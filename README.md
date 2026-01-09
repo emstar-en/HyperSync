@@ -1,4 +1,4 @@
-# HyperSync Spec Pack (ALPHA)
+# HyperSync Spec Pack (CORE)(ALPHA)
 
 Geometry-aware orchestration and **deterministic diagnostic fabric** for distributed computational workloads.
 
