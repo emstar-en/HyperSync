@@ -1,0 +1,14 @@
+{
+  "diagnostics": {
+    "recenter_every": 50,
+    "stabilized": true
+  },
+  "inputs_commitment": "sha256:W|mu|nu|epsilon=0.01|cost_policy",
+  "iters": 1675,
+  "output_commitment": "sha256:transport_plan",
+  "receipt_kind": "ReductionReceipt",
+  "residuals": {
+    "duality_gap": 9.2e-10
+  },
+  "solver_binding_id": "solver://graph/ot/sinkhorn@1.3.1"
+}

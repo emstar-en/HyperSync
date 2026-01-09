@@ -1,0 +1,1554 @@
+[
+  {
+    "geometry_mode": "native",
+    "migration_policy": "replace-old-techniques",
+    "modules": [
+      {
+        "constants": [
+          {
+            "doc": "Numerical tolerance for geometric validation",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "EPS",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true,
+            "value": 1e-09
+          }
+        ],
+        "exports": [
+          "json_canonical",
+          "fingerprint_bytes",
+          "EPS",
+          "hyperbolic_fingerprint"
+        ],
+        "functions": [
+          {
+            "doc": "Deterministic JSON (sorted keys, no whitespace)",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "json_canonical",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "obj",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Any",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "str",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "doc": "SHA-256 hex digest",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "fingerprint_bytes",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "data",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "bytes",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "str",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "doc": "Geometric fingerprint from intrinsic hyperbolic relationships (no Euclidean serialization)",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "hyperbolic_fingerprint",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "obj",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Any",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "str",
+            "stability": "experimental",
+            "unreleased": true
+          }
+        ],
+        "geometry_mode": "native",
+        "migration_policy": "replace-old-techniques",
+        "path": "core/utils.py",
+        "purpose": "Canonical serialization, content addressing, constants",
+        "release_status": "pre-alpha",
+        "stability": "experimental",
+        "unreleased": true
+      },
+      {
+        "classes": [
+          {
+            "attributes": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "target_anchor",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "Any",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "target_anchor_key",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "Any",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "capability",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "Any",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "policy_version",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "Any",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "policy_constraints",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "Any",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "shadow_policy_version",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "Any",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "typed_factor_weights",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "Any",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "consolidation_constraints",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "Any",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "anchor_strategy",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "Any",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "environment_mode",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "Any",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "actor_id",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "Any",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "actor_clearance",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "Any",
+                "unreleased": true
+              }
+            ],
+            "doc": "Carries policy, environment, and actor clearance for enforcement",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "Context",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "attributes": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "vector",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "List[float]",
+                "unreleased": true
+              }
+            ],
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "Anchor",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true
+          }
+        ],
+        "constants": [
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "CONTRACT_VALIDATIONS",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true,
+            "value": [
+              "Context includes environment_mode and actor_clearance for shadow enforcement",
+              "Embed and anchor vectors satisfy Lorentz constraints"
+            ]
+          }
+        ],
+        "exports": [
+          "Context",
+          "Anchor",
+          "lorentz_point_native",
+          "hyper_distance_native",
+          "canonical_id_native",
+          "vector_space_encode_native",
+          "CONTRACT_VALIDATIONS"
+        ],
+        "functions": [
+          {
+            "doc": "Intrinsic hyperboloid normalization without Euclidean projection",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "lorentz_point_native",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "vec",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "List[float]",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "np.ndarray",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "doc": "Intrinsic geodesic distance on the hyperboloid (no geometry-natives)",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "hyper_distance_native",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "v1",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "np.ndarray",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "v2",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "np.ndarray",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "float",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "doc": "Geometric content address from hyperbolic fingerprint (identity preserved intrinsically)",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "canonical_id_native",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "obj",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Any",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "str",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "doc": "Intrinsic manifold encoding preserving geometric relationships (no Euclidean trap)",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "vector_space_encode_native",
+            "params": [],
+            "release_status": "pre-alpha",
+            "returns": "Any",
+            "stability": "experimental",
+            "unreleased": true
+          }
+        ],
+        "geometry_mode": "native",
+        "migration_policy": "replace-old-techniques",
+        "path": "core/types.py",
+        "purpose": "Foundational geometric types and context",
+        "release_status": "pre-alpha",
+        "stability": "experimental",
+        "unreleased": true
+      },
+      {
+        "constants": [
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "CORE_PHILOSOPHY",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true,
+            "value": [
+              "Geometry-first design: All routing, approval, and drift detection decisions are geometric operations in Lorentz space",
+              "Entity-locked execution: Machine commands, human instructions, and compliance artifacts all derive from the same semantic spec with preserved critical tokens",
+              "Tighten-only policy evolution: Security constraints can only become stricter over time, never weaker",
+              "Content-addressed everything: All artifacts are deterministic and hash-stable for instant rollback and forensic replay",
+              "Portable model identity: Model/MHR/NHR records travel with the model, enabling offline operation and reconciliation",
+              "Attack-resistant geometry: Trust-weighted routing, density-aware repulsion, multi-gate admission",
+              "Shadow-world isolation: Shadow ops are non-canonical, deny-by-default, and require c4_root + dual control",
+              "Semantic multicast + golden samples: Single semantic root fans out to heterogeneous receivers; high-quality interactions fuel LoRA pipelines under policy"
+            ]
+          }
+        ],
+        "exports": [
+          "CORE_PHILOSOPHY"
+        ],
+        "geometry_mode": "native",
+        "migration_policy": "replace-old-techniques",
+        "path": "core/manifest.py",
+        "purpose": "Core philosophy, invariants, semantic anchors",
+        "release_status": "pre-alpha",
+        "stability": "experimental",
+        "unreleased": true
+      },
+      {
+        "constants": [
+          {
+            "doc": "Schema for ModelHealthRecord",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "MODELHEALTHRECORD_SCHEMA",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true,
+            "value": {
+              "capabilities": [
+                "str"
+              ],
+              "cohort": {
+                "anchor_ids": [
+                  "str"
+                ],
+                "capability_tags": [
+                  "str"
+                ],
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "unreleased": true
+              },
+              "environment_mode": "str",
+              "epoch": "int",
+              "geometry_mode": "native",
+              "hash": "ContentAddress",
+              "metrics": {
+                "calibration_ece": "float",
+                "drift_distance": "float",
+                "failure_modes": [
+                  "str"
+                ],
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "release_status": "pre-alpha",
+                "routing_accuracy_top1": "float",
+                "routing_accuracy_topk": "float",
+                "shadow_transfer_efficiency": "float",
+                "stability": "experimental",
+                "unreleased": true
+              },
+              "migration_policy": "replace-old-techniques",
+              "model_id": "str",
+              "provenance": {
+                "geometry_mode": "native",
+                "lora_artifact_hash": "str",
+                "migration_policy": "replace-old-techniques",
+                "parent_models": [
+                  "str"
+                ],
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "training_dataset_hash": "str",
+                "unreleased": true
+              },
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "unreleased": true,
+              "validation": {
+                "attestations": [
+                  "AttestationId"
+                ],
+                "evidence_level": "str",
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "release_status": "pre-alpha",
+                "signer": "ActorId",
+                "stability": "experimental",
+                "timestamp": "int",
+                "unreleased": true
+              }
+            }
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "MODELHEALTHRECORD_INVARIANTS",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true,
+            "value": [
+              "append_only",
+              "content_address_hash_stable",
+              "entity_locks_enforced",
+              "no_publish_without_attestations"
+            ]
+          },
+          {
+            "doc": "Schema for NetworkHealthRecord",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "NETWORKHEALTHRECORD_SCHEMA",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true,
+            "value": {
+              "anchors": [
+                "str"
+              ],
+              "cohort_id": "str",
+              "environment_mode": "str",
+              "epoch": "int",
+              "gates": {
+                "cohort_gate_result": "str",
+                "drift_gate_result": "str",
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "unreleased": true
+              },
+              "geometry_mode": "native",
+              "global_metrics": {
+                "avg_calibration_ece": "float",
+                "black_hole_score": "float",
+                "geometry_mode": "native",
+                "holonomy_inconsistency": "float",
+                "migration_policy": "replace-old-techniques",
+                "release_status": "pre-alpha",
+                "route_flap_rate": "float",
+                "stability": "experimental",
+                "sybil_hubness_index": "float",
+                "unreleased": true
+              },
+              "hash": "ContentAddress",
+              "incidents": [
+                {
+                  "action_taken": "str",
+                  "geometry_mode": "native",
+                  "migration_policy": "replace-old-techniques",
+                  "release_status": "pre-alpha",
+                  "scope": "str",
+                  "severity": "str",
+                  "stability": "experimental",
+                  "timestamp": "int",
+                  "type": "str",
+                  "unreleased": true
+                }
+              ],
+              "migration_policy": "replace-old-techniques",
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "unreleased": true
+            }
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "NETWORKHEALTHRECORD_INVARIANTS",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true,
+            "value": [
+              "append_only",
+              "content_address_hash_stable",
+              "cohort_gate_required_for_positive_state",
+              "no_shadow_activation_without_network_ok"
+            ]
+          }
+        ],
+        "exports": [
+          "MODELHEALTHRECORD_SCHEMA",
+          "MODELHEALTHRECORD_INVARIANTS",
+          "NETWORKHEALTHRECORD_SCHEMA",
+          "NETWORKHEALTHRECORD_INVARIANTS"
+        ],
+        "geometry_mode": "native",
+        "migration_policy": "replace-old-techniques",
+        "path": "core/records.py",
+        "purpose": "Schemas and invariants for MHR/NHR",
+        "release_status": "pre-alpha",
+        "stability": "experimental",
+        "unreleased": true
+      }
+    ],
+    "name": "core",
+    "release_status": "pre-alpha",
+    "stability": "experimental",
+    "unreleased": true
+  },
+  {
+    "geometry_mode": "native",
+    "migration_policy": "replace-old-techniques",
+    "modules": [
+      {
+        "constants": [
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "NUMERICAL_STABILITY_GUARDS",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true,
+            "value": [
+              {
+                "description": "Keep vectors away from boundary by EPS to prevent acosh domain errors",
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "epsilon_projection",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "unreleased": true
+              },
+              {
+                "description": "Scale by local curvature to prevent overshoot",
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "adaptive_learning_rate",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "unreleased": true
+              },
+              {
+                "description": "Prevent holonomy accumulation across base changes",
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "parallel_transport_correction",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "unreleased": true
+              },
+              {
+                "description": "Check exp/log round-trip < EPS; enforce hyperboloid constraint",
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "numerical_tolerance_validation",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "unreleased": true
+              }
+            ]
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "CONTRACT_VALIDATIONS",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true,
+            "value": [
+              "Exp/log inverse within EPS at base",
+              "Typed-factor budgets enforced for consolidation",
+              "Drift bounds computable and checked before use"
+            ]
+          },
+          {
+            "doc": "Default hyperboloid dimension used for shadow bundles and geometry ops (adjust per deployment)",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "HYPERBOLOID_DIMENSION",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true,
+            "value": 5
+          }
+        ],
+        "exports": [
+          "parallel_transport_native",
+          "compute_holonomy_native",
+          "lorentz_log_map",
+          "lorentz_exp_map",
+          "tangent_aggregate_native",
+          "consolidate_at_anchor_native",
+          "compute_drift_bound_native",
+          "HYPERBOLOID_DIMENSION",
+          "compute_sectional_curvature",
+          "compute_geodesic",
+          "apply_isometry",
+          "encode_message_as_tangent",
+          "decode_tangent_as_message",
+          "compute_geodesic_ball",
+          "compute_geodesic_boundary",
+          "compute_alternative_geodesics",
+          "compute_geometric_median",
+          "encode_vote_as_isometry",
+          "generate_geometric_vote_proof",
+          "compute_geometric_id",
+          "validate_geometric_consistency",
+          "NUMERICAL_STABILITY_GUARDS",
+          "CONTRACT_VALIDATIONS"
+        ],
+        "functions": [
+          {
+            "doc": "Continuous geodesic transport preserving motion integrity (intrinsic Levi-Civita)",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "parallel_transport_native",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "vec",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "np.ndarray",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "from_point",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "np.ndarray",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "to_point",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "np.ndarray",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "np.ndarray",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "doc": "Intrinsic holonomy via geodesic loops and intrinsic transport",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "compute_holonomy_native",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "path",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "List[np.ndarray]",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "np.ndarray",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "doc": "Manifold -> tangent at base",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "lorentz_log_map",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "base",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "np.ndarray",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "point",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "np.ndarray",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "np.ndarray",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "doc": "Tangent -> manifold at base",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "lorentz_exp_map",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "base",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "np.ndarray",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "tangent",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "np.ndarray",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "np.ndarray",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "doc": "Intrinsic aggregation (Riemannian barycenter) preserving community geometry",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "tangent_aggregate_native",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "deltas",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "List[np.ndarray]",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "weights",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "List[float]",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "constraints",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Dict",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "np.ndarray",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "doc": "Intrinsic consolidation preserving geometric integrity (no Euclidean round-trips)",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "consolidate_at_anchor_native",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "active_state",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Dict",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "shadow_report",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Dict",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "base",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Anchor",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "policy",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Dict",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "Dict",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "doc": "Intrinsic drift bound computed from geodesic relationships",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "compute_drift_bound_native",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "shadow_quality",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "float",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "constraint_budget",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "float",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "base",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "np.ndarray",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "float",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "doc": "Intrinsic sectional curvature at a manifold point (hyperboloid model)",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "compute_sectional_curvature",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "point",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "np.ndarray",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "float",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "doc": "Compute geodesic connecting two hyperboloid points (discretized path)",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "compute_geodesic",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "endpoint_a",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "np.ndarray",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "endpoint_b",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "np.ndarray",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "List[np.ndarray]",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "doc": "Apply a geometry-native isometry to a manifold point",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "apply_isometry",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "point",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "np.ndarray",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "transformation",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Any",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "np.ndarray",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "doc": "Encode message into a tangent vector at an endpoint using a shared secret",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "encode_message_as_tangent",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "message",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Any",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "shared_secret",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Any",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "np.ndarray",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "doc": "Decode a tangent vector back into a message using a shared secret",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "decode_tangent_as_message",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "tangent",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "np.ndarray",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "shared_secret",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Any",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "Any",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "doc": "Compute a geodesic ball region centered at anchor_point with a given radius",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "compute_geodesic_ball",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "anchor_point",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "np.ndarray",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "radius",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "float",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "Dict",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "doc": "Compute the isolation boundary for a geodesic region",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "compute_geodesic_boundary",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "region",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Dict",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "Any",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "doc": "Compute alternative geodesics that route around a boundary",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "compute_alternative_geodesics",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "boundary",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Any",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "List[List[np.ndarray]]",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "doc": "Robust geometric median on the hyperboloid (intrinsic optimization)",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "compute_geometric_median",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "points",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "List[np.ndarray]",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "np.ndarray",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "doc": "Encode a vote as an isometry/transformation artifact",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "encode_vote_as_isometry",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "vote_vector",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "np.ndarray",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "Any",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "doc": "Produce an attested proof of a geometric vote (pre/post + round)",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "generate_geometric_vote_proof",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "before",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "np.ndarray",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "after",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "np.ndarray",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "voting_round",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "int",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "Dict",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "doc": "Deterministic geometric identity for an anchor",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "compute_geometric_id",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "anchor",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "np.ndarray",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "str",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "doc": "Validate that robust center and consensus are consistent under invariants",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "validate_geometric_consistency",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "robust_center",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Any",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "consensus_value",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Any",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "bool",
+            "stability": "experimental",
+            "unreleased": true
+          }
+        ],
+        "geometry_mode": "native",
+        "migration_policy": "replace-old-techniques",
+        "path": "geometry/primitives.py",
+        "purpose": "Geometric primitives, transport, holonomy, consolidation",
+        "release_status": "pre-alpha",
+        "stability": "experimental",
+        "unreleased": true
+      },
+      {
+        "constants": [
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "ANCHOR_POSITIONING_POLICY",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true,
+            "value": {
+              "density_kappa_mapping": {
+                "geometry_mode": "native",
+                "high_density_nearby": "anchors closer (smaller geodesic spacing)",
+                "low_density_spread": "anchors more separated",
+                "migration_policy": "replace-old-techniques",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "transition": "smooth interpolation; holonomy consistency validated",
+                "unreleased": true
+              },
+              "geometry_mode": "native",
+              "migration_policy": "replace-old-techniques",
+              "release_status": "pre-alpha",
+              "respect_curvature_K": true,
+              "stability": "experimental",
+              "threshold_capability": 0.25,
+              "threshold_security": 0.75,
+              "unreleased": true
+            }
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "CONTRACT_VALIDATIONS",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true,
+            "value": [
+              "All anchor vectors satisfy hyperboloid constraint: lorentz_inner(v,v) == -1 within EPS",
+              "All anchor vectors are timelike",
+              "Placement honors manifold curvature K from substrate_config.manifold",
+              "Voronoi territories computed in hyperbolic metric",
+              "Capability clustering maintains intra/inter geodesic thresholds"
+            ]
+          }
+        ],
+        "exports": [
+          "compute_semantic_density",
+          "generate_hyperbolic_positions",
+          "is_timelike",
+          "establish_geometric_anchors",
+          "create_capability_clusters",
+          "voronoi_regions",
+          "ANCHOR_POSITIONING_POLICY",
+          "CONTRACT_VALIDATIONS"
+        ],
+        "functions": [
+          {
+            "doc": "Compute local semantic density \u03ba from training/evidence; output provides density map usable for curvature-aware placement",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "compute_semantic_density",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "training_data",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Any",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "Any",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "doc": "Generate anchor positions directly on the hyperboloid manifold (no Euclidean projection); honors curvature K and density-aware spacing; ensures \u27e8v,v\u27e9 = -1",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "generate_hyperbolic_positions",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "density_map",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Any",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "curvature_K",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "float",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "dimension",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "int",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "List[np.ndarray]",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "doc": "Return True iff vec is timelike under Lorentz metric (\u27e8v,v\u27e9 < 0)",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "is_timelike",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "vec",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "np.ndarray",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "bool",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "doc": "Phase 1: Establish geometrically-valid anchors. Steps: compute \u03ba-density \u2192 curvature-aware hyperboloid positions \u2192 validate Lorentz constraint and timelike \u2192 capability-aware clustering",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "establish_geometric_anchors",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "substrate_config",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Dict",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "List[Anchor]",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "doc": "Cluster by semantic capability with geometric separation: intra d_h < threshold_capability; inter d_h > threshold_security; optimize for routing efficiency",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "create_capability_clusters",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "positions",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "List[np.ndarray]",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "capabilities",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Dict",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "List[Anchor]",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "doc": "Compute natural geometric territories via Voronoi regions under hyperbolic distance; used for scope and kill-switch radii",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "voronoi_regions",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "anchors",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "List[Anchor]",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "Any",
+            "stability": "experimental",
+            "unreleased": true
+          }
+        ],
+        "geometry_mode": "native",
+        "migration_policy": "replace-old-techniques",
+        "path": "geometry/anchors.py",
+        "purpose": "Anchor positioning on native hyperboloid, density-aware spacing, capability clustering, Voronoi territories, and geometric invariants",
+        "release_status": "pre-alpha",
+        "stability": "experimental",
+        "unreleased": true
+      }
+    ],
+    "name": "geometry",
+    "release_status": "pre-alpha",
+    "stability": "experimental",
+    "unreleased": true
+  }
+]

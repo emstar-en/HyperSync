@@ -1,0 +1,6 @@
+{
+  "deterministic": true,
+  "id": "op://cut_manager_deterministic.0",
+  "kind": "cuts",
+  "notes": "Deterministic cut pool and selection rules"
+}

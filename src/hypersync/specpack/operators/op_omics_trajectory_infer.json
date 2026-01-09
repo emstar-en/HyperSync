@@ -1,0 +1,6 @@
+{
+  "deterministic": true,
+  "id": "op://omics_trajectory_infer.0",
+  "kind": "omics",
+  "notes": "Pseudotime; root policy; MST ties lexicographic"
+}

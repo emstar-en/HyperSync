@@ -1,0 +1,14 @@
+{
+  "id": "hypersync.core.bridge.uplink",
+  "version": "1.0.0",
+  "type": "capsule",
+  "description": "High-speed IPC uplink for connecting virtualized HyperSync instances to the base program.",
+  "capabilities": [
+    "ipc_channel",
+    "shared_memory",
+    "context_switching"
+  ],
+  "dependencies": [
+    "hypersync.core.kernel"
+  ]
+}

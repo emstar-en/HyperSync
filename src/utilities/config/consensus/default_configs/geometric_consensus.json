@@ -1,0 +1,14 @@
+{
+  "gpu": {
+    "enabled": true,
+    "parallel_geodesics": 128,
+    "precision": "fp64"
+  },
+  "mechanism_id": "geometric_consensus",
+  "parameters": {
+    "consensus_radius": 0.1,
+    "curvature": "variable",
+    "manifold_type": "riemannian",
+    "projection_method": "exponential_map"
+  }
+}

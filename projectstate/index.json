@@ -1,0 +1,16 @@
+{
+  "master_state_report.md": {
+    "migration_policy": "none",
+    "release_status": "released",
+    "size_bytes": 1679,
+    "stability": "stable",
+    "unreleased": false
+  },
+  "domain_spec_report.md": {
+    "migration_policy": "none",
+    "release_status": "released",
+    "size_bytes": 6121,
+    "stability": "stable",
+    "unreleased": false
+  }
+}

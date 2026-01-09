@@ -1,0 +1,6 @@
+{
+  "deterministic": true,
+  "id": "op://density_filter.0",
+  "kind": "regularization",
+  "notes": "Deterministic density filter with fixed kernel"
+}

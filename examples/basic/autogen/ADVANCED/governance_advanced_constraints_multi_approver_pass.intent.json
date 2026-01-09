@@ -1,0 +1,9 @@
+{
+  "approvals": 2,
+  "intent_kind": "ReductionIntent",
+  "params": {
+    "commands": 1
+  },
+  "profile": "ADVANCED",
+  "task": "actuation_guard"
+}

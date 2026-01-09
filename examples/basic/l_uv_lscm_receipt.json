@@ -1,0 +1,23 @@
+{
+  "diagnostics": {
+    "charts": 12,
+    "distortion_l2": 1.07,
+    "distortion_linf": 1.21,
+    "pack_util": 0.86
+  },
+  "geometry": {
+    "anchors": [
+      17,
+      593
+    ],
+    "receipt_kind": "GeometryReceipt",
+    "seams_digest": "sha256:seams"
+  },
+  "inputs_commitment": "sha256:mesh|lscm|anchors=auto|pack=binpack",
+  "lineage": {
+    "atlas_digest": "sha256:atlas",
+    "receipt_kind": "LineageReceipt"
+  },
+  "receipt_kind": "ReductionReceipt",
+  "solver_binding_id": "solver://uv/lscm@1.1.0"
+}

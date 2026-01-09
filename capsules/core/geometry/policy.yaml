@@ -1,0 +1,65 @@
+# HyperSync Core Geometry Capsule Policy (Enhanced)
+
+determinism:
+  required_tier: D0_bit_exact
+  allow_fallback: false
+  notes:
+    - "Core geometry operations must be bit-exact across platforms."
+    - "Approximate algorithms must be isolated into separate, clearly-labeled capsules if needed."
+
+resources:
+  max_cpu_ms_per_call: 50
+  max_memory_mb: 256
+  max_concurrent_invocations: 128
+  notes:
+    - "Geometry is latency-sensitive but computationally bounded."
+
+environment:
+  network_access: none
+  filesystem_access: read_only
+  allowed_mounts: []
+  notes:
+    - "Geometry capsules must not initiate external network calls."
+    - "Read-only access may be granted to static configuration or lookup tables."
+
+security:
+  trust_zone: system
+  sandbox_class: core_strict_no_network
+  allowed_callers:
+    - role: environment_manager
+    - role: consensus_engine
+    - role: routing_engine
+  forbidden_callers:
+    - role: untrusted_agent
+  notes:
+    - "Untrusted AI agents must call geometry only through mediated environment capsules."
+
+data_handling:
+  allow_pii: false
+  redact_on_log: true
+  notes:
+    - "Geometry inputs should be abstract (IDs, coordinates), not raw user-identifying data."
+
+telemetry:
+  emit_receipts_for_operations:
+    - Distance
+    - Geodesic
+    - ShortestPath
+    - Embed
+  log_level: info
+  notes:
+    - "Receipts are required when geometry decisions affect routing, consensus, or environment layout."
+
+change_management:
+  requires_approval:
+    - type: spec_logic
+      approvers:
+        - geom-lead
+        - safety-review
+    - type: policy
+      approvers:
+        - safety-review
+        - governance-board
+  rollout_strategy: staged
+  notes:
+    - "Changes to core geometry must go through formal review and staged rollout."

@@ -1,0 +1,146 @@
+{
+  "$id": "https://hypersync.io/schemas/agent/binding/v1",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": false,
+  "description": "Defines runtime bindings between agents and specific node instances",
+  "properties": {
+    "agent_id": {
+      "description": "Reference to agent profile",
+      "pattern": "^agent-[a-z0-9-]+$",
+      "type": "string"
+    },
+    "binding_id": {
+      "description": "Unique identifier for this binding",
+      "pattern": "^binding-[a-z0-9-]+$",
+      "type": "string"
+    },
+    "binding_type": {
+      "description": "Type of binding relationship",
+      "enum": [
+        "primary",
+        "fallback",
+        "conditional",
+        "load_balanced"
+      ],
+      "type": "string"
+    },
+    "conditions": {
+      "description": "Conditions under which this binding is active",
+      "properties": {
+        "capability_match": {
+          "description": "Required capabilities for activation",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "load_threshold": {
+          "description": "Maximum node load for activation (0-1)",
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
+        "time_windows": {
+          "description": "Time windows when binding is active",
+          "items": {
+            "properties": {
+              "end": {
+                "format": "time",
+                "type": "string"
+              },
+              "start": {
+                "format": "time",
+                "type": "string"
+              },
+              "timezone": {
+                "default": "UTC",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "lifecycle": {
+      "description": "Binding lifecycle metadata",
+      "properties": {
+        "created_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "expires_at": {
+          "description": "Optional expiration timestamp",
+          "format": "date-time",
+          "type": "string"
+        },
+        "state": {
+          "default": "active",
+          "enum": [
+            "active",
+            "suspended",
+            "terminated"
+          ],
+          "type": "string"
+        },
+        "updated_at": {
+          "format": "date-time",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "node_id": {
+      "description": "Target node for this binding",
+      "pattern": "^node-[a-z0-9-]+$",
+      "type": "string"
+    },
+    "overrides": {
+      "description": "Node-specific configuration overrides",
+      "properties": {
+        "retry_policy": {
+          "properties": {
+            "backoff_ms": {
+              "minimum": 100,
+              "type": "integer"
+            },
+            "max_attempts": {
+              "maximum": 10,
+              "minimum": 1,
+              "type": "integer"
+            }
+          },
+          "type": "object"
+        },
+        "telemetry_sample_rate": {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
+        "timeout_ms": {
+          "description": "Request timeout override in milliseconds",
+          "minimum": 100,
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
+    "priority": {
+      "default": 50,
+      "description": "Binding priority (lower = higher priority)",
+      "maximum": 100,
+      "minimum": 0,
+      "type": "integer"
+    }
+  },
+  "required": [
+    "binding_id",
+    "agent_id",
+    "node_id",
+    "binding_type"
+  ],
+  "title": "HyperSync Agent Binding Schema",
+  "type": "object"
+}

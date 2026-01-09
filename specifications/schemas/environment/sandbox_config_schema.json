@@ -1,0 +1,92 @@
+{
+  "$id": "https://hypersync.ai/schemas/environment/sandbox_config_schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "Runtime configuration for agent sandboxes",
+  "properties": {
+    "agent_id": {
+      "type": "string"
+    },
+    "environment": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "Environment variables",
+      "type": "object"
+    },
+    "metrics": {
+      "properties": {
+        "cpu_usage_percent": {
+          "type": "number"
+        },
+        "disk_used_mb": {
+          "type": "number"
+        },
+        "inodes_used": {
+          "type": "integer"
+        },
+        "memory_used_mb": {
+          "type": "number"
+        },
+        "open_files": {
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
+    "mounts": {
+      "items": {
+        "properties": {
+          "mode": {
+            "enum": [
+              "ro",
+              "rw"
+            ],
+            "type": "string"
+          },
+          "source": {
+            "type": "string"
+          },
+          "target": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "source",
+          "target",
+          "mode"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "policy_id": {
+      "type": "string"
+    },
+    "root_path": {
+      "description": "Sandbox root directory",
+      "type": "string"
+    },
+    "sandbox_id": {
+      "pattern": "^sandbox-[a-z0-9-]+$",
+      "type": "string"
+    },
+    "state": {
+      "enum": [
+        "inactive",
+        "provisioning",
+        "active",
+        "suspended",
+        "terminating",
+        "terminated"
+      ],
+      "type": "string"
+    }
+  },
+  "required": [
+    "sandbox_id",
+    "agent_id",
+    "state"
+  ],
+  "title": "Sandbox Configuration Schema",
+  "type": "object"
+}

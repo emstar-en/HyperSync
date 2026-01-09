@@ -1,0 +1,43 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "Hyperbolic geometry mode configuration",
+  "properties": {
+    "curvature_domain": {
+      "enum": [
+        "positive",
+        "zero",
+        "negative",
+        "mixed"
+      ],
+      "type": "string"
+    },
+    "mode": {
+      "enum": [
+        "poincare_disk",
+        "hyperboloid",
+        "black_hole_lens",
+        "wormhole_throat",
+        "fiber_bundle",
+        "klein_disk",
+        "upper_half_plane",
+        "beltrami_klein",
+        "hemisphere",
+        "lorentz"
+      ],
+      "type": "string"
+    },
+    "show_boundary": {
+      "default": true,
+      "type": "boolean"
+    },
+    "show_geodesics": {
+      "default": false,
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "mode"
+  ],
+  "title": "Geometry Mode",
+  "type": "object"
+}

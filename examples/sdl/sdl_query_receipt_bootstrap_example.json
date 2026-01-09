@@ -1,0 +1,23 @@
+{
+  "context_tags": [
+    "hardware_profile:hw_ultra_light_2c_4g_no_gpu",
+    "phase:first_run_bootstrap"
+  ],
+  "id": "sdl_query_bootstrap_ultra_light_001",
+  "metadata": {
+    "example": true
+  },
+  "query_text": "small-device optimization profile for ultra-light hardware",
+  "results": [
+    {
+      "score": 0.97,
+      "shard_id": "sdl_shard_small_device_optimization"
+    },
+    {
+      "score": 0.89,
+      "shard_id": "sdl_shard_offline_friendly_profile"
+    }
+  ],
+  "commitment": "sha256:16ef7b54578fc8bf383d4fb966de8a4145dd0d817548cae0103ade4078cda6d7",
+  "signature": "sig:ed25519:a1b2c3d4e5f67890abcdef1234567890abcdef1234567890abcdef1234567890"
+}

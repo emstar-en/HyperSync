@@ -1,0 +1,28 @@
+{
+  "generated_at": "2025-11-17T01:12:40.470324Z",
+  "global_default_enabled": false,
+  "resolution_instructions": "When enabled, replace tokens of form ext://{id} using overlays/runtime_ext.map.json to recover originals.",
+  "schemes": {
+    "file": {
+      "enabled": false
+    },
+    "gs": {
+      "enabled": false
+    },
+    "http": {
+      "enabled": false
+    },
+    "https": {
+      "enabled": false
+    },
+    "operator": {
+      "enabled": false
+    },
+    "s3": {
+      "enabled": false
+    },
+    "spec": {
+      "enabled": false
+    }
+  }
+}

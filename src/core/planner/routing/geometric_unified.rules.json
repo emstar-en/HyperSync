@@ -1,0 +1,502 @@
+{
+  "defaults": {
+    "accumulation": "pairwise",
+    "determinism_required": true,
+    "emit_privacy_receipts": true,
+    "precision_default": "fp32",
+    "prefer_geodesic": true,
+    "prefer_geometry_native": true,
+    "privacy_enforced": true,
+    "seed": 1337,
+    "tier_gating": "enforced"
+  },
+  "ext_overlays": [
+    "overlay://planner/user_registry"
+  ],
+  "router_id": "router://geometric_unified",
+  "selection": {
+    "fallbacks": {
+      "diffusion_synthesis": [
+        "solver://ml/diffusion/ode_sampler"
+      ],
+      "metric_learning": [
+        "solver://ml/metric/sdp_ipm",
+        "solver://ml/metric/bilevel_prox"
+      ]
+    },
+    "order": [
+      "prefer_tags:geometry-native",
+      "prefer_flag:geodesic_preferred",
+      "prefer_conformance_available",
+      "prefer_lower_estimated_cost"
+    ]
+  },
+  "task_family_patterns": {
+    "assign_*": {
+      "candidates": [
+        "solver://or/assign/hungarian"
+      ],
+      "prefer_tags": [
+        "geometry-native"
+      ]
+    },
+    "canonical_*": {
+      "candidates": [
+        "solver://canonical/representative_qp"
+      ],
+      "prefer_tags": [
+        "geometry-native"
+      ]
+    },
+    "cluster_*": {
+      "candidates": [
+        "solver://cluster/geodesic_kmedoids",
+        "solver://cluster/hdbscan_metric"
+      ],
+      "prefer_tags": [
+        "geometry-native"
+      ]
+    },
+    "color_*": {
+      "candidates": [
+        "solver://color/ot_3d_entropic",
+        "solver://color/ot_1d_monotone",
+        "solver://color/tonemap_curve"
+      ],
+      "prefer_tags": [
+        "geometry-native"
+      ]
+    },
+    "curation_*": {
+      "candidates": [
+        "solver://retrieval/dist_mahalanobis",
+        "solver://cluster/geodesic_kmedoids"
+      ],
+      "prefer_tags": [
+        "geometry-native"
+      ]
+    },
+    "data_*": {
+      "candidates": [
+        "solver://prov/normalize_canonical",
+        "solver://prov/deduplicate"
+      ],
+      "prefer_tags": [
+        "geometry-native"
+      ]
+    },
+    "design_*": {
+      "candidates": [
+        "solver://design/simp_pde",
+        "solver://design/levelset_admm",
+        "solver://design/pde_sensitivity"
+      ],
+      "prefer_tags": [
+        "geometry-native"
+      ]
+    },
+    "dictionary_*": {
+      "candidates": [
+        "solver://ml/dict/admm",
+        "solver://ml/dict/lasso_fista",
+        "solver://ml/dict/ksvd"
+      ],
+      "prefer_tags": [
+        "geometry-native"
+      ]
+    },
+    "diffusion_*": {
+      "candidates": [
+        "solver://ml/diffusion/ode_sampler",
+        "solver://ml/diffusion/adjoint_eval",
+        "solver://ml/diffusion/safety_gate"
+      ],
+      "prefer_tags": [
+        "geometry-native"
+      ]
+    },
+    "dp_*": {
+      "candidates": [
+        "solver://dp/calibrate_accountant",
+        "solver://dp/sgd_deterministic",
+        "solver://dp/aggregation_lp"
+      ],
+      "prefer_tags": [
+        "geometry-native"
+      ]
+    },
+    "dro_*": {
+      "candidates": [
+        "solver://or/dro/wasserstein",
+        "solver://or/dro/phi_divergence"
+      ],
+      "prefer_tags": [
+        "geometry-native"
+      ]
+    },
+    "ebm_*": {
+      "candidates": [
+        "solver://ml/ebm/score_match",
+        "solver://ml/ebm/dsm",
+        "solver://ml/ebm/langevin_eval"
+      ],
+      "prefer_tags": [
+        "geometry-native"
+      ]
+    },
+    "em_*": {
+      "candidates": [
+        "solver://em/fem_freq_curlcurl",
+        "solver://em/fem_time_td",
+        "solver://em/eigs_modes"
+      ],
+      "prefer_tags": [
+        "geometry-native"
+      ]
+    },
+    "epi_*": {
+      "candidates": [
+        "solver://epi/graph_diffusion",
+        "solver://epi/transport_pde",
+        "solver://epi/calibrate_convex"
+      ],
+      "prefer_tags": [
+        "deterministic",
+        "compliance"
+      ]
+    },
+    "facility_*": {
+      "candidates": [
+        "solver://or/facility/ufl_lp_ipm"
+      ],
+      "prefer_tags": [
+        "geometry-native"
+      ]
+    },
+    "fairness_*": {
+      "candidates": [
+        "solver://fair/inproc_eqodds_pdhg",
+        "solver://fair/postproc_threshold_lp"
+      ],
+      "prefer_tags": [
+        "geometry-native"
+      ]
+    },
+    "fm_*": {
+      "candidates": [
+        "solver://fm/discrete_relax/lp_qp",
+        "solver://fm/discrete_relax/sdp",
+        "solver://fm/discrete_relax/pdhg_prox"
+      ],
+      "prefer_tags": [
+        "geometry-native"
+      ]
+    },
+    "heat_*": {
+      "candidates": [
+        "solver://heat/fem_transient",
+        "solver://heat/radiative_bc"
+      ],
+      "prefer_tags": [
+        "geometry-native"
+      ]
+    },
+    "latent_*": {
+      "candidates": [
+        "solver://latent/geodesic_path",
+        "solver://latent/decode_raster",
+        "solver://latent/mask_blend"
+      ],
+      "prefer_tags": [
+        "geometry-native"
+      ]
+    },
+    "lattice_*": {
+      "candidates": [
+        "solver://lattice/lll_wrapper",
+        "solver://lattice/bkz_wrapper",
+        "solver://lattice/tuning_envelope"
+      ],
+      "prefer_tags": [
+        "geometry-native"
+      ]
+    },
+    "linkage_*": {
+      "candidates": [
+        "solver://linkage/bipartite_lp",
+        "solver://linkage/cluster_edit_ilp"
+      ],
+      "prefer_tags": [
+        "geometry-native"
+      ]
+    },
+    "media_*": {
+      "candidates": [
+        "solver://color/ot_3d_entropic",
+        "solver://latent/decode_raster"
+      ],
+      "prefer_tags": [
+        "geometry-native"
+      ]
+    },
+    "medreg_*": {
+      "candidates": [
+        "solver://medreg/affine_pdhg",
+        "solver://medreg/svf_lddmm"
+      ],
+      "prefer_tags": [
+        "deterministic",
+        "compliance"
+      ]
+    },
+    "medseg_*": {
+      "candidates": [
+        "solver://medseg/tv_multilabel",
+        "solver://medseg/shape_atlas_priors"
+      ],
+      "prefer_tags": [
+        "deterministic",
+        "compliance"
+      ]
+    },
+    "mesh_*": {
+      "candidates": [
+        "solver://mesh/remesh_iso",
+        "solver://mesh/taubin_smooth",
+        "solver://mesh/implicit_mcf",
+        "solver://mesh/decimate_qem"
+      ],
+      "prefer_tags": [
+        "geometry-native"
+      ]
+    },
+    "metric_*": {
+      "candidates": [
+        "solver://retrieval/dist_mahalanobis",
+        "solver://retrieval/geodesic_latent"
+      ],
+      "prefer_tags": [
+        "geometry-native"
+      ]
+    },
+    "micro_*": {
+      "candidates": [
+        "solver://micro/realized_vol_tv",
+        "solver://micro/fused_lasso",
+        "solver://micro/state_space_convex"
+      ],
+      "deny_tiers": [
+        "Core"
+      ],
+      "prefer_tags": [
+        "finance",
+        "deterministic",
+        "compliance"
+      ]
+    },
+    "mpc_*": {
+      "candidates": [
+        "solver://mpc/session_setup",
+        "solver://mpc/preprocess_triples",
+        "solver://mpc/execute_protocol",
+        "solver://mpc/reveal_policy_gate"
+      ],
+      "prefer_tags": [
+        "geometry-native"
+      ]
+    },
+    "omics_*": {
+      "candidates": [
+        "solver://omics/knn_graph",
+        "solver://omics/diffusion_maps",
+        "solver://omics/trajectory_infer"
+      ],
+      "prefer_tags": [
+        "deterministic",
+        "compliance"
+      ]
+    },
+    "ot_*": {
+      "candidates": [
+        "solver://ot/sinkhorn_balancing",
+        "solver://ot/unbalanced_kl",
+        "solver://ot/jko_flow"
+      ],
+      "prefer_tags": [
+        "geometry-native"
+      ]
+    },
+    "pareto_*": {
+      "candidates": [
+        "solver://or/pareto/prox_scalar_lpqp",
+        "solver://or/pareto/chebyshev_qp",
+        "solver://or/pareto/homotopy"
+      ],
+      "prefer_tags": [
+        "geometry-native"
+      ]
+    },
+    "portfolio_*": {
+      "candidates": [
+        "solver://pmv/prox_qp",
+        "solver://pmv/factor_constrained",
+        "solver://pmv/turnover_budget"
+      ],
+      "deny_tiers": [
+        "Core"
+      ],
+      "prefer_tags": [
+        "finance",
+        "deterministic",
+        "compliance"
+      ]
+    },
+    "privacy_*": {
+      "candidates": [
+        "solver://prov/redact_policy_gate"
+      ],
+      "prefer_tags": [
+        "geometry-native"
+      ]
+    },
+    "prov_*": {
+      "candidates": [
+        "solver://prov/normalize_canonical",
+        "solver://prov/deduplicate",
+        "solver://prov/redact_policy_gate"
+      ],
+      "prefer_tags": [
+        "geometry-native"
+      ]
+    },
+    "qchem_*": {
+      "candidates": [
+        "solver://qchem/scf",
+        "solver://qchem/geoopt_bfgs",
+        "solver://qchem/pop_analysis"
+      ],
+      "prefer_tags": [
+        "geometry-native"
+      ]
+    },
+    "retrieval_*": {
+      "candidates": [
+        "solver://retrieval/dist_mahalanobis",
+        "solver://retrieval/geodesic_latent"
+      ],
+      "prefer_tags": [
+        "geometry-native"
+      ]
+    },
+    "risk_*": {
+      "candidates": [
+        "solver://risk/cvar_lp",
+        "solver://risk/wass_dro_prox",
+        "solver://risk/phi_div_dro"
+      ],
+      "deny_tiers": [
+        "Core"
+      ],
+      "prefer_tags": [
+        "finance",
+        "deterministic",
+        "compliance"
+      ]
+    },
+    "robust_*": {
+      "candidates": [
+        "solver://robust/pgd_deterministic",
+        "solver://robust/prox_update",
+        "solver://robust/cert_radius"
+      ],
+      "prefer_tags": [
+        "geometry-native"
+      ]
+    },
+    "rounding_*": {
+      "candidates": [
+        "solver://or/rounding/threshold_greedy",
+        "solver://or/rounding/pipage"
+      ],
+      "prefer_tags": [
+        "geometry-native"
+      ]
+    },
+    "routing_*": {
+      "candidates": [
+        "solver://or/routing/sp_cg_deterministic"
+      ],
+      "prefer_tags": [
+        "geometry-native"
+      ]
+    },
+    "rt_*": {
+      "candidates": [
+        "solver://rt/fmo_qp",
+        "solver://rt/vmat_surrogate",
+        "solver://rt/dose_kernel"
+      ],
+      "prefer_tags": [
+        "deterministic",
+        "compliance"
+      ]
+    },
+    "scen_*": {
+      "candidates": [
+        "solver://scen/ot_multivariate",
+        "solver://scen/ot_marginal_1d",
+        "solver://scen/jko_flow"
+      ],
+      "deny_tiers": [
+        "Core"
+      ],
+      "prefer_tags": [
+        "finance",
+        "deterministic",
+        "compliance"
+      ]
+    },
+    "solid_*": {
+      "candidates": [
+        "solver://solid/elasticity_fem",
+        "solver://solid/hyperelastic_newton",
+        "solver://solid/phasefield_fracture"
+      ],
+      "prefer_tags": [
+        "geometry-native"
+      ]
+    },
+    "stochastic_*": {
+      "candidates": [
+        "solver://or/stoch/saa_benders",
+        "solver://or/stoch/saa_mip",
+        "solver://or/stoch/surrogate_lp"
+      ],
+      "prefer_tags": [
+        "geometry-native"
+      ]
+    },
+    "uv_*": {
+      "candidates": [
+        "solver://uv/lscm",
+        "solver://uv/harmonic_laplacian",
+        "solver://uv/arap_adjust",
+        "solver://uv/pack_charts"
+      ],
+      "prefer_tags": [
+        "geometry-native"
+      ]
+    },
+    "zk_*": {
+      "candidates": [
+        "solver://zk/constraint_gen",
+        "solver://zk/witness_gen",
+        "solver://zk/prove",
+        "solver://zk/verify"
+      ],
+      "prefer_tags": [
+        "geometry-native"
+      ]
+    }
+  }
+}

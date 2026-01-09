@@ -1,0 +1,9 @@
+{
+  "name": "geometry.curvature",
+  "version": "1.0.0",
+  "description": "VNES Capsules for Curvature Mechanisms",
+  "components": [
+    "curvature_field_generators.capsule.json",
+    "ricci_flow.capsule.json"
+  ]
+}

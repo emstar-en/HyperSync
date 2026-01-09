@@ -1,0 +1,56 @@
+{
+  "$schema": "ext://f1fed686329b",
+  "properties": {
+    "causal_envelope": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "diagnostics": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "inputs_commitment": {
+      "type": "string"
+    },
+    "iters": {
+      "type": [
+        "integer",
+        "object",
+        "null"
+      ]
+    },
+    "mesh_digest": {
+      "type": "string"
+    },
+    "output_commitment": {
+      "type": "string"
+    },
+    "receipt_kind": {
+      "const": "ReductionReceipt"
+    },
+    "residuals": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "solver_binding_id": {
+      "type": "string"
+    },
+    "stability_metrics": {
+      "type": "object"
+    }
+  },
+  "required": [
+    "receipt_kind",
+    "inputs_commitment",
+    "solver_binding_id",
+    "output_commitment"
+  ],
+  "title": "ReductionReceipt",
+  "type": "object"
+}

@@ -1,0 +1,47 @@
+{
+  "meta": {
+    "id": "spec.core.vnes_libraries",
+    "version": "1.0.0",
+    "description": "Defines the composition of VNES library collections."
+  },
+  "libraries": {
+    "essential": {
+      "description": "Minimal runtime requirements. Geometry, basic logic, and kernel interfaces.",
+      "modules": [
+        "hypersync.core.geometry",
+        "hypersync.core.logic",
+        "hypersync.core.kernel",
+        "hypersync.core.factory",
+        "hypersync.core.catalogue",
+        "hypersync.core.io.basic"
+      ]
+    },
+    "standard": {
+      "description": "Common utilities for power users. Extended IO, standard data processing, basic agents.",
+      "modules": [
+        "hypersync.std.io.extended",
+        "hypersync.std.data.processing",
+        "hypersync.std.agents.basic",
+        "hypersync.std.network.http"
+      ]
+    },
+    "advanced": {
+      "description": "Complex capabilities for teams. Coordination, advanced AI, specialized physics.",
+      "modules": [
+        "hypersync.adv.coordination",
+        "hypersync.adv.ai.reasoning",
+        "hypersync.adv.physics.simulation",
+        "hypersync.adv.security.crypto"
+      ]
+    },
+    "enterprise_suite": {
+      "description": "Compliance, auditing, and large-scale orchestration.",
+      "modules": [
+        "hypersync.ent.compliance",
+        "hypersync.ent.audit",
+        "hypersync.ent.orchestration.swarm",
+        "hypersync.ent.legacy.integration"
+      ]
+    }
+  }
+}

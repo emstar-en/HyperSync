@@ -1,0 +1,48 @@
+{
+  "$id": "schema://receipts/SignatureReceipt.json",
+  "$schema": "ext://fcbd7642ed3f",
+  "properties": {
+    "m_of_n": {
+      "type": "string"
+    },
+    "receipt_kind": {
+      "const": "SignatureReceipt"
+    },
+    "signatures": {
+      "items": {
+        "properties": {
+          "alg": {
+            "type": "string"
+          },
+          "pubkey": {
+            "type": "string"
+          },
+          "sig": {
+            "type": "string"
+          },
+          "subject": {
+            "type": "string"
+          },
+          "standard_proof": {
+            "description": "Standard cryptographic proof (e.g. JOSE, COSE)",
+            "type": "object"
+          }
+        },
+        "required": [
+          "alg",
+          "pubkey",
+          "sig",
+          "subject"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "receipt_kind",
+    "m_of_n",
+    "signatures"
+  ],
+  "type": "object"
+}

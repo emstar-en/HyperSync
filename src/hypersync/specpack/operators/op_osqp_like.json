@@ -1,0 +1,6 @@
+{
+  "deterministic": true,
+  "id": "op://osqp_like.0",
+  "kind": "qp_solver",
+  "notes": "ADMM-based QP, fixed rho/alpha schedule"
+}

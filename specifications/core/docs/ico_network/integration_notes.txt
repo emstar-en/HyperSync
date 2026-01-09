@@ -1,0 +1,24 @@
+
+# Add to hypersync/cli.py or main CLI entry point
+
+from hypersync.nvm.ico_cli import ico_cli
+
+# Register ICO commands
+cli.add_command(ico_cli)
+
+# hypersync/nvm/__init__.py additions
+
+from .ld_manager import LDManager, LorentzianDomain
+from .ico_router import ICORouter, NodeAddress
+from .ico_cli import ico_cli
+from .ico_api import ico_api, register_ico_api
+
+__all__ = [
+ 'LDManager',
+ 'LorentzianDomain',
+ 'ICORouter',
+ 'NodeAddress',
+ 'ico_cli',
+ 'ico_api',
+ 'register_ico_api'
+]

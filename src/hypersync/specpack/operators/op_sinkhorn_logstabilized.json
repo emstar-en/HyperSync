@@ -1,0 +1,6 @@
+{
+  "deterministic": true,
+  "id": "op://sinkhorn_logstabilized.0",
+  "kind": "ot",
+  "notes": "Entropic OT with log stabilization"
+}

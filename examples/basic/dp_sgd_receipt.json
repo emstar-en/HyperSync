@@ -1,0 +1,16 @@
+{
+  "diagnostics": {
+    "clip": 1.0,
+    "noise_multiplier": 1.12
+  },
+  "inputs_commitment": "sha256:eps=3.0|delta=1e-5|N=50000|E=20|bs=256",
+  "output_commitment": "sha256:dp_train_plan",
+  "privacy": {
+    "accountant": "RDP",
+    "delta": 1e-05,
+    "epsilon": 2.98,
+    "receipt_kind": "PrivacyReceipt"
+  },
+  "receipt_kind": "ReductionReceipt",
+  "solver_binding_id": "solver://dp/calibrate_accountant@1.2.1"
+}

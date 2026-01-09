@@ -1,0 +1,42 @@
+{
+  "examples": [
+    "examples/geometry.map.h2e.example.json",
+    "examples/geometry.map.s2e.example.json",
+    "examples/geometry.pipeline.profile.example.json",
+    "examples/media.raw.reveal.request.example.json",
+    "examples/media.reconstruction.instructions.example.json",
+    "examples/media.segment.commitment.example.json",
+    "examples/media.surrogate.recipe.example.json"
+  ],
+  "feature": "euclid-pipeline",
+  "policies": [
+    "policies/reveal/incident.json",
+    "policies/modes/semantic-only-default.json",
+    "policies/modes/surrogate-allowed.json"
+  ],
+  "schemas": [
+    "schemas/geometry/pipeline.profile.schema.json",
+    "schemas/media/reconstruction.instructions.schema.json",
+    "schemas/geometry/map.h2e.schema.json",
+    "schemas/geometry/map.s2e.schema.json",
+    "schemas/media/segment.commitment.schema.json",
+    "schemas/media/raw.reveal.request.schema.json",
+    "schemas/media/surrogate.recipe.schema.json"
+  ],
+  "tiers": {
+    "Core": [
+      "surrogate.recipe",
+      "segment.commitment",
+      "semantic-only-default"
+    ],
+    "ProAdvanced": [
+      "map.h2e",
+      "map.s2e",
+      "reconstruction.instructions"
+    ],
+    "QuarterMaster": [
+      "generative-surrogates",
+      "multi-sensor-fusion"
+    ]
+  }
+}

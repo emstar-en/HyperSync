@@ -1,0 +1,32 @@
+{
+  "$schema": "ext://f1fed686329b",
+  "properties": {
+    "confidence": {
+      "type": "object"
+    },
+    "gaps": {
+      "type": "object"
+    },
+    "groups": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "metric": {
+      "type": "string"
+    },
+    "receipt_kind": {
+      "const": "FairnessReceipt"
+    },
+    "tolerances": {
+      "type": "object"
+    }
+  },
+  "required": [
+    "receipt_kind",
+    "metric"
+  ],
+  "title": "FairnessReceipt",
+  "type": "object"
+}

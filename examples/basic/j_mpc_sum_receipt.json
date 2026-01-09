@@ -1,0 +1,20 @@
+{
+  "diagnostics": {
+    "latency_ms_p95": 73,
+    "retries": 0
+  },
+  "inputs_commitment": "sha256:parties|function=sum|suite=prime_p|policy=no-secret-in-text",
+  "output_commitment": "sha256:sum_commitment",
+  "pipeline": {
+    "receipt_kind": "MPCOrchestrationReceipt",
+    "redacted": [
+      "per-party"
+    ],
+    "released": [
+      "sum_only"
+    ],
+    "transcript": "sha256:def"
+  },
+  "receipt_kind": "ReductionReceipt",
+  "solver_binding_id": "solver://mpc/session_setup@1.1.0"
+}

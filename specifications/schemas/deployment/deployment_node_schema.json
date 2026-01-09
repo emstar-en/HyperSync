@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "properties": {
+    "capability_vector": {
+      "type": "object"
+    },
+    "node_id": {
+      "type": "string"
+    },
+    "position": {
+      "$ref": "manifold_position_schema.json"
+    },
+    "service_name": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "node_id",
+    "service_name",
+    "position"
+  ],
+  "title": "DeploymentNodeSchema",
+  "type": "object"
+}

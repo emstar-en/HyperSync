@@ -1,0 +1,4783 @@
+[
+  {
+    "geometry_mode": "native",
+    "migration_policy": "replace-old-techniques",
+    "modules": [
+      {
+        "constants": [
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "CONTRACT_VALIDATIONS",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true,
+            "value": [
+              "get_vector() returns np.ndarray",
+              "add_vector() shape validation with explicit error",
+              "All returned vectors satisfy Lorentz constraint",
+              "Query results sorted by ascending distance"
+            ]
+          }
+        ],
+        "exports": [
+          "add_vector",
+          "get_vector",
+          "query",
+          "count",
+          "get_recent_vectors",
+          "get_all_vectors",
+          "get_vectors_since",
+          "address_tag_insert",
+          "address_tag_query",
+          "address_tag_resolve",
+          "CONTRACT_VALIDATIONS"
+        ],
+        "functions": [
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "add_vector",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "id",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "str",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "vec",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "np.ndarray",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "None",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "get_vector",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "id",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "str",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "np.ndarray",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "query",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "vec",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "np.ndarray",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "k",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "int",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "List[Tuple[str, float]]",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "count",
+            "params": [],
+            "release_status": "pre-alpha",
+            "returns": "int",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "get_recent_vectors",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "limit",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "int",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "List[Tuple[str, np.ndarray]]",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "get_all_vectors",
+            "params": [],
+            "release_status": "pre-alpha",
+            "returns": "Dict[str, np.ndarray]",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "get_vectors_since",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "marker",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "str",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "List[Tuple[str, np.ndarray]]",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "address_tag_insert",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "address_tag_query",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "address_tag_resolve",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true
+          }
+        ],
+        "geometry_mode": "native",
+        "migration_policy": "replace-old-techniques",
+        "path": "ops/index.py",
+        "purpose": "Vector index for anchors and embeddings",
+        "release_status": "pre-alpha",
+        "stability": "experimental",
+        "unreleased": true
+      },
+      {
+        "constants": [
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "ENFORCEMENT",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true,
+            "value": {
+              "deny_in_red": true,
+              "geometry_mode": "native",
+              "migration_policy": "replace-old-techniques",
+              "release_status": "pre-alpha",
+              "route_with_shadows_requires_clearance": "c4_root",
+              "speculative_exec_policy": {
+                "amber_min_conf": 0.85,
+                "geometry_mode": "native",
+                "green_min_conf": 0.7,
+                "migration_policy": "replace-old-techniques",
+                "red_disabled": true,
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "unreleased": true
+              },
+              "stability": "experimental",
+              "unreleased": true
+            }
+          }
+        ],
+        "exports": [
+          "route",
+          "embed_fn",
+          "register_model",
+          "apply_consolidated_state",
+          "route_with_shadows",
+          "enable_privacy_mode",
+          "next_hop",
+          "ENFORCEMENT"
+        ],
+        "functions": [
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "route",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "spec",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "SemanticSpec",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "context",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Context",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "Anchor",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "embed_fn",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "text",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "str",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "List[float]",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "register_model",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "spec",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "ModelSpec",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "None",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "apply_consolidated_state",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "model_id",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "str",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "consolidation",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Dict",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "context",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Context",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "None",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "route_with_shadows",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "spec",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "SemanticSpec",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "context",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Context",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "shadows",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "List[ShadowBundle]",
+                "unreleased": true
+              },
+              {
+                "default": "0.7",
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "confidence_threshold",
+                "release_status": "pre-alpha",
+                "required": false,
+                "stability": "experimental",
+                "type": "float",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "Tuple[Anchor, Dict[str, Any]]",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "enable_privacy_mode",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "mode",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "str",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "None",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "doc": "Compute next hop anchor id",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "next_hop",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "current",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "str",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "context",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Context",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "str",
+            "stability": "experimental",
+            "unreleased": true
+          }
+        ],
+        "geometry_mode": "native",
+        "migration_policy": "replace-old-techniques",
+        "path": "ops/routing.py",
+        "purpose": "Capability-aware routing with predictive shadows (enforced)",
+        "release_status": "pre-alpha",
+        "stability": "experimental",
+        "unreleased": true
+      },
+      {
+        "exports": [
+          "lora_prepare",
+          "lora_train_epoch",
+          "lora_evaluate",
+          "lora_publish"
+        ],
+        "functions": [
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "lora_prepare",
+            "params": [],
+            "release_status": "pre-alpha",
+            "returns": "Any",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "lora_train_epoch",
+            "params": [],
+            "release_status": "pre-alpha",
+            "returns": "Any",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "lora_evaluate",
+            "params": [],
+            "release_status": "pre-alpha",
+            "returns": "Any",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "lora_publish",
+            "params": [],
+            "release_status": "pre-alpha",
+            "returns": "Any",
+            "stability": "experimental",
+            "unreleased": true
+          }
+        ],
+        "geometry_mode": "native",
+        "migration_policy": "replace-old-techniques",
+        "path": "ops/lora.py",
+        "purpose": "LoRA preparation, training, evaluation, publish",
+        "release_status": "pre-alpha",
+        "stability": "experimental",
+        "unreleased": true
+      },
+      {
+        "exports": [
+          "riemannian_consensus"
+        ],
+        "functions": [
+          {
+            "doc": "Average on manifolds",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "riemannian_consensus",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "points",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "List[Any]",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "weights",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "List[float]",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "Any",
+            "stability": "experimental",
+            "unreleased": true
+          }
+        ],
+        "geometry_mode": "native",
+        "migration_policy": "replace-old-techniques",
+        "path": "ops/consensus.py",
+        "purpose": "Riemannian consensus algorithms",
+        "release_status": "pre-alpha",
+        "stability": "experimental",
+        "unreleased": true
+      },
+      {
+        "exports": [
+          "rsgd_intrinsic"
+        ],
+        "functions": [
+          {
+            "doc": "Riemannian gradient descent using intrinsic hyperbolic geometry (no tangent-space Euclidean step)",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "rsgd_intrinsic",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "params",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Any",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "grads",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Any",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "lr",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "float",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "Any",
+            "stability": "experimental",
+            "unreleased": true
+          }
+        ],
+        "geometry_mode": "native",
+        "migration_policy": "replace-old-techniques",
+        "path": "ops/optimization.py",
+        "purpose": "Optimization in hyperbolic geometry",
+        "release_status": "pre-alpha",
+        "stability": "experimental",
+        "unreleased": true
+      },
+      {
+        "exports": [
+          "model_health_snapshot"
+        ],
+        "functions": [
+          {
+            "doc": "Compute a compact health snapshot from MHR",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "model_health_snapshot",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "mhr",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Any",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "Any",
+            "stability": "experimental",
+            "unreleased": true
+          }
+        ],
+        "geometry_mode": "native",
+        "migration_policy": "replace-old-techniques",
+        "path": "ops/health.py",
+        "purpose": "Model health snapshot utilities",
+        "release_status": "pre-alpha",
+        "stability": "experimental",
+        "unreleased": true
+      },
+      {
+        "constants": [
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "ENFORCEMENT",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true,
+            "value": {
+              "deny_in_red": true,
+              "geometry_mode": "native",
+              "migration_policy": "replace-old-techniques",
+              "release_status": "pre-alpha",
+              "route_with_domains_requires_clearance": "c4_root",
+              "speculative_exec_policy": {
+                "amber_min_conf": 0.85,
+                "geometry_mode": "native",
+                "green_min_conf": 0.7,
+                "migration_policy": "replace-old-techniques",
+                "red_disabled": true,
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "unreleased": true
+              },
+              "stability": "experimental",
+              "unreleased": true
+            }
+          }
+        ],
+        "exports": [
+          "route_with_domains",
+          "ENFORCEMENT"
+        ],
+        "functions": [
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "route_with_domains",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "spec",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "SemanticSpec",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "context",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Context",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "domains",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "List[RiemannRealm]",
+                "unreleased": true
+              },
+              {
+                "default": "0.7",
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "confidence_threshold",
+                "release_status": "pre-alpha",
+                "required": false,
+                "stability": "experimental",
+                "type": "float",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "Tuple[Anchor, Dict[str, Any]]",
+            "stability": "experimental",
+            "unreleased": true
+          }
+        ],
+        "geometry_mode": "native",
+        "migration_policy": "replace-old-techniques",
+        "path": "ops/routing_domains.py",
+        "purpose": "Capability-aware routing with Riemann Realms (enforced)",
+        "release_status": "pre-alpha",
+        "stability": "experimental",
+        "unreleased": true
+      }
+    ],
+    "name": "ops",
+    "release_status": "pre-alpha",
+    "stability": "experimental",
+    "unreleased": true
+  },
+  {
+    "geometry_mode": "native",
+    "migration_policy": "replace-old-techniques",
+    "modules": [
+      {
+        "classes": [
+          {
+            "attributes": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "name",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "str",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "dim",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "int",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "base_points",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "List[np.ndarray]",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "fibers",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "Dict[int, np.ndarray]",
+                "unreleased": true
+              }
+            ],
+            "geometry_mode": "native",
+            "methods": [
+              {
+                "doc": "Ensure shadow base_points remain within allowed \u03ba-range and fibers are spatial (timelike=0); deny if any base point is outside shadow region.",
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "validate_containment",
+                "params": [],
+                "release_status": "pre-alpha",
+                "returns": "bool",
+                "stability": "experimental",
+                "unreleased": true
+              }
+            ],
+            "migration_policy": "replace-old-techniques",
+            "name": "ShadowBundle",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "attributes": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "dim",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "int",
+                "unreleased": true
+              }
+            ],
+            "geometry_mode": "native",
+            "methods": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "extract_error_bundle",
+                "params": [
+                  {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "name": "predictions",
+                    "release_status": "pre-alpha",
+                    "required": true,
+                    "stability": "experimental",
+                    "type": "List[np.ndarray]",
+                    "unreleased": true
+                  },
+                  {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "name": "targets",
+                    "release_status": "pre-alpha",
+                    "required": true,
+                    "stability": "experimental",
+                    "type": "List[np.ndarray]",
+                    "unreleased": true
+                  },
+                  {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "name": "queries",
+                    "release_status": "pre-alpha",
+                    "required": true,
+                    "stability": "experimental",
+                    "type": "List[np.ndarray]",
+                    "unreleased": true
+                  }
+                ],
+                "release_status": "pre-alpha",
+                "returns": "ShadowBundle",
+                "stability": "experimental",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "extract_correction_bundle",
+                "params": [
+                  {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "name": "before",
+                    "release_status": "pre-alpha",
+                    "required": true,
+                    "stability": "experimental",
+                    "type": "List[np.ndarray]",
+                    "unreleased": true
+                  },
+                  {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "name": "after",
+                    "release_status": "pre-alpha",
+                    "required": true,
+                    "stability": "experimental",
+                    "type": "List[np.ndarray]",
+                    "unreleased": true
+                  },
+                  {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "name": "queries",
+                    "release_status": "pre-alpha",
+                    "required": true,
+                    "stability": "experimental",
+                    "type": "List[np.ndarray]",
+                    "unreleased": true
+                  }
+                ],
+                "release_status": "pre-alpha",
+                "returns": "ShadowBundle",
+                "stability": "experimental",
+                "unreleased": true
+              }
+            ],
+            "migration_policy": "replace-old-techniques",
+            "name": "ShadowBundleExtractor",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "attributes": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "dim",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "int",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "num_shadows",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "int",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "extractor",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "ShadowBundleExtractor",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "shadows",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "List[Optional[ShadowBundle]]",
+                "unreleased": true
+              }
+            ],
+            "geometry_mode": "native",
+            "methods": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "train_with_shadows",
+                "params": [
+                  {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "name": "model",
+                    "release_status": "pre-alpha",
+                    "required": true,
+                    "stability": "experimental",
+                    "type": "GeometricModel",
+                    "unreleased": true
+                  },
+                  {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "name": "train_queries",
+                    "release_status": "pre-alpha",
+                    "required": true,
+                    "stability": "experimental",
+                    "type": "List[np.ndarray]",
+                    "unreleased": true
+                  },
+                  {
+                    "default": "5",
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "name": "epochs_per_shadow",
+                    "release_status": "pre-alpha",
+                    "required": false,
+                    "stability": "experimental",
+                    "type": "int",
+                    "unreleased": true
+                  }
+                ],
+                "release_status": "pre-alpha",
+                "returns": "Dict[str, Any]",
+                "stability": "experimental",
+                "unreleased": true
+              }
+            ],
+            "migration_policy": "replace-old-techniques",
+            "name": "ShadowBundleTrainer",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "attributes": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "model",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "GeometricModel",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "shadows",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "List[ShadowBundle]",
+                "unreleased": true
+              }
+            ],
+            "geometry_mode": "native",
+            "methods": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "predict_destination",
+                "params": [
+                  {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "name": "query",
+                    "release_status": "pre-alpha",
+                    "required": true,
+                    "stability": "experimental",
+                    "type": "np.ndarray",
+                    "unreleased": true
+                  }
+                ],
+                "release_status": "pre-alpha",
+                "returns": "Tuple[str, float]",
+                "stability": "experimental",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "route_with_prediction",
+                "params": [
+                  {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "name": "query",
+                    "release_status": "pre-alpha",
+                    "required": true,
+                    "stability": "experimental",
+                    "type": "np.ndarray",
+                    "unreleased": true
+                  }
+                ],
+                "release_status": "pre-alpha",
+                "returns": "Dict[str, Any]",
+                "stability": "experimental",
+                "unreleased": true
+              }
+            ],
+            "migration_policy": "replace-old-techniques",
+            "name": "PredictiveRouter",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "attributes": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "message",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "str",
+                "unreleased": true
+              }
+            ],
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "GeometricSecurityViolation",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true
+          }
+        ],
+        "constants": [
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "ENFORCEMENT",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true,
+            "value": {
+              "deny_by_default": true,
+              "disabled_in_red_mode": true,
+              "full_audit_logging": true,
+              "geometry_mode": "native",
+              "migration_policy": "replace-old-techniques",
+              "non_canonical_only": true,
+              "release_status": "pre-alpha",
+              "require_clearance": "c4_root",
+              "stability": "experimental",
+              "unreleased": true
+            }
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "CONTRACT_VALIDATIONS",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true,
+            "value": [
+              "All shadow bundles maintain Lorentz constraint on base points",
+              "Fiber vectors are spatial (no timelike component)",
+              "Interpolation weights sum to 1.0",
+              "Confidence scores \u2208 [0,1] and well-calibrated",
+              "Transfer preserves geometric invariants",
+              "Activation requires evaluate_mhr_gate PASS for target model",
+              "Activation requires evaluate_nhr_gate PASS for active cohort"
+            ]
+          }
+        ],
+        "exports": [
+          "ShadowBundle",
+          "ShadowBundleExtractor",
+          "ShadowBundleTrainer",
+          "PredictiveRouter",
+          "deterministic_encode",
+          "cap_radius",
+          "to_lorentz",
+          "lorentz_distance",
+          "ENFORCEMENT",
+          "CONTRACT_VALIDATIONS",
+          "GeometricSecurityViolation",
+          "validate_shadow_bundle_geometry",
+          "secure_shadow_extraction"
+        ],
+        "functions": [
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "deterministic_encode",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "data",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Dict[str, Any]",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "dim",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "int",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "np.ndarray",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "cap_radius",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "s",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "np.ndarray",
+                "unreleased": true
+              },
+              {
+                "default": "0.95",
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "cap",
+                "release_status": "pre-alpha",
+                "required": false,
+                "stability": "experimental",
+                "type": "float",
+                "unreleased": true
+              },
+              {
+                "default": "1e-9",
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "eps",
+                "release_status": "pre-alpha",
+                "required": false,
+                "stability": "experimental",
+                "type": "float",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "np.ndarray",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "to_lorentz",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "s",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "np.ndarray",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "np.ndarray",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "lorentz_distance",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "p",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "np.ndarray",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "q",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "np.ndarray",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "float",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "doc": "Projects fiber to spatial component (zero timelike) while preserving Lorentz constraints.",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "ensure_spatial",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "f",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "np.ndarray",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "np.ndarray",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "doc": "Validate hyperboloid constraints and fiber spatiality for a shadow bundle",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "validate_shadow_bundle_geometry",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "bundle",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "ShadowBundle",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "bool",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "doc": "Extract security-relevant shadow bundles while enforcing geometric constraints",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "secure_shadow_extraction",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "model_predictions",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "List[np.ndarray]",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "legitimate_queries",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "List[np.ndarray]",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "attack_queries",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "List[np.ndarray]",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "ShadowBundle",
+            "stability": "experimental",
+            "unreleased": true
+          }
+        ],
+        "geometry_mode": "native",
+        "migration_policy": "replace-old-techniques",
+        "path": "security/shadow_bundles.py",
+        "purpose": "Shadow training/extraction/transfer with strict isolation and authz",
+        "release_status": "pre-alpha",
+        "stability": "experimental",
+        "unreleased": true
+      },
+      {
+        "constants": [],
+        "exports": [
+          "attest_geometric",
+          "attest_entity_lock",
+          "attest_runtime",
+          "verify_attestation",
+          "attest_index_state",
+          "attest_provenance",
+          "attest_policy",
+          "attest_shadow_report",
+          "attest_consolidation_bounds",
+          "attest_mhr",
+          "attest_nhr",
+          "preflight_geometric",
+          "preflight_entity_lock",
+          "preflight_policy",
+          "preflight_provenance",
+          "preflight_shadow_transfer",
+          "preflight_mhr_publish",
+          "preflight_nhr_publish",
+          "evaluate_slo_gate",
+          "evaluate_security_gate",
+          "evaluate_drift_gate",
+          "evaluate_cohort_gate",
+          "evaluate_shadow_transfer_gate",
+          "evaluate_mhr_gate",
+          "evaluate_nhr_gate",
+          "ablation_euclidean_baseline",
+          "ablation_no_anchor_baseline",
+          "ablation_no_constraint_baseline",
+          "run_all_ablations",
+          "validate_consolidation_bounds"
+        ],
+        "functions": [
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "attest_geometric",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "anchor",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Anchor",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "context",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Context",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "Attestation",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "attest_entity_lock",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "spec",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "SemanticSpec",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "artifact",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Artifact",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "Attestation",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "attest_runtime",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "model_id",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "str",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "context",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Context",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "RuntimeAttestation",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "verify_attestation",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "attestation",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Attestation",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "public_key",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Ed25519PublicKey",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "bool",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "attest_index_state",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "index",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "VectorIndex",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "IndexAttestation",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "attest_provenance",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "artifact",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Artifact",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "lineage",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "List[str]",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "ProvenanceAttestation",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "attest_policy",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "op",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "str",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "context",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Context",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "decision",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "bool",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "PolicyAttestation",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "attest_shadow_report",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "model_id",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "str",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "anchor",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Anchor",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "report",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Dict",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "context",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Context",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "Attestation",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "attest_consolidation_bounds",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "model_id",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "str",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "base",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Anchor",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "delta_tangent",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "np.ndarray",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "constraints",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Dict",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "Attestation",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "attest_mhr",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "mhr",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "ModelHealthRecord",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "context",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Context",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "Attestation",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "attest_nhr",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "nhr",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "NetworkHealthRecord",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "context",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Context",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "Attestation",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "preflight_geometric",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "anchor",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Anchor",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "context",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Context",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "PreflightResult",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "preflight_entity_lock",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "spec",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "SemanticSpec",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "PreflightResult",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "preflight_policy",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "op",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "str",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "context",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Context",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "PreflightResult",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "preflight_provenance",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "artifact",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Artifact",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "PreflightResult",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "preflight_shadow_transfer",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "model_id",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "str",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "base",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Anchor",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "report",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Dict",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "context",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Context",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "PreflightResult",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "preflight_mhr_publish",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "mhr",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "ModelHealthRecord",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "context",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Context",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "PreflightResult",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "preflight_nhr_publish",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "nhr",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "NetworkHealthRecord",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "context",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Context",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "PreflightResult",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "evaluate_slo_gate",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "attestations",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "List[Attestation]",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "GateResult",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "evaluate_security_gate",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "attestations",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "List[Attestation]",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "GateResult",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "evaluate_drift_gate",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "attestations",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "List[Attestation]",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "baseline",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Anchor",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "GateResult",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "evaluate_cohort_gate",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "attestations",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "List[Attestation]",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "GateResult",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "evaluate_shadow_transfer_gate",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "attestations",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "List[Attestation]",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "constraints",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Dict",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "base",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Anchor",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "GateResult",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "doc": " thresholds={\"calibration_ece_max\": 0.07, \"routing_accuracy_top1_min\": 0.6}",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "evaluate_mhr_gate",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "mhr",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "ModelHealthRecord",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "policy",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Dict",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "GateResult",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "doc": " thresholds={\"black_hole_score_max\": 0.2, \"holonomy_inconsistency_max\": 0.15}",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "evaluate_nhr_gate",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "nhr",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "NetworkHealthRecord",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "policy",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Dict",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "GateResult",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "ablation_euclidean_baseline",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "model",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "GeometricModel",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "queries",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "List[np.ndarray]",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "Dict[str, float]",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "ablation_no_anchor_baseline",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "model",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "GeometricModel",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "shadows",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "List[ShadowBundle]",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "queries",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "List[np.ndarray]",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "Dict[str, float]",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "ablation_no_constraint_baseline",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "model",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "GeometricModel",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "shadows",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "List[ShadowBundle]",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "queries",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "List[np.ndarray]",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "Dict[str, float]",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "run_all_ablations",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "model",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "GeometricModel",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "shadows",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "List[ShadowBundle]",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "queries",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "List[np.ndarray]",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "Dict<String, Dict<String, float>>",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "doc": "Checks typed-factor budgets and drift upper bounds against policy at base anchor; returns True if consolidation is geometrically valid.",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "validate_consolidation_bounds",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "attestation",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Attestation",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "base",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Anchor",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "bool",
+            "stability": "experimental",
+            "unreleased": true
+          }
+        ],
+        "geometry_mode": "native",
+        "migration_policy": "replace-old-techniques",
+        "path": "security/validation.py",
+        "purpose": "Attestations, drift detection, shadow gates, ablations",
+        "release_status": "pre-alpha",
+        "stability": "experimental",
+        "unreleased": true
+      },
+      {
+        "constants": [
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "SECURITY_MODEL",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true,
+            "value": {
+              "authz_contracts": {
+                "attest_clearance": {
+                  "evidence": "Ed25519 signature over (actor_id, level, nonce, ts); optional TPM/IMa proof",
+                  "geometry_mode": "native",
+                  "migration_policy": "replace-old-techniques",
+                  "release_status": "pre-alpha",
+                  "signature": "attest_clearance(actor_id: str, claimed_level: str, nonce: bytes, ts: int) -> ClearanceAttestation",
+                  "stability": "experimental",
+                  "unreleased": true
+                },
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "unreleased": true,
+                "verify_clearance": {
+                  "checks": [
+                    "signature_valid",
+                    "level_at_least_required",
+                    "timestamp_fresh",
+                    "revocation_not_listed"
+                  ],
+                  "geometry_mode": "native",
+                  "migration_policy": "replace-old-techniques",
+                  "release_status": "pre-alpha",
+                  "signature": "verify_clearance(att: ClearanceAttestation, required: str, now_ts: int) -> bool",
+                  "stability": "experimental",
+                  "unreleased": true
+                }
+              },
+              "clearance_levels": [
+                "c0_public",
+                "c1_internal",
+                "c2_sensitive",
+                "c3_admin",
+                "c4_root"
+              ],
+              "default_runtime_clearance": "c1_internal",
+              "geometry_mode": "native",
+              "migration_policy": "replace-old-techniques",
+              "principles": [
+                "deny_by_default_for_shadow_ops",
+                "least_privilege",
+                "append_only_transparency",
+                "tighten_only_policy"
+              ],
+              "release_status": "pre-alpha",
+              "roles": {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "observer": {
+                  "geometry_mode": "native",
+                  "migration_policy": "replace-old-techniques",
+                  "min_clearance": "c1_internal",
+                  "permissions": [
+                    "read_metrics",
+                    "read_logs_snapshot"
+                  ],
+                  "release_status": "pre-alpha",
+                  "stability": "experimental",
+                  "unreleased": true
+                },
+                "operator": {
+                  "geometry_mode": "native",
+                  "migration_policy": "replace-old-techniques",
+                  "min_clearance": "c2_sensitive",
+                  "permissions": [
+                    "route_requests",
+                    "register_models",
+                    "rollback_artifacts"
+                  ],
+                  "release_status": "pre-alpha",
+                  "stability": "experimental",
+                  "unreleased": true
+                },
+                "release_status": "pre-alpha",
+                "root_governor": {
+                  "geometry_mode": "native",
+                  "migration_policy": "replace-old-techniques",
+                  "min_clearance": "c4_root",
+                  "permissions": [
+                    "shadow_op_allowlist_manage",
+                    "shadow_op_execute_lab",
+                    "shadow_manifest_sign",
+                    "policy_override_emergency"
+                  ],
+                  "release_status": "pre-alpha",
+                  "stability": "experimental",
+                  "unreleased": true
+                },
+                "security_admin": {
+                  "geometry_mode": "native",
+                  "migration_policy": "replace-old-techniques",
+                  "min_clearance": "c3_admin",
+                  "permissions": [
+                    "approve_shadow_eval",
+                    "activate_kill_switch_scoped",
+                    "quarantine_cohort"
+                  ],
+                  "release_status": "pre-alpha",
+                  "stability": "experimental",
+                  "unreleased": true
+                },
+                "stability": "experimental",
+                "unreleased": true
+              },
+              "shadow_op_allowlist": {
+                "enforcement_points": [
+                  "validation.preflight_shadow_transfer",
+                  "validation.evaluate_shadow_transfer_gate",
+                  "gateway.route_with_shadows",
+                  "shadow_bundles.*",
+                  "orchestration.sync_chain_execute (when shadow hooks present)"
+                ],
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "policy": "deny_all_by_default",
+                "release_status": "pre-alpha",
+                "required_approvals": {
+                  "geometry_mode": "native",
+                  "lab_only_ops": [
+                    "2_of_2 root_governor"
+                  ],
+                  "migration_policy": "replace-old-techniques",
+                  "prod_readonly_eval": [
+                    "1_of_1 security_admin",
+                    "attestations_ok"
+                  ],
+                  "release_status": "pre-alpha",
+                  "stability": "experimental",
+                  "staging_eval_ops": [
+                    "1_of_1 security_admin",
+                    "1_of_1 root_governor"
+                  ],
+                  "unreleased": true
+                },
+                "stability": "experimental",
+                "unreleased": true
+              },
+              "stability": "experimental",
+              "unreleased": true
+            }
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "SHADOW_OPERATIONS_POLICY",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true,
+            "value": {
+              "default_environment": "production",
+              "environment_modes": [
+                "lab",
+                "staging",
+                "production"
+              ],
+              "geometry_mode": "native",
+              "global_guards": {
+                "deny_in_red": true,
+                "full_telemetry_required": true,
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "non_canonical_only": true,
+                "release_status": "pre-alpha",
+                "require_dual_control": true,
+                "require_signed_manifest": true,
+                "stability": "experimental",
+                "unreleased": true
+              },
+              "migration_policy": "replace-old-techniques",
+              "ops": [
+                {
+                  "allowed_in": {
+                    "geometry_mode": "native",
+                    "lab": true,
+                    "migration_policy": "replace-old-techniques",
+                    "production": false,
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "staging": "readonly_eval_only",
+                    "unreleased": true
+                  },
+                  "geometry_mode": "native",
+                  "migration_policy": "replace-old-techniques",
+                  "name": "negative_mass_update",
+                  "policy_flags": {
+                    "activation": false,
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "release_status": "pre-alpha",
+                    "routing_only": true,
+                    "stability": "experimental",
+                    "unreleased": true
+                  },
+                  "release_status": "pre-alpha",
+                  "required_attestations": [
+                    "preflight_shadow_transfer",
+                    "attest_shadow_report",
+                    "attest_consolidation_bounds"
+                  ],
+                  "required_clearance": "c4_root",
+                  "stability": "experimental",
+                  "unreleased": true
+                },
+                {
+                  "allowed_in": {
+                    "geometry_mode": "native",
+                    "lab": true,
+                    "migration_policy": "replace-old-techniques",
+                    "production": "timeboxed_hotfix",
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "staging": true,
+                    "unreleased": true
+                  },
+                  "geometry_mode": "native",
+                  "migration_policy": "replace-old-techniques",
+                  "name": "time_reversed_correction",
+                  "policy_flags": {
+                    "activation": "allow_if_timeboxed_and_signed",
+                    "expiry_seconds_max": 86400,
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "unreleased": true
+                  },
+                  "release_status": "pre-alpha",
+                  "required_attestations": [
+                    "preflight_shadow_transfer",
+                    "merkle_membership_forward_fiber"
+                  ],
+                  "required_clearance": "c3_admin",
+                  "stability": "experimental",
+                  "unreleased": true
+                },
+                {
+                  "allowed_in": {
+                    "geometry_mode": "native",
+                    "lab": true,
+                    "migration_policy": "replace-old-techniques",
+                    "production": "bounded_region_only",
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "staging": true,
+                    "unreleased": true
+                  },
+                  "geometry_mode": "native",
+                  "migration_policy": "replace-old-techniques",
+                  "name": "surgical_forgetting",
+                  "policy_flags": {
+                    "auto_rollback_on_canary_breach": true,
+                    "factors_allowlist": "typed_only",
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "radius_max": 0.15,
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "unreleased": true
+                  },
+                  "release_status": "pre-alpha",
+                  "required_attestations": [
+                    "preflight_shadow_transfer",
+                    "micro_canary_pass"
+                  ],
+                  "required_clearance": "c3_admin",
+                  "stability": "experimental",
+                  "unreleased": true
+                },
+                {
+                  "allowed_in": {
+                    "geometry_mode": "native",
+                    "lab": true,
+                    "migration_policy": "replace-old-techniques",
+                    "production": false,
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "staging": false,
+                    "unreleased": true
+                  },
+                  "geometry_mode": "native",
+                  "migration_policy": "replace-old-techniques",
+                  "name": "adversarial_mirage",
+                  "policy_flags": {
+                    "activation": false,
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "release_status": "pre-alpha",
+                    "routing_only": "sandbox_isolated",
+                    "stability": "experimental",
+                    "unreleased": true
+                  },
+                  "release_status": "pre-alpha",
+                  "required_attestations": [
+                    "deception_policy_flag_on",
+                    "dual_control_approval"
+                  ],
+                  "required_clearance": "c4_root",
+                  "stability": "experimental",
+                  "unreleased": true
+                },
+                {
+                  "allowed_in": {
+                    "geometry_mode": "native",
+                    "lab": true,
+                    "migration_policy": "replace-old-techniques",
+                    "production": "readonly_eval_only",
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "staging": true,
+                    "unreleased": true
+                  },
+                  "geometry_mode": "native",
+                  "migration_policy": "replace-old-techniques",
+                  "name": "entanglement_fork",
+                  "policy_flags": {
+                    "activation": false,
+                    "divergence_max_js": 0.15,
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "unreleased": true
+                  },
+                  "release_status": "pre-alpha",
+                  "required_attestations": [
+                    "preflight_shadow_transfer",
+                    "fork_divergence_lt_threshold"
+                  ],
+                  "required_clearance": "c3_admin",
+                  "stability": "experimental",
+                  "unreleased": true
+                },
+                {
+                  "allowed_in": {
+                    "geometry_mode": "native",
+                    "lab": true,
+                    "migration_policy": "replace-old-techniques",
+                    "production": "readonly_eval_only",
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "staging": true,
+                    "unreleased": true
+                  },
+                  "geometry_mode": "native",
+                  "migration_policy": "replace-old-techniques",
+                  "name": "compressed_bundle",
+                  "policy_flags": {
+                    "activation": false,
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "reconstruction_error_max": 0.001,
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "unreleased": true
+                  },
+                  "release_status": "pre-alpha",
+                  "required_attestations": [
+                    "round_trip_fidelity_below_threshold",
+                    "manifest_signature"
+                  ],
+                  "required_clearance": "c2_sensitive",
+                  "stability": "experimental",
+                  "unreleased": true
+                },
+                {
+                  "allowed_in": {
+                    "geometry_mode": "native",
+                    "lab": true,
+                    "migration_policy": "replace-old-techniques",
+                    "production": false,
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "staging": false,
+                    "unreleased": true
+                  },
+                  "geometry_mode": "native",
+                  "migration_policy": "replace-old-techniques",
+                  "name": "geometric_steganography",
+                  "policy_flags": {
+                    "activation": false,
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "release_status": "pre-alpha",
+                    "routing_only": "airgapped_lab",
+                    "stability": "experimental",
+                    "unreleased": true
+                  },
+                  "release_status": "pre-alpha",
+                  "required_attestations": [
+                    "covert_channel_policy_flag_on",
+                    "dual_control_approval"
+                  ],
+                  "required_clearance": "c4_root",
+                  "stability": "experimental",
+                  "unreleased": true
+                },
+                {
+                  "allowed_in": {
+                    "geometry_mode": "native",
+                    "lab": true,
+                    "migration_policy": "replace-old-techniques",
+                    "production": "readonly_eval_only",
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "staging": true,
+                    "unreleased": true
+                  },
+                  "geometry_mode": "native",
+                  "migration_policy": "replace-old-techniques",
+                  "name": "immortal_teacher",
+                  "policy_flags": {
+                    "activation": false,
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "unreleased": true
+                  },
+                  "release_status": "pre-alpha",
+                  "required_attestations": [
+                    "provenance_signature",
+                    "compatibility_validation",
+                    "attest_consolidation_bounds"
+                  ],
+                  "required_clearance": "c3_admin",
+                  "stability": "experimental",
+                  "unreleased": true
+                }
+              ],
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "unreleased": true
+            }
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "SECURITY_HARDENING_OVERVIEW",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true,
+            "value": {
+              "defense_layers": [
+                "Admission control: provenance, geometric sanity, density, novelty",
+                "Trust-weighted routing + density-aware repulsion",
+                "Robust neighbor selection (trimmed k-NN, diversity, hysteresis)",
+                "Temporal stability (EMA, cooldowns, deterministic ties)",
+                "Async safety (idempotency keys, 2PC, backpressure)",
+                "Geometry sanitation (hyperboloid constraints, curvature checks)",
+                "Shadow isolation (deny-by-default, c4_root-only, non-canonical, auditable)",
+                "Monitoring & detection (black-hole, disagreement, stego, divergence)",
+                "Containment (geometric kill-switch, shard isolation, anchor rotation)",
+                "Transparency (Merkle-anchored append-only with role watermarking)"
+              ],
+              "geometry_mode": "native",
+              "migration_policy": "replace-old-techniques",
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "threat_models_addressed": [
+                "Black hole attacks",
+                "Holonomy manipulation",
+                "Sybil anchors/hubness",
+                "Index poisoning",
+                "Embedding supply-chain compromise",
+                "Temporal tugging / route flapping",
+                "Shadow-channel abuse (covert channels, deception, unauthorized influence)"
+              ],
+              "unreleased": true
+            }
+          },
+          {
+            "doc": "Geometric clearance mapping: allowable curvature (\u03ba) regions by role.",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "CLEARANCE_KAPPA_THRESHOLDS",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true,
+            "value": {
+              "c0_public": {
+                "geometry_mode": "native",
+                "kappa_max": 0.1,
+                "migration_policy": "replace-old-techniques",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "unreleased": true
+              },
+              "c1_internal": {
+                "geometry_mode": "native",
+                "kappa_max": 0.3,
+                "kappa_min": 0.1,
+                "migration_policy": "replace-old-techniques",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "unreleased": true
+              },
+              "c2_sensitive": {
+                "geometry_mode": "native",
+                "kappa_max": 0.7,
+                "kappa_min": 0.3,
+                "migration_policy": "replace-old-techniques",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "unreleased": true
+              },
+              "c3_admin": {
+                "geometry_mode": "native",
+                "kappa_max": 0.95,
+                "kappa_min": 0.7,
+                "migration_policy": "replace-old-techniques",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "unreleased": true
+              },
+              "c4_root": {
+                "geometry_mode": "native",
+                "kappa_min": 0.95,
+                "migration_policy": "replace-old-techniques",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "unreleased": true
+              },
+              "geometry_mode": "native",
+              "migration_policy": "replace-old-techniques",
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "unreleased": true
+            }
+          },
+          {
+            "doc": "Default security thresholds aligned with geometric gates and detectors.",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "SECURITY_THRESHOLDS",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true,
+            "value": {
+              "BLACK_HOLE_THRESHOLD": 0.2,
+              "FLAP_THRESHOLD": 0.2,
+              "HOLONOMY_THRESHOLD": 0.15,
+              "ISOLATION_THRESHOLD": 0.1,
+              "POLICY_RADIUS": 0.2,
+              "geometry_mode": "native",
+              "migration_policy": "replace-old-techniques",
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "unreleased": true
+            }
+          }
+        ],
+        "exports": [
+          "SECURITY_MODEL",
+          "SHADOW_OPERATIONS_POLICY",
+          "SECURITY_HARDENING_OVERVIEW",
+          "CLEARANCE_KAPPA_THRESHOLDS",
+          "SECURITY_THRESHOLDS",
+          "validate_geometric_clearance"
+        ],
+        "functions": [
+          {
+            "doc": "Computes curvature parameter \u03ba for a point on the hyperboloid (used for clearance checks).",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "kappa",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "point",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "np.ndarray",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "float",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "doc": "Validates that the anchor\u2019s \u03ba lies within the allowable region for required_clearance per CLEARANCE_KAPPA_THRESHOLDS.",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "validate_geometric_clearance",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "anchor",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Anchor",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "required_clearance",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "str",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "bool",
+            "stability": "experimental",
+            "unreleased": true
+          }
+        ],
+        "geometry_mode": "native",
+        "migration_policy": "replace-old-techniques",
+        "path": "security/policy.py",
+        "purpose": "Security model, shadow operations policy, and hardening overview",
+        "release_status": "pre-alpha",
+        "stability": "experimental",
+        "unreleased": true
+      },
+      {
+        "classes": [
+          {
+            "attributes": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "party_count",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "int",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "dimension",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "int",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "shared_randomness",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "Any",
+                "unreleased": true
+              }
+            ],
+            "geometry_mode": "native",
+            "methods": [
+              {
+                "doc": "Compute pairwise distances via commitments and MPC without revealing point locations",
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "secure_distance_computation",
+                "params": [
+                  {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "name": "private_points",
+                    "release_status": "pre-alpha",
+                    "required": true,
+                    "stability": "experimental",
+                    "type": "List[np.ndarray]",
+                    "unreleased": true
+                  }
+                ],
+                "release_status": "pre-alpha",
+                "returns": "Any",
+                "stability": "experimental",
+                "unreleased": true
+              }
+            ],
+            "migration_policy": "replace-old-techniques",
+            "name": "SecureGeometricComputation",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true
+          }
+        ],
+        "exports": [
+          "enforce_release_guard",
+          "geodesic_noise",
+          "native_hyperbolic_privacy",
+          "add_geodesic_noise",
+          "validate_privacy_bounds",
+          "private_geometric_aggregate",
+          "SecureGeometricComputation",
+          "generate_geometric_shared_randomness",
+          "commit_to_geometric_point",
+          "secure_geometric_distance_protocol",
+          "verify_distance_consistency"
+        ],
+        "functions": [
+          {
+            "doc": "Check release guards based on policy",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "enforce_release_guard",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "record",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Any",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "policy",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Any",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "bool",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "doc": "Add DP noise in geodesic space",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "geodesic_noise",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "point",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Any",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "epsilon",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "float",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "Any",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "doc": "Privacy through intrinsic geometric noise/obscuration (no surgical dissection)",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "native_hyperbolic_privacy",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "point",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Any",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "epsilon",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "float",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "Any",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "doc": "Samples DP noise in the tangent space at the origin with privacy budget epsilon.",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "sample_tangent_noise",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "epsilon",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "float",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "np.ndarray",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "doc": "Adds privacy-preserving noise on the manifold via tangent noise + lorentz_exp_map.",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "add_geodesic_noise",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "point",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "np.ndarray",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "epsilon",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "float",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "np.ndarray",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "doc": "Checks record\u2019s geometric disclosure constraints (e.g., radius, destination \u03ba-range) against policy bounds.",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "validate_privacy_bounds",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "record",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Any",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "bounds",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Any",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "bool",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "doc": "Differentially-private geometric aggregate using geodesic noise and hyperboloid projection",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "private_geometric_aggregate",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "sensitive_points",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "List[np.ndarray]",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "privacy_budget",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "float",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "np.ndarray",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "doc": "Generate shared randomness for geometric MPC",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "generate_geometric_shared_randomness",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "party_count",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "int",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "Any",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "doc": "Create a binding/hiding commitment to a hyperboloid point",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "commit_to_geometric_point",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "point",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "np.ndarray",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "Any",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "doc": "Protocol to compute distances from commitments + randomness",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "secure_geometric_distance_protocol",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "commitments",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "List[Any]",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "shared_randomness",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Any",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "Any",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "doc": "Verify distance outputs are consistent with commitments without revealing points",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "verify_distance_consistency",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "distances",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Any",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "commitments",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "List[Any]",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "bool",
+            "stability": "experimental",
+            "unreleased": true
+          }
+        ],
+        "geometry_mode": "native",
+        "migration_policy": "replace-old-techniques",
+        "path": "security/privacy.py",
+        "purpose": "Privacy-preserving mechanisms",
+        "release_status": "pre-alpha",
+        "stability": "experimental",
+        "unreleased": true
+      },
+      {
+        "exports": [
+          "sign",
+          "verify"
+        ],
+        "functions": [
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "sign",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "verify",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true
+          }
+        ],
+        "geometry_mode": "native",
+        "migration_policy": "replace-old-techniques",
+        "path": "security/crypto.py",
+        "purpose": "Cryptographic signing and verification",
+        "release_status": "pre-alpha",
+        "stability": "experimental",
+        "unreleased": true
+      },
+      {
+        "exports": [
+          "activate_kill_switch",
+          "activate_geometric_kill_switch",
+          "quarantine_anchor",
+          "block_geometric_operations",
+          "log_kill_switch_activation"
+        ],
+        "functions": [
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "activate_kill_switch",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "doc": "Marks anchor as quarantined and prevents participation in routing and consolidation.",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "quarantine_anchor",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "anchor",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Anchor",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "None",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "doc": "Blocks new geometric operations within a specified manifold region.",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "block_geometric_operations",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "region",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Any",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "None",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "doc": "Writes an auditable record of geometric kill switch activation with geodesic coordinates.",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "log_kill_switch_activation",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "trigger_anchor",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Anchor",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "radius",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "float",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "region",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Any",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "None",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "doc": "Activates a scoped kill switch within a geodesic ball centered at trigger_anchor with the given radius.",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "activate_geometric_kill_switch",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "trigger_anchor",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Anchor",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "radius",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "float",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "scope",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "str",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "None",
+            "stability": "experimental",
+            "unreleased": true
+          }
+        ],
+        "geometry_mode": "native",
+        "migration_policy": "replace-old-techniques",
+        "path": "security/kill_switch.py",
+        "purpose": "Scoped geometric kill switch activation",
+        "release_status": "pre-alpha",
+        "stability": "experimental",
+        "unreleased": true
+      },
+      {
+        "exports": [
+          "check_revocation"
+        ],
+        "functions": [
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "check_revocation",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true
+          }
+        ],
+        "geometry_mode": "native",
+        "migration_policy": "replace-old-techniques",
+        "path": "security/revocation.py",
+        "purpose": "Revocation checking and cache policies",
+        "release_status": "pre-alpha",
+        "stability": "experimental",
+        "unreleased": true
+      },
+      {
+        "constants": [
+          {
+            "doc": "Threshold for triggering anomaly-driven security responses",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "GEOMETRIC_ANOMALY_THRESHOLD",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true,
+            "value": 0.7
+          }
+        ],
+        "exports": [
+          "detect_black_hole_attack",
+          "detect_holonomy_manipulation",
+          "compute_route_flap_rate",
+          "detect_route_flapping",
+          "monitor_geometric_anomalies",
+          "predictive_geometric_security",
+          "GEOMETRIC_ANOMALY_THRESHOLD"
+        ],
+        "functions": [
+          {
+            "doc": "Uses geometry.compute_black_hole_score(window) to detect extreme curvature/density gradients; triggers scoped kill switch via policy if above threshold.",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "detect_black_hole_attack",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "vector_index",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "VectorIndex",
+                "unreleased": true
+              },
+              {
+                "default": "1000",
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "window",
+                "release_status": "pre-alpha",
+                "required": false,
+                "stability": "experimental",
+                "type": "int",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "bool",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "doc": "Computes holonomy inconsistency using geometry.holonomy_inconsistency_score(paths); True if above HOLONOMY_THRESHOLD.",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "detect_holonomy_manipulation",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "paths",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "List[List[np.ndarray]]",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "bool",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "doc": "Computes normalized route flap rate over a sliding window (anchor changes per unit time).",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "compute_route_flap_rate",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "routing_history",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "List[Dict]",
+                "unreleased": true
+              },
+              {
+                "default": "100",
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "window",
+                "release_status": "pre-alpha",
+                "required": false,
+                "stability": "experimental",
+                "type": "int",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "float",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "doc": "True if compute_route_flap_rate(routing_history, window) exceeds FLAP_THRESHOLD; apply hysteresis protection.",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "detect_route_flapping",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "routing_history",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "List[Dict]",
+                "unreleased": true
+              },
+              {
+                "default": "100",
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "window",
+                "release_status": "pre-alpha",
+                "required": false,
+                "stability": "experimental",
+                "type": "int",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "bool",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "doc": "Compute combined anomaly score from curvature/holonomy/geodesic/density detectors; trigger responses if over threshold",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "monitor_geometric_anomalies",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "real_time_metrics",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Dict",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "historical_baseline",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Any",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "float",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "doc": "Predict incident likelihood from geometric features and patterns; propose preventive measures",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "predictive_geometric_security",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "current_state",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Any",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "historical_patterns",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Any",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "Dict",
+            "stability": "experimental",
+            "unreleased": true
+          }
+        ],
+        "geometry_mode": "native",
+        "migration_policy": "replace-old-techniques",
+        "path": "security/detection.py",
+        "purpose": "Geometric anomaly detection: black-hole, holonomy manipulation, and route flapping",
+        "release_status": "pre-alpha",
+        "stability": "experimental",
+        "unreleased": true
+      },
+      {
+        "classes": [
+          {
+            "attributes": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "reference_anchors",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "List[Anchor]",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "baseline_geometry",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "Any",
+                "unreleased": true
+              }
+            ],
+            "doc": "Monitors geometric integrity using fixed reference anchors (read-only)",
+            "geometry_mode": "native",
+            "methods": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "_compute_reference_geometry",
+                "params": [],
+                "release_status": "pre-alpha",
+                "returns": "Any",
+                "stability": "experimental",
+                "unreleased": true
+              },
+              {
+                "doc": "Return invariants: max_drift, holonomy_deviation, curvature_consistency, density_preservation",
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "validate_geometry",
+                "params": [
+                  {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "name": "current_anchors",
+                    "release_status": "pre-alpha",
+                    "required": true,
+                    "stability": "experimental",
+                    "type": "List[Anchor]",
+                    "unreleased": true
+                  }
+                ],
+                "release_status": "pre-alpha",
+                "returns": "Dict[str, float]",
+                "stability": "experimental",
+                "unreleased": true
+              }
+            ],
+            "migration_policy": "replace-old-techniques",
+            "name": "ReadOnlyAnchorMonitor",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "attributes": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "reference_anchors",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "List[Anchor]",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "config",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "Dict",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "alert_system",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "Any",
+                "unreleased": true
+              }
+            ],
+            "doc": "Continuous monitoring system for anchor integrity",
+            "geometry_mode": "native",
+            "methods": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "sample_geometric_state",
+                "params": [],
+                "release_status": "pre-alpha",
+                "returns": "Dict",
+                "stability": "experimental",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "validate_against_references",
+                "params": [
+                  {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "name": "state",
+                    "release_status": "pre-alpha",
+                    "required": true,
+                    "stability": "experimental",
+                    "type": "Dict",
+                    "unreleased": true
+                  }
+                ],
+                "release_status": "pre-alpha",
+                "returns": "Dict[str, float]",
+                "stability": "experimental",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "check_security_invariants",
+                "params": [
+                  {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "name": "state",
+                    "release_status": "pre-alpha",
+                    "required": true,
+                    "stability": "experimental",
+                    "type": "Dict",
+                    "unreleased": true
+                  }
+                ],
+                "release_status": "pre-alpha",
+                "returns": "Any",
+                "stability": "experimental",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "emit_geometric_telemetry",
+                "params": [
+                  {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "name": "validation_result",
+                    "release_status": "pre-alpha",
+                    "required": true,
+                    "stability": "experimental",
+                    "type": "Dict[str",
+                    "unreleased": true
+                  },
+                  {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "name": "security_status",
+                    "release_status": "pre-alpha",
+                    "required": true,
+                    "stability": "experimental",
+                    "type": "Any",
+                    "unreleased": true
+                  }
+                ],
+                "release_status": "pre-alpha",
+                "returns": "None",
+                "stability": "experimental",
+                "unreleased": true
+              },
+              {
+                "doc": "Continuously validates geometry and triggers alerts per thresholds",
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "monitor_loop",
+                "params": [],
+                "release_status": "pre-alpha",
+                "returns": "None",
+                "stability": "experimental",
+                "unreleased": true
+              }
+            ],
+            "migration_policy": "replace-old-techniques",
+            "name": "GeometricAnchorMonitor",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "attributes": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "reference_anchors",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "List[Anchor]",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "drift_model",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "Any",
+                "unreleased": true
+              }
+            ],
+            "doc": "Predict geometric drift risk before it becomes critical",
+            "geometry_mode": "native",
+            "methods": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "_train_drift_predictor",
+                "params": [],
+                "release_status": "pre-alpha",
+                "returns": "Any",
+                "stability": "experimental",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "_extract_drift_features",
+                "params": [
+                  {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "name": "measurements",
+                    "release_status": "pre-alpha",
+                    "required": true,
+                    "stability": "experimental",
+                    "type": "List[Dict]",
+                    "unreleased": true
+                  }
+                ],
+                "release_status": "pre-alpha",
+                "returns": "Any",
+                "stability": "experimental",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "predict_drift_risk",
+                "params": [
+                  {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "name": "recent_measurements",
+                    "release_status": "pre-alpha",
+                    "required": true,
+                    "stability": "experimental",
+                    "type": "List[Dict]",
+                    "unreleased": true
+                  }
+                ],
+                "release_status": "pre-alpha",
+                "returns": "DriftRisk",
+                "stability": "experimental",
+                "unreleased": true
+              }
+            ],
+            "migration_policy": "replace-old-techniques",
+            "name": "PredictiveDriftDetector",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "attributes": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "anchors",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "List[Anchor]",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "signatures",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "List[bytes]",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "merkle_root",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "Any",
+                "unreleased": true
+              }
+            ],
+            "doc": "Cryptographically sealed geometric baseline; detects tampering/anchor compromise",
+            "geometry_mode": "native",
+            "methods": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "_compute_geometric_merkle_root",
+                "params": [],
+                "release_status": "pre-alpha",
+                "returns": "Any",
+                "stability": "experimental",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "_verify_geometric_signatures",
+                "params": [],
+                "release_status": "pre-alpha",
+                "returns": "bool",
+                "stability": "experimental",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "_detect_unauthorized_anchor_movement",
+                "params": [],
+                "release_status": "pre-alpha",
+                "returns": "bool",
+                "stability": "experimental",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "detect_tampering",
+                "params": [
+                  {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "name": "current_state",
+                    "release_status": "pre-alpha",
+                    "required": true,
+                    "stability": "experimental",
+                    "type": "Dict",
+                    "unreleased": true
+                  }
+                ],
+                "release_status": "pre-alpha",
+                "returns": "SecurityAlert",
+                "stability": "experimental",
+                "unreleased": true
+              }
+            ],
+            "migration_policy": "replace-old-techniques",
+            "name": "ImmutableGeometricBaseline",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true
+          }
+        ],
+        "constants": [
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "GEOMETRIC_INVARIANTS_MONITORED",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true,
+            "value": [
+              "Lorentz constraint: \u27e8v,v\u27e9 = -1",
+              "Holonomy consistency around closed loops",
+              "Curvature uniformity across regions",
+              "Distance metric preservation",
+              "Semantic transport fidelity"
+            ]
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "CONTRACT_VALIDATIONS",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true,
+            "value": [
+              "Read-only anchors are immutable in production",
+              "Geometric signatures verified before use",
+              "Telemetry is append-only and hash-stable",
+              "Alert thresholds are monotonic tighten-only"
+            ]
+          }
+        ],
+        "exports": [
+          "ReadOnlyAnchorMonitor",
+          "GeometricAnchorMonitor",
+          "PredictiveDriftDetector",
+          "ImmutableGeometricBaseline",
+          "deploy_read_only_anchors",
+          "create_multi_projection_monitor",
+          "configure_stress_mode_monitoring",
+          "detect_geometric_attacks",
+          "create_immutable_anchor_record",
+          "GEOMETRIC_INVARIANTS_MONITORED",
+          "CONTRACT_VALIDATIONS"
+        ],
+        "functions": [
+          {
+            "doc": "Phase 2: Select geometrically-stable anchors, create cryptographic attestations, configure monitoring baselines and kill-switch triggers",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "deploy_read_only_anchors",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "anchors",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "List[Anchor]",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "security_level",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "str",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "substrate_config",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Dict",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "Dict",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "doc": "Instantiate monitoring across hyperboloid, Poincar\u00e9, Klein, half-space projections with tight consistency threshold",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "create_multi_projection_monitor",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "ro_anchors",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "List[Anchor]",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "MultiProjectionMonitor",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "doc": "Produce stress-mode config for sampling, tolerances, and alert sensitivity (green/amber/red)",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "configure_stress_mode_monitoring",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "stress_level",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "str",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "Dict",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "doc": "Detect black-hole formation, holonomy manipulation, and Sybil anchors",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "detect_geometric_attacks",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "current_anchors",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "List[Anchor]",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "ro_anchors",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "List[Anchor]",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "List[AttackPattern]",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "doc": "Create cryptographically sealed anchor record with geometric proof and Merkle root",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "create_immutable_anchor_record",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "anchor",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Anchor",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "private_key",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "bytes",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "ImmutableRecord",
+            "stability": "experimental",
+            "unreleased": true
+          }
+        ],
+        "geometry_mode": "native",
+        "migration_policy": "replace-old-techniques",
+        "path": "security/geometric_monitoring.py",
+        "purpose": "Read-only anchor deployment, immutable geometric baselines, continuous telemetry, predictive drift detection, and geometric attack detection",
+        "release_status": "pre-alpha",
+        "stability": "experimental",
+        "unreleased": true
+      },
+      {
+        "classes": [
+          {
+            "attributes": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "name",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "str",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "dim",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "int",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "base_points",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "List[np.ndarray]",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "fibers",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "Dict[int, np.ndarray]",
+                "unreleased": true
+              }
+            ],
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "RiemannRealm",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "attributes": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "dim",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "int",
+                "unreleased": true
+              }
+            ],
+            "geometry_mode": "native",
+            "methods": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "extract_error_realm",
+                "params": [
+                  {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "name": "predictions",
+                    "release_status": "pre-alpha",
+                    "required": true,
+                    "stability": "experimental",
+                    "type": "List[np.ndarray]",
+                    "unreleased": true
+                  },
+                  {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "name": "targets",
+                    "release_status": "pre-alpha",
+                    "required": true,
+                    "stability": "experimental",
+                    "type": "List[np.ndarray]",
+                    "unreleased": true
+                  },
+                  {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "name": "queries",
+                    "release_status": "pre-alpha",
+                    "required": true,
+                    "stability": "experimental",
+                    "type": "List[np.ndarray]",
+                    "unreleased": true
+                  }
+                ],
+                "release_status": "pre-alpha",
+                "returns": "RiemannRealm",
+                "stability": "experimental",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "extract_correction_realm",
+                "params": [
+                  {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "name": "before",
+                    "release_status": "pre-alpha",
+                    "required": true,
+                    "stability": "experimental",
+                    "type": "List[np.ndarray]",
+                    "unreleased": true
+                  },
+                  {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "name": "after",
+                    "release_status": "pre-alpha",
+                    "required": true,
+                    "stability": "experimental",
+                    "type": "List[np.ndarray]",
+                    "unreleased": true
+                  },
+                  {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "name": "queries",
+                    "release_status": "pre-alpha",
+                    "required": true,
+                    "stability": "experimental",
+                    "type": "List[np.ndarray]",
+                    "unreleased": true
+                  }
+                ],
+                "release_status": "pre-alpha",
+                "returns": "RiemannRealm",
+                "stability": "experimental",
+                "unreleased": true
+              }
+            ],
+            "migration_policy": "replace-old-techniques",
+            "name": "RiemannRealmExtractor",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "attributes": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "dim",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "int",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "num_realms",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "int",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "extractor",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "RiemannRealmExtractor",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "realms",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "List[Optional[RiemannRealm]]",
+                "unreleased": true
+              }
+            ],
+            "geometry_mode": "native",
+            "methods": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "train_with_realms",
+                "params": [
+                  {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "name": "model",
+                    "release_status": "pre-alpha",
+                    "required": true,
+                    "stability": "experimental",
+                    "type": "GeometricModel",
+                    "unreleased": true
+                  },
+                  {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "name": "train_queries",
+                    "release_status": "pre-alpha",
+                    "required": true,
+                    "stability": "experimental",
+                    "type": "List[np.ndarray]",
+                    "unreleased": true
+                  },
+                  {
+                    "default": "5",
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "name": "epochs_per_realm",
+                    "release_status": "pre-alpha",
+                    "required": false,
+                    "stability": "experimental",
+                    "type": "int",
+                    "unreleased": true
+                  }
+                ],
+                "release_status": "pre-alpha",
+                "returns": "Dict[str, Any]",
+                "stability": "experimental",
+                "unreleased": true
+              }
+            ],
+            "migration_policy": "replace-old-techniques",
+            "name": "RiemannRealmTrainer",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "methods": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "transfer_realms",
+                "params": [
+                  {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "name": "source_realms",
+                    "release_status": "pre-alpha",
+                    "required": true,
+                    "stability": "experimental",
+                    "type": "List[RiemannRealm]",
+                    "unreleased": true
+                  },
+                  {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "name": "target_model",
+                    "release_status": "pre-alpha",
+                    "required": true,
+                    "stability": "experimental",
+                    "type": "GeometricModel",
+                    "unreleased": true
+                  }
+                ],
+                "release_status": "pre-alpha",
+                "returns": "GeometricModel",
+                "stability": "experimental",
+                "unreleased": true
+              }
+            ],
+            "migration_policy": "replace-old-techniques",
+            "name": "RiemannRealmTransfer",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true
+          }
+        ],
+        "exports": [
+          "RiemannRealm",
+          "RiemannRealmExtractor",
+          "RiemannRealmTrainer",
+          "RiemannRealmTransfer"
+        ],
+        "geometry_mode": "native",
+        "migration_policy": "replace-old-techniques",
+        "path": "security/riemann_realms.py",
+        "purpose": "Riemann Realm training/extraction/transfer with strict isolation and authz",
+        "release_status": "pre-alpha",
+        "stability": "experimental",
+        "unreleased": true
+      }
+    ],
+    "name": "security",
+    "release_status": "pre-alpha",
+    "stability": "experimental",
+    "unreleased": true
+  }
+]

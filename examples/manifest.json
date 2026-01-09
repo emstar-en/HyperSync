@@ -1,0 +1,14 @@
+{
+  "path": "/current/examples",
+  "files": [
+    "manifest.json"
+  ],
+  "folders": [
+    "sdl",
+    "iam",
+    "environment",
+    "integration",
+    "hierarchical_deployment",
+    "basic"
+  ]
+}

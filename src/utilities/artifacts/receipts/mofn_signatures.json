@@ -1,0 +1,24 @@
+{
+  "m_of_n": "3/5",
+  "receipt_kind": "SignatureReceipt",
+  "signatures": [
+    {
+      "alg": "ed25519",
+      "pubkey": "k1",
+      "sig": "s1",
+      "subject": "approver:a"
+    },
+    {
+      "alg": "ed25519",
+      "pubkey": "k2",
+      "sig": "s2",
+      "subject": "approver:b"
+    },
+    {
+      "alg": "ed25519",
+      "pubkey": "k3",
+      "sig": "s3",
+      "subject": "approver:c"
+    }
+  ]
+}

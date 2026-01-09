@@ -1,0 +1,9 @@
+{
+  "name": "foundations",
+  "version": "1.0.0",
+  "description": "Core geometric foundations and metric space definitions for HyperSync.",
+  "type": "capsule",
+  "namespace": "hypersync.geometry.foundations",
+  "dependencies": [],
+  "tier_requirement": "core"
+}

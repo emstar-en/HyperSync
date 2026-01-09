@@ -1,0 +1,15 @@
+{
+  "hyperparams": {
+    "radius": 0.15,
+    "tol": 1e-09,
+    "uncertainty": "budgeted"
+  },
+  "plan_kind": "ReductionPlan",
+  "postprocess": [
+    {
+      "seed": 20251101,
+      "solver_binding_id": "solver://route/adversary_envelope"
+    }
+  ],
+  "solver_binding_id": "solver://route/robust_shortest_path"
+}

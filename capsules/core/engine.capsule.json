@@ -1,0 +1,28 @@
+{
+  "capsule": "hypersync.core.engine",
+  "version": "1.0.0",
+  "dependencies": [
+    "hypersync.core.scheduler",
+    "hypersync.core.dispatcher"
+  ],
+  "components": {
+    "HyperSyncEngine": {
+      "type": "class",
+      "description": "The core execution engine for the HyperSync node.",
+      "methods": {
+        "start": {
+          "description": "Starts the engine and its subsystems.",
+          "returns": "void"
+        },
+        "stop": {
+          "description": "Stops the engine gracefully.",
+          "returns": "void"
+        },
+        "process_cycle": {
+          "description": "Executes a single processing cycle.",
+          "returns": "void"
+        }
+      }
+    }
+  }
+}

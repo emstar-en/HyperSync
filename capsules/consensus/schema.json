@@ -1,0 +1,43 @@
+
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "consensus_mechanisms": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "mechanism_id": { "type": "string" },
+          "name": { "type": "string" },
+          "mechanism_type": { "type": "string" },
+          "description": { "type": "string" },
+          "parameters": { "type": "object" },
+          "tier_requirements": { "type": "object" },
+          "performance": { "type": "object" },
+          "status": { "type": "string", "enum": ["active", "inactive", "deprecated"] },
+          "metadata": { "type": "object" }
+        },
+        "required": ["name", "mechanism_type"]
+      }
+    },
+    "attestation_protocols": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "protocol_id": { "type": "string" },
+          "name": { "type": "string" },
+          "protocol_type": { "type": "string" },
+          "description": { "type": "string" },
+          "verification": { "type": "object" },
+          "tier_requirements": { "type": "object" },
+          "cryptographic": { "type": "object" },
+          "status": { "type": "string", "enum": ["active", "inactive", "deprecated"] },
+          "metadata": { "type": "object" }
+        },
+        "required": ["name", "protocol_type"]
+      }
+    }
+  }
+}

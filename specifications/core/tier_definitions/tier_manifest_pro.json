@@ -1,0 +1,22 @@
+{
+  "tier_id": "pro",
+  "name": "Pro",
+  "description": "Professional Team Tools. Advanced ops and config.",
+  "included_specs": [
+    "specifications/core",
+    "specifications/ico",
+    "specifications/geometry",
+    "specifications/vnes",
+    "specifications/schemas",
+    "specifications/api",
+    "specifications/policies",
+    "specifications/subsystems",
+    "specifications/ops",
+    "specifications/config"
+  ],
+  "feature_flags": {
+    "ico_probe_access": "unconditional",
+    "team_tools": true,
+    "routing_attestation": "priority"
+  }
+}

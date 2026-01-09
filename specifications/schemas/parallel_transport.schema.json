@@ -1,0 +1,47 @@
+{
+  "$id": "parallel_transport.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "Schema for parallel transport operations on semantic manifolds",
+  "properties": {
+    "connection_type": {
+      "default": "levi_civita",
+      "enum": [
+        "levi_civita",
+        "affine",
+        "metric_compatible"
+      ],
+      "type": "string"
+    },
+    "end_point": {
+      "description": "Ending point on manifold",
+      "type": "object"
+    },
+    "kappa": {
+      "description": "Curvature parameter",
+      "type": "number"
+    },
+    "preserve_norm": {
+      "default": true,
+      "type": "boolean"
+    },
+    "start_point": {
+      "description": "Starting point on manifold",
+      "type": "object"
+    },
+    "vector": {
+      "description": "Tangent vector to transport",
+      "items": {
+        "type": "number"
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "vector",
+    "start_point",
+    "end_point",
+    "kappa"
+  ],
+  "title": "Parallel Transport Schema",
+  "type": "object"
+}

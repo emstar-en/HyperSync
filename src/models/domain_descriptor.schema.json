@@ -1,0 +1,212 @@
+{
+  "$id": "https://hypersync.io/schemas/domain_descriptor_v2.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "Complete schema for geometric domain descriptors including Lorentzian and pseudo-Riemannian domains",
+  "examples": [
+    {
+      "capabilities": {
+        "requires_time_coordinate": true,
+        "supports_causality": true,
+        "supports_geodesics": true,
+        "supports_horizons": true
+      },
+      "curvature_class": "mixed",
+      "dimension": 4,
+      "domain_id": "schwarzschild_default",
+      "domain_type": "schwarzschild",
+      "feature_traits": [
+        "black_hole",
+        "event_horizon",
+        "singularity"
+      ],
+      "metadata": {
+        "description": "Schwarzschild black hole spacetime"
+      },
+      "parameters": {
+        "mass": 1.0,
+        "schwarzschild_radius": 2.0
+      },
+      "policy_constraints": [
+        "horizon_acl",
+        "causality_check"
+      ]
+    }
+  ],
+  "properties": {
+    "capabilities": {
+      "description": "Capabilities and features of the domain",
+      "properties": {
+        "max_dimension": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "requires_time_coordinate": {
+          "default": false,
+          "type": "boolean"
+        },
+        "supports_causality": {
+          "default": false,
+          "type": "boolean"
+        },
+        "supports_curvature_tensor": {
+          "default": true,
+          "type": "boolean"
+        },
+        "supports_ergosphere": {
+          "default": false,
+          "type": "boolean"
+        },
+        "supports_geodesics": {
+          "default": true,
+          "type": "boolean"
+        },
+        "supports_horizons": {
+          "default": false,
+          "type": "boolean"
+        },
+        "supports_parallel_transport": {
+          "default": true,
+          "type": "boolean"
+        },
+        "supports_redshift": {
+          "default": false,
+          "type": "boolean"
+        },
+        "supports_time_evolution": {
+          "default": false,
+          "type": "boolean"
+        }
+      },
+      "type": "object"
+    },
+    "curvature_class": {
+      "description": "Classification by curvature type",
+      "enum": [
+        "negative",
+        "zero",
+        "positive",
+        "mixed",
+        "time_varying"
+      ],
+      "type": "string"
+    },
+    "dimension": {
+      "description": "Dimension of the domain",
+      "maximum": 11,
+      "minimum": 1,
+      "type": "integer"
+    },
+    "domain_id": {
+      "description": "Unique identifier for the domain",
+      "pattern": "^[a-z][a-z0-9_]*$",
+      "type": "string"
+    },
+    "domain_type": {
+      "description": "Type of geometric domain",
+      "enum": [
+        "hyperboloid",
+        "sphere",
+        "flat_minkowski",
+        "ads_space",
+        "schwarzschild",
+        "kerr",
+        "frw_cosmology",
+        "inflationary",
+        "cyclic",
+        "euclidean",
+        "hyperbolic"
+      ],
+      "type": "string"
+    },
+    "feature_traits": {
+      "description": "Feature traits for classification",
+      "items": {
+        "enum": [
+          "constant_curvature",
+          "lorentzian",
+          "riemannian",
+          "time_like",
+          "space_like",
+          "compact",
+          "flat",
+          "special_relativity",
+          "ads_cft",
+          "conformal_boundary",
+          "black_hole",
+          "event_horizon",
+          "singularity",
+          "spherical_symmetry",
+          "rotating",
+          "ergosphere",
+          "frame_dragging",
+          "ring_singularity",
+          "cosmology",
+          "expanding",
+          "time_varying",
+          "homogeneous",
+          "isotropic",
+          "inflation",
+          "exponential_expansion",
+          "early_universe",
+          "cyclic",
+          "periodic",
+          "bounce"
+        ],
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "metadata": {
+      "additionalProperties": true,
+      "description": "Additional metadata",
+      "properties": {
+        "author": {
+          "type": "string"
+        },
+        "created": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "updated": {
+          "format": "date-time",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "parameters": {
+      "additionalProperties": true,
+      "description": "Domain-specific parameters",
+      "type": "object"
+    },
+    "policy_constraints": {
+      "description": "Required policy constraints",
+      "items": {
+        "enum": [
+          "horizon_acl",
+          "causality_check",
+          "ergosphere_policy",
+          "boundary_redundancy",
+          "time_dependent_acl",
+          "distance_constraint",
+          "redshift_constraint"
+        ],
+        "type": "string"
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "domain_id",
+    "domain_type",
+    "curvature_class",
+    "dimension"
+  ],
+  "title": "HyperSync Domain Descriptor v2",
+  "type": "object"
+}

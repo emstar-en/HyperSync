@@ -1,0 +1,108 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "migration_policy": "replace-old-techniques",
+  "properties": {
+    "manifold": {
+      "enum": [
+        "hyperboloid.H4"
+      ],
+      "migration_policy": "replace-old-techniques",
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "type": "string",
+      "unreleased": true
+    },
+    "migration_policy": "replace-old-techniques",
+    "ops": {
+      "migration_policy": "replace-old-techniques",
+      "properties": {
+        "christoffel": {
+          "enum": [
+            "connection.levi_civita.christoffel.v1"
+          ],
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "string",
+          "unreleased": true
+        },
+        "geodesic_deviation": {
+          "enum": [
+            "geodesic.deviation.jacobi.v1"
+          ],
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "string",
+          "unreleased": true
+        },
+        "metric": {
+          "enum": [
+            "metric.lorentz.minkowski.v1"
+          ],
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "string",
+          "unreleased": true
+        },
+        "migration_policy": "replace-old-techniques",
+        "release_status": "pre-alpha",
+        "ricci_tensor": {
+          "enum": [
+            "curvature.ricci.intrinsic.v1"
+          ],
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "string",
+          "unreleased": true
+        },
+        "riemann_tensor": {
+          "enum": [
+            "curvature.riemann.intrinsic.v1"
+          ],
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "string",
+          "unreleased": true
+        },
+        "scalar_curvature": {
+          "enum": [
+            "curvature.scalar.intrinsic.v1"
+          ],
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "string",
+          "unreleased": true
+        },
+        "sectional_curvature": {
+          "enum": [
+            "curvature.sectional.intrinsic.v1"
+          ],
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "string",
+          "unreleased": true
+        },
+        "stability": "experimental",
+        "unreleased": true
+      },
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "type": "object",
+      "unreleased": true
+    },
+    "release_status": "pre-alpha",
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "release_status": "pre-alpha",
+  "stability": "experimental",
+  "title": "RiemannianGeometryAPI",
+  "type": "object",
+  "unreleased": true
+}

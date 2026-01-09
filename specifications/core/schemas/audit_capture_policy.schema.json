@@ -1,0 +1,88 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "migration_policy": "replace-old-techniques",
+  "properties": {
+    "dp_epsilon": {
+      "maximum": 10,
+      "migration_policy": "replace-old-techniques",
+      "minimum": 0.1,
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "type": "number",
+      "unreleased": true
+    },
+    "migration_policy": "replace-old-techniques",
+    "rate_limits": {
+      "migration_policy": "replace-old-techniques",
+      "properties": {
+        "max_events_per_min": {
+          "migration_policy": "replace-old-techniques",
+          "minimum": 1,
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "integer",
+          "unreleased": true
+        },
+        "migration_policy": "replace-old-techniques",
+        "release_status": "pre-alpha",
+        "stability": "experimental",
+        "unreleased": true
+      },
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "type": "object",
+      "unreleased": true
+    },
+    "release_status": "pre-alpha",
+    "stability": "experimental",
+    "typed_fields_only": {
+      "migration_policy": "replace-old-techniques",
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "type": "boolean",
+      "unreleased": true
+    },
+    "unreleased": true,
+    "volume_caps": {
+      "migration_policy": "replace-old-techniques",
+      "properties": {
+        "max_bytes_per_window": {
+          "migration_policy": "replace-old-techniques",
+          "minimum": 1024,
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "integer",
+          "unreleased": true
+        },
+        "migration_policy": "replace-old-techniques",
+        "release_status": "pre-alpha",
+        "stability": "experimental",
+        "unreleased": true,
+        "window_minutes": {
+          "maximum": 1440,
+          "migration_policy": "replace-old-techniques",
+          "minimum": 1,
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "integer",
+          "unreleased": true
+        }
+      },
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "type": "object",
+      "unreleased": true
+    }
+  },
+  "release_status": "pre-alpha",
+  "required": [
+    "typed_fields_only",
+    "dp_epsilon",
+    "rate_limits",
+    "volume_caps"
+  ],
+  "stability": "experimental",
+  "title": "AuditCapturePolicy",
+  "type": "object",
+  "unreleased": true
+}

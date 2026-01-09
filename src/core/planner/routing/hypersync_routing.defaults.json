@@ -1,0 +1,79 @@
+{
+  "defaults": {
+    "accumulation": "pairwise",
+    "budgets": {
+      "gpu_ms": 0,
+      "mem_mb": 512,
+      "time_ms": 400
+    },
+    "determinism_required": true,
+    "effects_ceiling": "Write",
+    "emit_privacy_receipts": true,
+    "platform_profile": {
+      "cpu": {
+        "arch": "x86_64",
+        "features": [
+          "sse4_2",
+          "avx2"
+        ],
+        "threads": 1
+      },
+      "gpu": {
+        "deterministic_math": true,
+        "enabled": false,
+        "min_cc": "7.0"
+      },
+      "io": {
+        "io_uring": true,
+        "o_direct": true
+      }
+    },
+    "precision_default": "fp32",
+    "privacy_enforced": true,
+    "routing": {
+      "max_hops": 2,
+      "mode": "geoticket",
+      "risk_ceiling": 0.25,
+      "weights": {
+        "cost": 0.5,
+        "debt": 1.0,
+        "latency": 1.0,
+        "quality": 1.0
+      }
+    },
+    "seed": 1337
+  },
+  "executor": {
+    "capability_vm": {
+      "allow_ops": [
+        "mem_map_ro",
+        "mem_map_rw",
+        "mem_unmap",
+        "io_copy_blocked",
+        "sched_pin_core",
+        "sched_budget",
+        "blas_gemm_f32",
+        "mem_flush",
+        "fence",
+        "rand_seed_set",
+        "receipt_emit",
+        "gpu_upload_const",
+        "gpu_launch"
+      ],
+      "enabled": true,
+      "receipts": {
+        "emit_effect_proofs": true,
+        "emit_hw_counters": true
+      }
+    },
+    "device_preferences": {
+      "prefer_gpu": false,
+      "prefer_io_uring": true
+    },
+    "safe_fallback_preference": [
+      "ext://cf4da4e06ecd",
+      "ext://d0b56e71b5a7"
+    ]
+  },
+  "router_id": "router://hypersync_routing"
+}

@@ -1,0 +1,22 @@
+{
+  "$id": "schema://receipts/AdversaryModelReceipt.json",
+  "$schema": "ext://fcbd7642ed3f",
+  "properties": {
+    "radius": {
+      "type": "number"
+    },
+    "receipt_kind": {
+      "const": "AdversaryModelReceipt"
+    },
+    "seed": {
+      "type": "integer"
+    },
+    "set": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "receipt_kind"
+  ],
+  "type": "object"
+}

@@ -1,0 +1,90 @@
+{
+  "$id": "https://hypersync.ai/schemas/policy/numeric_policy_valuation.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Numeric policy extended with valuation-theoretic comparisons",
+  "properties": {
+    "curvature_aware_scaling": {
+      "properties": {
+        "curvature_factor": {
+          "type": "number"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "scaling_function": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "error_budgets": {
+      "properties": {
+        "accumulation_error": {
+          "type": "number"
+        },
+        "conditioning_threshold": {
+          "type": "number"
+        },
+        "ulp_budget": {
+          "type": "number"
+        }
+      },
+      "type": "object"
+    },
+    "kind": {
+      "const": "NumericPolicyValuation",
+      "type": "string"
+    },
+    "policy_id": {
+      "type": "string"
+    },
+    "valuation_adapter": {
+      "properties": {
+        "comparison_method": {
+          "enum": [
+            "hahn_series",
+            "surreal_birthday",
+            "lexicographic"
+          ],
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "transfinite_patience": {
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "ordinal_limit": {
+              "type": "string"
+            },
+            "stage_budgets": {
+              "additionalProperties": {
+                "type": "integer"
+              },
+              "type": "object"
+            }
+          },
+          "type": "object"
+        },
+        "valuation_ref": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "enabled",
+        "valuation_ref"
+      ],
+      "type": "object"
+    }
+  },
+  "required": [
+    "kind",
+    "policy_id",
+    "error_budgets",
+    "valuation_adapter"
+  ],
+  "title": "NumericPolicyValuation",
+  "type": "object"
+}

@@ -1,0 +1,143 @@
+{
+  "$id": "https://hypersync.ai/schemas/catalogue/nld_profile.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "High-nLD model tracking and security assessment",
+  "properties": {
+    "cross_boundary_capabilities": {
+      "properties": {
+        "can_bridge_domains": {
+          "type": "boolean"
+        },
+        "instability_score": {
+          "description": "0=stable, 1=highly unstable",
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
+        "requires_containment": {
+          "type": "boolean"
+        },
+        "safe_deployment_contexts": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "is_nld_model": {
+      "description": "True if trained across multiple Lorentzian Domains",
+      "type": "boolean"
+    },
+    "nld_level": {
+      "description": "Number of LDs the model was trained across",
+      "minimum": 0,
+      "type": "integer"
+    },
+    "security_classification": {
+      "properties": {
+        "allowed_operators": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "audit_logging": {
+          "enum": [
+            "none",
+            "optional",
+            "recommended",
+            "mandatory"
+          ],
+          "type": "string"
+        },
+        "containment_policy": {
+          "format": "uuid",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "requires_authentication": {
+          "type": "boolean"
+        },
+        "threat_level": {
+          "enum": [
+            "safe",
+            "low",
+            "medium",
+            "high",
+            "critical"
+          ],
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "stability_metrics": {
+      "properties": {
+        "domain_bleed": {
+          "description": "Mixing concepts from different LDs",
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
+        "hallucination_rate": {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
+        "last_stability_check": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "output_consistency": {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        }
+      },
+      "type": "object"
+    },
+    "training_domains": {
+      "items": {
+        "properties": {
+          "domain_characteristics": {
+            "type": "string"
+          },
+          "ld_id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "ld_schema": {
+            "enum": [
+              "euclidean-standard",
+              "hyperbolic-compressed",
+              "mixed-geometry",
+              "custom"
+            ],
+            "type": "string"
+          },
+          "sample_count": {
+            "minimum": 0,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "ld_id",
+          "ld_schema",
+          "sample_count"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "is_nld_model",
+    "nld_level"
+  ],
+  "title": "nLD Model Profile",
+  "type": "object"
+}

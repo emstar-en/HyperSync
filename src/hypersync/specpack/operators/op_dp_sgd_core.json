@@ -1,0 +1,6 @@
+{
+  "deterministic": true,
+  "id": "op://dp_sgd_core.0",
+  "kind": "optimizer",
+  "notes": "DP-SGD with deterministic per-example processing"
+}

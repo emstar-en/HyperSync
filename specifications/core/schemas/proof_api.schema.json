@@ -1,0 +1,211 @@
+{
+  "$id": "schemas/proof_api.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "geometry_mode": "native",
+  "migration_policy": "replace-old-techniques",
+  "properties": {
+    "generate_request": {
+      "geometry_mode": "native",
+      "migration_policy": "replace-old-techniques",
+      "properties": {
+        "claim_id": {
+          "geometry_mode": "native",
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "string",
+          "unreleased": true
+        },
+        "constraints": {
+          "geometry_mode": "native",
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "object",
+          "unreleased": true
+        },
+        "geometry_mode": "native",
+        "migration_policy": "replace-old-techniques",
+        "release_status": "pre-alpha",
+        "stability": "experimental",
+        "unreleased": true,
+        "witness": {
+          "geometry_mode": "native",
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "object",
+          "unreleased": true
+        }
+      },
+      "release_status": "pre-alpha",
+      "required": [
+        "claim_id",
+        "witness"
+      ],
+      "stability": "experimental",
+      "type": "object",
+      "unreleased": true
+    },
+    "generate_response": {
+      "geometry_mode": "native",
+      "migration_policy": "replace-old-techniques",
+      "properties": {
+        "geometry_mode": "native",
+        "migration_policy": "replace-old-techniques",
+        "proof": {
+          "geometry_mode": "native",
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "string",
+          "unreleased": true
+        },
+        "release_status": "pre-alpha",
+        "stability": "experimental",
+        "transparency": {
+          "geometry_mode": "native",
+          "migration_policy": "replace-old-techniques",
+          "properties": {
+            "generation_time_ms": {
+              "geometry_mode": "native",
+              "migration_policy": "replace-old-techniques",
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "number",
+              "unreleased": true
+            },
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "object",
+          "unreleased": true
+        },
+        "unreleased": true
+      },
+      "release_status": "pre-alpha",
+      "required": [
+        "proof"
+      ],
+      "stability": "experimental",
+      "type": "object",
+      "unreleased": true
+    },
+    "geometry_mode": "native",
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "stability": "experimental",
+    "unreleased": true,
+    "verify_request": {
+      "geometry_mode": "native",
+      "migration_policy": "replace-old-techniques",
+      "properties": {
+        "claim_id": {
+          "geometry_mode": "native",
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "string",
+          "unreleased": true
+        },
+        "context": {
+          "geometry_mode": "native",
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "object",
+          "unreleased": true
+        },
+        "geometry_mode": "native",
+        "migration_policy": "replace-old-techniques",
+        "proof": {
+          "description": "Opaque proof artifact (e.g., SNARK/Groth16) base64-encoded",
+          "geometry_mode": "native",
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "string",
+          "unreleased": true
+        },
+        "release_status": "pre-alpha",
+        "stability": "experimental",
+        "unreleased": true
+      },
+      "release_status": "pre-alpha",
+      "required": [
+        "proof",
+        "claim_id"
+      ],
+      "stability": "experimental",
+      "type": "object",
+      "unreleased": true
+    },
+    "verify_response": {
+      "geometry_mode": "native",
+      "migration_policy": "replace-old-techniques",
+      "properties": {
+        "geometry_mode": "native",
+        "message": {
+          "geometry_mode": "native",
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "string",
+          "unreleased": true
+        },
+        "migration_policy": "replace-old-techniques",
+        "release_status": "pre-alpha",
+        "stability": "experimental",
+        "transparency": {
+          "geometry_mode": "native",
+          "migration_policy": "replace-old-techniques",
+          "properties": {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true,
+            "verification_time_ms": {
+              "geometry_mode": "native",
+              "migration_policy": "replace-old-techniques",
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "number",
+              "unreleased": true
+            }
+          },
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "object",
+          "unreleased": true
+        },
+        "unreleased": true,
+        "valid": {
+          "geometry_mode": "native",
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "boolean",
+          "unreleased": true
+        }
+      },
+      "release_status": "pre-alpha",
+      "required": [
+        "valid"
+      ],
+      "stability": "experimental",
+      "type": "object",
+      "unreleased": true
+    }
+  },
+  "release_status": "pre-alpha",
+  "stability": "experimental",
+  "title": "HyperSync Proof API",
+  "type": "object",
+  "unreleased": true
+}

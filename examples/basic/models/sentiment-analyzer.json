@@ -1,0 +1,39 @@
+{
+  "capabilities": [
+    "analyze:sentiment",
+    "classify:emotion"
+  ],
+  "description": "Sentiment analysis and emotion classification model",
+  "entrypoint": {
+    "kind": "noop",
+    "note": "Replace with actual model endpoint"
+  },
+  "metadata": {
+    "classes": [
+      "positive",
+      "negative",
+      "neutral"
+    ],
+    "language": "en",
+    "output_format": "json"
+  },
+  "name": "sentiment-analyzer",
+  "tags": [
+    "offline",
+    "demo",
+    "nlp",
+    "sentiment"
+  ],
+  "type": "model",
+  "vnes_spec": {
+    "capsule_type": "cognitive_operator",
+    "determinism_tier": "D2_probabilistic",
+    "geometry_mapping": {
+      "output_to_tensor": "psychometric_tensor_v1"
+    }
+  },
+  "receipt_config": {
+    "proof_type": "inference_trace",
+    "retention": "ephemeral"
+  }
+}

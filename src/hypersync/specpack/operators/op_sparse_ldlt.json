@@ -1,0 +1,6 @@
+{
+  "deterministic": true,
+  "id": "op://sparse_ldlt.0",
+  "kind": "linear_solver",
+  "notes": "Deterministic sparse LDL^T"
+}

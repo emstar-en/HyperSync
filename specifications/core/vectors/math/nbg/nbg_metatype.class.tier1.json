@@ -1,0 +1,28 @@
+{
+  "definition": {
+    "predicate": "{L|R} where L < R and birthday(x) < \u03c9^\u03c9",
+    "representative_subset": [
+      {
+        "birthday": "0",
+        "value": "0"
+      },
+      {
+        "birthday": "1",
+        "value": "1"
+      },
+      {
+        "birthday": "\u03c9",
+        "value": "\u03c9"
+      }
+    ],
+    "type": "class",
+    "universe": "Surreal"
+  },
+  "kind": "NBGMetatype",
+  "metatype": "class",
+  "runtime_policy": {
+    "materialization": "representative_subset",
+    "max_cardinality": 100,
+    "selection_method": "deterministic"
+  }
+}

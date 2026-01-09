@@ -1,0 +1,44 @@
+{
+  "category": "causal",
+  "description": "Enforces causal ordering constraints in hyperbolic space",
+  "enforcement": "strict",
+  "metadata": {
+    "author": "HyperSync Core Team",
+    "created": "2024-12-04",
+    "tags": [
+      "geometry",
+      "causality",
+      "hyperbolic"
+    ]
+  },
+  "parameters": {
+    "causal_horizon": 10.0,
+    "curvature_threshold": 0.5,
+    "enforcement_mode": "blocking"
+  },
+  "policy": "causal-gate.policy",
+  "rules": [
+    {
+      "action": "enforce_ordering",
+      "condition": "geodesic_distance(event_a, event_b) > 0",
+      "description": "Events must respect causal ordering based on geodesic distance",
+      "id": "causal-ordering",
+      "severity": "critical"
+    },
+    {
+      "action": "reject",
+      "condition": "hyperbolic_distance(event_a, event_b) > causal_horizon",
+      "description": "Events outside lightcone cannot have causal relationship",
+      "id": "lightcone-constraint",
+      "severity": "critical"
+    },
+    {
+      "action": "adjust_timestamp",
+      "condition": "curvature_at(location) > threshold",
+      "description": "Account for curvature-induced time dilation",
+      "id": "time-dilation-aware",
+      "severity": "warning"
+    }
+  ],
+  "type": "geometric"
+}

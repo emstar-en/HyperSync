@@ -1,0 +1,8 @@
+{
+  "intent_kind": "ReductionIntent",
+  "params": {
+    "epsilon": 0.003001
+  },
+  "profile": "BASIC",
+  "task": "ot_jko_calibration"
+}

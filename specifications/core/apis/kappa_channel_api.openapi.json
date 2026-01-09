@@ -1,0 +1,182 @@
+{
+  "info": {
+    "description": "User-facing API for kappa channel management and curvature operations",
+    "title": "HyperSync Kappa Channel API"
+  },
+  "openapi": "3.0.0",
+  "paths": {
+    "/kappa/channels": {
+      "get": {
+        "operationId": "listKappaChannels",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "properties": {
+                      "active": {
+                        "type": "boolean"
+                      },
+                      "channel_id": {
+                        "type": "string"
+                      },
+                      "kappa": {
+                        "type": "number"
+                      },
+                      "semantic_density": {
+                        "type": "string"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": "List of kappa channels"
+          }
+        },
+        "summary": "List all kappa channels",
+        "tags": [
+          "Kappa Channels"
+        ]
+      },
+      "post": {
+        "operationId": "createKappaChannel",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "kappa": {
+                    "type": "number"
+                  },
+                  "semantic_density": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "kappa"
+                ],
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Channel created"
+          }
+        },
+        "summary": "Create new kappa channel",
+        "tags": [
+          "Kappa Channels"
+        ]
+      }
+    },
+    "/kappa/channels/{channel_id}": {
+      "get": {
+        "operationId": "getKappaChannel",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "channel_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Channel details"
+          }
+        },
+        "summary": "Get kappa channel details",
+        "tags": [
+          "Kappa Channels"
+        ]
+      }
+    },
+    "/kappa/transition": {
+      "post": {
+        "operationId": "transitionKappa",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "data": {
+                    "type": "object"
+                  },
+                  "method": {
+                    "type": "string"
+                  },
+                  "source_kappa": {
+                    "type": "number"
+                  },
+                  "target_kappa": {
+                    "type": "number"
+                  }
+                },
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Transition complete"
+          }
+        },
+        "summary": "Transition between kappa values",
+        "tags": [
+          "Kappa Operations"
+        ]
+      }
+    },
+    "/kappa/validate": {
+      "post": {
+        "operationId": "validateCurvature",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "kappa": {
+                    "type": "number"
+                  },
+                  "validation_type": {
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Validation result"
+          }
+        },
+        "summary": "Validate curvature properties",
+        "tags": [
+          "Kappa Operations"
+        ]
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.hypersync.local/v1"
+    },
+    {
+      "url": "https://api.hypersync.cloud/v1"
+    }
+  ]
+}

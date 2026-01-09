@@ -1,0 +1,9 @@
+{
+  "spec_manifest_updated.json": {
+    "migration_policy": "none",
+    "release_status": "released",
+    "size_bytes": 1638,
+    "stability": "stable",
+    "unreleased": false
+  }
+}

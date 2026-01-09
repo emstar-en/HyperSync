@@ -1,0 +1,75 @@
+{
+  "geometry_capsules": {
+    "meta": {
+      "description": "Capsule definitions for advanced geometry subsystems",
+      "status": "ALPHA",
+      "version": "1.0.1"
+    },
+    "definitions": {
+      "hypersync.geometry.advanced_consensus": {
+        "capsule_path": "capsules/geometry/advanced_consensus",
+        "manifest_file": "manifest.json",
+        "description": "Robust and stochastic geometric consensus algorithms",
+        "type": "advanced",
+        "base_spec": "specifications/geometry/advanced_consensus.spec.json"
+      },
+      "hypersync.geometry.curvature": {
+        "capsule_path": "capsules/geometry/curvature",
+        "manifest_file": "manifest.json",
+        "description": "Mathematical definitions and fault detection for curvature fields",
+        "type": "advanced",
+        "base_spec": "specifications/geometry/curvature_mechanisms.spec.json"
+      },
+      "hypersync.geometry.foundations": {
+        "capsule_path": "capsules/geometry/foundations",
+        "manifest_file": "manifest.json",
+        "description": "Core manifold definitions, metrics, and optimization algorithms",
+        "type": "essential",
+        "base_spec": "specifications/geometry/geometric_foundations.spec.json"
+      },
+      "hypersync.geometry.layer": {
+        "capsule_path": "capsules/geometry/layer",
+        "manifest_file": "manifest.json",
+        "description": "API surface for geometry operations with determinism guarantees",
+        "type": "essential",
+        "base_spec": "specifications/geometry/layer/hypersync_geometry_layer.json"
+      },
+      "hypersync.geometry.pct": {
+        "capsule_path": "capsules/geometry/pct",
+        "manifest_file": "manifest.json",
+        "description": "Pathfinder-Cartographer-Trailblazer method for geometry-aware workflow development",
+        "type": "advanced",
+        "base_spec": "specifications/geometry/pct/pct_method_overview.json"
+      },
+      "hypersync.geometry.agua": {
+        "capsule_path": "capsules/geometry/agua",
+        "manifest_file": "manifest.json",
+        "description": "Geometry-aware control and orchestration for HyperSync workloads",
+        "type": "advanced",
+        "base_spec": "specifications/geometry/agua/agua_geometry_spec.json"
+      }
+    },
+    "mathematical_foundations": {
+      "capsule_homomorphism": {
+        "theory": "Structure-preserving map between Base Spec and Capsule Runtime",
+        "invariant": "Capsule(BaseSpec) must satisfy all invariants of BaseSpec"
+      }
+    },
+    "fault_detection": {
+      "spec_divergence": {
+        "detection": "Hash mismatch between Base Spec and Capsule Logic",
+        "action": "Invalidate Capsule"
+      }
+    },
+    "detailed_mechanisms": {
+      "encapsulation_process": {
+        "steps": [
+          "Read Base Spec",
+          "Generate Manifest",
+          "Generate Logic Adapter",
+          "Verify Invariants"
+        ]
+      }
+    }
+  }
+}

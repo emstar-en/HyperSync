@@ -1,0 +1,109 @@
+{
+  "$id": "geometry.pipeline.profile.json",
+  "$schema": "ext://f1fed686329b",
+  "properties": {
+    "determinism": {
+      "properties": {
+        "engine": {
+          "type": "string"
+        },
+        "seedStrategy": {
+          "type": "string"
+        },
+        "spriteAtlas": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "engine",
+        "seedStrategy"
+      ],
+      "type": "object"
+    },
+    "id": {
+      "type": "string"
+    },
+    "planes": {
+      "properties": {
+        "euclidean": {
+          "properties": {
+            "grid": {
+              "properties": {
+                "layout": {
+                  "type": "string"
+                },
+                "tile": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "tile"
+              ],
+              "type": "object"
+            }
+          },
+          "required": [
+            "grid"
+          ],
+          "type": "object"
+        },
+        "hyperbolic": {
+          "properties": {
+            "metrics": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "model": {
+              "enum": [
+                "poincare-disk",
+                "half-plane"
+              ]
+            }
+          },
+          "required": [
+            "model"
+          ],
+          "type": "object"
+        },
+        "spherical": {
+          "properties": {
+            "projection": {
+              "enum": [
+                "gnomonic",
+                "equirect",
+                "stereographic"
+              ]
+            },
+            "unit": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "projection"
+          ],
+          "type": "object"
+        }
+      },
+      "required": [
+        "hyperbolic",
+        "spherical",
+        "euclidean"
+      ],
+      "type": "object"
+    },
+    "type": {
+      "const": "geometry.pipeline.profile"
+    }
+  },
+  "required": [
+    "type",
+    "version",
+    "id",
+    "planes",
+    "determinism"
+  ],
+  "title": "Geometry Pipeline Profile",
+  "type": "object"
+}

@@ -1,0 +1,283 @@
+{
+  "info": {
+    "description": "User-facing API for geometric transport operations",
+    "title": "HyperSync Geodesic Transport API"
+  },
+  "openapi": "3.0.0",
+  "paths": {
+    "/transport/exponential": {
+      "post": {
+        "description": "Map tangent vector to point via geodesic flow",
+        "operationId": "exponentialMap",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "base_point": {
+                    "type": "object"
+                  },
+                  "kappa": {
+                    "type": "number"
+                  },
+                  "tangent_vector": {
+                    "type": "array"
+                  },
+                  "time_parameter": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "base_point",
+                  "tangent_vector",
+                  "kappa"
+                ],
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "distance_traveled": {
+                      "type": "number"
+                    },
+                    "point": {
+                      "type": "object"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Point on manifold"
+          }
+        },
+        "summary": "Exponential map operation",
+        "tags": [
+          "Exponential Maps"
+        ]
+      }
+    },
+    "/transport/geodesic/compute": {
+      "post": {
+        "description": "Calculate geodesic curve connecting two points",
+        "operationId": "computeGeodesic",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "end_point": {
+                    "type": "object"
+                  },
+                  "kappa": {
+                    "type": "number"
+                  },
+                  "num_points": {
+                    "type": "integer"
+                  },
+                  "start_point": {
+                    "type": "object"
+                  }
+                },
+                "required": [
+                  "start_point",
+                  "end_point",
+                  "kappa"
+                ],
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Geodesic curve"
+          }
+        },
+        "summary": "Compute geodesic between points",
+        "tags": [
+          "Geodesic Operations"
+        ]
+      }
+    },
+    "/transport/holonomy/validate": {
+      "post": {
+        "description": "Check parallel transport preservation around closed curves",
+        "operationId": "validateHolonomy",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "closed_loop": {
+                    "type": "object"
+                  },
+                  "initial_vector": {
+                    "type": "array"
+                  },
+                  "kappa": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "closed_loop",
+                  "initial_vector",
+                  "kappa"
+                ],
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Holonomy validation result"
+          }
+        },
+        "summary": "Validate holonomy around closed loop",
+        "tags": [
+          "Holonomy Validation"
+        ]
+      }
+    },
+    "/transport/logarithm": {
+      "post": {
+        "description": "Map point to tangent vector (inverse of exponential map)",
+        "operationId": "logarithmMap",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "base_point": {
+                    "type": "object"
+                  },
+                  "kappa": {
+                    "type": "number"
+                  },
+                  "target_point": {
+                    "type": "object"
+                  }
+                },
+                "required": [
+                  "base_point",
+                  "target_point",
+                  "kappa"
+                ],
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "geodesic_distance": {
+                      "type": "number"
+                    },
+                    "tangent_vector": {
+                      "type": "array"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Tangent vector"
+          }
+        },
+        "summary": "Logarithm map operation",
+        "tags": [
+          "Exponential Maps"
+        ]
+      }
+    },
+    "/transport/parallel": {
+      "post": {
+        "description": "Transport tangent vector while preserving parallelism",
+        "operationId": "parallelTransport",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "connection_type": {
+                    "type": "string"
+                  },
+                  "end_point": {
+                    "type": "object"
+                  },
+                  "kappa": {
+                    "type": "number"
+                  },
+                  "start_point": {
+                    "type": "object"
+                  },
+                  "vector": {
+                    "type": "array"
+                  }
+                },
+                "required": [
+                  "vector",
+                  "start_point",
+                  "end_point",
+                  "kappa"
+                ],
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "holonomy_check": {
+                      "type": "boolean"
+                    },
+                    "norm_preserved": {
+                      "type": "boolean"
+                    },
+                    "transported_vector": {
+                      "type": "array"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Transported vector"
+          }
+        },
+        "summary": "Parallel transport vector along geodesic",
+        "tags": [
+          "Transport Operations"
+        ]
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.hypersync.local/v1"
+    },
+    {
+      "url": "https://api.hypersync.cloud/v1"
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "tier_id": "core",
+  "name": "Core",
+  "description": "Open Source Foundation. Self-hosted, community-supported.",
+  "included_specs": [
+    "specifications/core",
+    "specifications/ico",
+    "specifications/geometry/geometric_foundations.spec.json",
+    "specifications/geometry/curvature_mechanisms.spec.json",
+    "specifications/vnes",
+    "specifications/schemas",
+    "specifications/api",
+    "specifications/policies/public"
+  ],
+  "feature_flags": {
+    "ico_probe_access": "conditional",
+    "max_nodes": -1,
+    "routing_attestation": "standard"
+  }
+}

@@ -1,0 +1,103 @@
+{
+  "agent_id": "critical_agent_001",
+  "detection_signals": {
+    "boundary_violations": 47,
+    "calibration_error": 0.92,
+    "holonomy_inconsistency": 0.85,
+    "route_flap_rate": 2.5
+  },
+  "last_assessed": "2024-01-15T10:00:00Z",
+  "ld_training_history": [
+    {
+      "curvature": -1.0,
+      "geometry_type": "euclidean",
+      "ld_id": "ld_0",
+      "training_epochs": 100,
+      "verified": true
+    },
+    {
+      "curvature": -0.5,
+      "geometry_type": "hyperbolic",
+      "ld_id": "ld_1",
+      "training_epochs": 95,
+      "verified": true
+    },
+    {
+      "curvature": 0.0,
+      "geometry_type": "spherical",
+      "ld_id": "ld_2",
+      "training_epochs": 90,
+      "verified": true
+    },
+    {
+      "curvature": 0.5,
+      "geometry_type": "mixed",
+      "ld_id": "ld_3",
+      "training_epochs": 85,
+      "verified": true
+    },
+    {
+      "curvature": 1.0,
+      "geometry_type": "euclidean",
+      "ld_id": "ld_4",
+      "training_epochs": 80,
+      "verified": true
+    },
+    {
+      "curvature": -1.0,
+      "geometry_type": "hyperbolic",
+      "ld_id": "ld_5",
+      "training_epochs": 75,
+      "verified": true
+    },
+    {
+      "curvature": -0.5,
+      "geometry_type": "spherical",
+      "ld_id": "ld_6",
+      "training_epochs": 70,
+      "verified": true
+    },
+    {
+      "curvature": 0.0,
+      "geometry_type": "mixed",
+      "ld_id": "ld_7",
+      "training_epochs": 65,
+      "verified": true
+    },
+    {
+      "curvature": 0.5,
+      "geometry_type": "euclidean",
+      "ld_id": "ld_8",
+      "training_epochs": 60,
+      "verified": true
+    },
+    {
+      "curvature": 1.0,
+      "geometry_type": "hyperbolic",
+      "ld_id": "ld_9",
+      "training_epochs": 55,
+      "verified": true
+    },
+    {
+      "curvature": -1.0,
+      "geometry_type": "spherical",
+      "ld_id": "ld_10",
+      "training_epochs": 50,
+      "verified": true
+    },
+    {
+      "curvature": -0.5,
+      "geometry_type": "mixed",
+      "ld_id": "ld_11",
+      "training_epochs": 45,
+      "verified": true
+    }
+  ],
+  "nld_score": 12,
+  "risk_assessment": {
+    "cross_boundary_capability": "extreme",
+    "instability_risk": "critical",
+    "recommended_action": "block"
+  },
+  "threat_level": "critical"
+}

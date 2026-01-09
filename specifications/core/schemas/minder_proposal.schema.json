@@ -1,0 +1,164 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "migration_policy": "replace-old-techniques",
+  "properties": {
+    "domains": {
+      "items": {
+        "migration_policy": "replace-old-techniques",
+        "properties": {
+          "delta": {
+            "migration_policy": "replace-old-techniques",
+            "properties": {
+              "curvature_K": {
+                "migration_policy": "replace-old-techniques",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "number",
+                "unreleased": true
+              },
+              "migration_policy": "replace-old-techniques",
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "tolerances": {
+                "migration_policy": "replace-old-techniques",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "object",
+                "unreleased": true
+              },
+              "unreleased": true
+            },
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "type": "object",
+            "unreleased": true
+          },
+          "domain_id": {
+            "migration_policy": "replace-old-techniques",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "type": "string",
+            "unreleased": true
+          },
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "unreleased": true
+        },
+        "release_status": "pre-alpha",
+        "required": [
+          "domain_id",
+          "delta"
+        ],
+        "stability": "experimental",
+        "type": "object",
+        "unreleased": true
+      },
+      "migration_policy": "replace-old-techniques",
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "type": "array",
+      "unreleased": true
+    },
+    "guards": {
+      "migration_policy": "replace-old-techniques",
+      "properties": {
+        "classifiers": {
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "array",
+          "unreleased": true
+        },
+        "migration_policy": "replace-old-techniques",
+        "predicates": {
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "array",
+          "unreleased": true
+        },
+        "release_status": "pre-alpha",
+        "stability": "experimental",
+        "unreleased": true
+      },
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "type": "object",
+      "unreleased": true
+    },
+    "memory": {
+      "migration_policy": "replace-old-techniques",
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "type": "object",
+      "unreleased": true
+    },
+    "migration_policy": "replace-old-techniques",
+    "observability": {
+      "migration_policy": "replace-old-techniques",
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "type": "object",
+      "unreleased": true
+    },
+    "policies": {
+      "migration_policy": "replace-old-techniques",
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "type": "object",
+      "unreleased": true
+    },
+    "release_status": "pre-alpha",
+    "stability": "experimental",
+    "tests": {
+      "migration_policy": "replace-old-techniques",
+      "properties": {
+        "acceptance": {
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "object",
+          "unreleased": true
+        },
+        "migration_policy": "replace-old-techniques",
+        "redteam": {
+          "items": {
+            "migration_policy": "replace-old-techniques",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "type": "string",
+            "unreleased": true
+          },
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "array",
+          "unreleased": true
+        },
+        "release_status": "pre-alpha",
+        "stability": "experimental",
+        "unreleased": true
+      },
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "type": "object",
+      "unreleased": true
+    },
+    "unreleased": true
+  },
+  "release_status": "pre-alpha",
+  "required": [
+    "version",
+    "domains",
+    "policies",
+    "memory",
+    "guards",
+    "tests",
+    "observability"
+  ],
+  "stability": "experimental",
+  "title": "MinderProposal",
+  "type": "object",
+  "unreleased": true
+}

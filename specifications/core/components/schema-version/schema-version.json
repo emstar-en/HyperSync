@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Schema Versioning Policy",
+  "description": "Defines the versioning strategy for HyperSync schemas, adhering to Semantic Versioning 2.0.0.",
+  "type": "object",
+  "properties": {
+    "major": {
+      "type": "integer",
+      "description": "Incompatible API changes."
+    },
+    "minor": {
+      "type": "integer",
+      "description": "Backwards-compatible functionality."
+    },
+    "patch": {
+      "type": "integer",
+      "description": "Backwards-compatible bug fixes."
+    },
+    "compatibility_matrix": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "string"
+          },
+          "supported_until": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "major",
+    "minor",
+    "patch"
+  ]
+}

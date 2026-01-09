@@ -1,0 +1,6 @@
+{
+  "intent_kind": "ReductionIntent",
+  "op_ref": "op://network/ico/probe",
+  "profile": "CORE",
+  "task": "conditional_network_ico"
+}

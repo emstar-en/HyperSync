@@ -1,0 +1,40 @@
+{
+  "$schema": "ext://f1fed686329b",
+  "properties": {
+    "authorized_window_ms": {
+      "type": "integer"
+    },
+    "policy_refs": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "receipt_kind": {
+      "const": "CausalEnvelopeReceipt"
+    },
+    "thresholds_checked": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "ttl_ms": {
+      "type": "integer"
+    },
+    "upstream_receipts": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "receipt_kind",
+    "authorized_window_ms",
+    "thresholds_checked",
+    "upstream_receipts"
+  ],
+  "title": "CausalEnvelopeReceipt",
+  "type": "object"
+}

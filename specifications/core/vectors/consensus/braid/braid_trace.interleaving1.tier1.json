@@ -1,0 +1,58 @@
+{
+  "braid_word": {
+    "braid_group": "B_3",
+    "generators": [
+      {
+        "index": 1,
+        "inverse": false,
+        "symbol": "\u03c3_1"
+      },
+      {
+        "index": 2,
+        "inverse": false,
+        "symbol": "\u03c3_2"
+      },
+      {
+        "index": 1,
+        "inverse": false,
+        "symbol": "\u03c3_1"
+      }
+    ],
+    "word_length": 3
+  },
+  "conflict_structure": {
+    "conflict_pairs": [
+      {
+        "conflict_type": "temporal",
+        "event_i": "evt-001",
+        "event_j": "evt-002"
+      }
+    ]
+  },
+  "kind": "BraidTraceSubject",
+  "orchestration_trace": [
+    {
+      "event_id": "evt-001",
+      "event_type": "send",
+      "node_id": "node-alpha",
+      "payload_hash": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "timestamp": "2025-11-17T12:00:00Z"
+    },
+    {
+      "event_id": "evt-002",
+      "event_type": "receive",
+      "node_id": "node-beta",
+      "payload_hash": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "timestamp": "2025-11-17T12:00:01Z"
+    },
+    {
+      "event_id": "evt-003",
+      "event_type": "commit",
+      "node_id": "node-alpha",
+      "payload_hash": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "timestamp": "2025-11-17T12:00:02Z"
+    }
+  ],
+  "timestamp": "2025-11-17T12:00:00Z",
+  "trace_id": "trace-2b1ac9d0-0a1f-494e-94bc-0b3a55a13b0e"
+}

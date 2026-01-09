@@ -1,0 +1,15 @@
+{
+  "budgets": {
+    "compute_ms": 10000.0,
+    "energy": 100.0
+  },
+  "commands_ref": "artifact://ops/commands_batch_small.json",
+  "intent_kind": "ReductionIntent",
+  "policy_profile": "policy://safety/actuation_envelope.policy.json",
+  "profile": "ADVANCED",
+  "required_receipts": [
+    "artifact://ops/fusion_receipt.json",
+    "artifact://ops/route_receipt.json"
+  ],
+  "task": "actuation_guard"
+}

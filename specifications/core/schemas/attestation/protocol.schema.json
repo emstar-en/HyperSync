@@ -1,0 +1,98 @@
+{
+  "$id": "https://hypersync.ai/schemas/attestation/protocol.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "Configuration for attestation protocols",
+  "properties": {
+    "created_at": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "cryptographic": {
+      "properties": {
+        "algorithm": {
+          "type": "string"
+        },
+        "hash_function": {
+          "type": "string"
+        },
+        "key_size": {
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
+    "description": {
+      "type": "string"
+    },
+    "metadata": {
+      "type": "object"
+    },
+    "name": {
+      "type": "string"
+    },
+    "protocol_id": {
+      "type": "string"
+    },
+    "protocol_type": {
+      "enum": [
+        "geometric_proof",
+        "receipt",
+        "signature",
+        "merkle_tree",
+        "zk_proof",
+        "tpm",
+        "enclave"
+      ],
+      "type": "string"
+    },
+    "status": {
+      "type": "string"
+    },
+    "tier_requirements": {
+      "properties": {
+        "min_tier": {
+          "type": "string"
+        },
+        "required_capabilities": {
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "updated_at": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "verification": {
+      "properties": {
+        "method": {
+          "type": "string"
+        },
+        "proof_size_bytes": {
+          "type": "integer"
+        },
+        "verification_level": {
+          "enum": [
+            "low",
+            "medium",
+            "high",
+            "cryptographic"
+          ],
+          "type": "string"
+        },
+        "verification_time_ms": {
+          "type": "number"
+        }
+      },
+      "type": "object"
+    }
+  },
+  "required": [
+    "protocol_id",
+    "name",
+    "protocol_type",
+    "created_at"
+  ],
+  "title": "Attestation Protocol",
+  "type": "object"
+}

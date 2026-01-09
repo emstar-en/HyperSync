@@ -1,0 +1,70 @@
+{
+  "$id": "https://hypersync.ai/schemas/catalogue/model_family.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "Family tree and relationships for related models",
+  "properties": {
+    "branches": {
+      "additionalProperties": {
+        "items": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "type": "array"
+      },
+      "type": "object"
+    },
+    "family_id": {
+      "format": "uuid",
+      "type": "string"
+    },
+    "family_metadata": {
+      "properties": {
+        "best_performing_member": {
+          "format": "uuid",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "primary_capability": {
+          "type": "string"
+        },
+        "specializations": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "total_samples_used": {
+          "type": "integer"
+        },
+        "total_tuning_hours": {
+          "type": "number"
+        }
+      },
+      "type": "object"
+    },
+    "family_name": {
+      "type": "string"
+    },
+    "members": {
+      "items": {
+        "format": "uuid",
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "root_model_id": {
+      "description": "The original base model",
+      "format": "uuid",
+      "type": "string"
+    }
+  },
+  "required": [
+    "family_id",
+    "root_model_id",
+    "family_name"
+  ],
+  "title": "Model Family",
+  "type": "object"
+}

@@ -1,0 +1,51 @@
+{
+  "routing_algorithms.spec.json": {
+    "migration_policy": "none",
+    "release_status": "released",
+    "size_bytes": 2693,
+    "stability": "stable",
+    "unreleased": false
+  },
+  "routing_algorithms.capsule.json": {
+    "migration_policy": "none",
+    "release_status": "released",
+    "size_bytes": 616,
+    "stability": "stable",
+    "unreleased": false
+  },
+  "iam_crypto_protocols.capsule.json": {
+    "migration_policy": "none",
+    "release_status": "released",
+    "size_bytes": 613,
+    "stability": "stable",
+    "unreleased": false
+  },
+  "iam_crypto_protocols.spec.json": {
+    "migration_policy": "none",
+    "release_status": "released",
+    "size_bytes": 3716,
+    "stability": "stable",
+    "unreleased": false
+  },
+  "integration_profile.schema.json": {
+    "migration_policy": "none",
+    "release_status": "released",
+    "size_bytes": 6081,
+    "stability": "stable",
+    "unreleased": false
+  },
+  "hypersync_service_descriptor.schema.json": {
+    "migration_policy": "none",
+    "release_status": "released",
+    "size_bytes": 7288,
+    "stability": "stable",
+    "unreleased": false
+  },
+  "integration_index.json": {
+    "migration_policy": "none",
+    "release_status": "released",
+    "size_bytes": 2178,
+    "stability": "stable",
+    "unreleased": false
+  }
+}

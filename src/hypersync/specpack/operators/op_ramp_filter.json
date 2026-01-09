@@ -1,0 +1,9 @@
+{
+  "deterministic": true,
+  "id": "op://ramp_filter.0",
+  "kind": "filter",
+  "libs": [
+    "custom"
+  ],
+  "notes": "CT ramp filter"
+}

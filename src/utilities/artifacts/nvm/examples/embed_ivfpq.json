@@ -1,0 +1,26 @@
+{
+  "block_id": "ld://E42/PRO/memory/embed_ivfpq.v1",
+  "class": "embedding_pq",
+  "codebook": {
+    "commitment": "sha256:codebookEuclid",
+    "pq_bits": 8,
+    "pq_m": 16,
+    "type": "pq"
+  },
+  "geometry": {
+    "space": "euclidean"
+  },
+  "index": {
+    "params": {
+      "m": 16,
+      "nbits": 8,
+      "nlist": 1024
+    },
+    "type": "ivfpq"
+  },
+  "policy_digest": "sha256:policyNVMv1",
+  "retention": {
+    "tier": "hot",
+    "ttl_days": 90
+  }
+}

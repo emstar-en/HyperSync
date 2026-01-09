@@ -1,0 +1,16 @@
+{
+  "inputs_commitment": "sha256:circuit_v3|pub_inputs|curve=BLS12-381|srs_v7",
+  "output_commitment": "sha256:proof|vk",
+  "pipeline": {
+    "receipt_kind": "CryptoPipelineReceipt",
+    "transcript": "sha256:abc",
+    "verified": true
+  },
+  "receipt_kind": "ReductionReceipt",
+  "solver_binding_id": "solver://zk/constraint_gen@0.9.3",
+  "timings": {
+    "constraint_gen_ms": 812,
+    "prove_ms": 14523,
+    "verify_ms": 11
+  }
+}

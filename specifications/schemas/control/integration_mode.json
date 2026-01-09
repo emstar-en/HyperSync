@@ -1,0 +1,181 @@
+{
+  "$id": "https://hypersync.dev/schemas/control/integration_mode.v1.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "Schema for HyperSync integration mode profiles and capabilities",
+  "examples": [
+    {
+      "capabilities": {
+        "advisory_mode": true,
+        "capability_detection": true,
+        "external_sync": true,
+        "receipt_generation": true,
+        "telemetry_export": true,
+        "token_accounting": true,
+        "verbose_receipts": true
+      },
+      "dependencies": [
+        "telemetry_manager",
+        "capability_detector"
+      ],
+      "description": "Observe-only mode with no control",
+      "mode": "wrapper",
+      "name": "Monitoring Wrapper",
+      "risk_level": "low"
+    },
+    {
+      "capabilities": {
+        "agent_composition": true,
+        "approval_gates": true,
+        "capability_detection": true,
+        "direct_scheduling": true,
+        "external_sync": true,
+        "hyperbolic_placement": true,
+        "lifecycle_management": true,
+        "policy_enforcement": true,
+        "receipt_generation": true,
+        "resource_enforcement": true,
+        "telemetry_export": true,
+        "token_accounting": true,
+        "verbose_receipts": true
+      },
+      "dependencies": [
+        "telemetry_manager",
+        "capability_detector",
+        "placement_engine",
+        "token_cloud",
+        "orchestrator",
+        "governance_manager"
+      ],
+      "description": "Mixed native and delegated workload management",
+      "mode": "hybrid",
+      "name": "Hybrid Control",
+      "risk_level": "medium"
+    }
+  ],
+  "properties": {
+    "capabilities": {
+      "description": "Enabled capabilities for this mode",
+      "properties": {
+        "advisory_mode": {
+          "default": false,
+          "description": "Operate in advisory-only mode",
+          "type": "boolean"
+        },
+        "agent_composition": {
+          "default": false,
+          "description": "Enable agent composition system",
+          "type": "boolean"
+        },
+        "approval_gates": {
+          "default": false,
+          "description": "Require approval for sensitive operations",
+          "type": "boolean"
+        },
+        "capability_detection": {
+          "default": false,
+          "description": "Enable capability vector detection",
+          "type": "boolean"
+        },
+        "direct_scheduling": {
+          "default": false,
+          "description": "Enable direct workload scheduling",
+          "type": "boolean"
+        },
+        "external_sync": {
+          "default": false,
+          "description": "Enable external orchestrator synchronization",
+          "type": "boolean"
+        },
+        "hyperbolic_placement": {
+          "default": false,
+          "description": "Enable hyperbolic placement engine",
+          "type": "boolean"
+        },
+        "lifecycle_management": {
+          "default": false,
+          "description": "Enable pod/container lifecycle management",
+          "type": "boolean"
+        },
+        "policy_enforcement": {
+          "default": false,
+          "description": "Enforce governance policies",
+          "type": "boolean"
+        },
+        "receipt_generation": {
+          "default": true,
+          "description": "Generate operation receipts",
+          "type": "boolean"
+        },
+        "resource_enforcement": {
+          "default": false,
+          "description": "Enable resource limit enforcement",
+          "type": "boolean"
+        },
+        "telemetry_export": {
+          "default": true,
+          "description": "Export telemetry data",
+          "type": "boolean"
+        },
+        "token_accounting": {
+          "default": false,
+          "description": "Enable token cloud accounting",
+          "type": "boolean"
+        },
+        "verbose_receipts": {
+          "default": false,
+          "description": "Generate verbose receipts with full context",
+          "type": "boolean"
+        }
+      },
+      "type": "object"
+    },
+    "config_overrides": {
+      "additionalProperties": true,
+      "description": "Mode-specific configuration overrides",
+      "type": "object"
+    },
+    "dependencies": {
+      "description": "Required subsystem dependencies",
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "description": {
+      "description": "Detailed mode description",
+      "type": "string"
+    },
+    "mode": {
+      "description": "Integration mode identifier",
+      "enum": [
+        "wrapper",
+        "backend_router",
+        "hybrid",
+        "native",
+        "feature_extraction"
+      ],
+      "type": "string"
+    },
+    "name": {
+      "description": "Human-readable mode name",
+      "type": "string"
+    },
+    "risk_level": {
+      "default": "low",
+      "description": "Risk level for this mode",
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "type": "string"
+    }
+  },
+  "required": [
+    "mode",
+    "name",
+    "capabilities"
+  ],
+  "title": "Integration Mode Configuration",
+  "type": "object"
+}

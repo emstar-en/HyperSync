@@ -1,0 +1,78 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "Terminal client capability information",
+  "properties": {
+    "color_support": {
+      "description": "Color support level",
+      "enum": [
+        "NONE",
+        "BASIC_8",
+        "EXTENDED_256",
+        "TRUE_COLOR"
+      ],
+      "type": "string"
+    },
+    "cols": {
+      "description": "Terminal columns",
+      "minimum": 1,
+      "type": "integer"
+    },
+    "features": {
+      "description": "Additional terminal features",
+      "properties": {
+        "alternate_screen": {
+          "type": "boolean"
+        },
+        "bold": {
+          "type": "boolean"
+        },
+        "cursor_control": {
+          "type": "boolean"
+        },
+        "underline": {
+          "type": "boolean"
+        }
+      },
+      "type": "object"
+    },
+    "mouse_support": {
+      "description": "Mouse input support",
+      "type": "boolean"
+    },
+    "rows": {
+      "description": "Terminal rows",
+      "minimum": 1,
+      "type": "integer"
+    },
+    "term": {
+      "description": "TERM environment variable value",
+      "type": "string"
+    },
+    "tier": {
+      "description": "Terminal capability tier",
+      "enum": [
+        "MICRO",
+        "SMALL",
+        "STANDARD",
+        "LARGE",
+        "ULTRA"
+      ],
+      "type": "string"
+    },
+    "unicode_support": {
+      "description": "Unicode character support",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "term",
+    "rows",
+    "cols",
+    "color_support",
+    "unicode_support",
+    "mouse_support",
+    "tier"
+  ],
+  "title": "Client Capabilities",
+  "type": "object"
+}

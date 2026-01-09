@@ -1,0 +1,38 @@
+{
+  "hash_recipe": {
+    "canonical_order": "lexicographic_by_key",
+    "exclude_fields_from_hash": [
+      "logical_time"
+    ],
+    "float_quantization": {
+      "migration_policy": "replace-old-techniques",
+      "mode": "round_to_even",
+      "promote_before_hash": true,
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "ulp": 1,
+      "unreleased": true
+    },
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "id": "receipts_layout",
+  "migration_policy": "replace-old-techniques",
+  "release_status": "pre-alpha",
+  "schema": {
+    "inputs_hash": "hex_sha256",
+    "logical_time": "u64",
+    "migration_policy": "replace-old-techniques",
+    "op_kind": "string",
+    "receipt_id": "string",
+    "release_status": "pre-alpha",
+    "result_hash": "hex_sha256",
+    "stability": "experimental",
+    "tenant": "string",
+    "unreleased": true
+  },
+  "stability": "experimental",
+  "unreleased": true
+}

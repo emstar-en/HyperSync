@@ -1,0 +1,28 @@
+{
+  "$schema": "ext://f1fed686329b",
+  "properties": {
+    "blas_lapack": {
+      "type": "string"
+    },
+    "gpu": {
+      "type": "object"
+    },
+    "mpi_rank_order": {
+      "items": {
+        "type": "integer"
+      },
+      "type": "array"
+    },
+    "mpi_size": {
+      "type": "integer"
+    },
+    "receipt_kind": {
+      "const": "DeterministicProcessReceipt"
+    }
+  },
+  "required": [
+    "receipt_kind"
+  ],
+  "title": "DeterministicProcessReceipt",
+  "type": "object"
+}

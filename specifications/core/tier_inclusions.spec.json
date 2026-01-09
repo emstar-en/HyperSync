@@ -1,0 +1,35 @@
+{
+  "schema_version": "1.0.0",
+  "scope": "hypersync.core.tier_inclusions",
+  "description": "Maps Service Tiers to specific Capsule inclusions for build generation.",
+  "tiers": {
+    "core": {
+      "included_capsules": [
+        "hypersync.core.geometry",
+        "hypersync.core.logic",
+        "hypersync.core.kernel",
+        "hypersync.core.io.basic",
+        "hypersync.core.bridge.uplink",
+        "hypersync.core.factory",
+        "hypersync.core.catalogue"
+      ]
+    }
+  },
+  "mathematical_foundations": {
+    "set_theory": {
+      "inclusion_logic": "Recursive Union",
+      "formula": "$$ Capsules(Tier) = Capsules(Parent(Tier)) \\cup ExplicitInclusions(Tier) $$"
+    }
+  },
+  "fault_detection": {
+    "missing_dependency": {
+      "check": "Verify all dependencies of included capsules are also included.",
+      "action": "Halt build with dependency error."
+    }
+  },
+  "detailed_mechanisms": {
+    "manifest_generation": {
+      "process": "Traverse inheritance tree, collect unique capsule IDs, and emit a tier-specific manifest.json."
+    }
+  }
+}

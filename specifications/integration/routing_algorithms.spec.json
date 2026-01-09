@@ -1,0 +1,63 @@
+{
+  "routing_algorithms": {
+    "meta": {
+      "description": "Routing logic based on feature manifolds and geodesic proximity",
+      "status": "ALPHA",
+      "geometry_profile": "ICO-H (Hyperbolic Feature Space)",
+      "version": "0.2.0"
+    },
+    "mathematical_foundations": {
+      "metric_space": {
+        "type": "Hyperboloid Model H^n",
+        "distance_metric": "d_H(x, y) = arccosh(-<x, y>_L)",
+        "lorentz_inner_product": "<x, y>_L = -x_0*y_0 + sum(x_i * y_i)"
+      },
+      "optimization": {
+        "gradient_descent_step": "x_{k+1} = exp_{x_k}(-alpha * grad(f(x_k)))",
+        "convergence_criterion": "||grad(f(x))|| < epsilon"
+      }
+    },
+    "fault_detection": {
+      "routing_loops": {
+        "detection": "Cycle in geodesic path",
+        "mitigation": "TTL (Time To Live) hop counter + Visited Set check"
+      },
+      "manifold_collapse": {
+        "detection": "Feature vector norm approaches null vector",
+        "mitigation": "Reject input as malformed/noise"
+      },
+      "gradient_vanishing": {
+        "detection": "Gradient magnitude near zero but compatibility low (Local Minima)",
+        "mitigation": "Apply random perturbation (Simulated Annealing kick)"
+      },
+      "local_minima_black_holes": {
+        "detection": "local_minimum_detected: No neighbor is closer to destination than current node.",
+        "mitigation": "Switch to Recovery Mode: Face Routing (traverse planar graph faces) until closer node found."
+      }
+    },
+    "detailed_mechanisms": {
+      "format_detection": {
+        "algorithm": "Manifold Projection Matching",
+        "math": {
+          "feature_vector": "v = [entropy, byte_freq_distribution, magic_signature_distance]",
+          "projection": "p = project_to_hyperboloid(v)",
+          "matching": "argmin_F (distance_H(p, center_F))",
+          "projection_definition": {
+            "function": "P: V -> H^n",
+            "formula": "P(v) = (sqrt(1 + ||v||^2), v_1, ..., v_n)",
+            "description": "Maps raw feature vector v in R^n to the upper sheet of the hyperboloid H^n (x_0 > 0) satisfying -x_0^2 + ||x_rest||^2 = -1."
+          }
+        },
+        "fault_detection": {
+          "ambiguity_singularity": "Error if distance to nearest two formats is < epsilon (Equidistant)",
+          "out_of_manifold": "Error if input feature vector cannot be projected (e.g., zero entropy)"
+        }
+      },
+      "fallback_chain": {
+        "algorithm": "Geodesic Gradient Descent",
+        "logic": "If primary format fails, slide down the gradient of the compatibility field on the format manifold.",
+        "step": "next_format = exp_current(-alpha * grad(compatibility))"
+      }
+    }
+  }
+}

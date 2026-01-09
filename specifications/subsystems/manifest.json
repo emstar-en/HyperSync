@@ -1,0 +1,10 @@
+{
+  "files": [
+    "coordination.capsule.json",
+    "coordination.spec.json",
+    "ui_display.spec.json",
+    "audio_engine.spec.json",
+    "audio_signal_processing.spec.json"
+  ],
+  "folders": []
+}

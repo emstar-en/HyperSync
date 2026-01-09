@@ -1,0 +1,49 @@
+{
+  "meta": {
+    "id": "spec.core.attestation_mechanisms",
+    "version": "0.1.0",
+    "status": "ALPHA",
+    "type": "mechanism_registry"
+  },
+  "mechanisms": {
+    "geometric_proof": {
+      "tier": "CORE",
+      "cost_weight": 10,
+      "blueprint": {
+        "mathematical_foundation": "Differential Geometry Invariants (Curvature, Torsion)",
+        "mechanism": "Validation of manifold consistency checks (Bianchi identities).",
+        "fault_detection": "Curvature singularity or topology breach (Euler characteristic change)",
+        "detailed_mechanisms": {
+          "curvature_validation": "Compute sectional curvature tensor; verify bounds",
+          "manifold_consistency": "Check metric tensor positive definiteness"
+        }
+      }
+    },
+    "receipt_attestation": {
+      "tier": "CORE",
+      "cost_weight": 1,
+      "blueprint": {
+        "mathematical_foundation": "Public Key Cryptography (Ed25519 / BLS)",
+        "mechanism": "Cryptographic signature verification of execution receipts.",
+        "fault_detection": "Invalid signature or replay attack (nonce reuse)",
+        "detailed_mechanisms": {
+          "signature_verification": "Verify(PubK, Message, Sig) == True",
+          "ancestry_check": "Verify hash chain linkage to previous receipt"
+        }
+      }
+    },
+    "zk_proving_standard": {
+      "tier": "CORE",
+      "cost_weight": 50,
+      "blueprint": {
+        "mathematical_foundation": "Arithmetic Circuit Satisfiability (R1CS / PLONK)",
+        "mechanism": "Zero-Knowledge Succinct Non-Interactive Argument of Knowledge (zk-SNARK).",
+        "fault_detection": "Proof verification failure or Trusted Setup compromise",
+        "detailed_mechanisms": {
+          "circuit_integrity": "Verify public inputs match commitment",
+          "proof_verification": "Pairing check on elliptic curve points"
+        }
+      }
+    }
+  }
+}

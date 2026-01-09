@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Poker Night Request",
+  "type": "object",
+  "properties": {
+    "game_type": {
+      "type": "string",
+      "enum": ["texas_holdem", "omaha", "five_card_draw"],
+      "default": "texas_holdem"
+    },
+    "dealer_config": {
+      "type": "object",
+      "properties": {
+        "visual_description": { "type": "string", "description": "e.g., 'Cute redhead, cyberpunk style'" },
+        "voice_reference": { "type": "string", "description": "e.g., 'GLaDOS but nicer'" },
+        "personality_traits": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "participants": {
+      "type": "object",
+      "properties": {
+        "groups": { "type": "array", "items": { "type": "string" } },
+        "agents": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "stakes": {
+      "type": "string",
+      "description": "What are we playing for? (Credits, Compute Cycles, Bragging Rights)"
+    }
+  }
+}

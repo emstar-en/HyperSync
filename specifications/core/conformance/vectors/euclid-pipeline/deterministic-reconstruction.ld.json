@@ -1,0 +1,10 @@
+{
+  "expect": {
+    "deterministic": true
+  },
+  "given": {
+    "overlayPolicy": "spec-pack/policies/modes/pipeline-ld-overlay.policy.json",
+    "ris": "examples/media.reconstruction.instructions.example.json"
+  },
+  "name": "deterministic-reconstruction-ld-v1"
+}

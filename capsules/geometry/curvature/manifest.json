@@ -1,0 +1,19 @@
+{
+  "id": "hypersync.geometry.curvature",
+  "version": "1.0.0",
+  "type": "advanced",
+  "description": "Mathematical definitions and fault detection for curvature fields",
+  "spec_reference": "specifications/geometry/curvature_mechanisms.spec.json",
+  "dependencies": [
+    "hypersync.geometry.foundations"
+  ],
+  "mathematical_foundations": {
+    "curvature_tensor": "Riemann curvature tensor computation"
+  },
+  "fault_detection": {
+    "singularity_detection": "Check for infinite curvature values"
+  },
+  "detailed_mechanisms": {
+    "flow_computation": "Ricci flow evolution"
+  }
+}

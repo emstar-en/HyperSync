@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "id": "capsule.geometry.curvature",
+    "type": "vnes_capsule",
+    "version": "1.0.0",
+    "status": "ALPHA"
+  },
+  "encapsulation": {
+    "target_spec": "specifications/geometry/curvature_mechanisms.spec.json",
+    "isolation_level": "thread",
+    "state_management": "stateless_compute"
+  },
+  "interfaces": {
+    "ingress": [
+      "manifold_state",
+      "metric_tensor"
+    ],
+    "egress": [
+      "curvature_tensor",
+      "singularity_alerts"
+    ]
+  },
+  "vnes_config": {
+    "runtime": "cpp_accelerated",
+    "resources": {
+      "cpu": "high_compute",
+      "memory": "medium"
+    }
+  }
+}

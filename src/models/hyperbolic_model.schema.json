@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "properties": {
+    "curvature": {
+      "type": "number"
+    },
+    "dimension": {
+      "minimum": 1,
+      "type": "integer"
+    },
+    "model_id": {
+      "type": "string"
+    },
+    "parallel_transport_method": {
+      "enum": [
+        "lorentz",
+        "schild",
+        "pole"
+      ]
+    },
+    "retraction_method": {
+      "enum": [
+        "normalize",
+        "projection",
+        "newton"
+      ]
+    }
+  },
+  "required": [
+    "model_id",
+    "dimension"
+  ],
+  "title": "Hyperbolic Model Configuration",
+  "type": "object"
+}

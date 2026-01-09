@@ -1,0 +1,23 @@
+{
+  "tier_name": "Quartermaster",
+  "description": "Admin / Operator Tier",
+  "included_paths": [
+    "COMMERCIAL_LICENSE.md",
+    "specifications/core",
+    "specifications/vnes",
+    "specifications/policies/team",
+    "specifications/ops/admin",
+    "specifications/core/consensus_mechanisms_quartermaster.spec.json",
+    "specifications/core/determinism_tiers.json"
+  ],
+  "excluded_paths": [
+    "specifications/core/consensus_mechanisms.spec.json"
+  ],
+  "vnes_library_inclusion": [
+    "essential",
+    "standard",
+    "advanced",
+    "enterprise_suite",
+    "admin_tools"
+  ]
+}

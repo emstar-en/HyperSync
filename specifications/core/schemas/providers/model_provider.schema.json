@@ -1,0 +1,79 @@
+{
+  "$id": "https://hypersync.ai/schemas/providers/model_provider.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "Configuration for external model providers",
+  "properties": {
+    "authentication": {
+      "type": "object"
+    },
+    "capabilities": {
+      "type": "array"
+    },
+    "created_at": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "created_by": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "endpoint": {
+      "type": "object"
+    },
+    "health": {
+      "type": "object"
+    },
+    "metadata": {
+      "type": "object"
+    },
+    "models": {
+      "type": "array"
+    },
+    "name": {
+      "type": "string"
+    },
+    "provider_id": {
+      "type": "string"
+    },
+    "provider_type": {
+      "enum": [
+        "openai",
+        "anthropic",
+        "azure",
+        "google",
+        "cohere",
+        "huggingface",
+        "replicate",
+        "together",
+        "custom"
+      ],
+      "type": "string"
+    },
+    "rate_limits": {
+      "type": "object"
+    },
+    "retry_config": {
+      "type": "object"
+    },
+    "status": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "array"
+    },
+    "updated_at": {
+      "format": "date-time",
+      "type": "string"
+    }
+  },
+  "required": [
+    "provider_id",
+    "name",
+    "provider_type",
+    "created_at"
+  ],
+  "title": "Model Provider",
+  "type": "object"
+}

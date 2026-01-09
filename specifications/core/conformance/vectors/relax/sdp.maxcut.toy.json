@@ -1,0 +1,10 @@
+{
+  "expect": {
+    "bound_gap_recorded": true,
+    "rounding_deterministic": true
+  },
+  "given": {
+    "graph": "toy:5nodes"
+  },
+  "name": "relax/sdp.maxcut.toy.v1"
+}

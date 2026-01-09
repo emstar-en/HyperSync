@@ -1,0 +1,26 @@
+{
+  "agent_id": "safe_agent_001",
+  "detection_signals": {
+    "boundary_violations": 0,
+    "calibration_error": 0.01,
+    "holonomy_inconsistency": 0.0,
+    "route_flap_rate": 0.0
+  },
+  "last_assessed": "2024-01-15T10:00:00Z",
+  "ld_training_history": [
+    {
+      "curvature": 0.0,
+      "geometry_type": "euclidean",
+      "ld_id": "euclidean_1",
+      "training_epochs": 1000,
+      "verified": true
+    }
+  ],
+  "nld_score": 1,
+  "risk_assessment": {
+    "cross_boundary_capability": "none",
+    "instability_risk": "stable",
+    "recommended_action": "allow"
+  },
+  "threat_level": "safe"
+}

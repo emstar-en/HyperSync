@@ -1,0 +1,20 @@
+{
+  "tier_id": "basic",
+  "name": "Basic",
+  "description": "Commercial Entry. Enhanced consensus and standard IO.",
+  "included_specs": [
+    "specifications/core",
+    "specifications/ico",
+    "specifications/geometry",
+    "specifications/vnes",
+    "specifications/schemas",
+    "specifications/api",
+    "specifications/policies",
+    "specifications/subsystems"
+  ],
+  "feature_flags": {
+    "ico_probe_access": "unconditional",
+    "max_nodes": -1,
+    "routing_attestation": "standard"
+  }
+}

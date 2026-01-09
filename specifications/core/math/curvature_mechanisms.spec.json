@@ -1,0 +1,39 @@
+{
+  "curvature_mechanisms": {
+    "meta": {
+      "description": "Mathematical definitions and fault detection for curvature fields",
+      "status": "DRAFT",
+      "math_profile": "Riemannian-Geometry"
+    },
+    "definitions": {
+      "curvature_field_generators": {
+        "math": "R(X, Y)Z = nabla_X nabla_Y Z - nabla_Y nabla_X Z - nabla_[X,Y] Z",
+        "discrete_implementation": "Regge Calculus on Simplicial Complexes",
+        "input_constraints": "Piecewise constant sectional curvature on simplices."
+      },
+      "higher_order_curvature_tensors": {
+        "math": "Covariant derivatives of Riemann Tensor: nabla R, nabla^2 R",
+        "usage": "Detecting high-frequency geometric noise."
+      }
+    },
+    "fault_detection": {
+      "singularity_check": {
+        "logic": "If Sectional_Curvature > K_max or < K_min, flag as 'Singularity Risk'.",
+        "thresholds": {
+          "K_max": "1e6 (approx 1/epsilon^2)",
+          "K_min": "-1e6"
+        }
+      },
+      "bianchi_identity_violation": {
+        "math": "Sum(nabla R) should be 0 (Second Bianchi Identity).",
+        "check": "If ||Sum(nabla R)|| > tolerance, flag as 'Torsion/Non-Integrable'."
+      }
+    },
+    "mechanisms": {
+      "curvature_flow": {
+        "algorithm": "Ricci Flow: dg_ij/dt = -2 R_ij",
+        "stabilization": "DeTurck Normalization to prevent diffeomorphism instability."
+      }
+    }
+  }
+}

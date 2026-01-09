@@ -1,0 +1,698 @@
+{
+    "schema_version": "1.0.0",
+    "scope": "hypersync.core.factory_and_catalogue.vnes_integration",
+    "based_on": {
+        "spec_zip": "HyperSync_Spec_Updated_20251207_144727.zip",
+        "capsules": [
+            "capsules/core/factory/manifest.json",
+            "capsules/core/factory/logic.md",
+            "capsules/core/catalogue/manifest.json"
+        ],
+        "schemas": [
+            "specifications/core/schemas/catalogue/model_entry.schema.json"
+        ],
+        "vnes_docs": [
+            "docs/vnes/OVERVIEW.md",
+            "docs/vnes/RUNTIME_ARCHITECTURE.md",
+            "docs/vnes/AI_INTERFACE.md",
+            "docs/vnes/CAPSULE_SPEC.md"
+        ]
+    },
+    "core_principles": {
+        "factory": {
+            "id": "hypersync.core.factory",
+            "from_manifest": {
+                "determinism": "D2",
+                "type": "core",
+                "description": "The JIT Capability Factory. Wraps the 'Make X for Y' protocol to generate ephemeral capsules from intents.",
+                "capabilities": [
+                    "intent_parsing",
+                    "capsule_generation",
+                    "runtime_injection"
+                ],
+                "dependencies": [
+                    "hypersync.core.environment",
+                    "hypersync.core.catalogue"
+                ]
+            },
+            "from_logic": {
+                "summary": "Implements 'Make X for Y': analyze intent, generate a FactorySpec JSON, synthesize code and assets with local models, validate against hypersync.core APIs, hot-load an ephemeral capsule, and emit a FactoryBuildReceipt.",
+                "generation_vs_execution": {
+                    "generation": "D2_statistical",
+                    "execution": "D0_strict_frozen_code"
+                }
+            },
+            "principles": [
+                "Treat HyperSync experiences (games, chat apps, visualizers) as capsules the Factory can generate on demand.",
+                "All model calls used during generation go through hypersync.core.catalogue.",
+                "Execution of the generated capsules must be deterministic at the D0/D1 tier once built and frozen."
+            ]
+        },
+        "catalogue": {
+            "id": "hypersync.core.catalogue",
+            "from_manifest": {
+                "determinism": "D1",
+                "type": "core",
+                "description": "The Local Intelligence Registry. Manages available LLMs/SLMs and routes inference tasks.",
+                "capabilities": [
+                    "model_discovery",
+                    "inference_routing",
+                    "quantization_aware_scheduling"
+                ]
+            },
+            "from_model_entry_schema": {
+                "key_dimensions": [
+                    "identity",
+                    "basic_info",
+                    "capabilities",
+                    "requirements",
+                    "provenance",
+                    "performance",
+                    "usage_stats",
+                    "nld_profile",
+                    "tuning_history"
+                ]
+            },
+            "principles": [
+                "Catalogue is the single source of truth for what models and related intelligence are available locally.",
+                "All Factory and agent model calls are routed via Catalogue using structured Model Entry data.",
+                "Catalogue must remain deterministic at the routing/meta level even if models themselves are statistical."
+            ]
+        },
+        "vnes": {
+            "name": "Vector-Native Extension System",
+            "summary_from_spec": {
+                "everything_is_a_capsule": "VNES is the universal runtime/development platform: everything from geometry to TUI renderers to user bots is a Vector Capsule.",
+                "vector_native": "Capsules expose vector embeddings (e.g., description.vec, capabilities.vec) so AI agents and systems can semantically search and compose capabilities.",
+                "spec_first": "Capsules are spec-driven: manifest + spec/logic.md + spec/schema.json + policy.yaml; implementation is a derived artifact.",
+                "runtime_roles": [
+                    "Kernel: bootstrap core capsules, discover registry, verify receipts, orchestrate lifecycle.",
+                    "Event Bus: typed pub/sub for capsule communication.",
+                    "State Store: versioned, owner-based state for shared data.",
+                    "AI Interface: semantic registry, spec generation, and dynamic composition for AI agents."
+                ]
+            },
+            "principles": [
+                "VNES is where models receive structured, vector-native blocks of instructions and data.",
+                "Factory and Catalogue are themselves Vector Capsules and should align with the VNES capsule pattern.",
+                "HyperSync-native apps built by Factory should be VNES-compatible capsules, so they can be managed and composed via the same runtime and AI interface."
+            ]
+        }
+    },
+    "capsules": {
+        "hypersync.core.factory": {
+            "role": "intent_to_capsule_compiler",
+            "determinism_profile": {
+                "manifests": "D1: manifests and wiring decisions are deterministic for a given intent and policy state if receipts are reused.",
+                "generation": "D2: uses local LLMs/SLMs via Catalogue for analysis, planning, and synthesis.",
+                "execution": "D0/D1: generated capsules are frozen, hashed, and run deterministically under HyperSync/VNES."
+            },
+            "core_capabilities_refined": [
+                "intent_parsing.make_x_for_y",
+                "factoryspec_generation",
+                "capsule_blueprint_synthesis",
+                "code_and_asset_synthesis",
+                "capsule_packaging_and_registration",
+                "runtime_injection_into_environment"
+            ],
+            "vnes_hooks": {
+                "capsule_type": "core",
+                "uses_vnes_ai_interface_for": [
+                    "semantic_intent_analysis",
+                    "capsule_discovery_for_composition",
+                    "spec_drafting_for_new_capsules"
+                ],
+                "produces_capsules": {
+                    "kinds": [
+                        "logic",
+                        "ui",
+                        "agent_persona"
+                    ],
+                    "example_blueprint_shape": {
+                        "target_capsule_id": "hypersync.contrib.poker_night",
+                        "components": [
+                            "logic",
+                            "tui_renderer",
+                            "agent_persona"
+                        ],
+                        "constraints": [
+                            "low_latency",
+                            "8bit_graphics"
+                        ],
+                        "manifests_and_specs": "For each component, generate manifest.json, spec/logic.md, spec/schema.json, policy.yaml as per VNES Capsule Spec."
+                    }
+                },
+                "registry_and_runtime": {
+                    "registry_usage": "Query VNES Capsule Registry for building-block capsules (renderers, geometry engines, bots) during planning.",
+                    "runtime_usage": "Request the VNES Kernel to load, verify, and inject newly generated capsules into the active environment."
+                }
+            },
+            "pipelines": {
+                "intent_to_factoryspec": {
+                    "description": "Transform 'Make X for Y' inputs into a structured FactorySpec JSON.",
+                    "stages": [
+                        {
+                            "id": "capture_intent",
+                            "inputs": [
+                                "raw_prompt",
+                                "user_context",
+                                "target_environment_ref"
+                            ],
+                            "outputs": [
+                                "intent_record"
+                            ],
+                            "model_calls": [],
+                            "vnes_usage": [
+                                "Log the intent as an event on the VNES Event Bus for observability."
+                            ]
+                        },
+                        {
+                            "id": "semantic_intent_analysis",
+                            "inputs": [
+                                "intent_record"
+                            ],
+                            "outputs": [
+                                "analyzed_intent"
+                            ],
+                            "model_calls": [
+                                "reasoning_model_from_catalogue"
+                            ],
+                            "vnes_usage": [
+                                "Use VNES AI Interface semantic registry to resolve a reasoning capsule or model.",
+                                "Represent the analysis request as a VNES extension block: instructions+data for the chosen model."
+                            ]
+                        },
+                        {
+                            "id": "factoryspec_synthesis",
+                            "inputs": [
+                                "analyzed_intent"
+                            ],
+                            "outputs": [
+                                "factory_spec"
+                            ],
+                            "model_calls": [
+                                "reasoning_or_planning_model_from_catalogue"
+                            ],
+                            "vnes_usage": [
+                                "Produce a JSON FactorySpec that can be mapped to VNES-compatible capsule manifests/specs."
+                            ]
+                        }
+                    ]
+                },
+                "factoryspec_to_capsules": {
+                    "description": "Turn FactorySpec into one or more concrete capsules compatible with HyperSync and VNES.",
+                    "stages": [
+                        {
+                            "id": "component_blueprint_expansion",
+                            "inputs": [
+                                "factory_spec"
+                            ],
+                            "outputs": [
+                                "component_blueprints"
+                            ],
+                            "model_calls": [
+                                "reasoning_model_from_catalogue"
+                            ],
+                            "vnes_usage": [
+                                "For each component type (logic, tui_renderer, agent_persona, etc.), generate provisional manifest/spec templates."
+                            ]
+                        },
+                        {
+                            "id": "implementation_synthesis",
+                            "inputs": [
+                                "component_blueprints"
+                            ],
+                            "outputs": [
+                                "component_impls"
+                            ],
+                            "model_calls": [
+                                "coding_model_from_catalogue",
+                                "asset_model_from_catalogue"
+                            ],
+                            "vnes_usage": [
+                                "Represent each synthesis request as a VNES extension workload with clear input/output schemas for the models.",
+                                "Ensure generated code aligns with HyperSync core APIs and TUI architecture references."
+                            ]
+                        },
+                        {
+                            "id": "capsule_packaging",
+                            "inputs": [
+                                "component_impls"
+                            ],
+                            "outputs": [
+                                "capsule_artifacts"
+                            ],
+                            "model_calls": [],
+                            "vnes_usage": [
+                                "Assemble manifest.json + spec/* + impl/* + vectors/* into well-formed capsules for the VNES runtime.",
+                                "Optionally compute embeddings (description.vec, capabilities.vec) using local embedding models via Catalogue."
+                            ]
+                        }
+                    ]
+                },
+                "capsules_to_environment": {
+                    "description": "Register and inject generated capsules into active HyperSync environments.",
+                    "stages": [
+                        {
+                            "id": "capsule_registration",
+                            "inputs": [
+                                "capsule_artifacts"
+                            ],
+                            "outputs": [
+                                "registered_capsule_ids"
+                            ],
+                            "vnes_usage": [
+                                "Publish capsules to the Capsule Registry with appropriate metadata and embeddings.",
+                                "Update any local indices used by Catalogue to know about new experiences."
+                            ]
+                        },
+                        {
+                            "id": "environment_injection",
+                            "inputs": [
+                                "registered_capsule_ids",
+                                "target_environment_ref"
+                            ],
+                            "outputs": [
+                                "active_experience_handles"
+                            ],
+                            "vnes_usage": [
+                                "Request the VNES Kernel to load and activate these capsules in the current environment.",
+                                "Wire them into the TUI pipeline as per the TUI ARCHITECTURE/RENDER_PIPELINE docs."
+                            ]
+                        }
+                    ]
+                }
+            },
+            "receipts_and_audit": {
+                "factory_build_receipt": {
+                    "purpose": "Track how a particular experience capsule (e.g., poker_night) was generated from a Make X for Y intent.",
+                    "suggested_shape": {
+                        "id": "factory.build.receipt",
+                        "version": "1.0",
+                        "timestamp": "ISO-8601",
+                        "intent_hash": "sha256:<intent_payload>",
+                        "factoryspec_hash": "sha256:<factory_spec>",
+                        "generated_capsule_ids": [
+                            "hypersync.contrib.poker_night.logic",
+                            "hypersync.contrib.poker_night.tui",
+                            "hypersync.contrib.poker_night.dealer_bot"
+                        ],
+                        "model_invocations": [
+                            {
+                                "phase": "analysis|planning|coding|asset",
+                                "model_id": "from_catalogue.identity",
+                                "task_descriptor": "short description or hash",
+                                "input_hash": "sha256:<model_input>",
+                                "output_hash": "sha256:<model_output>"
+                            }
+                        ],
+                        "env_targets": [
+                            "env_id_or_topology_ref"
+                        ],
+                        "signatures": [
+                            {
+                                "by": "host_or_control_capsule",
+                                "value": "signature_bytes_or_string"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        "hypersync.core.catalogue": {
+            "role": "local_intelligence_registry_and_router",
+            "determinism_profile": {
+                "selection_logic": "D1: for a given inventory and policy state, routing decisions are reproducible.",
+                "models": "D2: underlying models are statistical; Catalogue focuses on deterministic selection and accountancy."
+            },
+            "model_entry_refinement": {
+                "backing_schema": "core/schemas/catalogue/model_entry.schema.json",
+                "required_fields_high_level": [
+                    "identity",
+                    "basic_info",
+                    "capabilities",
+                    "requirements"
+                ],
+                "recommended_extensions": [
+                    "performance",
+                    "usage_stats",
+                    "nld_profile",
+                    "provenance",
+                    "tuning_history",
+                    "tags"
+                ],
+                "embedding_hooks": {
+                    "description_embedding": "Optional vector embedding derived from identity/basic_info/capabilities to align with VNES Semantic Registry.",
+                    "capabilities_embedding": "Optional vector embedding encoding functional signature for composition."
+                }
+            },
+            "catalogue_functions": {
+                "registration": [
+                    "register_model_from_filesystem_or_download",
+                    "update_model_entry_on_requantization_or_finetune",
+                    "deprecate_or_quarantine_model_on_policy_violation"
+                ],
+                "routing": [
+                    "select_model_for_task_descriptor",
+                    "route_inference_request",
+                    "record_task_receipt_for_audit"
+                ],
+                "inventory_queries": [
+                    "list_models_by_capability",
+                    "search_models_by_semantic_description",
+                    "list_experiences_built_by_factory"
+                ]
+            },
+            "task_descriptor_shape": {
+                "fields": [
+                    "task_kind",
+                    "domain",
+                    "latency_budget_ms",
+                    "precision_requirements",
+                    "determinism_required_tier",
+                    "context_size_estimate",
+                    "user_or_tenant_risk_profile"
+                ]
+            },
+            "model_selection_logic": {
+                "steps": [
+                    "filter_by_capabilities_and_domain",
+                    "filter_by_requirements_vs_available_hardware",
+                    "apply_policy_and_risk_filters",
+                    "rank_by_latency_and_cost_preferences",
+                    "pick_primary_and_zero_or_more_fallback_models"
+                ],
+                "integration_with_vnes": {
+                    "alignment": "Model Entries may be linked to VNES capsules that define model adapters or extension types.",
+                    "semantic_registry": "Catalogue may expose its entries to the VNES Semantic Registry so that AI agents can discover local models using the same query protocol they use for other capsules."
+                }
+            },
+            "receipts_and_audit": {
+                "catalogue_task_receipt": {
+                    "purpose": "Record how a specific inference or planning task was routed and executed.",
+                    "suggested_shape": {
+                        "id": "catalogue.task.receipt",
+                        "version": "1.0",
+                        "timestamp": "ISO-8601",
+                        "task_descriptor_hash": "sha256:<task_descriptor>",
+                        "selected_model_ids": [
+                            "primary_model_id",
+                            "fallback_model_id"
+                        ],
+                        "invocation_results": [
+                            {
+                                "model_id": "identity from Model Entry",
+                                "input_hash": "sha256:<model_input>",
+                                "output_hash": "sha256:<model_output>",
+                                "status": "ok|error",
+                                "latency_ms": 0.0
+                            }
+                        ],
+                        "policy_context": {
+                            "policy_ids": [
+                                "applied_policy_or_tier_ids"
+                            ],
+                            "outcome": "allowed|denied|degraded"
+                        }
+                    }
+                }
+            }
+        },
+        "hypersync.core.geometry": {
+            "role": "Core geometric routing and spatial logic.",
+            "determinism_profile": {
+                "manifests": "D1: Standard deterministic manifest.",
+                "execution": "D0: Strict execution."
+            },
+            "vnes_hooks": {
+                "capsule_type": "essential",
+                "path": "capsules/core/geometry"
+            },
+            "core_capabilities": [
+                "spatial_routing",
+                "manifold_mapping"
+            ]
+        },
+        "hypersync.core.logic": {
+            "role": "Fundamental logical operators and state management.",
+            "determinism_profile": {
+                "manifests": "D1: Standard deterministic manifest.",
+                "execution": "D0: Strict execution."
+            },
+            "vnes_hooks": {
+                "capsule_type": "essential",
+                "path": "capsules/core/logic"
+            },
+            "core_capabilities": [
+                "state_management",
+                "boolean_ops"
+            ]
+        },
+        "hypersync.core.kernel": {
+            "role": "VNES kernel interface and system calls.",
+            "determinism_profile": {
+                "manifests": "D1: Standard deterministic manifest.",
+                "execution": "D0: Strict execution."
+            },
+            "vnes_hooks": {
+                "capsule_type": "essential",
+                "path": "capsules/core/kernel"
+            }
+        },
+        "hypersync.core.io.basic": {
+            "role": "Standard input/output streams.",
+            "determinism_profile": {
+                "manifests": "D1: Standard deterministic manifest.",
+                "execution": "D0: Strict execution."
+            },
+            "vnes_hooks": {
+                "capsule_type": "essential",
+                "path": "capsules/core/io/basic"
+            },
+            "core_capabilities": [
+                "stream_handling",
+                "serialization"
+            ]
+        },
+        "hypersync.std.io.extended": {
+            "role": "Extended I/O capabilities.",
+            "determinism_profile": {
+                "manifests": "D1: Standard deterministic manifest.",
+                "execution": "D1/D2: Variable execution."
+            },
+            "vnes_hooks": {
+                "capsule_type": "standard",
+                "path": "capsules/core/io/extended"
+            },
+            "core_capabilities": [
+                "stream_handling",
+                "serialization"
+            ]
+        },
+        "hypersync.std.data.processing": {
+            "role": "Standard data processing utilities.",
+            "determinism_profile": {
+                "manifests": "D1: Standard deterministic manifest.",
+                "execution": "D1/D2: Variable execution."
+            },
+            "vnes_hooks": {
+                "capsule_type": "standard",
+                "path": "capsules/core/data/processing"
+            }
+        },
+        "hypersync.std.agents.basic": {
+            "role": "Basic autonomous agents.",
+            "determinism_profile": {
+                "manifests": "D1: Standard deterministic manifest.",
+                "execution": "D1/D2: Variable execution."
+            },
+            "vnes_hooks": {
+                "capsule_type": "standard",
+                "path": "capsules/core/agents/basic"
+            }
+        },
+        "hypersync.std.network.http": {
+            "role": "HTTP networking support.",
+            "determinism_profile": {
+                "manifests": "D1: Standard deterministic manifest.",
+                "execution": "D1/D2: Variable execution."
+            },
+            "vnes_hooks": {
+                "capsule_type": "standard",
+                "path": "capsules/core/bridge/http"
+            }
+        },
+        "hypersync.adv.coordination": {
+            "role": "Advanced coordination.",
+            "determinism_profile": {
+                "manifests": "D1: Standard deterministic manifest.",
+                "execution": "D1/D2: Variable execution."
+            },
+            "vnes_hooks": {
+                "capsule_type": "advanced",
+                "path": "capsules/core/coordination"
+            },
+            "core_capabilities": [
+                "stream_handling",
+                "serialization"
+            ]
+        },
+        "hypersync.adv.ai.reasoning": {
+            "role": "Advanced AI reasoning.",
+            "determinism_profile": {
+                "manifests": "D1: Standard deterministic manifest.",
+                "execution": "D1/D2: Variable execution."
+            },
+            "vnes_hooks": {
+                "capsule_type": "advanced",
+                "path": "capsules/core/ai/reasoning"
+            }
+        },
+        "hypersync.adv.physics.simulation": {
+            "role": "Physics simulation.",
+            "determinism_profile": {
+                "manifests": "D1: Standard deterministic manifest.",
+                "execution": "D1/D2: Variable execution."
+            },
+            "vnes_hooks": {
+                "capsule_type": "advanced",
+                "path": "capsules/core/physics/simulation"
+            },
+            "core_capabilities": [
+                "stream_handling",
+                "serialization"
+            ]
+        },
+        "hypersync.adv.security.crypto": {
+            "role": "Advanced crypto.",
+            "determinism_profile": {
+                "manifests": "D1: Standard deterministic manifest.",
+                "execution": "D1/D2: Variable execution."
+            },
+            "vnes_hooks": {
+                "capsule_type": "advanced",
+                "path": "capsules/core/security/crypto"
+            }
+        },
+        "hypersync.core.bridge.uplink": {
+            "role": "Host-Guest IPC Uplink.",
+            "determinism_profile": {
+                "manifests": "D1: Standard deterministic manifest.",
+                "execution": "D0: Strict execution."
+            },
+            "vnes_hooks": {
+                "capsule_type": "essential",
+                "path": "capsules/core/bridge/uplink"
+            }
+        },
+        "hypersync.ui.tui.base": {
+            "role": "Standard Text User Interface (TUI) rendering engine and layout manager.",
+            "determinism_profile": {
+                "manifests": "D1: Standard deterministic manifest.",
+                "execution": "D0: Strict execution for layout calculation."
+            },
+            "vnes_hooks": {
+                "capsule_type": "standard",
+                "path": "capsules/ui/tui/base"
+            },
+            "core_capabilities": [
+                "layout_engine",
+                "render_loop",
+                "input_handling"
+            ]
+        },
+        "hypersync.ui.dashboard": {
+            "role": "Main system dashboard, status monitor, and widget container.",
+            "determinism_profile": {
+                "manifests": "D1: Standard deterministic manifest.",
+                "execution": "D1: Variable execution based on live data."
+            },
+            "vnes_hooks": {
+                "capsule_type": "standard",
+                "path": "capsules/ui/dashboard"
+            }
+        },
+        "hypersync.ui.console": {
+            "role": "Interactive command console and REPL interface.",
+            "determinism_profile": {
+                "manifests": "D1: Standard deterministic manifest.",
+                "execution": "D1: Variable execution based on user input."
+            },
+            "vnes_hooks": {
+                "capsule_type": "standard",
+                "path": "capsules/ui/console"
+            }
+        },
+        "hypersync.ui.visualizer": {
+            "role": "Geometry and network visualization tools (2D/3D projections).",
+            "determinism_profile": {
+                "manifests": "D1: Standard deterministic manifest.",
+                "execution": "D1: Variable execution based on view state."
+            },
+            "vnes_hooks": {
+                "capsule_type": "standard",
+                "path": "capsules/ui/visualizer"
+            }
+        }
+    },
+    "vnes_integration": {
+        "factory_as_vnes_capsule": {
+            "capsule_structure": "Factory itself is a Vector Capsule as per VNES CAPSULE_SPEC: manifest.json, spec/logic.md, spec/schema.json (for Make X for Y requests), policy.yaml, optional vectors, and an implementation that orchestrates planning and synthesis.",
+            "ai_interface_usage": [
+                "Use VNES Semantic Registry to discover supporting capsules (e.g., TUI renderers, geometry engines, utility bots).",
+                "Express model calls as VNES extension workloads (blocks of instructions+data) to local models and tools.",
+                "Optionally generate new capsules by having Factory draft specs (logic.md + schema.json + policy.yaml) for downstream build flows."
+            ]
+        },
+        "catalogue_as_vnes_bridge": {
+            "registry_alignment": "Expose Catalogue entries to VNES so that models and model-backed capsules can be discovered by AI agents via semantic queries.",
+            "capsule_mappings": [
+                "For models that are wrapped as capsules, maintain a mapping from Model Entry identity to the VNES capsule id and version.",
+                "For higher-level 'reasoning' or 'coding' capsules, Catalogue can act as a policy-aware filter/proxy in front of the VNES Semantic Registry."
+            ]
+        },
+        "runtime_flows": {
+            "make_x_for_y_to_vnes": [
+                "User or agent issues 'Make X for Y' via TUI or AI interface.",
+                "Factory (as a capsule) calls into Catalogue to choose reasoning/coding models.",
+                "Factory packages each model task as a VNES-style extension workload with explicit input/output schemas.",
+                "VNES runtime executes these workloads, returning artifacts/specs.",
+                "Factory assembles outputs into VNES-compatible capsules representing the new experience.",
+                "VNES Kernel loads the new capsules; TUI architecture routes rendering to appropriate capsules (per TUI ARCHITECTURE/RENDER_PIPELINE docs)."
+            ]
+        }
+    },
+    "workflows": {
+        "make_x_for_y_end_to_end": {
+            "description": "From user intent to running HyperSync-native experience.",
+            "steps": [
+                "User enters natural language intent in the native GUI/TUI.",
+                "Factory captures and normalizes the intent into an intent_record.",
+                "Factory queries Catalogue for appropriate reasoning/coding models and VNES capsules using structured task descriptors.",
+                "Factory uses those models (via VNES AI Interface) to synthesize a FactorySpec JSON and then concrete component blueprints.",
+                "Factory synthesizes code, TUI layouts, and agent personas for each component.",
+                "Factory packages artifacts into one or more capsules with manifests/specs/policies and optional vectors.",
+                "Factory registers the capsules with the Registry and updates Catalogue with new experience entries.",
+                "VNES Kernel loads the capsules, wiring them into the active environment.",
+                "User launches and interacts with the generated experience through the native GUI/TUI.",
+                "FactoryBuildReceipt(s) and Catalogue task receipts record the lineage and routing decisions."
+            ]
+        },
+        "add_or_update_model": {
+            "description": "Introduce or modify a local model in a way that the Factory and VNES can immediately benefit from.",
+            "steps": [
+                "Operator or automated process creates/updates a Model Entry that conforms to model_entry.schema.json.",
+                "Catalogue ingests or updates the entry, computing or refreshing any embeddings.",
+                "Catalogue updates any VNES-facing indices so that AI agents and Factory can discover the model as a capsule or extension.",
+                "Subsequent Make X for Y invocations may select this model for relevant tasks via Catalogue\u2019s routing logic."
+            ]
+        }
+    },
+    "open_questions": [
+        "How strictly should Factory-generated capsules follow the full VNES CAPSULE_SPEC (including vectors and receipts) versus a lighter-weight HyperSync-local format for early prototypes?",
+        "What minimum metadata/embeddings are required on Model Entries so that Catalogue and VNES Semantic Registry can interoperate cleanly?",
+        "Should Factory ever persist generated capsules as permanent entries in the Capsules Registry by default, or should they start as ephemeral and be promoted only on explicit user action?",
+        "How should multi-tenant isolation and policy tiers be represented jointly in FactoryBuildReceipt and Catalogue task receipts when Make X for Y is used in shared environments?",
+        "What is the recommended path to elevate a frequently-used Factory-generated experience into a fully curated, STUNIR-verified capsule in the broader VNES ecosystem, if and when that matters?"
+    ]
+}

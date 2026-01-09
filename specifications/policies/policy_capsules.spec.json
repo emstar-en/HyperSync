@@ -1,0 +1,54 @@
+{
+  "policy_capsules": {
+    "meta": {
+      "description": "Capsule definitions for policy subsystems",
+      "status": "ALPHA",
+      "version": "1.0.0"
+    },
+    "definitions": {
+      "hypersync.policies.overwatch": {
+        "capsule_path": "capsules/policies/overwatch",
+        "manifest_file": "manifest.json",
+        "description": "Federated policy authority registry and conflict resolution",
+        "type": "essential",
+        "base_spec": "specifications/policies/federated_policy_overwatch.json"
+      },
+      "hypersync.policies.fault_detection": {
+        "capsule_path": "capsules/policies/fault_detection",
+        "manifest_file": "manifest.json",
+        "description": "System-wide fault detection vectors and thresholds",
+        "type": "essential",
+        "base_spec": "specifications/policies/fault_detection.spec.json"
+      },
+      "hypersync.policies.evidence": {
+        "capsule_path": "capsules/policies/evidence",
+        "manifest_file": "manifest.json",
+        "description": "Evidence storage, retention, and redaction policies",
+        "type": "essential",
+        "base_spec": "specifications/policies/evidence_path_policies.json"
+      }
+    },
+    "mathematical_foundations": {
+      "capsule_integrity": {
+        "theory": "Merkle tree verification of capsule contents",
+        "invariant": "Hash(Capsule) == Signed_Manifest_Hash"
+      }
+    },
+    "fault_detection": {
+      "manifest_mismatch": {
+        "logic": "Computed hash != Manifest hash",
+        "action": "Reject capsule load"
+      }
+    },
+    "detailed_mechanisms": {
+      "hot_reloading": {
+        "steps": [
+          "Verify new capsule",
+          "Pause policy engine",
+          "Swap in-memory structures",
+          "Resume policy engine"
+        ]
+      }
+    }
+  }
+}

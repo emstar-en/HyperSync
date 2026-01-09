@@ -1,0 +1,13 @@
+{
+  "expect": {
+    "contract_valid": true,
+    "delta_applied": true,
+    "grant_verified": true
+  },
+  "given": {
+    "contract": "examples/ecc/contract.toy.json",
+    "delta": "examples/ecc/delta.toy.json",
+    "subject": "entity:toy"
+  },
+  "name": "ecc-delta.v1"
+}

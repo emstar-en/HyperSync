@@ -1,0 +1,14 @@
+{
+  "id": "hypersync.adv.physics.simulation",
+  "version": "1.0.0",
+  "type": "capsule",
+  "description": "High-fidelity physics simulation engine.",
+  "capabilities": [
+    "rigid_body_dynamics",
+    "fluid_dynamics",
+    "collision_detection"
+  ],
+  "dependencies": [
+    "hypersync.core.geometry"
+  ]
+}

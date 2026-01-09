@@ -1,0 +1,91 @@
+{
+  "meta": {
+    "id": "spec.ico.conformance",
+    "version": "1.0.0",
+    "status": "ALPHA",
+    "type": "conformance_definition"
+  },
+  "conformance_tiers": {
+    "level_0": {
+      "name": "Storage Compliant",
+      "requirements": [
+        "valid_encoding",
+        "schema_validation"
+      ]
+    },
+    "level_1": {
+      "name": "Operationally Safe",
+      "requirements": [
+        "level_0",
+        "manifold_checks",
+        "numerical_stability_checks"
+      ],
+      "requirements_definitions": {
+        "numerical_stability_checks": "Verify metric tensor determinant > eps; Verify frame orthogonality error < 1e-6."
+      }
+    },
+    "level_2": {
+      "name": "Mathematically Rigorous",
+      "requirements": [
+        "level_1",
+        "high_precision",
+        "curvature_constraints_verified"
+      ],
+      "requirements_definitions": {
+        "high_precision": "Must use IEEE 754 double-precision (64-bit) or higher. Max relative error < 1e-15."
+      }
+    }
+  },
+  "test_vectors": {
+    "structure": {
+      "input": [
+        "geometry_profile",
+        "operation",
+        "operands"
+      ],
+      "expected": [
+        "result",
+        "error_bound"
+      ],
+      "meta": [
+        "description",
+        "edge_case_flag"
+      ]
+    },
+    "suites": [
+      "basic_arithmetic",
+      "boundary_conditions",
+      "singularity_handling"
+    ]
+  },
+  "mathematical_foundations": {
+    "error_analysis": {
+      "metric": "Relative Error = |approx - exact| / |exact|",
+      "tolerance_bounds": "Defined per tier (e.g., 1e-15 for Level 2)."
+    },
+    "validation_logic": {
+      "metric_tensor_check": "det(g) > 0 and eigenvalues > 0 (Sylvester's criterion)",
+      "orthogonality_check": "|| <e_i, e_j> - delta_ij || < epsilon"
+    }
+  },
+  "detailed_mechanisms": {
+    "test_vector_generation": {
+      "strategy": "Random sampling from manifold + boundary cases (e.g., ideal points in H^n).",
+      "oracle": "High-precision reference implementation (e.g., symbolic math library)."
+    },
+    "compliance_reporting": {
+      "format": "JSON report with pass/fail per vector.",
+      "aggregation": "Overall score based on weighted tier requirements."
+    }
+  },
+  "fault_detection": {
+    "conformance_failure": {
+      "logic": "If test vector result deviates from expected by > error_bound",
+      "action": "Fail conformance test for that vector"
+    },
+    "tier_mismatch": {
+      "logic": "If implementation claims Tier N but fails Tier N requirements",
+      "action": "Downgrade certified tier"
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "attestations": {
+    "provided_refs": [
+      "artifact://receipts/attestationvalidationreceipt_v1.json",
+      "artifact://receipts/signaturereceipt_v1.json"
+    ],
+    "required": [
+      "AttestationValidationReceipt",
+      "SignatureReceipt"
+    ]
+  },
+  "intent_kind": "ReductionIntent",
+  "op_ref": "op://network/ico/probe",
+  "params": {
+    "probe": true
+  },
+  "profile": "CORE",
+  "task": "network_ico_probe"
+}

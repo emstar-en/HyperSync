@@ -1,0 +1,30 @@
+{
+  "ico_algorithms.spec.json": {
+    "migration_policy": "none",
+    "release_status": "released",
+    "size_bytes": 5031,
+    "stability": "stable",
+    "unreleased": false
+  },
+  "ico_conformance.spec.json": {
+    "migration_policy": "none",
+    "release_status": "released",
+    "size_bytes": 2551,
+    "stability": "stable",
+    "unreleased": false
+  },
+  "README.md": {
+    "migration_policy": "none",
+    "release_status": "released",
+    "size_bytes": 487,
+    "stability": "stable",
+    "unreleased": false
+  },
+  "ICO_CORE_SPEC.md": {
+    "migration_policy": "none",
+    "release_status": "released",
+    "size_bytes": 6291,
+    "stability": "stable",
+    "unreleased": false
+  }
+}

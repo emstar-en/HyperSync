@@ -1,0 +1,10 @@
+{
+  "files": [
+    "bounded_kpis.json",
+    "deployment_docs.spec.json",
+    "deployment_docs.md"
+  ],
+  "folders": [
+    "templates"
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "expiresAt": "2025-11-01T18:45:00Z",
+  "hModel": "poincare-disk",
+  "roi": {
+    "center": [
+      0.1,
+      -0.2
+    ],
+    "radiusHyperbolic": 0.6
+  },
+  "streamId": "cam-entrance-01",
+  "tileGrid": {
+    "frame": [
+      1280,
+      720
+    ],
+    "tilePx": 256
+  },
+  "type": "geometry.map.h2e"
+}

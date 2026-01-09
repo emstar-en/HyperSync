@@ -1,0 +1,8 @@
+preset_knowledge:
+ enabled: true
+ auto_load:
+ enabled: true
+ on_startup: true
+ operations_system:
+ enabled: true
+ version: "3.0.0"

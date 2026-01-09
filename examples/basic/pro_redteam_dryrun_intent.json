@@ -1,0 +1,14 @@
+{
+  "adversary": {
+    "budget": 0.1,
+    "seed": 7,
+    "tactics": [
+      "jam_comms"
+    ]
+  },
+  "intent_kind": "ReductionIntent",
+  "profile": "PRO",
+  "routes_ref": "artifact://routes/plan_candidates_small.parquet",
+  "task": "redteam_sim",
+  "world_ref": "artifact://worlds/world_small.json"
+}

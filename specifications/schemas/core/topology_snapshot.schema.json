@@ -1,0 +1,398 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://hypersync.io/schemas/core/topology_snapshot.schema.json",
+  "title": "Topology Snapshot",
+  "description": "A point-in-time or window-based description of the system's geometric structure, density, connectivity, and anomalies.",
+  "type": "object",
+  "properties": {
+    "snapshot_id": {
+    "type": "string",
+    "format": "uuid",
+    "description": "Unique identifier for this snapshot instance."
+    },
+    "topology_id": {
+    "type": "string",
+    "description": "Identifier of the logical topology or environment this snapshot refers to (e.g., 'prod-cluster-eu', 'sim-run-42')."
+    },
+    "metric_policy_id": {
+    "type": "string",
+    "description": "ID of the metric policy used to compute distances/costs for this snapshot."
+    },
+    "metric_policy": {
+    "description": "Metric policy applied to this snapshot, either by ID or embedded definition.",
+    "oneOf": [
+    {
+    "type": "string",
+    "description": "Reference by metric_policy.policy_id."
+    },
+    {
+    "$ref": "https://hypersync.io/schemas/geometry/metric_policy.schema.json#"
+    }
+    ]
+    },
+    "mechanism_profile": {
+    "description": "Optional mechanism profile associated with this snapshot's observed dynamics.",
+    "oneOf": [
+    {
+    "type": "string",
+    "description": "Identifier of a mechanism_profile."
+    },
+    {
+    "$ref": "https://hypersync.io/schemas/mechanism_profile.schema.json#"
+    }
+    ]
+    },
+    "determinism_tier": {
+    "type": "string",
+    "description": "Determinism tier for the process that produced this snapshot (e.g., 'D0_BIT_EXACT', 'D1_REPLAYABLE', 'D2_STATISTICAL', 'D3_BEST_EFFORT')."
+    },
+    "timestamp": {
+    "type": "string",
+    "format": "date-time",
+    "description": "Wall-clock timestamp representing when this snapshot was taken or finalized."
+    },
+    "window": {
+    "type": "object",
+    "description": "Optional sampling window for this snapshot (for aggregations over time).",
+    "properties": {
+    "start": {
+    "type": "string",
+    "format": "date-time"
+    },
+    "end": {
+    "type": "string",
+    "format": "date-time"
+    },
+    "sampling_mode": {
+    "type": "string",
+    "description": "Describes how the window was sampled (e.g., 'instant', 'rolling_avg', 'sliding_window').",
+    "enum": [
+    "instant",
+    "rolling_avg",
+    "sliding_window",
+    "custom"
+    ]
+    }
+    }
+    },
+    "coordinate_system": {
+    "type": "object",
+    "description": "Summary description of the coordinate system in use for this snapshot.",
+    "properties": {
+    "system": {
+    "type": "string",
+    "description": "Coordinate system identifier (e.g., 'polar_complex', 'poincare_disk')."
+    },
+    "dimensions": {
+    "type": "integer",
+    "minimum": 1
+    },
+    "curvature_k": {
+    "type": "number",
+    "description": "Curvature constant, if applicable."
+    }
+    }
+    },
+    "source": {
+    "type": "object",
+    "description": "Provenance information describing how this snapshot was produced.",
+    "properties": {
+    "generated_by": {
+    "type": "string",
+    "description": "ID of the agent or service that generated this snapshot."
+    },
+    "algorithm": {
+    "type": "string",
+    "description": "Name or identifier of the algorithm or job that computed this snapshot."
+    },
+    "algorithm_version": {
+    "type": "string",
+    "description": "Version/hash of the algorithm configuration."
+    },
+    "provenance_receipt_id": {
+    "type": "string",
+    "description": "ID of a receipt/oprecord that attests to the computation of this snapshot."
+    },
+    "notes": {
+    "type": "string",
+    "description": "Free-form notes about this snapshot's generation context."
+    }
+    }
+    },
+    "global_metrics": {
+    "type": "object",
+    "description": "Aggregate metrics describing the global topology.",
+    "properties": {
+    "node_count": {
+    "type": "integer"
+    },
+    "edge_count": {
+    "type": "integer"
+    },
+    "edge_density": {
+    "type": "number",
+    "description": "Normalized edge density (e.g., actual_edges / max_possible_edges in some model)."
+    },
+    "connected_components": {
+    "type": "integer",
+    "description": "Number of connected components under the chosen connectivity notion."
+    },
+    "average_degree": {
+    "type": "number",
+    "description": "Average node degree."
+    },
+    "diameter": {
+    "type": "number",
+    "description": "The longest geodesic path length in the system (approximate or exact)."
+    },
+    "average_curvature": {
+    "type": "number",
+    "description": "Average curvature across sampled regions (if applicable)."
+    },
+    "cluster_count": {
+    "type": "integer",
+    "description": "Number of clusters detected/maintained in this snapshot."
+    },
+    "entropy": {
+    "type": "number",
+    "description": "Optional entropy-like measure for diversity/spread of nodes across the manifold."
+    },
+    "modularity": {
+    "type": "number",
+    "description": "Optional modularity score for clustering/community structure."
+    }
+    }
+    },
+    "node_summaries": {
+    "type": "object",
+    "description": "Optional aggregate metrics grouped by node attributes.",
+    "properties": {
+    "by_type": {
+    "type": "array",
+    "description": "Summaries by node type.",
+    "items": {
+    "type": "object",
+    "properties": {
+    "type": {
+    "type": "string"
+    },
+    "count": {
+    "type": "integer"
+    },
+    "avg_degree": {
+    "type": "number"
+    },
+    "avg_latency_ms": {
+    "type": "number"
+    },
+    "avg_utilization": {
+    "type": "number"
+    }
+    },
+    "required": [
+    "type",
+    "count"
+    ]
+    }
+    },
+    "by_tenant": {
+    "type": "array",
+    "description": "Summaries by tenant, if applicable.",
+    "items": {
+    "type": "object",
+    "properties": {
+    "tenant": {
+    "type": "string"
+    },
+    "count": {
+    "type": "integer"
+    }
+    },
+    "required": [
+    "tenant",
+    "count"
+    ]
+    }
+    }
+    }
+    },
+    "edge_summaries": {
+    "type": "array",
+    "description": "Optional aggregate metrics grouped by edge type.",
+    "items": {
+    "type": "object",
+    "properties": {
+    "edge_type": {
+    "type": "string"
+    },
+    "count": {
+    "type": "integer"
+    },
+    "avg_weight": {
+    "type": "number"
+    },
+    "avg_latency_ms": {
+    "type": "number"
+    }
+    },
+    "required": [
+    "edge_type",
+    "count"
+    ]
+    }
+    },
+    "clusters": {
+    "type": "array",
+    "description": "Cluster or community summaries detected in this topology.",
+    "items": {
+    "type": "object",
+    "properties": {
+    "cluster_id": {
+    "type": "string"
+    },
+    "semantic_label": {
+    "type": "string",
+    "description": "Optional human-readable cluster label (e.g., 'eu-frontend', 'hot-shard-ring')."
+    },
+    "centroid": {
+    "$ref": "https://hypersync.io/schemas/core/coordinate.schema.json#"
+    },
+    "radius": {
+    "type": "number",
+    "description": "Approximate cluster radius in the chosen metric."
+    },
+    "member_count": {
+    "type": "integer",
+    "description": "Number of nodes in this cluster."
+    },
+    "metrics": {
+    "type": "object",
+    "description": "Cluster-level metrics (e.g., avg latency, error rate, utilization).",
+    "properties": {
+    "avg_latency_ms": {
+    "type": "number"
+    },
+    "avg_error_rate": {
+    "type": "number"
+    },
+    "avg_utilization": {
+    "type": "number"
+    },
+    "density": {
+    "type": "number"
+    }
+    }
+    },
+    "stability_score": {
+    "type": "number",
+    "description": "Stability or persistence score in [0,1] across snapshots."
+    },
+    "tags": {
+    "type": "array",
+    "items": {
+    "type": "string"
+    },
+    "uniqueItems": true
+    }
+    },
+    "required": [
+    "cluster_id",
+    "centroid",
+    "member_count"
+    ]
+    }
+    },
+    "anomalies": {
+    "type": "array",
+    "description": "Regions or phenomena where the topology is stressed (e.g., high latency, overcrowding, fragmentation).",
+    "items": {
+    "type": "object",
+    "properties": {
+    "id": {
+    "type": "string",
+    "description": "Unique identifier for this anomaly within the snapshot."
+    },
+    "type": {
+    "type": "string",
+    "description": "Classifier for anomaly type. Recommended values include: 'void', 'clump', 'rift', 'singularity', 'bottleneck', 'hotspot', but this field is intentionally open-ended."
+    },
+    "location": {
+    "type": "string",
+    "description": "Approximate location (coordinate, region name, or sector ID)."
+    },
+    "region": {
+    "type": "object",
+    "description": "Optional structured region description.",
+    "properties": {
+    "center": {
+    "$ref": "https://hypersync.io/schemas/core/coordinate.schema.json#"
+    },
+    "radius": {
+    "type": "number",
+    "description": "Approximate affected radius in metric space."
+    }
+    }
+    },
+    "severity": {
+    "type": "number",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "description": "Normalized severity score in [0,1]."
+    },
+    "metrics": {
+    "type": "object",
+    "description": "Key anomaly metrics, e.g., local latency spike, packet loss, queue depth.",
+    "additionalProperties": {
+    "type": "number"
+    }
+    },
+    "detected_by": {
+    "type": "string",
+    "description": "ID of the detector/agent or algorithm that flagged this anomaly."
+    },
+    "notes": {
+    "type": "string",
+    "description": "Human-readable diagnostic notes or hypotheses about this anomaly."
+    }
+    },
+    "required": [
+    "type",
+    "severity"
+    ]
+    }
+    },
+    "annotations": {
+    "type": "array",
+    "description": "Additional human or system annotations attached to this snapshot.",
+    "items": {
+    "type": "object",
+    "properties": {
+    "author": {
+    "type": "string"
+    },
+    "timestamp": {
+    "type": "string",
+    "format": "date-time"
+    },
+    "message": {
+    "type": "string"
+    }
+    },
+    "required": [
+    "message"
+    ]
+    }
+    },
+    "extensions": {
+    "type": "object",
+    "description": "Namespace for topology-specific or deployment-specific extensions.",
+    "additionalProperties": true
+    }
+  },
+  "required": [
+    "snapshot_id",
+    "timestamp",
+    "global_metrics"
+  ],
+  "additionalProperties": true
+}

@@ -1,0 +1,11 @@
+{
+  "intent_kind": "ReductionIntent",
+  "params": {
+    "action": "consensus_and_sign"
+  },
+  "profile": "QUARTERMASTER_CAMPAIGN",
+  "receipts": [
+    "BFTConsensusReceipt"
+  ],
+  "task": "enterprise_governance"
+}

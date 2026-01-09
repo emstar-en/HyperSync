@@ -1,0 +1,124 @@
+{
+  "$id": "https://example.com/spec-pack/schemas/reasoning/divergence_attestation.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "evidence": {
+      "additionalProperties": false,
+      "properties": {
+        "beta_estimate": {
+          "type": "number"
+        },
+        "mu_trace": {
+          "items": {
+            "oneOf": [
+              {
+                "type": "number"
+              },
+              {
+                "items": {
+                  "type": "number"
+                },
+                "maxItems": 6,
+                "minItems": 2,
+                "type": "array"
+              }
+            ]
+          },
+          "maxItems": 256,
+          "type": "array"
+        },
+        "numeric": {
+          "additionalProperties": false,
+          "properties": {
+            "backtracks": {
+              "minimum": 0,
+              "type": "integer"
+            },
+            "condition_number": {
+              "type": "number"
+            },
+            "residual_post": {
+              "type": "number"
+            },
+            "residual_pre": {
+              "type": "number"
+            }
+          },
+          "type": "object"
+        },
+        "recent_fingerprints": {
+          "items": {
+            "pattern": "^f128:[A-Fa-f0-9]{32}$",
+            "type": "string"
+          },
+          "maxItems": 64,
+          "type": "array"
+        },
+        "window": {
+          "items": {
+            "minimum": 0,
+            "type": "integer"
+          },
+          "maxItems": 2,
+          "minItems": 2,
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "kind": {
+      "const": "DivergenceAttestation",
+      "type": "string"
+    },
+    "plan_id": {
+      "type": "string"
+    },
+    "policy_tier": {
+      "enum": [
+        "core",
+        "home_lab",
+        "sub_enterprise",
+        "enterprise"
+      ],
+      "type": "string"
+    },
+    "reason": {
+      "enum": [
+        "cycle_detected",
+        "non_decreasing_measure",
+        "superlinear_growth",
+        "numeric_stall"
+      ],
+      "type": "string"
+    },
+    "thresholds": {
+      "additionalProperties": false,
+      "properties": {
+        "beta_block": {
+          "type": "number"
+        },
+        "condition_cap": {
+          "type": "number"
+        },
+        "patience": {
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
+    "timestamp": {
+      "format": "date-time",
+      "type": "string"
+    }
+  },
+  "required": [
+    "kind",
+    "plan_id",
+    "reason",
+    "thresholds"
+  ],
+  "title": "DivergenceAttestation",
+  "type": "object"
+}

@@ -1,0 +1,226 @@
+{
+  "$id": "https://hypersync.ai/schemas/dimensional/sync_session_schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "Defines node-to-node hyperbolic alignment and dimension sharing protocol",
+  "properties": {
+    "initiator": {
+      "properties": {
+        "capabilities": {
+          "properties": {
+            "curvature": {
+              "maximum": 0.0,
+              "minimum": -1.0,
+              "type": "number"
+            },
+            "dimensions": {
+              "maximum": 16,
+              "minimum": 2,
+              "type": "integer"
+            },
+            "protocols": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            }
+          },
+          "type": "object"
+        },
+        "node_id": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "node_id",
+        "capabilities"
+      ],
+      "type": "object"
+    },
+    "metadata": {
+      "properties": {
+        "completed_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "duration_ms": {
+          "type": "integer"
+        },
+        "network_type": {
+          "enum": [
+            "local",
+            "lan",
+            "wan"
+          ],
+          "type": "string"
+        },
+        "updated_at": {
+          "format": "date-time",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "passes": {
+      "items": {
+        "properties": {
+          "completed_at": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "metrics": {
+            "type": "object"
+          },
+          "pass_type": {
+            "enum": [
+              "metadata",
+              "transport",
+              "reconcile"
+            ],
+            "type": "string"
+          },
+          "started_at": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "pending",
+              "running",
+              "complete",
+              "failed"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "pass_type",
+          "status"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "policy_tag": {
+      "description": "Policy identifier governing this sync session",
+      "type": "string"
+    },
+    "reconciliation": {
+      "properties": {
+        "convergence_threshold": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "type": "number"
+        },
+        "current_error": {
+          "type": "number"
+        },
+        "iterations_completed": {
+          "type": "integer"
+        },
+        "max_iterations": {
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
+    "responder": {
+      "properties": {
+        "capabilities": {
+          "properties": {
+            "curvature": {
+              "maximum": 0.0,
+              "minimum": -1.0,
+              "type": "number"
+            },
+            "dimensions": {
+              "maximum": 16,
+              "minimum": 2,
+              "type": "integer"
+            },
+            "protocols": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            }
+          },
+          "type": "object"
+        },
+        "node_id": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "node_id",
+        "capabilities"
+      ],
+      "type": "object"
+    },
+    "session_id": {
+      "description": "Unique session identifier",
+      "type": "string"
+    },
+    "shared_dims": {
+      "description": "Dimension indices to be shared between nodes",
+      "items": {
+        "minimum": 0,
+        "type": "integer"
+      },
+      "type": "array"
+    },
+    "state": {
+      "description": "Current session state",
+      "enum": [
+        "pending",
+        "handshake",
+        "transform",
+        "reconcile",
+        "complete",
+        "failed"
+      ],
+      "type": "string"
+    },
+    "transform": {
+      "description": "Coordinate transformation between node spaces",
+      "properties": {
+        "curvature_adjustment": {
+          "type": "number"
+        },
+        "matrix": {
+          "items": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array"
+          },
+          "type": "array"
+        },
+        "method": {
+          "enum": [
+            "poincare",
+            "lorentz",
+            "klein",
+            "hyperboloid"
+          ],
+          "type": "string"
+        }
+      },
+      "type": "object"
+    }
+  },
+  "required": [
+    "session_id",
+    "initiator",
+    "responder",
+    "shared_dims",
+    "policy_tag",
+    "state"
+  ],
+  "title": "Dimensional Sync Session Schema",
+  "type": "object"
+}

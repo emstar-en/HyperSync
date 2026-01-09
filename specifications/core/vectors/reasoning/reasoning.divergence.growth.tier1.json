@@ -1,0 +1,26 @@
+{
+  "expected": {
+    "beta_block": 1.5,
+    "divergence_reason": "superlinear_growth",
+    "window_min": 10
+  },
+  "plan": {
+    "budget": {
+      "depth": 128,
+      "steps": 100,
+      "tokens": 4000,
+      "tool_calls": 20
+    },
+    "inputs_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+    "kind": "ReasoningPlan",
+    "measure": [
+      12,
+      5
+    ],
+    "plan_id": "rp_growth_01",
+    "policy_ref": "policy://divergence/default",
+    "ruleset_id": "rs_growth_v1"
+  },
+  "scenario": "Superlinear growth blocked by beta threshold",
+  "vector_kind": "ReasoningDivergenceVector"
+}

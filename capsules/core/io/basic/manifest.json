@@ -1,0 +1,16 @@
+{
+  "id": "hypersync.core.io.basic",
+  "version": "1.0.0",
+  "type": "capsule",
+  "description": "Standard input/output streams.",
+  "capabilities": [
+    "stdin",
+    "stdout",
+    "stderr",
+    "file_read",
+    "file_write"
+  ],
+  "dependencies": [
+    "hypersync.core.kernel"
+  ]
+}

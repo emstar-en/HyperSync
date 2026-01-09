@@ -1,0 +1,64 @@
+{
+  "curvature_regimes": {
+    "dense_hyperbolic": {
+      "description": "High semantic density, strong curvature",
+      "kappa_range": [
+        -3.0,
+        -1.5
+      ]
+    },
+    "rarified_hyperbolic": {
+      "description": "Low semantic density, weak curvature",
+      "kappa_range": [
+        -0.5,
+        -0.1
+      ]
+    },
+    "standard_hyperbolic": {
+      "description": "Standard semantic density",
+      "kappa_range": [
+        -1.5,
+        -0.5
+      ]
+    }
+  },
+  "dependencies": [
+    "numpy",
+    "scipy"
+  ],
+  "description": "User-facing kappa channel operations",
+  "implementation_id": "kappa_channel_user_api_v1",
+  "language": "python",
+  "operations": {
+    "create_channel": {
+      "complexity": "O(1)",
+      "function": "create_kappa_channel",
+      "parameters": [
+        "kappa",
+        "semantic_density"
+      ],
+      "returns": "channel_id"
+    },
+    "transition_kappa": {
+      "complexity": "O(n * d) where n=data points, d=dimension",
+      "function": "kappa_transition",
+      "parameters": [
+        "source_kappa",
+        "target_kappa",
+        "data",
+        "method"
+      ],
+      "returns": "transformed_data"
+    },
+    "validate_curvature": {
+      "complexity": "O(n^2) for holonomy validation",
+      "function": "validate_curvature_properties",
+      "parameters": [
+        "kappa",
+        "validation_type",
+        "tolerance"
+      ],
+      "returns": "validation_result"
+    }
+  }
+}

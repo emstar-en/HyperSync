@@ -1,0 +1,44 @@
+{
+  "$id": "schema://nvm/index.config.v1.json",
+  "$schema": "ext://fcbd7642ed3f",
+  "properties": {
+    "geometry": {
+      "properties": {
+        "curvature": {
+          "type": "number"
+        },
+        "radius_cap": {
+          "type": "number"
+        },
+        "space": {
+          "enum": [
+            "poincare_ball",
+            "hyperboloid",
+            "euclidean",
+            "spherical"
+          ]
+        }
+      },
+      "required": [
+        "space"
+      ],
+      "type": "object"
+    },
+    "params": {
+      "type": "object"
+    },
+    "type": {
+      "enum": [
+        "hnsw_hyperbolic",
+        "hnsw_euclidean",
+        "ivfpq",
+        "bruteforce"
+      ]
+    }
+  },
+  "required": [
+    "type",
+    "geometry"
+  ],
+  "type": "object"
+}

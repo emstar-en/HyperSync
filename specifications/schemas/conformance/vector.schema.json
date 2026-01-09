@@ -1,0 +1,52 @@
+{
+  "$id": "schema://conformance/vector.schema.json",
+  "$schema": "ext://fcbd7642ed3f",
+  "properties": {
+    "description": {
+      "type": "string"
+    },
+    "expected": {
+      "properties": {
+        "gate_outcome": {
+          "enum": [
+            "allow",
+            "deny",
+            "degrade"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "gate_outcome"
+      ],
+      "type": "object"
+    },
+    "id": {
+      "type": "string"
+    },
+    "inputs": {
+      "properties": {
+        "intent": {
+          "type": [
+            "string",
+            "object"
+          ]
+        }
+      },
+      "required": [
+        "intent"
+      ],
+      "type": "object"
+    },
+    "profile": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "description",
+    "inputs",
+    "expected"
+  ],
+  "type": "object"
+}

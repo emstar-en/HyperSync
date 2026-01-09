@@ -1,0 +1,56 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "Collaborative session log with playback metadata",
+  "properties": {
+    "actions": {
+      "description": "Actions taken during session",
+      "type": "array"
+    },
+    "created_at": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "ended_at": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "layout_history": {
+      "items": {
+        "properties": {
+          "layout": {
+            "type": "string"
+          },
+          "operator": {
+            "type": "string"
+          },
+          "timestamp": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "operators": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "session_id": {
+      "type": "string"
+    },
+    "telemetry_snapshots": {
+      "description": "Periodic telemetry snapshots",
+      "type": "array"
+    }
+  },
+  "required": [
+    "session_id",
+    "operators",
+    "created_at"
+  ],
+  "title": "Session Record",
+  "type": "object"
+}

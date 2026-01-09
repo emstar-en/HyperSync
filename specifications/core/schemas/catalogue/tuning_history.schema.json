@@ -1,0 +1,121 @@
+{
+  "$id": "https://hypersync.ai/schemas/catalogue/tuning_history.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "Complete tuning history for internally trained models",
+  "properties": {
+    "base_model_id": {
+      "description": "ID of the original base model",
+      "format": "uuid",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "cumulative_samples": {
+      "description": "Total samples used across all sessions",
+      "minimum": 0,
+      "type": "integer"
+    },
+    "is_base_model": {
+      "description": "True if this is an untuned base model",
+      "type": "boolean"
+    },
+    "total_tuning_time": {
+      "description": "Cumulative tuning time in seconds",
+      "minimum": 0,
+      "type": "integer"
+    },
+    "tuning_sessions": {
+      "items": {
+        "properties": {
+          "dataset_hash": {
+            "pattern": "^sha256:[a-f0-9]{64}$",
+            "type": "string"
+          },
+          "dataset_size": {
+            "minimum": 0,
+            "type": "integer"
+          },
+          "duration_seconds": {
+            "minimum": 0,
+            "type": "integer"
+          },
+          "hyperparameters": {
+            "properties": {
+              "batch_size": {
+                "type": "integer"
+              },
+              "epochs": {
+                "type": "integer"
+              },
+              "learning_rate": {
+                "type": "number"
+              },
+              "warmup_steps": {
+                "type": "integer"
+              },
+              "weight_decay": {
+                "type": "number"
+              }
+            },
+            "type": "object"
+          },
+          "method": {
+            "enum": [
+              "lora",
+              "qlora",
+              "full-finetune",
+              "dpo",
+              "rlhf",
+              "sft",
+              "custom"
+            ],
+            "type": "string"
+          },
+          "metrics": {
+            "properties": {
+              "eval_accuracy": {
+                "type": "number"
+              },
+              "final_loss": {
+                "type": "number"
+              },
+              "perplexity": {
+                "type": "number"
+              }
+            },
+            "type": "object"
+          },
+          "notes": {
+            "type": "string"
+          },
+          "operator": {
+            "description": "User or system that performed tuning",
+            "type": "string"
+          },
+          "session_id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "timestamp": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "session_id",
+          "timestamp",
+          "method"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "is_base_model",
+    "tuning_sessions"
+  ],
+  "title": "Model Tuning History",
+  "type": "object"
+}

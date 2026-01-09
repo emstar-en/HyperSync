@@ -1,0 +1,89 @@
+{
+  "geometric_foundations": {
+    "meta": {
+      "description": "Core manifold definitions, metrics, and optimization algorithms",
+      "status": "ALPHA",
+      "version": "1.0.0"
+    },
+    "manifolds": {
+      "hyperbolic_space": {
+        "model": "Poincare Ball Model (D^n)",
+        "metric_tensor": "g_ij = (2 / (1 - ||x||^2))^2 delta_ij",
+        "distance_function": "dist_M(u, v) = arccosh(1 + 2 * ||u-v||^2 / ((1-||u||^2)(1-||v||^2)))",
+        "constraints": "||x|| < 1"
+      },
+      "spd_manifold": {
+        "description": "Symmetric Positive Definite Matrices",
+        "metric": "Affine-Invariant Riemannian Metric",
+        "distance": "dist_M(A, B) = ||log(A^-1/2 * B * A^-1/2)||_F",
+        "constraints": "eigenvalues(A) > 0",
+        "geodesic_equation": {
+          "formula": "gamma(t) = A^1/2 * exp(t * A^-1/2 * V * A^-1/2) * A^1/2",
+          "description": "Geodesic starting at A in direction V."
+        },
+        "parallel_transport": {
+          "formula": "PT_{A->B}(V) = E * V * E^T, where E = (B * A^-1)^1/2",
+          "description": "Transport vector V from tangent space at A to tangent space at B."
+        }
+      }
+    },
+    "optimization": {
+      "riemannian_sgd": {
+        "update_rule": "x_{t+1} = Retraction_x_t(-eta * grad_R f(x_t))",
+        "retraction": {
+          "hyperbolic": "Exponential Map: Exp_x(v) = x + v (approx for small v) or exact formula",
+          "spd": "Exp_A(V) = A^1/2 * exp(A^-1/2 * V * A^-1/2) * A^1/2"
+        },
+        "parallel_transport": {
+          "definition": "Transport tangent vector v from x to y along geodesic while preserving norm and angle.",
+          "usage": "Momentum-based optimization on manifolds."
+        }
+      }
+    },
+    "fault_detection": {
+      "metric_degeneracy": {
+        "logic": "If det(g_ij) < epsilon, flag 'Metric Collapse'.",
+        "action": "Halt optimization, trigger fallback to Euclidean tangent space."
+      },
+      "manifold_constraint_violation": {
+        "logic": "If x not in M (e.g., ||x|| >= 1 for Poincare), flag 'Manifold Escape'.",
+        "action": "Project x back to M or restart from last valid checkpoint."
+      },
+      "numerical_instability": {
+        "logic": "If ||grad_R f(x)|| is NaN or Inf, flag 'Gradient Explosion'.",
+        "action": "Reduce learning rate eta."
+      },
+      "spd_drift_detection": {
+        "logic": "If min(eigenvalues(A)) <= 0, flag 'SPD Manifold Drift'.",
+        "action": "Rectify: project_to_spd(A) = V * max(D, epsilon) * V^T, where A = V*D*V^T."
+      }
+    },
+    "mathematical_foundations": {
+      "formal_definition": "Defined via category theory morphisms.",
+      "invariants": [
+        "Conservation of Information",
+        "Topological Stability"
+      ]
+    },
+    "detailed_mechanisms": {
+      "initialization": {
+        "bootstrapping": "Load manifold configuration from 'geometry.config.json'. Initialize metric tensor cache. Verify floating-point environment (IEEE 754 strict mode).",
+        "state_validation": "Check initial state vector x_0 satisfies manifold constraints (e.g., ||x_0|| < 1 for Poincare). Compute initial curvature K(x_0)."
+      },
+      "execution_flow": {
+        "step_1_tangent_projection": "Map Euclidean gradient 'g' to Riemannian gradient 'grad_R f(x)' using inverse metric tensor: g^ij * g_j.",
+        "step_2_retraction": "Update state x_{t+1} = Retraction_x_t(-eta * grad_R f(x_t)). For Poincare: x + v (approx) or exact Mobius addition.",
+        "step_3_transport": "Parallel transport momentum vectors to new tangent space T_{x_{t+1}}M.",
+        "step_4_constraint_check": "Verify x_{t+1} remains within manifold bounds. Apply projection or error correction if violated."
+      },
+      "error_handling": {
+        "singularity_detection": "Monitor determinant of metric tensor det(g). If det(g) -> 0 or Inf, trigger 'SingularityAvoidance' routine (perturbation or chart switch).",
+        "numerical_drift": "Periodically re-project state to exact manifold to counter floating-point drift."
+      }
+    },
+    "stunir_optimizations": {
+      "caching": "Content-addressable artifact caching.",
+      "parallelism": "Task graph parallel execution."
+    }
+  }
+}

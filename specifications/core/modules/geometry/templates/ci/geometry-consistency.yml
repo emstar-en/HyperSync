@@ -1,0 +1,10 @@
+name: geometry-consistency
+on: [workflow_dispatch]
+jobs:
+ check-geometry:
+ runs-on: ubuntu-latest
+ steps:
+ - uses: actions/checkout
+ - name: Verify geometry assets
+ run: |
+ python3 modules/geometry/tests/test_geometry_assets.py

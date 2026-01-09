@@ -1,0 +1,22 @@
+{
+  "inputs_commitment": "sha256:mesh|bc|nu|plan",
+  "iters": {
+    "avg_linear": {
+      "press": 45,
+      "vel": 80
+    },
+    "steps": 12450
+  },
+  "mesh_digest": "sha256:CG2/CG1",
+  "output_commitment": "sha256:u|p",
+  "receipt_kind": "ReductionReceipt",
+  "residuals": {
+    "divergence_l2": 7.4e-09
+  },
+  "solver_binding_id": "solver://fluids/incomp.projection_cg@0.9.4",
+  "stability_metrics": {
+    "energy_drift_pct": 0.3,
+    "max_cfl": 0.49,
+    "min_cfl": 0.31
+  }
+}

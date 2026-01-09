@@ -1,0 +1,402 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "migration_policy": "replace-old-techniques",
+  "properties": {
+    "manifold": {
+      "migration_policy": "replace-old-techniques",
+      "properties": {
+        "canonical": {
+          "migration_policy": "replace-old-techniques",
+          "properties": {
+            "curvature_K": {
+              "migration_policy": "replace-old-techniques",
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "number",
+              "unreleased": true
+            },
+            "dim": {
+              "migration_policy": "replace-old-techniques",
+              "minimum": 2,
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "integer",
+              "unreleased": true
+            },
+            "migration_policy": "replace-old-techniques",
+            "release_status": "pre-alpha",
+            "signature": {
+              "enum": [
+                "-++++"
+              ],
+              "migration_policy": "replace-old-techniques",
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "unreleased": true
+            },
+            "stability": "experimental",
+            "unreleased": true
+          },
+          "release_status": "pre-alpha",
+          "required": [
+            "signature",
+            "curvature_K",
+            "dim"
+          ],
+          "stability": "experimental",
+          "type": "object",
+          "unreleased": true
+        },
+        "domains": {
+          "items": {
+            "migration_policy": "replace-old-techniques",
+            "properties": {
+              "curvature_K": {
+                "migration_policy": "replace-old-techniques",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "number",
+                "unreleased": true
+              },
+              "id": {
+                "migration_policy": "replace-old-techniques",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "string",
+                "unreleased": true
+              },
+              "migration_policy": "replace-old-techniques",
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "unreleased": true
+            },
+            "release_status": "pre-alpha",
+            "required": [
+              "id",
+              "curvature_K"
+            ],
+            "stability": "experimental",
+            "type": "object",
+            "unreleased": true
+          },
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "array",
+          "unreleased": true
+        },
+        "migration_policy": "replace-old-techniques",
+        "release_status": "pre-alpha",
+        "stability": "experimental",
+        "unreleased": true
+      },
+      "release_status": "pre-alpha",
+      "required": [
+        "canonical",
+        "domains"
+      ],
+      "stability": "experimental",
+      "type": "object",
+      "unreleased": true
+    },
+    "memory": {
+      "migration_policy": "replace-old-techniques",
+      "properties": {
+        "kv_policy": {
+          "migration_policy": "replace-old-techniques",
+          "properties": {
+            "allow_types": {
+              "items": {
+                "migration_policy": "replace-old-techniques",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "string",
+                "unreleased": true
+              },
+              "migration_policy": "replace-old-techniques",
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "array",
+              "unreleased": true
+            },
+            "caps": {
+              "migration_policy": "replace-old-techniques",
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "object",
+              "unreleased": true
+            },
+            "deny_payloads": {
+              "migration_policy": "replace-old-techniques",
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "boolean",
+              "unreleased": true
+            },
+            "migration_policy": "replace-old-techniques",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "ttl_ms": {
+              "migration_policy": "replace-old-techniques",
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "object",
+              "unreleased": true
+            },
+            "unreleased": true
+          },
+          "release_status": "pre-alpha",
+          "required": [
+            "allow_types",
+            "caps",
+            "ttl_ms",
+            "deny_payloads"
+          ],
+          "stability": "experimental",
+          "type": "object",
+          "unreleased": true
+        },
+        "micro_mem_array": {
+          "migration_policy": "replace-old-techniques",
+          "properties": {
+            "kernel": {
+              "enum": [
+                "lorentz"
+              ],
+              "migration_policy": "replace-old-techniques",
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "unreleased": true
+            },
+            "migration_policy": "replace-old-techniques",
+            "model_family": {
+              "migration_policy": "replace-old-techniques",
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "string",
+              "unreleased": true
+            },
+            "quantization": {
+              "enum": [
+                "int8",
+                "int4"
+              ],
+              "migration_policy": "replace-old-techniques",
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "unreleased": true
+            },
+            "release_status": "pre-alpha",
+            "replicas": {
+              "migration_policy": "replace-old-techniques",
+              "minimum": 1,
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "integer",
+              "unreleased": true
+            },
+            "slots": {
+              "migration_policy": "replace-old-techniques",
+              "minimum": 1024,
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "integer",
+              "unreleased": true
+            },
+            "stability": "experimental",
+            "unreleased": true
+          },
+          "release_status": "pre-alpha",
+          "required": [
+            "model_family",
+            "slots",
+            "replicas",
+            "kernel"
+          ],
+          "stability": "experimental",
+          "type": "object",
+          "unreleased": true
+        },
+        "migration_policy": "replace-old-techniques",
+        "release_status": "pre-alpha",
+        "stability": "experimental",
+        "unreleased": true
+      },
+      "release_status": "pre-alpha",
+      "required": [
+        "kv_policy",
+        "micro_mem_array"
+      ],
+      "stability": "experimental",
+      "type": "object",
+      "unreleased": true
+    },
+    "migration_policy": "replace-old-techniques",
+    "observability": {
+      "migration_policy": "replace-old-techniques",
+      "properties": {
+        "metrics": {
+          "items": {
+            "migration_policy": "replace-old-techniques",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "type": "string",
+            "unreleased": true
+          },
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "array",
+          "unreleased": true
+        },
+        "migration_policy": "replace-old-techniques",
+        "release_status": "pre-alpha",
+        "sample_rate": {
+          "maximum": 1,
+          "migration_policy": "replace-old-techniques",
+          "minimum": 0,
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "number",
+          "unreleased": true
+        },
+        "stability": "experimental",
+        "unreleased": true
+      },
+      "release_status": "pre-alpha",
+      "required": [
+        "metrics",
+        "sample_rate"
+      ],
+      "stability": "experimental",
+      "type": "object",
+      "unreleased": true
+    },
+    "policy": {
+      "migration_policy": "replace-old-techniques",
+      "properties": {
+        "deny_by_default": {
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "boolean",
+          "unreleased": true
+        },
+        "migration_policy": "replace-old-techniques",
+        "predicate_gateway": {
+          "enum": [
+            "enclave",
+            "software"
+          ],
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "unreleased": true
+        },
+        "release_status": "pre-alpha",
+        "stability": "experimental",
+        "tighten_only": {
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "boolean",
+          "unreleased": true
+        },
+        "unreleased": true
+      },
+      "release_status": "pre-alpha",
+      "required": [
+        "deny_by_default",
+        "tighten_only"
+      ],
+      "stability": "experimental",
+      "type": "object",
+      "unreleased": true
+    },
+    "release_status": "pre-alpha",
+    "security": {
+      "migration_policy": "replace-old-techniques",
+      "properties": {
+        "clearance_capsule": {
+          "$ref": "clearance_capsule.schema.json",
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "unreleased": true
+        },
+        "identity": {
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "object",
+          "unreleased": true
+        },
+        "migration_policy": "replace-old-techniques",
+        "release_status": "pre-alpha",
+        "stability": "experimental",
+        "unreleased": true
+      },
+      "release_status": "pre-alpha",
+      "required": [
+        "clearance_capsule",
+        "identity"
+      ],
+      "stability": "experimental",
+      "type": "object",
+      "unreleased": true
+    },
+    "stability": "experimental",
+    "storage": {
+      "migration_policy": "replace-old-techniques",
+      "properties": {
+        "knowledge_ledger": {
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "object",
+          "unreleased": true
+        },
+        "migration_policy": "replace-old-techniques",
+        "persistent": {
+          "items": {
+            "migration_policy": "replace-old-techniques",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "type": "object",
+            "unreleased": true
+          },
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "array",
+          "unreleased": true
+        },
+        "release_status": "pre-alpha",
+        "stability": "experimental",
+        "unreleased": true
+      },
+      "release_status": "pre-alpha",
+      "required": [
+        "persistent",
+        "knowledge_ledger"
+      ],
+      "stability": "experimental",
+      "type": "object",
+      "unreleased": true
+    },
+    "unreleased": true
+  },
+  "release_status": "pre-alpha",
+  "required": [
+    "manifold",
+    "memory",
+    "storage",
+    "security",
+    "policy",
+    "observability"
+  ],
+  "stability": "experimental",
+  "title": "FactorySpec",
+  "type": "object",
+  "unreleased": true
+}

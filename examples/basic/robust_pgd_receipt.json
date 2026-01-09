@@ -1,0 +1,19 @@
+{
+  "diagnostics": {
+    "cert_radius_p50": 0.008,
+    "robust_acc": 0.72
+  },
+  "inputs_commitment": "sha256:train|eps=0.0314|steps=10|alpha=0.0078",
+  "iters": {
+    "epochs": 10
+  },
+  "output_commitment": "sha256:weights_robust",
+  "receipt_kind": "ReductionReceipt",
+  "robustness": {
+    "epsilon": 0.0314,
+    "norm": "linf",
+    "receipt_kind": "RobustnessReceipt",
+    "steps": 10
+  },
+  "solver_binding_id": "solver://robust/pgd_deterministic@1.0.0"
+}

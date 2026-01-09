@@ -1,0 +1,23 @@
+{
+  "diagnostics": {
+    "tracking_error": 0.034,
+    "turnover": 0.112
+  },
+  "impact": {
+    "H_digest": "sha256:H",
+    "realized_imp": 0.00019,
+    "realized_tx": 0.00041,
+    "receipt_kind": "MarketImpactReceipt"
+  },
+  "inputs_commitment": "sha256:Sigma|Mu|x_prev|H|tau1|tau2|kappa",
+  "iters": {
+    "admm": 1820
+  },
+  "output_commitment": "sha256:weights_delta_digest",
+  "receipt_kind": "ReductionReceipt",
+  "risk": {
+    "receipt_kind": "RiskReceipt",
+    "variance": 0.0012
+  },
+  "solver_binding_id": "solver://pmv/prox_qp@1.0.3"
+}

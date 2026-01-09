@@ -1,0 +1,62 @@
+{
+  "capsule": "hypersync.consensus.quorum",
+  "version": "1.1.0",
+  "dependencies": [
+    "hypersync.geometry.primitives"
+  ],
+  "math": {
+    "definitions": {
+      "n": "Total number of eligible nodes in region",
+      "f": "Maximum number of Byzantine faults",
+      "d_i": "Distance of node i from event horizon",
+      "w_i": "Weight of node i"
+    },
+    "formulas": {
+      "fault_tolerance": "f = floor((n - 1) / 3)",
+      "quorum_threshold": "Q = ceil(2 * n / 3)",
+      "geometric_weight": "w_i = 1 / (1 + alpha * d_i^2)",
+      "weighted_voting_condition": "sum(w_i for i in votes) > (2/3) * sum(w_j for j in all_nodes)"
+    }
+  },
+  "components": {
+    "QuorumManager": {
+      "type": "class",
+      "description": "Manages quorum requirements for consensus based on geometric proximity and weighted voting.",
+      "methods": {
+        "calculate_quorum": {
+          "description": "Calculates the required quorum size for a given region.",
+          "args": [
+            {
+              "name": "region_center",
+              "type": "Point"
+            },
+            {
+              "name": "radius",
+              "type": "float"
+            },
+            {
+              "name": "alpha",
+              "type": "float",
+              "default": 1.0
+            }
+          ],
+          "returns": "int"
+        },
+        "validate_votes": {
+          "description": "Validates if the received votes satisfy the weighted quorum.",
+          "args": [
+            {
+              "name": "votes",
+              "type": "List[Vote]"
+            },
+            {
+              "name": "total_weight",
+              "type": "float"
+            }
+          ],
+          "returns": "bool"
+        }
+      }
+    }
+  }
+}

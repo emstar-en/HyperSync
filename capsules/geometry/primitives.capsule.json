@@ -1,0 +1,35 @@
+{
+  "capsule": "hypersync.geometry.primitives",
+  "version": "1.0.0",
+  "components": {
+    "Point": {
+      "type": "class",
+      "description": "A point in the hyperbolic plane, represented in the Poincaré disk model.",
+      "properties": {
+        "x": { "type": "float", "description": "The x-coordinate." },
+        "y": { "type": "float", "description": "The y-coordinate." }
+      },
+      "methods": {
+        "complex": {
+          "description": "Returns the point as a complex number.",
+          "returns": "complex"
+        },
+        "magnitude": {
+          "description": "Returns the Euclidean magnitude of the point vector.",
+          "returns": "float"
+        },
+        "from_complex": {
+          "type": "static",
+          "description": "Creates a Point from a complex number.",
+          "args": [
+            { "name": "z", "type": "complex" }
+          ],
+          "returns": "Point"
+        }
+      },
+      "constraints": [
+        "magnitude < 1.0  # Must lie within the Poincaré disk"
+      ]
+    }
+  }
+}

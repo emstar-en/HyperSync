@@ -1,0 +1,311 @@
+{
+  "last_updated": "2026-01-09T02:54:45.842083Z",
+  "assembly": {
+    "path": "assembly",
+    "type": "folder"
+  },
+  "conformance": {
+    "path": "conformance",
+    "type": "folder"
+  },
+  "diagnostics": {
+    "path": "diagnostics",
+    "type": "folder"
+  },
+  "coord": {
+    "path": "coord",
+    "type": "folder"
+  },
+  "core": {
+    "path": "core",
+    "type": "folder"
+  },
+  "federation": {
+    "path": "federation",
+    "type": "folder"
+  },
+  "domain": {
+    "path": "domain",
+    "type": "folder"
+  },
+  "engine": {
+    "path": "engine",
+    "type": "folder"
+  },
+  "providers": {
+    "path": "providers",
+    "type": "folder"
+  },
+  "operators": {
+    "path": "operators",
+    "type": "folder"
+  },
+  "nvm": {
+    "path": "nvm",
+    "type": "folder"
+  },
+  "hypergraph": {
+    "path": "hypergraph",
+    "type": "folder"
+  },
+  "planner": {
+    "path": "planner",
+    "type": "folder"
+  },
+  "policy": {
+    "path": "policy",
+    "type": "folder"
+  },
+  "receipts": {
+    "path": "receipts",
+    "type": "folder"
+  },
+  "routing": {
+    "path": "routing",
+    "type": "folder"
+  },
+  "service": {
+    "path": "service",
+    "type": "folder"
+  },
+  "retrieval": {
+    "path": "retrieval",
+    "type": "folder"
+  },
+  "specpack": {
+    "path": "specpack",
+    "type": "folder"
+  },
+  "tools": {
+    "path": "tools",
+    "type": "folder"
+  },
+  "tuning": {
+    "path": "tuning",
+    "type": "folder"
+  },
+  "utils": {
+    "path": "utils",
+    "type": "folder"
+  },
+  "kappa": {
+    "path": "kappa",
+    "type": "folder"
+  },
+  "templates": {
+    "path": "templates",
+    "type": "folder"
+  },
+  "scripts": {
+    "path": "scripts",
+    "type": "folder"
+  },
+  "transport": {
+    "path": "transport",
+    "type": "folder"
+  },
+  "audio": {
+    "path": "audio",
+    "type": "folder"
+  },
+  "agua": {
+    "path": "agua",
+    "type": "folder"
+  },
+  "bootstrap": {
+    "path": "bootstrap",
+    "type": "folder"
+  },
+  "bft": {
+    "path": "bft",
+    "type": "folder"
+  },
+  "assistant": {
+    "path": "assistant",
+    "type": "folder"
+  },
+  "cicd": {
+    "path": "cicd",
+    "type": "folder"
+  },
+  "cli": {
+    "path": "cli",
+    "type": "folder"
+  },
+  "control": {
+    "path": "control",
+    "type": "folder"
+  },
+  "consensus": {
+    "path": "consensus",
+    "type": "folder"
+  },
+  "composition": {
+    "path": "composition",
+    "type": "folder"
+  },
+  "coordination": {
+    "path": "coordination",
+    "type": "folder"
+  },
+  "dimensional": {
+    "path": "dimensional",
+    "type": "folder"
+  },
+  "deployment": {
+    "path": "deployment",
+    "type": "folder"
+  },
+  "edge": {
+    "path": "edge",
+    "type": "folder"
+  },
+  "environment": {
+    "path": "environment",
+    "type": "folder"
+  },
+  "gates": {
+    "path": "gates",
+    "type": "folder"
+  },
+  "geometry": {
+    "path": "geometry",
+    "type": "folder"
+  },
+  "ico_network": {
+    "path": "ico_network",
+    "type": "folder"
+  },
+  "ico_sync": {
+    "path": "ico_sync",
+    "type": "folder"
+  },
+  "init": {
+    "path": "init",
+    "type": "folder"
+  },
+  "hyperbolic": {
+    "path": "hyperbolic",
+    "type": "folder"
+  },
+  "integration": {
+    "path": "integration",
+    "type": "folder"
+  },
+  "operator": {
+    "path": "operator",
+    "type": "folder"
+  },
+  "mesh": {
+    "path": "mesh",
+    "type": "folder"
+  },
+  "logic": {
+    "path": "logic",
+    "type": "folder"
+  },
+  "monitoring": {
+    "path": "monitoring",
+    "type": "folder"
+  },
+  "prompt": {
+    "path": "prompt",
+    "type": "folder"
+  },
+  "processors": {
+    "path": "processors",
+    "type": "folder"
+  },
+  "safety": {
+    "path": "safety",
+    "type": "folder"
+  },
+  "replication": {
+    "path": "replication",
+    "type": "folder"
+  },
+  "surreal": {
+    "path": "surreal",
+    "type": "folder"
+  },
+  "tui": {
+    "path": "tui",
+    "type": "folder"
+  },
+  "uir": {
+    "path": "uir",
+    "type": "folder"
+  },
+  "wiring": {
+    "path": "wiring",
+    "type": "folder"
+  },
+  "visualization": {
+    "path": "visualization",
+    "type": "folder"
+  },
+  "vector": {
+    "path": "vector",
+    "type": "folder"
+  },
+  "db": {
+    "path": "db",
+    "type": "folder"
+  },
+  "token": {
+    "path": "token",
+    "type": "folder"
+  },
+  "bridges": {
+    "path": "bridges",
+    "type": "folder"
+  },
+  "governance": {
+    "path": "governance",
+    "type": "folder"
+  },
+  "orchestrator": {
+    "path": "orchestrator",
+    "type": "folder"
+  },
+  "scheduler": {
+    "path": "scheduler",
+    "type": "folder"
+  },
+  "telemetry": {
+    "path": "telemetry",
+    "type": "folder"
+  },
+  "security": {
+    "path": "security",
+    "type": "folder"
+  },
+  "network": {
+    "path": "network",
+    "type": "folder"
+  },
+  "storage": {
+    "path": "storage",
+    "type": "folder"
+  },
+  "utilities": {
+    "path": "utilities",
+    "type": "folder"
+  },
+  "models": {
+    "path": "models",
+    "type": "folder"
+  },
+  "agents": {
+    "path": "agents",
+    "type": "folder"
+  },
+  "api": {
+    "path": "api",
+    "type": "folder"
+  },
+  "contrib": {
+    "path": "contrib",
+    "type": "folder"
+  }
+}

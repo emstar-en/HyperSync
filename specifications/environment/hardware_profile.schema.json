@@ -1,0 +1,177 @@
+{
+  "$id": "https://hypersync.dev/specs/environment/hardware_profile.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Environment-independent summary of a host's hardware characteristics for bootstrap and optimization.",
+  "properties": {
+    "class": {
+      "description": "Coarse class of hardware for tuning decisions.",
+      "enum": [
+        "ultra_light",
+        "light",
+        "standard",
+        "performance",
+        "accelerated",
+        "server",
+        "edge"
+      ],
+      "type": "string"
+    },
+    "constraints": {
+      "additionalProperties": true,
+      "description": "High-level policy or operational constraints for this profile.",
+      "properties": {
+        "max_model_size_gb": {
+          "description": "Soft upper bound on single-model size in gigabytes.",
+          "minimum": 0,
+          "type": "number"
+        },
+        "no_large_models": {
+          "description": "True if large models should be avoided by default.",
+          "type": "boolean"
+        },
+        "no_persistent_logs": {
+          "description": "True if persistent logging should be avoided.",
+          "type": "boolean"
+        },
+        "power_saving_mode": {
+          "description": "True if the system should favor power efficiency over performance.",
+          "type": "boolean"
+        }
+      },
+      "type": "object"
+    },
+    "id": {
+      "description": "Stable identifier for this hardware profile instance.",
+      "type": "string"
+    },
+    "metadata": {
+      "additionalProperties": true,
+      "description": "Free-form metadata for implementors and tooling.",
+      "type": "object"
+    },
+    "resources": {
+      "additionalProperties": false,
+      "properties": {
+        "accelerator": {
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "description": "Coarse class of accelerator, vendor-neutral.",
+              "enum": [
+                "none",
+                "integrated",
+                "discrete",
+                "tpu_like",
+                "other"
+              ],
+              "type": "string"
+            },
+            "memory_gb": {
+              "description": "Approximate accelerator memory in gigabytes, if present.",
+              "minimum": 0,
+              "type": "number"
+            },
+            "present": {
+              "description": "True if any accelerator is available (GPU, TPU-like, etc.).",
+              "type": "boolean"
+            }
+          },
+          "type": "object"
+        },
+        "cpu": {
+          "additionalProperties": false,
+          "properties": {
+            "approx_speed_class": {
+              "description": "Coarse CPU speed band.",
+              "enum": [
+                "very_low",
+                "low",
+                "medium",
+                "high",
+                "very_high"
+              ],
+              "type": "string"
+            },
+            "logical_cores": {
+              "description": "Total logical CPU cores visible to the runtime.",
+              "minimum": 1,
+              "type": "integer"
+            }
+          },
+          "type": "object"
+        },
+        "memory_gb": {
+          "description": "Approximate main memory available in gigabytes.",
+          "minimum": 0,
+          "type": "number"
+        },
+        "network": {
+          "additionalProperties": false,
+          "properties": {
+            "connectivity": {
+              "description": "Typical connectivity pattern for this host.",
+              "enum": [
+                "offline_preferred",
+                "intermittent",
+                "online"
+              ],
+              "type": "string"
+            },
+            "latency_class": {
+              "description": "Approximate external network latency band.",
+              "enum": [
+                "very_low",
+                "low",
+                "medium",
+                "high",
+                "very_high"
+              ],
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "storage": {
+          "additionalProperties": false,
+          "properties": {
+            "size_gb": {
+              "description": "Approximate storage size in gigabytes.",
+              "minimum": 0,
+              "type": "number"
+            },
+            "speed_class": {
+              "description": "Coarse storage speed band (sequential+random).",
+              "enum": [
+                "very_low",
+                "low",
+                "medium",
+                "high",
+                "very_high"
+              ],
+              "type": "string"
+            }
+          },
+          "type": "object"
+        }
+      },
+      "required": [
+        "cpu",
+        "memory_gb"
+      ],
+      "type": "object"
+    },
+    "summary": {
+      "description": "Short human-readable description of the hardware.",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "summary",
+    "class",
+    "resources"
+  ],
+  "title": "HyperSync Hardware Profile",
+  "type": "object"
+}

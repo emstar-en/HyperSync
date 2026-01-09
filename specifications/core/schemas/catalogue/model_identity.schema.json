@@ -1,0 +1,51 @@
+{
+  "$id": "https://hypersync.ai/schemas/catalogue/model_identity.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "Core identity and lineage information for catalogued models",
+  "properties": {
+    "content_hash": {
+      "description": "SHA256 hash of model weights",
+      "pattern": "^sha256:[a-f0-9]{64}$",
+      "type": "string"
+    },
+    "family_id": {
+      "description": "Shared across all related models in the family",
+      "format": "uuid",
+      "type": "string"
+    },
+    "generation": {
+      "description": "Number of tuning steps from base model",
+      "minimum": 0,
+      "type": "integer"
+    },
+    "lineage_path": {
+      "description": "Full path from base to current model",
+      "items": {
+        "format": "uuid",
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "model_id": {
+      "description": "Unique identifier for this model instance",
+      "format": "uuid",
+      "type": "string"
+    },
+    "parent_id": {
+      "description": "Direct parent model ID (null for base models)",
+      "format": "uuid",
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "required": [
+    "model_id",
+    "content_hash",
+    "family_id",
+    "generation"
+  ],
+  "title": "Model Identity",
+  "type": "object"
+}

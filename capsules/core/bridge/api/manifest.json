@@ -1,0 +1,99 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "schema_version": "v1.0.0",
+  "id": "hypersync.bridge.api",
+  "version": "1.1.0",
+  "type": "interface",
+  "description": "Primary boundary and virtualization gateway capsule for HyperSync. Manages external connectivity, multi-tenant routing, and safe translation between untrusted networks and virtualized HyperSync environments.",
+  "summary": "Secure, multi-protocol, multi-tenant gateway for users, tools, and services to interact with virtualized HyperSync environments.",
+  "tags": [
+    "bridge",
+    "api",
+    "gateway",
+    "http",
+    "websocket",
+    "grpc",
+    "virtualization",
+    "boundary"
+  ],
+  "capabilities": {
+    "provides": [
+      "bridge.access.rest",
+      "bridge.access.websocket",
+      "bridge.access.grpc",
+      "bridge.auth.gateway",
+      "bridge.session.control",
+      "bridge.telemetry.stream"
+    ],
+    "requires": [
+      "hypersync.core.environment",
+      "hypersync.core.consensus",
+      "hypersync.core.environment_directory",
+      "hypersync.agent.standard",
+      "auth.identity.core",
+      "telemetry.core"
+    ],
+    "input_schemas": [
+      "hypersync.schemas.bridge.envelope.v1",
+      "hypersync.schemas.bridge.ws_message.v1"
+    ],
+    "output_schemas": [
+      "hypersync.schemas.bridge.envelope.v1",
+      "hypersync.schemas.bridge.event.v1"
+    ],
+    "determinism_tier": "D2_statistical",
+    "latency_class": "interactive_realtime"
+  },
+  "interfaces": {
+    "python": "impl.src.bridge_api:ApiGateway",
+    "rest": "/api/v1",
+    "websocket": "/ws/v1",
+    "grpc": "hypersync.bridge.api.v1",
+    "admin_rest": "/api/v1/admin"
+  },
+  "governance": {
+    "tier": "critical_boundary",
+    "audit_level": "high",
+    "owner": "hypersync-platform",
+    "reviewed_by": [
+      "security-lead",
+      "api-governance",
+      "platform-architecture"
+    ],
+    "change_control": {
+      "requires_security_review": true,
+      "requires_load_test": true,
+      "rollout_strategy": "canary"
+    }
+  },
+  "runtime": {
+    "language": "python",
+    "requires_gpu": false,
+    "timeout_ms": 500,
+    "memory_limit_mb": 512,
+    "http_versions": [
+      "1.1",
+      "2"
+    ],
+    "supports_websocket": true,
+    "max_concurrent_connections": 5000
+  },
+  "security": {
+    "trust_zone": "boundary",
+    "sandbox_class": "net_gateway",
+    "max_trust_level": "boundary_gateway",
+    "notes": "The ONLY capsule authorized to bind public network ports and terminate TLS."
+  },
+  "virtualization": {
+    "supports_multi_tenant": true,
+    "supports_multi_environment": true,
+    "default_isolation_policy": "tenant_and_environment",
+    "environment_routing_mode": "directory_lookup"
+  },
+  "lineage": {
+    "derived_from": [
+      "hypersync.bridge.api@1.0.0"
+    ],
+    "supersedes": []
+  }
+}

@@ -1,0 +1,82 @@
+{
+  "$id": "https://example.org/ico/icod.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "determinism": {
+      "type": "boolean"
+    },
+    "dimension": {
+      "minimum": 1,
+      "type": "integer"
+    },
+    "ico_profile": {
+      "oneOf": [
+        {
+          "enum": [
+            "E",
+            "H",
+            "S"
+          ],
+          "type": "string"
+        },
+        {
+          "items": {
+            "enum": [
+              "E",
+              "H",
+              "S"
+            ],
+            "type": "string"
+          },
+          "minItems": 1,
+          "type": "array"
+        }
+      ]
+    },
+    "models_supported": {
+      "items": {
+        "enum": [
+          "lorentz",
+          "poincare_ball",
+          "half_space"
+        ],
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "numeric_policy": {
+      "properties": {
+        "max_iters": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "retraction_strategy": {
+          "enum": [
+            "native",
+            "approx"
+          ],
+          "type": "string"
+        },
+        "tol": {
+          "exclusiveMinimum": 0,
+          "type": "number"
+        }
+      },
+      "type": "object"
+    },
+    "ops": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "type": "array"
+    }
+  },
+  "required": [
+    "ico_profile",
+    "dimension",
+    "ops",
+    "version"
+  ],
+  "type": "object"
+}

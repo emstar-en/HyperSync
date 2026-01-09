@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "id": "capsule.subsystems.coordination",
+    "type": "vnes_capsule",
+    "version": "0.1.0",
+    "status": "ALPHA"
+  },
+  "encapsulation": {
+    "target_spec": "specifications/subsystems/coordination.spec.json",
+    "isolation_level": "process",
+    "state_management": "geometric_state_db"
+  },
+  "interfaces": {
+    "ingress": [
+      "geometric_permissions",
+      "budget_tracking"
+    ],
+    "egress": [
+      "preemption_events",
+      "cost_updates"
+    ]
+  },
+  "vnes_config": {
+    "runtime": "python_3_11_specialized",
+    "resources": {
+      "cpu": "low",
+      "memory": "medium"
+    }
+  }
+}

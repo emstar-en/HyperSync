@@ -1,0 +1,142 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "migration_policy": "replace-old-techniques",
+  "properties": {
+    "batch_size": {
+      "migration_policy": "replace-old-techniques",
+      "minimum": 1,
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "type": "integer",
+      "unreleased": true
+    },
+    "eval_gates": {
+      "migration_policy": "replace-old-techniques",
+      "properties": {
+        "citation_precision": {
+          "maximum": 1,
+          "migration_policy": "replace-old-techniques",
+          "minimum": 0,
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "number",
+          "unreleased": true
+        },
+        "citation_recall": {
+          "maximum": 1,
+          "migration_policy": "replace-old-techniques",
+          "minimum": 0,
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "number",
+          "unreleased": true
+        },
+        "ece": {
+          "maximum": 1,
+          "migration_policy": "replace-old-techniques",
+          "minimum": 0,
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "number",
+          "unreleased": true
+        },
+        "hallucination_rate": {
+          "maximum": 1,
+          "migration_policy": "replace-old-techniques",
+          "minimum": 0,
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "number",
+          "unreleased": true
+        },
+        "jurisdiction_accuracy": {
+          "maximum": 1,
+          "migration_policy": "replace-old-techniques",
+          "minimum": 0,
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "number",
+          "unreleased": true
+        },
+        "migration_policy": "replace-old-techniques",
+        "release_status": "pre-alpha",
+        "stability": "experimental",
+        "temporal_correctness": {
+          "maximum": 1,
+          "migration_policy": "replace-old-techniques",
+          "minimum": 0,
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "number",
+          "unreleased": true
+        },
+        "unreleased": true
+      },
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "type": "object",
+      "unreleased": true
+    },
+    "loss_weights": {
+      "migration_policy": "replace-old-techniques",
+      "properties": {
+        "ce": {
+          "migration_policy": "replace-old-techniques",
+          "minimum": 0,
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "number",
+          "unreleased": true
+        },
+        "citation_coverage": {
+          "migration_policy": "replace-old-techniques",
+          "minimum": 0,
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "number",
+          "unreleased": true
+        },
+        "citation_precision": {
+          "migration_policy": "replace-old-techniques",
+          "minimum": 0,
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "number",
+          "unreleased": true
+        },
+        "migration_policy": "replace-old-techniques",
+        "release_status": "pre-alpha",
+        "stability": "experimental",
+        "unreleased": true
+      },
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "type": "object",
+      "unreleased": true
+    },
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "stability": "experimental",
+    "top_k": {
+      "maximum": 20,
+      "migration_policy": "replace-old-techniques",
+      "minimum": 1,
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "type": "integer",
+      "unreleased": true
+    },
+    "unreleased": true
+  },
+  "release_status": "pre-alpha",
+  "required": [
+    "batch_size",
+    "top_k",
+    "loss_weights",
+    "eval_gates"
+  ],
+  "stability": "experimental",
+  "title": "GroundedTrainerConfig",
+  "type": "object",
+  "unreleased": true
+}

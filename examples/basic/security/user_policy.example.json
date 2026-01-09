@@ -1,0 +1,54 @@
+{
+  "authentication": {
+    "enabled": false,
+    "method": "none"
+  },
+  "hierarchy": {
+    "child_nodes": [],
+    "inherit_policies": true,
+    "parent_nodes": []
+  },
+  "metadata": {
+    "created_at": "2024-01-15T10:00:00Z",
+    "updated_at": "2024-01-15T10:00:00Z"
+  },
+  "nld_protection": {
+    "audit_medium_threats": true,
+    "auto_block_critical": true,
+    "enabled": true,
+    "max_nld_score": 6
+  },
+  "owner": {
+    "id": "alice",
+    "priority": 50,
+    "type": "user"
+  },
+  "policy_id": "user_alice_policy",
+  "rules": [
+    {
+      "action": "nvm:read",
+      "effect": "allow",
+      "rule_id": "allow_nvm_read"
+    },
+    {
+      "action": "nvm:write:alice/*",
+      "effect": "allow",
+      "rule_id": "allow_nvm_write_own"
+    },
+    {
+      "action": "nvm:write:*",
+      "effect": "deny",
+      "rule_id": "deny_nvm_write_others"
+    },
+    {
+      "action": "ico:route",
+      "effect": "allow",
+      "rule_id": "allow_ico_route"
+    },
+    {
+      "action": "policy:*",
+      "effect": "audit",
+      "rule_id": "audit_policy_access"
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "intent_kind": "ReductionIntent",
+  "op_ref": "op://opt/sandbox_small/probe",
+  "params": {
+    "probe": true
+  },
+  "profile": "BASIC",
+  "task": "opt_sandbox_small_probe"
+}

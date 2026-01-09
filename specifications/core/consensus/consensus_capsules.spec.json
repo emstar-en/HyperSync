@@ -1,0 +1,47 @@
+{
+  "consensus_capsules": {
+    "meta": {
+      "description": "Capsule definitions for consensus subsystems",
+      "status": "ALPHA",
+      "version": "1.0.0"
+    },
+    "definitions": {
+      "hypersync.consensus.logic": {
+        "capsule_path": "capsules/consensus/logic",
+        "manifest_file": "manifest.json",
+        "description": "Algorithmic logic and state machine definitions for consensus mechanisms",
+        "type": "essential",
+        "base_spec": "specifications/core/consensus_logic.spec.json"
+      },
+      "hypersync.consensus.advanced": {
+        "capsule_path": "capsules/consensus/advanced",
+        "manifest_file": "manifest.json",
+        "description": "Robust and stochastic geometric consensus algorithms",
+        "type": "advanced",
+        "base_spec": "specifications/geometry/advanced_consensus.spec.json"
+      }
+    },
+    "mathematical_foundations": {
+      "capsule_isolation": {
+        "theory": "Consensus logic encapsulated to prevent state leakage between protocols",
+        "invariant": "State(Capsule_A) intersection State(Capsule_B) = Empty"
+      }
+    },
+    "fault_detection": {
+      "protocol_violation": {
+        "detection": "Message sequence does not match FSM definition",
+        "action": "Drop message and penalize peer"
+      }
+    },
+    "detailed_mechanisms": {
+      "capsule_loading": {
+        "steps": [
+          "Load Consensus Spec",
+          "Initialize State Machine",
+          "Bind Network Transport",
+          "Start Event Loop"
+        ]
+      }
+    }
+  }
+}

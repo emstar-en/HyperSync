@@ -1,0 +1,204 @@
+{
+  "path": "/current/specifications/core",
+  "id": "1XWaSTEfYvE3k6OtY0wtYOjesPY2LvCsA",
+  "contents": [
+    {
+      "name": "service_tiers.spec.json",
+      "id": "1CPeWuiQ_Z1HvTBjwTKHw_F0o2Eklhjjm",
+      "type": "file"
+    },
+    {
+      "name": "vnes_libraries.spec.json",
+      "id": "16TsqcJspCWFJSqtC0UOlkj2sxgfLw9Jz",
+      "type": "file"
+    },
+    {
+      "name": "capsule_definitions_v1.4.spec.json",
+      "id": "1OgC7jyw0XHO0am-J4Dgug6kNhcFKKyta",
+      "type": "file"
+    },
+    {
+      "name": "tier_definitions",
+      "id": "11ZziXH7DRvTgvrLogR11OPrdA9IAPLeR",
+      "type": "folder"
+    },
+    {
+      "name": "SERVICE_TIERS.md",
+      "id": "1IkSw0kDizSl5A8IOeUEfqHp-rjiDVQv8",
+      "type": "file"
+    },
+    {
+      "name": "index.json",
+      "id": "12XYGqZzlyWCY6IQio2VNACzRgXZvIkSc",
+      "type": "file"
+    },
+    {
+      "name": "sync_descriptor_extended.schema.json",
+      "id": "1yzv9ki0mc2xBQIkbeifV5P8xflsmGKYJ",
+      "type": "file"
+    },
+    {
+      "name": "vectors",
+      "id": "1tYeqJQ7JjiR7O8XR-VYYfjpz_ti91aui",
+      "type": "folder"
+    },
+    {
+      "name": "docs",
+      "id": "1LCP0Q7HuCZ7Cfb7NxkdVq_FJQi7nZzXQ",
+      "type": "folder"
+    },
+    {
+      "name": "conformance",
+      "id": "1mTHOsEzOepvF4nvxjgRxUoRBMCP_8Y7-",
+      "type": "folder"
+    },
+    {
+      "name": "modules",
+      "id": "1HhYpZTHTj_P3igSVRGIRKPuXCpHU23pE",
+      "type": "folder"
+    },
+    {
+      "name": "components",
+      "id": "1OoZNK8xD-zQUk7iZDgD1QW-6Zm2lYEXe",
+      "type": "folder"
+    },
+    {
+      "name": "scripts",
+      "id": "1YVW6IWflJ8Tw9oIDWsV2enUEqt10yWfy",
+      "type": "folder"
+    },
+    {
+      "name": "apis",
+      "id": "1Nv1uijgU8AJSZ4FuC7ZSZfajDOWFjplm",
+      "type": "folder"
+    },
+    {
+      "name": "originals",
+      "id": "1DelZEuIH5pJWMcIfPz-6Hbh3wWmkz5dq",
+      "type": "folder"
+    },
+    {
+      "name": "refs",
+      "id": "1y4wFMbP3rVAc_nt1el7hm9R5g6w7_jAY",
+      "type": "folder"
+    },
+    {
+      "name": "bridge.schema.json",
+      "id": "1GA3fVm29GNq9kRy72dRD9sEaPcFYPmv3",
+      "type": "file"
+    },
+    {
+      "name": "bundles",
+      "id": "1b5pW1mnqMTu20aX_T8pavgCPJiIN1Hdz",
+      "type": "folder"
+    },
+    {
+      "name": "math",
+      "id": "16IA7Nh6AB3shjbuOzsEehR2WGF7AiUkb",
+      "type": "folder"
+    },
+    {
+      "name": "coverage",
+      "id": "1WaXJPW9-jWX75rJUQfL0SVx6s-nHJOee",
+      "type": "folder"
+    },
+    {
+      "name": "tools",
+      "id": "1dBvwCPCuDI6qCnDyPMrDU3o2QCVOAPFS",
+      "type": "folder"
+    },
+    {
+      "name": "federation.schema.json",
+      "id": "1EcjRXisnp0CJmGzH_dqqyL-hQjfJkiQN",
+      "type": "file"
+    },
+    {
+      "name": "schemas",
+      "id": "1F288cijLVP3UtQiRM2K_eKNou-nCzMLd",
+      "type": "folder"
+    },
+    {
+      "name": "examples",
+      "id": "1tA_IPmV9dBKkXEcaLD-6OsX7F3E9FzNR",
+      "type": "folder"
+    },
+    {
+      "name": "specs",
+      "id": "15ae8ZlU8zlZkKEBcpcubYAClYU5VyzBB",
+      "type": "folder"
+    },
+    {
+      "name": "policies",
+      "id": "1pzHayRyxvpzvkem-pKHKkzzA0XdE36Oy",
+      "type": "folder"
+    },
+    {
+      "name": "legal",
+      "id": "1ujg8XN9lKJW6bqn-6xAr3af3Z524N8Jc",
+      "type": "folder"
+    },
+    {
+      "name": "bundle.jsonl",
+      "id": "1rf4pE4VfJ_9Ssl4vb1exasjEg14T68Kp",
+      "type": "file"
+    },
+    {
+      "name": "determinism_tiers.json",
+      "id": "1C8rqqY3C2bT0GYUstPasbAFA4usdj1UN",
+      "type": "file"
+    },
+    {
+      "name": "factory_catalogue_vnes_aligned.spec.json",
+      "id": "1v6QJ5CB3hiiAM6gLb8FL-9rlsOWe_JES",
+      "type": "file"
+    },
+    {
+      "name": "MODEL_README.md",
+      "id": "1uUI6OEkeseCXSrlQe8LSuNcgFGzmjSqg",
+      "type": "file"
+    },
+    {
+      "name": "overview.md",
+      "id": "103LCQYlpvqtuPvR4SIgV8aEdwFg-OlCd",
+      "type": "file"
+    },
+    {
+      "name": "spec.index.json",
+      "id": "1d397sXDcvEfcrDtTrIw6GTcQnLguy0DK",
+      "type": "file"
+    },
+    {
+      "name": "format_routing.spec.json",
+      "id": "1SACETUpsdEiF749mYQWJv6E-xVAeLbAZ",
+      "type": "file"
+    },
+    {
+      "name": "geometry_enhancements.json",
+      "id": "1TpyO72Sk0HsGns1Shu0Yhh0AgHJSZDtI",
+      "type": "file"
+    },
+    {
+      "name": "launcher_profile.json",
+      "id": "1GLQX8ajdoip228JU6rZB8g1OmcV-3AqP",
+      "type": "file"
+    },
+    {
+      "name": "ld.namespace.bindings.json",
+      "id": "1kvMhWpmeZ-M6a3H6quofACT6kkY9BxIG",
+      "type": "file"
+    },
+    {
+      "name": "LEGAL_README.md",
+      "id": "1imRzGBl25sQSloRdplQhQr9_0IHcA88J",
+      "type": "file"
+    },
+    {
+      "name": "targets.spec.json",
+      "type": "file"
+    },
+    {
+      "name": "stunir_profile.spec.json",
+      "type": "file"
+    }
+  ]
+}

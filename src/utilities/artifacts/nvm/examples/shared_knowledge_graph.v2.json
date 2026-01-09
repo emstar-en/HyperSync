@@ -1,0 +1,71 @@
+{
+  "assignments": [
+    {
+      "access_mode": "read_write",
+      "assignment_id": "nvm://kb/research_group::model_group::group://research",
+      "assignment_type": "model_group",
+      "created_at": "2025-11-16T00:00:00Z",
+      "metadata": {
+        "shared_across": [
+          "model://research/alpha",
+          "model://research/beta",
+          "model://research/gamma"
+        ]
+      },
+      "priority": 8,
+      "target_id": "group://research",
+      "target_name": "Research Model Group"
+    }
+  ],
+  "block_id": "nvm://kb/research_group",
+  "class": "knowledge_graph",
+  "codebook": {
+    "bits_per_code": 8,
+    "method": "opq",
+    "n_subvectors": 16,
+    "training_size": 20000
+  },
+  "created_at": "2025-11-16T00:00:00Z",
+  "description": "Shared knowledge graph for research model group",
+  "directories": [
+    {
+      "allowed_extensions": [
+        ".pdf",
+        ".md",
+        ".txt"
+      ],
+      "auto_embed": true,
+      "directory_id": "research_papers",
+      "max_size_mb": 2048,
+      "metadata": {},
+      "path": "./data/research/papers",
+      "purpose": "Research papers and publications",
+      "watch_changes": true
+    }
+  ],
+  "geometry": {
+    "curvature": -1.0,
+    "dimension": 1024,
+    "metric": "poincare",
+    "radius_cap": 0.98,
+    "space": "poincare_ball",
+    "transport": "parallel"
+  },
+  "index": {
+    "ef_construction": 300,
+    "ef_search": 150,
+    "index_type": "hnsw_hyperbolic",
+    "m_neighbors": 48,
+    "quantization": "opq"
+  },
+  "max_size_mb": 5120,
+  "max_vectors": 500000,
+  "metadata": {
+    "collaboration": true,
+    "sync_enabled": true
+  },
+  "name": "Research Group Knowledge Base",
+  "preloads": [],
+  "retention_days": null,
+  "updated_at": "2025-11-16T00:00:00Z"
+}

@@ -1,0 +1,68 @@
+{
+  "audit_trail": {
+    "capture_receipts": true,
+    "enabled": true,
+    "retention_days": 365
+  },
+  "composition_logic": {
+    "operator": "AND",
+    "predicates": [
+      {
+        "attestation_type": "geometric.cross_model_curvature",
+        "required": true,
+        "weight": 1.0
+      },
+      {
+        "attestation_type": "algebraic.byzantine_detection",
+        "required": true,
+        "weight": 1.0
+      },
+      {
+        "attestation_type": "divergence.cycle_detection",
+        "required": true,
+        "weight": 1.0
+      }
+    ]
+  },
+  "failure_handling": {
+    "escalation": {
+      "governance_ref": "governance-cab-001",
+      "notification_channels": [
+        "audit_log",
+        "ops_console"
+      ]
+    },
+    "retry_policy": {
+      "alternate_models": [
+        "poincare_ball",
+        "klein_disk"
+      ],
+      "backoff_strategy": "exponential",
+      "max_retries": 3
+    },
+    "strategy": "retry_different_model"
+  },
+  "kind": "AttestationPolicy",
+  "policy_id": "policy-strict-consensus",
+  "required_attestations": {
+    "algebraic": {
+      "byzantine_detection": true,
+      "consistency_check": true
+    },
+    "divergence": {
+      "cycle_detection": true,
+      "growth_monitoring": true,
+      "numeric_stall_detection": true
+    },
+    "geometric": {
+      "cross_model_curvature": true,
+      "metric_compatibility": true,
+      "numerical_stability": true,
+      "topology_validation": false
+    },
+    "temporal": {
+      "braid_equivalence": false,
+      "causal_consistency": true
+    }
+  }
+}

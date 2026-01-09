@@ -1,0 +1,47 @@
+# Example: Hybrid Mode Configuration
+# Mixed HyperSync and Kubernetes workload management
+
+integration_mode: hybrid
+
+capabilities:
+ capability_detection: true
+ hyperbolic_placement: true
+ token_accounting: true
+ agent_composition: true
+ direct_scheduling: true
+ lifecycle_management: true
+ resource_enforcement: true
+ external_sync: true
+ policy_enforcement: true
+ approval_gates: true
+
+config:
+ # Workload selection
+ scheduling:
+ # HyperSync manages workloads with this label
+ native_selector: "hypersync.io/managed=true"
+ # Fall back to K8s if HyperSync unavailable
+ fallback_to_external: true
+ # Sync interval
+ sync_interval: 10
+
+ # External orchestrator
+ external_orchestrator:
+ type: kubernetes
+ api_endpoint: https://k8s-api.example.com
+ credentials: /etc/hypersync/k8s-credentials.yaml
+ bidirectional_sync: true
+
+ # Governance
+ governance:
+ require_approval_for:
+ - workload_migration
+ - resource_scaling
+ - mode_transition
+ approval_timeout: 3600
+
+ # Resource management
+ resources:
+ enforce_limits: true
+ allow_overcommit: false
+ reservation_buffer: 0.1

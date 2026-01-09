@@ -1,0 +1,61 @@
+{
+  "config_files": [
+    {
+      "content": "[MASTER]\\nignore=CVS\\n[MESSAGES CONTROL]\\ndisable=C0111\\n",
+      "path": "~/.pylintrc"
+    }
+  ],
+  "description": "Python development environment with common tools",
+  "environment_vars": {
+    "PIP_REQUIRE_VIRTUALENV": "false",
+    "PYTHONPATH": "/usr/local/lib/python3/site-packages"
+  },
+  "metadata": {
+    "author": "HyperSync Team",
+    "created_at": "2025-01-01T00:00:00Z"
+  },
+  "name": "Python Development",
+  "packages": [
+    {
+      "manager": "apt",
+      "name": "python3"
+    },
+    {
+      "manager": "apt",
+      "name": "python3-pip"
+    },
+    {
+      "manager": "apt",
+      "name": "python3-venv"
+    },
+    {
+      "manager": "pip",
+      "name": "pylint"
+    },
+    {
+      "manager": "pip",
+      "name": "black"
+    },
+    {
+      "manager": "pip",
+      "name": "pytest"
+    },
+    {
+      "manager": "pip",
+      "name": "ipython"
+    }
+  ],
+  "profile_id": "profile-python-dev",
+  "scripts": [
+    {
+      "content": "#!/bin/bash\\npython3 -m venv ~/.venv\\nsource ~/.venv/bin/activate\\n",
+      "interpreter": "bash",
+      "name": "setup_venv"
+    }
+  ],
+  "tags": [
+    "python",
+    "development",
+    "programming"
+  ]
+}

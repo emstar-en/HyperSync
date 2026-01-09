@@ -1,0 +1,174 @@
+{
+  "$id": "https://hypersync.io/schemas/security/agent_policy/v1",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "Policy definitions for agent-based access control and clearance enforcement",
+  "properties": {
+    "clearance_matrix": {
+      "description": "Clearance level hierarchy and inheritance",
+      "properties": {
+        "inheritance": {
+          "additionalProperties": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "description": "Level inheritance rules",
+          "type": "object"
+        },
+        "levels": {
+          "description": "Ordered clearance levels (lowest to highest)",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "description": {
+      "description": "Policy purpose and scope",
+      "type": "string"
+    },
+    "metadata": {
+      "properties": {
+        "created_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "created_by": {
+          "type": "string"
+        },
+        "updated_at": {
+          "format": "date-time",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "name": {
+      "description": "Human-readable policy name",
+      "type": "string"
+    },
+    "policy_id": {
+      "description": "Unique policy identifier",
+      "pattern": "^policy-[a-z0-9-]+$",
+      "type": "string"
+    },
+    "rules": {
+      "description": "Policy rules",
+      "items": {
+        "properties": {
+          "actions": {
+            "description": "Allowed/denied actions",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "conditions": {
+            "description": "Conditional constraints",
+            "properties": {
+              "clearance_escalation": {
+                "description": "Allow clearance escalation through agent",
+                "type": "boolean"
+              },
+              "max_delegation_depth": {
+                "maximum": 10,
+                "minimum": 1,
+                "type": "integer"
+              },
+              "require_redaction": {
+                "description": "Require output redaction",
+                "type": "boolean"
+              }
+            },
+            "type": "object"
+          },
+          "effect": {
+            "description": "Rule effect",
+            "enum": [
+              "allow",
+              "deny"
+            ],
+            "type": "string"
+          },
+          "principals": {
+            "description": "Principal selectors",
+            "properties": {
+              "clearance_levels": {
+                "items": {
+                  "enum": [
+                    "public",
+                    "internal",
+                    "restricted",
+                    "confidential",
+                    "secret"
+                  ],
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "ids": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "types": {
+                "items": {
+                  "enum": [
+                    "user",
+                    "agent",
+                    "service",
+                    "system"
+                  ],
+                  "type": "string"
+                },
+                "type": "array"
+              }
+            },
+            "type": "object"
+          },
+          "resources": {
+            "description": "Resource selectors",
+            "properties": {
+              "capabilities": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "nodes": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              }
+            },
+            "type": "object"
+          },
+          "rule_id": {
+            "description": "Unique rule identifier",
+            "type": "string"
+          }
+        },
+        "required": [
+          "rule_id",
+          "effect",
+          "principals",
+          "actions"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "policy_id",
+    "version",
+    "rules"
+  ],
+  "title": "HyperSync Agent Policy Schema",
+  "type": "object"
+}

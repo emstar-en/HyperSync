@@ -1,0 +1,48 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "migration_policy": "replace-old-techniques",
+  "properties": {
+    "dp_aggregates_only": {
+      "migration_policy": "replace-old-techniques",
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "type": "boolean",
+      "unreleased": true
+    },
+    "legal_hold_override": {
+      "migration_policy": "replace-old-techniques",
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "type": "boolean",
+      "unreleased": true
+    },
+    "max_bytes_per_actor": {
+      "migration_policy": "replace-old-techniques",
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "type": "integer",
+      "unreleased": true
+    },
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "stability": "experimental",
+    "ttl_ms": {
+      "migration_policy": "replace-old-techniques",
+      "minimum": 1000,
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "type": "integer",
+      "unreleased": true
+    },
+    "unreleased": true
+  },
+  "release_status": "pre-alpha",
+  "required": [
+    "ttl_ms",
+    "legal_hold_override"
+  ],
+  "stability": "experimental",
+  "title": "RetentionPolicy",
+  "type": "object",
+  "unreleased": true
+}

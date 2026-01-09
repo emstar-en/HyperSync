@@ -1,0 +1,300 @@
+{
+  "$schema": "ext://fcbd7642ed3f",
+  "definitions": {
+    "ConformanceReport": {
+      "properties": {
+        "assertions": {
+          "items": {
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "id": {
+          "type": "string"
+        },
+        "passed": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "passed"
+      ],
+      "type": "object"
+    },
+    "DimensionAuditReport": {
+      "properties": {
+        "advisory": {
+          "type": "boolean"
+        },
+        "dims_current": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "dims_default": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "hard_cap": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "notes": {
+          "type": "string"
+        },
+        "soft_max": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "tier": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "tier",
+        "dims_current"
+      ],
+      "type": "object"
+    },
+    "Empty": {
+      "additionalProperties": false,
+      "properties": {},
+      "type": "object"
+    },
+    "ExecutePlanInput": {
+      "additionalProperties": false,
+      "properties": {
+        "plan_id": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "plan_id"
+      ],
+      "type": "object"
+    },
+    "GenericAck": {
+      "additionalProperties": true,
+      "properties": {
+        "message": {
+          "type": "string"
+        },
+        "ok": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "ok"
+      ],
+      "type": "object"
+    },
+    "ListGraphsOutput": {
+      "properties": {
+        "graphs": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "graphs"
+      ],
+      "type": "object"
+    },
+    "LoadGraphInput": {
+      "additionalProperties": true,
+      "properties": {
+        "graph": {
+          "type": "object"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "graph"
+      ],
+      "type": "object"
+    },
+    "PlanRouteInput": {
+      "additionalProperties": true,
+      "properties": {
+        "constraints": {
+          "type": "object"
+        },
+        "dst": {
+          "type": "string"
+        },
+        "src": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "src",
+        "dst"
+      ],
+      "type": "object"
+    },
+    "PlanRouteOutput": {
+      "properties": {
+        "plan_id": {
+          "type": "string"
+        },
+        "preview": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "plan_id"
+      ],
+      "type": "object"
+    },
+    "RouteInput": {
+      "additionalProperties": true,
+      "properties": {
+        "dst": {
+          "type": "string"
+        },
+        "max_hops": {
+          "minimum": 1,
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "mode": {
+          "enum": [
+            "geodesic",
+            "geoticketed",
+            null
+          ],
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "src": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "src",
+        "dst"
+      ],
+      "type": "object"
+    },
+    "RouteOutput": {
+      "properties": {
+        "path": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "receipt": {
+          "type": "object"
+        },
+        "slo": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "path",
+        "receipt"
+      ],
+      "type": "object"
+    },
+    "RunConformanceInput": {
+      "additionalProperties": false,
+      "properties": {
+        "vector_id": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "vector_id"
+      ],
+      "type": "object"
+    },
+    "SetDimsInput": {
+      "additionalProperties": false,
+      "properties": {
+        "dims": {
+          "minimum": 1,
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "dims"
+      ],
+      "type": "object"
+    },
+    "SetRoutingModeInput": {
+      "additionalProperties": false,
+      "properties": {
+        "mode": {
+          "enum": [
+            "geodesic",
+            "geoticketed"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "mode"
+      ],
+      "type": "object"
+    },
+    "SetTierInput": {
+      "additionalProperties": false,
+      "properties": {
+        "tier": {
+          "enum": [
+            "Core",
+            "Basic",
+            "Pro",
+            "Advanced",
+            "QM Venture",
+            "QM Campaign",
+            "QM Imperium"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "tier"
+      ],
+      "type": "object"
+    },
+    "SetTierOutput": {
+      "properties": {
+        "applied_tier": {
+          "type": "string"
+        },
+        "ok": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "ok",
+        "applied_tier"
+      ],
+      "type": "object"
+    }
+  },
+  "title": "HyperSync Autopilot Tool Schemas",
+  "type": "object"
+}

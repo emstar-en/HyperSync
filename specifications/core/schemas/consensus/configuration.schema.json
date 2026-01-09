@@ -1,0 +1,84 @@
+{
+  "$id": "https://hypersync.ai/schemas/consensus/configuration.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "Applied consensus configuration for stacks/assemblies",
+  "properties": {
+    "config_id": {
+      "type": "string"
+    },
+    "created_at": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "created_by": {
+      "type": "string"
+    },
+    "mechanism_id": {
+      "type": "string"
+    },
+    "metadata": {
+      "type": "object"
+    },
+    "metrics": {
+      "properties": {
+        "agreements_reached": {
+          "type": "integer"
+        },
+        "average_latency_ms": {
+          "type": "number"
+        },
+        "disagreements": {
+          "type": "integer"
+        },
+        "rounds_completed": {
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
+    "nodes": {
+      "description": "Node IDs participating in consensus",
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "parameters": {
+      "type": "object"
+    },
+    "status": {
+      "enum": [
+        "pending",
+        "active",
+        "suspended",
+        "failed"
+      ],
+      "type": "string"
+    },
+    "target_id": {
+      "type": "string"
+    },
+    "target_type": {
+      "enum": [
+        "stack",
+        "assembly",
+        "deployment",
+        "node_group"
+      ],
+      "type": "string"
+    },
+    "updated_at": {
+      "format": "date-time",
+      "type": "string"
+    }
+  },
+  "required": [
+    "config_id",
+    "target_type",
+    "target_id",
+    "mechanism_id",
+    "created_at"
+  ],
+  "title": "Consensus Configuration",
+  "type": "object"
+}

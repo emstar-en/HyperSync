@@ -1,0 +1,93 @@
+{
+  "geometry_control_rulesets": {
+    "bft_consensus_receipt_integration": {
+      "enabled_rulesets": [
+        "anomaly_detection_and_reconfiguration"
+      ],
+      "schema_ref": "HyperSync_ALPHA/03_specifications/schemas/receipts/BFTConsensusReceipt.json",
+      "usage": "When curvature-related anomalies drive consensus reconfiguration, BFTConsensusReceipt captures the final byzantine consensus state as part of safety telemetry"
+    },
+    "metadata": {
+      "created_by": "HyperSync Geometry/PCT/AGUA Integration Plan",
+      "description": "Curvature control rulesets for AGUA execution supervision",
+      "integration_date": "2025-12-06",
+      "title": "Geometry Control Rulesets v1"
+    },
+    "rulesets": [
+      {
+        "description": "Enforce valid curvature bounds for geometry operations",
+        "name": "Curvature Bounds Enforcement",
+        "rules": [
+          {
+            "bounds": {
+              "max": -0.001,
+              "min": -10.0
+            },
+            "condition": "curvature < 0",
+            "consensus_receipt_hook": true,
+            "rule_id": "hyperbolic_curvature_bounds",
+            "violation_action": "project_to_valid_range",
+            "enforcement_logic": "If val < min: val = min; If val > max: val = max"
+          },
+          {
+            "bounds": {
+              "max": 10.0,
+              "min": 0.001
+            },
+            "condition": "curvature > 0",
+            "consensus_receipt_hook": true,
+            "rule_id": "spherical_curvature_bounds",
+            "violation_action": "project_to_valid_range",
+            "enforcement_logic": "If val < min: val = min; If val > max: val = max"
+          }
+        ],
+        "ruleset_id": "curvature_bounds_enforcement"
+      },
+      {
+        "description": "Detect curvature anomalies and trigger consensus reconfiguration",
+        "name": "Anomaly Detection and Reconfiguration",
+        "rules": [
+          {
+            "bft_consensus_receipt_capture": {
+              "enabled": true,
+              "purpose": "Capture final byzantine consensus state when curvature anomalies drive reconfiguration",
+              "receipt_schema": "HyperSync_ALPHA/03_specifications/schemas/receipts/BFTConsensusReceipt.json"
+            },
+            "condition": "abs(current_curvature - expected_curvature) > threshold",
+            "consensus_receipt_hook": true,
+            "rule_id": "curvature_drift_detection",
+            "threshold": 0.5,
+            "violation_action": "trigger_consensus_reconfiguration"
+          },
+          {
+            "condition": "topology_signature_changed",
+            "consensus_receipt_hook": true,
+            "fallback": "log_for_offline_geometry_diagnostics",
+            "rule_id": "topology_change_detection",
+            "violation_action": "abort_consensus"
+          }
+        ],
+        "ruleset_id": "anomaly_detection_and_reconfiguration"
+      },
+      {
+        "description": "Safety checks for geometry-mediated control actions",
+        "name": "Safety Guardrails",
+        "rules": [
+          {
+            "condition": "approaching_curvature_singularity",
+            "fallback": "log_for_offline_geometry_diagnostics",
+            "rule_id": "prevent_singularity_approach",
+            "violation_action": "abort_consensus"
+          },
+          {
+            "condition": "operation_determinism_tier != required_tier",
+            "fallback": "log_for_offline_geometry_diagnostics",
+            "rule_id": "enforce_determinism_tier",
+            "violation_action": "reject_operation"
+          }
+        ],
+        "ruleset_id": "safety_guardrails"
+      }
+    ]
+  }
+}

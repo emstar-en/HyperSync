@@ -1,0 +1,1056 @@
+[
+  {
+    "geometry_mode": "native",
+    "migration_policy": "replace-old-techniques",
+    "modules": [
+      {
+        "classes": [
+          {
+            "attributes": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "domain_id",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "str",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "signature",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "str",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "curvature_K",
+                "optional": true,
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "float",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "metric_A",
+                "optional": true,
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "np.ndarray",
+                "unreleased": true
+              },
+              {
+                "default": -1.0,
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "canonical_K0",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "float",
+                "unreleased": true
+              }
+            ],
+            "doc": "Geometry-native domain adapter wrapping native K0=-1 primitives with curvature scaling or congruence transforms.",
+            "geometry_mode": "native",
+            "methods": [
+              {
+                "doc": "Similarity (constant K) or congruence (A-metric) map to canonical K0",
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "map_to_canonical",
+                "params": [
+                  {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "name": "x",
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "type": "np.ndarray",
+                    "unreleased": true
+                  }
+                ],
+                "release_status": "pre-alpha",
+                "returns": "np.ndarray",
+                "stability": "experimental",
+                "unreleased": true
+              },
+              {
+                "doc": "Inverse map from canonical K0",
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "map_from_canonical",
+                "params": [
+                  {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "name": "x0",
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "type": "np.ndarray",
+                    "unreleased": true
+                  }
+                ],
+                "release_status": "pre-alpha",
+                "returns": "np.ndarray",
+                "stability": "experimental",
+                "unreleased": true
+              },
+              {
+                "doc": "d_K(u,v) = arcosh(-K <u,v>_L)/sqrt(-K) or A-metric analog",
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "distance",
+                "params": [
+                  {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "name": "u",
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "type": "np.ndarray",
+                    "unreleased": true
+                  },
+                  {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "name": "v",
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "type": "np.ndarray",
+                    "unreleased": true
+                  }
+                ],
+                "release_status": "pre-alpha",
+                "returns": "float",
+                "stability": "experimental",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "exp_map",
+                "params": [
+                  {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "name": "x",
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "type": "np.ndarray",
+                    "unreleased": true
+                  },
+                  {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "name": "v",
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "type": "np.ndarray",
+                    "unreleased": true
+                  }
+                ],
+                "release_status": "pre-alpha",
+                "returns": "np.ndarray",
+                "stability": "experimental",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "log_map",
+                "params": [
+                  {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "name": "x",
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "type": "np.ndarray",
+                    "unreleased": true
+                  },
+                  {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "name": "y",
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "type": "np.ndarray",
+                    "unreleased": true
+                  }
+                ],
+                "release_status": "pre-alpha",
+                "returns": "np.ndarray",
+                "stability": "experimental",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "parallel_transport",
+                "params": [
+                  {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "name": "x",
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "type": "np.ndarray",
+                    "unreleased": true
+                  },
+                  {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "name": "y",
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "type": "np.ndarray",
+                    "unreleased": true
+                  },
+                  {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "name": "v",
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "type": "np.ndarray",
+                    "unreleased": true
+                  }
+                ],
+                "release_status": "pre-alpha",
+                "returns": "np.ndarray",
+                "stability": "experimental",
+                "unreleased": true
+              }
+            ],
+            "migration_policy": "replace-old-techniques",
+            "name": "DomainShim",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true
+          }
+        ],
+        "exports": [
+          "DomainShim",
+          "map_to_canonical",
+          "map_from_canonical",
+          "distance_domain",
+          "exp_map_domain",
+          "log_map_domain",
+          "parallel_transport_domain"
+        ],
+        "functions": [
+          {
+            "doc": "Scale coordinates by sqrt((-K0)/(-K))",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "map_to_canonical",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "x",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "np.ndarray",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "curvature_K",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "float",
+                "unreleased": true
+              },
+              {
+                "default": -1.0,
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "canonical_K0",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "float",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "np.ndarray",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "map_from_canonical",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "x0",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "np.ndarray",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "curvature_K",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "float",
+                "unreleased": true
+              },
+              {
+                "default": -1.0,
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "canonical_K0",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "float",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "np.ndarray",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "distance_domain",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "u",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "np.ndarray",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "v",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "np.ndarray",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "curvature_K",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "float",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "float",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "exp_map_domain",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "x",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "np.ndarray",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "v",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "np.ndarray",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "curvature_K",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "float",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "np.ndarray",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "log_map_domain",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "x",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "np.ndarray",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "y",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "np.ndarray",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "curvature_K",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "float",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "np.ndarray",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "parallel_transport_domain",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "x",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "np.ndarray",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "y",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "np.ndarray",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "v",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "np.ndarray",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "curvature_K",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "float",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "np.ndarray",
+            "stability": "experimental",
+            "unreleased": true
+          }
+        ],
+        "geometry_mode": "native",
+        "migration_policy": "replace-old-techniques",
+        "path": "domains/domain_shim.py",
+        "purpose": "Curvature- and metric-conditioned wrapper around native Lorentzian primitives (constant-curvature similarity maps and constrained A-metric).",
+        "release_status": "pre-alpha",
+        "stability": "experimental",
+        "unreleased": true
+      },
+      {
+        "classes": [
+          {
+            "attributes": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "domain_id",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "str",
+                "unreleased": true
+              },
+              {
+                "default": "-+...+",
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "signature",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "str",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "curvature_K",
+                "optional": true,
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "float",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "metric_fingerprint",
+                "optional": true,
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "str",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "map_to_canonical",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "str",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "tolerances",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "dict",
+                "unreleased": true
+              }
+            ],
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "DomainDescriptor",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "methods": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "register",
+                "params": [
+                  {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "name": "desc",
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "type": "DomainDescriptor",
+                    "unreleased": true
+                  }
+                ],
+                "release_status": "pre-alpha",
+                "returns": "None",
+                "stability": "experimental",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "get",
+                "params": [
+                  {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "name": "domain_id",
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "type": "str",
+                    "unreleased": true
+                  }
+                ],
+                "release_status": "pre-alpha",
+                "returns": "DomainDescriptor",
+                "stability": "experimental",
+                "unreleased": true
+              }
+            ],
+            "migration_policy": "replace-old-techniques",
+            "name": "DomainRegistry",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true
+          }
+        ],
+        "exports": [
+          "DomainDescriptor",
+          "DomainRegistry",
+          "require_clearance"
+        ],
+        "functions": [
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "require_clearance",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "domain_id",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "str",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "level",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "str",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "None",
+            "stability": "experimental",
+            "unreleased": true
+          }
+        ],
+        "geometry_mode": "native",
+        "migration_policy": "replace-old-techniques",
+        "path": "domains/registry.py",
+        "purpose": "Domain registry, descriptors, and policy gates (deny-by-default; clearance-bound).",
+        "release_status": "pre-alpha",
+        "stability": "experimental",
+        "unreleased": true
+      },
+      {
+        "classes": [
+          {
+            "attributes": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "registry",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "DomainRegistry",
+                "unreleased": true
+              },
+              {
+                "default": false,
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "use_tee",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "bool",
+                "unreleased": true
+              }
+            ],
+            "geometry_mode": "native",
+            "methods": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "map_request",
+                "params": [
+                  {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "name": "src",
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "type": "str",
+                    "unreleased": true
+                  },
+                  {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "name": "dst",
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "type": "str",
+                    "unreleased": true
+                  },
+                  {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "name": "payload",
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "type": "bytes",
+                    "unreleased": true
+                  }
+                ],
+                "release_status": "pre-alpha",
+                "returns": "bytes",
+                "stability": "experimental",
+                "unreleased": true
+              }
+            ],
+            "migration_policy": "replace-old-techniques",
+            "name": "Gateway",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true
+          }
+        ],
+        "exports": [
+          "Gateway",
+          "verify_attestation",
+          "map_request"
+        ],
+        "functions": [
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "verify_attestation",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "report",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "bytes",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "bool",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "map_request",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "src",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "str",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "dst",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "str",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "payload",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "bytes",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "bytes",
+            "stability": "experimental",
+            "unreleased": true
+          }
+        ],
+        "geometry_mode": "native",
+        "migration_policy": "replace-old-techniques",
+        "path": "domains/gateway.py",
+        "purpose": "Attested gateway for inter-domain isometries; enclave option; produces signed proofs.",
+        "release_status": "pre-alpha",
+        "stability": "experimental",
+        "unreleased": true
+      }
+    ],
+    "name": "domains",
+    "release_status": "pre-alpha",
+    "stability": "experimental",
+    "unreleased": true
+  },
+  {
+    "geometry_mode": "native",
+    "migration_policy": "replace-old-techniques",
+    "modules": [
+      {
+        "classes": [
+          {
+            "attributes": [
+              {
+                "default": -1.0,
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "canonical_K0",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "float",
+                "unreleased": true
+              },
+              {
+                "default": 8,
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "adapter_rank",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "int",
+                "unreleased": true
+              },
+              {
+                "default": "none",
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "gating",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "str",
+                "unreleased": true
+              }
+            ],
+            "geometry_mode": "native",
+            "methods": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "train_epoch",
+                "params": [
+                  {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "name": "batches",
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "type": "Iterable[dict]",
+                    "unreleased": true
+                  }
+                ],
+                "release_status": "pre-alpha",
+                "returns": "dict",
+                "stability": "experimental",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "step_scale_by_curvature",
+                "params": [
+                  {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "name": "K",
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "type": "float",
+                    "unreleased": true
+                  }
+                ],
+                "release_status": "pre-alpha",
+                "returns": "float",
+                "stability": "experimental",
+                "unreleased": true
+              }
+            ],
+            "migration_policy": "replace-old-techniques",
+            "name": "OmnibusTrainer",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true
+          }
+        ],
+        "exports": [
+          "OmnibusTrainer",
+          "alignment_loss",
+          "holonomy_regularization",
+          "causal_cone_consistency"
+        ],
+        "functions": [
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "alignment_loss",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "z_d",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "np.ndarray",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "z0",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "np.ndarray",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "float",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "holonomy_regularization",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "loop",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "List[np.ndarray]",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "float",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "causal_cone_consistency",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "pairs",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "List[tuple]",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "float",
+            "stability": "experimental",
+            "unreleased": true
+          }
+        ],
+        "geometry_mode": "native",
+        "migration_policy": "replace-old-techniques",
+        "path": "training/omnibus.py",
+        "purpose": "Omnibus trainer for multiple Lorentzian Domains with domain-conditioned adapters and cross-domain alignment.",
+        "release_status": "pre-alpha",
+        "stability": "experimental",
+        "unreleased": true
+      },
+      {
+        "classes": [
+          {
+            "attributes": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "rank",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "int",
+                "unreleased": true
+              }
+            ],
+            "geometry_mode": "native",
+            "methods": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "forward",
+                "params": [
+                  {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "name": "v",
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "type": "np.ndarray",
+                    "unreleased": true
+                  },
+                  {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "name": "cond",
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "type": "dict",
+                    "unreleased": true
+                  }
+                ],
+                "release_status": "pre-alpha",
+                "returns": "np.ndarray",
+                "stability": "experimental",
+                "unreleased": true
+              }
+            ],
+            "migration_policy": "replace-old-techniques",
+            "name": "TangentAdapter",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true
+          }
+        ],
+        "exports": [
+          "TangentAdapter"
+        ],
+        "geometry_mode": "native",
+        "migration_policy": "replace-old-techniques",
+        "path": "training/adapters.py",
+        "purpose": "Tangent-space low-rank adapters conditioned on Domain metadata.",
+        "release_status": "pre-alpha",
+        "stability": "experimental",
+        "unreleased": true
+      }
+    ],
+    "name": "training",
+    "release_status": "pre-alpha",
+    "stability": "experimental",
+    "unreleased": true
+  }
+]

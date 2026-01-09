@@ -1,0 +1,10 @@
+{
+  "expect": {
+    "elbo_monotone": true,
+    "final_kl_tol": 0.01
+  },
+  "given": {
+    "mixture_components": 2
+  },
+  "name": "vi/mfvi.gaussian_mixture.v1"
+}

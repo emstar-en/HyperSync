@@ -1,0 +1,21 @@
+{
+  "$id": "schema://receipts/StandardEmission.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Standard Emission",
+  "description": "Container for standard-compliant emissions",
+  "type": "object",
+  "properties": {
+    "w3c_vc": {
+      "type": "object",
+      "description": "W3C Verifiable Credential"
+    },
+    "jwt": {
+      "type": "string",
+      "description": "JSON Web Token"
+    },
+    "c2pa_manifest": {
+      "type": "object",
+      "description": "C2PA Manifest Store"
+    }
+  }
+}

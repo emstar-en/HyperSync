@@ -1,0 +1,6 @@
+{
+  "deterministic": true,
+  "id": "op://ilu_prec.0",
+  "kind": "preconditioner",
+  "notes": "ILU with fixed pattern"
+}

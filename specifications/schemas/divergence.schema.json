@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "properties": {
+    "cycle_window_size": {
+      "type": "integer"
+    },
+    "growth_rate_threshold": {
+      "type": "number"
+    },
+    "sampling_interval": {
+      "type": "number"
+    },
+    "stall_timeout_seconds": {
+      "type": "number"
+    }
+  },
+  "title": "Divergence Detection Configuration",
+  "type": "object"
+}

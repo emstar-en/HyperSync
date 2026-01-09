@@ -1,0 +1,70 @@
+{
+  "system": "HyperSync Human Coordination",
+  "type": "default_subsystem",
+  "meta": {
+    "description": "Geometric permissioning, fairness, and budget tracking",
+    "status": "ALPHA",
+    "version": "2.1.0"
+  },
+  "role": "governance_and_coordination",
+  "capabilities": [
+    "geometric_permissions",
+    "fair_preemption",
+    "curvature_load_balancing",
+    "budget_tracking"
+  ],
+  "mathematical_foundations": {
+    "trust_metric": "T(r) = 1 - tanh(r)",
+    "cost_metric": "C(d, t) = C_base * cosh(d) * t",
+    "fairness_invariant": "Preemption allowed iff d_new < d_current * fairness_factor"
+  },
+  "fault_detection": {
+    "fairness_audit": {
+      "mechanism": "Geometric invariant check on all preemption events",
+      "alert_condition": "Preemption rate > expected_geometric_rate"
+    },
+    "budget_integrity": {
+      "mechanism": "Zero-sum check on cost allocation vs resource consumption",
+      "tolerance": "1e-6 (floating point error)"
+    }
+  },
+  "detailed_mechanisms": {
+    "budget_tracking": {
+      "data_structure": "Standard cost tracking with geometric multiplier",
+      "integration": "Drop-in replacement for existing cost calculation",
+      "operations": [
+        "float geometric_cost_multiplier(float agent_radius) {",
+        "  return 1.0 + agent_radius; // 1.1 to 1.9",
+        "}"
+      ]
+    },
+    "load_balancing": {
+      "data_structure": "float agent_curvature[agent_id]; // Simple scalar per agent",
+      "operations": [
+        "float routing_score(float distance, float curvature) {",
+        "  return distance + curvature_weight * curvature;",
+        "}"
+      ],
+      "tuning": "curvature_weight = 0.1 to 0.5 based on deployment"
+    },
+    "permission_geometry": {
+      "data_structure": "float permission_level = 1.0 - agent.radius; // 0.0 to 1.0",
+      "migration": "No migration needed - derive from existing hyperbolic state",
+      "operations": [
+        "bool can_action(string action, float user_permission) {",
+        "  float required = action_required_permission[action];",
+        "  return user_permission >= required;",
+        "}"
+      ]
+    },
+    "preemption_fairness": {
+      "data_structure": "float fairness_factor = 0.7; // Configurable",
+      "explanation": "Geometric distance comparison with fairness buffer",
+      "operations": [
+        "bool should_preempt(float new_dist, float current_dist) {",
+        "  return new_dist < current_dist * fairness_factor;",
+        "}"
+      ]
+    }
+  }
+}

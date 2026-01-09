@@ -1,0 +1,10 @@
+{
+  "expect": {
+    "arrival_time_monotonic": true,
+    "gradient_norm\u22481": true
+  },
+  "given": {
+    "intent": "examples/intent/eikonal.grid.json"
+  },
+  "name": "eikonal.geodesic.v1"
+}

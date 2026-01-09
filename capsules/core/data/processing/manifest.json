@@ -1,0 +1,15 @@
+{
+  "id": "hypersync.std.data.processing",
+  "version": "1.0.0",
+  "type": "capsule",
+  "description": "Standard data processing utilities.",
+  "capabilities": [
+    "sorting",
+    "filtering",
+    "aggregation",
+    "transformation"
+  ],
+  "dependencies": [
+    "hypersync.core.logic"
+  ]
+}

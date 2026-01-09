@@ -1,0 +1,156 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hypersync.dev/schemas/ux/presentation/presentation_schema.schema.json",
+  "title": "HyperSync UX Presentation Schema",
+  "description": "Declarative description of how a given ActivityContext should be rendered across TUI and audio surfaces.",
+  "type": "object",
+  "properties": {
+    "schema_id": {
+      "type": "string",
+      "description": "Stable identifier for this presentation schema."
+    },
+    "version": {
+      "type": "string",
+      "description": "Semantic version of this schema definition (e.g. '0.1.0-draft')."
+    },
+    "name": {
+      "type": "string",
+      "description": "Human-readable name for this presentation schema."
+    },
+    "description": {
+      "type": "string",
+      "description": "Detailed description of the intent and usage of this schema."
+    },
+    "supported_archetypes": {
+      "type": "array",
+      "description": "List of UX archetype ids that this schema is designed to support.",
+      "items": {
+        "type": "string"
+      }
+    },
+    "inputs": {
+      "type": "object",
+      "description": "Named input channels that the presentation layer expects (telemetry streams, activity curves, receipts, etc.).",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "source_ref": {
+            "type": "string",
+            "description": "Reference into a receipt, telemetry stream, or adapter."
+          },
+          "kind": {
+            "type": "string",
+            "description": "Logical type of this input (metric_series, topology_snapshot, receipt_log, etc.)."
+          },
+          "required": {
+            "type": "boolean",
+            "default": true
+          }
+        },
+        "required": [
+          "source_ref",
+          "kind"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "views": {
+      "type": "array",
+      "description": "List of logical views/panels (abacus, timelines, tables, etc.) that compose this presentation.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "view_id": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string",
+            "description": "View primitive type.",
+            "enum": [
+              "abacus_activity_curve",
+              "timeseries_strip",
+              "topology_map",
+              "scalar_dashboard",
+              "log_timeline",
+              "text_explanation",
+              "custom"
+            ]
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "primary_input": {
+            "type": "string",
+            "description": "Key into inputs map."
+          },
+          "secondary_inputs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Optional secondary inputs used by this view."
+          },
+          "layout_hints": {
+            "type": "object",
+            "description": "Hints for the TUI layout engine (relative size, region, priority).",
+            "additionalProperties": true
+          }
+        },
+        "required": [
+          "view_id",
+          "kind"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "audio_profile": {
+      "type": "object",
+      "description": "Optional linkage into hypersync_ui_audio_system_master.json.",
+      "properties": {
+        "profile_id": {
+          "type": "string"
+        },
+        "event_mapping_ref": {
+          "type": "string",
+          "description": "Reference into audio integration mapping."
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "transitions": {
+      "type": "array",
+      "description": "Optional state-machine like transitions between internal presentation states based on ActivityContext changes.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "from_state": {
+            "type": "string"
+          },
+          "to_state": {
+            "type": "string"
+          },
+          "condition": {
+            "type": "string",
+            "description": "Human-readable description or rule expression of when to transition."
+          }
+        },
+        "required": [
+          "from_state",
+          "to_state"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "schema_id",
+    "version",
+    "name",
+    "views"
+  ],
+  "additionalProperties": false
+}

@@ -1,0 +1,49 @@
+{
+  "description": "Enforce entity-capability contracts and deltas.",
+  "enabled": true,
+  "id": "core/ecc-enforcement",
+  "tiers": {
+    "core": {
+      "checks": [
+        "contract-validate"
+      ],
+      "limits": {
+        "cap_count": 16
+      }
+    },
+    "pro_advanced": {
+      "checks": [
+        "contract-validate",
+        "delta-apply",
+        "grant-issue"
+      ],
+      "limits": {
+        "delta_ops": 4096
+      }
+    },
+    "pro_essentials": {
+      "checks": [
+        "contract-validate",
+        "delta-apply"
+      ],
+      "limits": {
+        "delta_ops": 256
+      }
+    },
+    "quartermaster": {
+      "checks": [
+        "contract-validate",
+        "delta-apply",
+        "grant-issue",
+        "revocation"
+      ],
+      "governance": [
+        "attestation",
+        "provenance"
+      ],
+      "limits": {
+        "delta_ops": "production"
+      }
+    }
+  }
+}

@@ -1,0 +1,191 @@
+{
+  "deployment_strategy": "blue_green",
+  "description": "Complete model training, validation, and deployment pipeline",
+  "gold_sample_config": {
+    "collection_triggers": [
+      "on_success",
+      "on_tag"
+    ],
+    "enabled": true,
+    "retention_policy": {
+      "max_age_days": 365,
+      "max_samples": 100
+    },
+    "storage_path": "./gold_samples",
+    "validation_threshold": 0.92
+  },
+  "name": "Model Training & Deployment",
+  "notifications": [
+    {
+      "config": {
+        "url": "https://hooks.example.com/cicd"
+      },
+      "on_events": [
+        "success",
+        "failure",
+        "rollback"
+      ],
+      "type": "webhook"
+    }
+  ],
+  "pipeline_id": "model-training-pipeline",
+  "rollback_policy": {
+    "auto_rollback_on_failure": true,
+    "enabled": true,
+    "health_check_timeout": 300,
+    "rollback_stages": [
+      "deploy"
+    ]
+  },
+  "stages": [
+    {
+      "name": "prepare",
+      "steps": [
+        {
+          "action": "script:./scripts/fetch_training_data.py",
+          "name": "fetch_data",
+          "params": {
+            "dataset": "production_v1",
+            "split": "train"
+          }
+        },
+        {
+          "action": "script:./scripts/preprocess.py",
+          "artifacts": [
+            "preprocessed_data/*"
+          ],
+          "name": "preprocess",
+          "params": {
+            "augment": true,
+            "normalize": true
+          }
+        }
+      ],
+      "type": "build"
+    },
+    {
+      "name": "train",
+      "steps": [
+        {
+          "action": "script:./scripts/train.py",
+          "artifacts": [
+            "models/*",
+            "checkpoints/*"
+          ],
+          "name": "train_model",
+          "params": {
+            "batch_size": 32,
+            "epochs": 100,
+            "learning_rate": 0.001
+          }
+        }
+      ],
+      "timeout_seconds": 7200,
+      "type": "build"
+    },
+    {
+      "name": "validate",
+      "steps": [
+        {
+          "action": "conformance_test",
+          "name": "conformance_tests",
+          "params": {
+            "strict": true,
+            "suite": "core"
+          }
+        },
+        {
+          "action": "script:./scripts/benchmark.py",
+          "gold_sample_capture": true,
+          "name": "performance_benchmark",
+          "params": {
+            "test_set": "validation_v1"
+          }
+        },
+        {
+          "action": "gold_sample_validate",
+          "name": "validate_against_baseline",
+          "params": {
+            "comparison_method": "metric_based",
+            "sample_id": "baseline-model-v1",
+            "threshold": 0.92
+          }
+        },
+        {
+          "action": "script:./scripts/check_nld_safety.py",
+          "name": "nld_safety_check",
+          "params": {
+            "max_nld": 3,
+            "stability_threshold": 0.95
+          }
+        }
+      ],
+      "type": "validate"
+    },
+    {
+      "name": "deploy",
+      "steps": [
+        {
+          "action": "deploy_model",
+          "name": "deploy_to_staging",
+          "params": {
+            "model_id": "${model_id}",
+            "target_environment": "staging"
+          }
+        },
+        {
+          "action": "script:./scripts/health_check.py",
+          "name": "health_check",
+          "params": {
+            "environment": "staging",
+            "timeout": 300
+          }
+        },
+        {
+          "action": "deploy_model",
+          "name": "deploy_to_production",
+          "params": {
+            "model_id": "${model_id}",
+            "target_environment": "production"
+          }
+        },
+        {
+          "action": "script:./scripts/update_catalogue.py",
+          "name": "update_catalogue",
+          "params": {
+            "model_id": "${model_id}"
+          }
+        }
+      ],
+      "type": "deploy"
+    },
+    {
+      "name": "gold_sample_collection",
+      "steps": [
+        {
+          "action": "script:./scripts/collect_samples.py",
+          "gold_sample_capture": true,
+          "name": "collect_production_samples",
+          "params": {
+            "environment": "production",
+            "sample_count": 100
+          }
+        }
+      ],
+      "type": "gold_sample_collection"
+    }
+  ],
+  "triggers": [
+    {
+      "branches": [
+        "main",
+        "develop"
+      ],
+      "type": "git_push"
+    },
+    {
+      "schedule": "0 2 * * *",
+      "type": "scheduled"
+    }
+  ]
+}

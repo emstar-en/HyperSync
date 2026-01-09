@@ -1,0 +1,65 @@
+{
+  "geometry_receipts_schema": {
+    "metadata": {
+      "alpha_spec_equivalence": {
+        "alpha_schema_path": "HyperSync_ALPHA/03_specifications/schemas/receipts/GeometryReceipt.schema.json",
+        "alpha_schema_title": "GeometryReceipt",
+        "equivalence_type": "conceptual",
+        "notes": "geometry_receipts_schema_v1 is the conceptual source; GeometryReceipt.schema.json is the concrete ALPHA-pack JSON-Schema realization"
+      },
+      "created_by": "HyperSync Geometry/PCT/AGUA Integration Plan",
+      "description": "Schema for D(0)-compatible geometry operation receipts",
+      "integration_date": "2025-12-06",
+      "title": "Geometry Receipts Schema v1"
+    },
+    "schema": {
+      "determinism_tier": {
+        "enum": [
+          "D0",
+          "D1",
+          "D2"
+        ],
+        "semantics": "Determinism tier at which operation was performed",
+        "type": "string"
+      },
+      "geometry_profile_id": {
+        "semantics": "Reference to geometry profile used",
+        "type": "string"
+      },
+      "inputs": {
+        "semantics": "Input parameters and data for the operation",
+        "type": "object"
+      },
+      "operation_type": {
+        "examples": [
+          "curvature_computation",
+          "geodesic_calculation",
+          "embedding_transformation"
+        ],
+        "semantics": "Type of geometry operation performed",
+        "type": "string"
+      },
+      "outputs": {
+        "semantics": "Output results from the operation",
+        "type": "object"
+      },
+      "receipt_id": {
+        "semantics": "Unique identifier for this geometry receipt",
+        "type": "string"
+      },
+      "reproducibility_metadata": {
+        "fields": {
+          "hardware_context": "string",
+          "random_seed": "integer"
+        },
+        "semantics": "Metadata required to reproduce this operation",
+        "type": "object"
+      },
+      "timestamp": {
+        "format": "iso8601",
+        "semantics": "Operation timestamp",
+        "type": "string"
+      }
+    }
+  }
+}

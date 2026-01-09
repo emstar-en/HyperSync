@@ -1,0 +1,132 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "migration_policy": "replace-old-techniques",
+  "properties": {
+    "aud": {
+      "items": {
+        "migration_policy": "replace-old-techniques",
+        "release_status": "pre-alpha",
+        "stability": "experimental",
+        "type": "string",
+        "unreleased": true
+      },
+      "migration_policy": "replace-old-techniques",
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "type": "array",
+      "unreleased": true
+    },
+    "exp": {
+      "format": "date-time",
+      "migration_policy": "replace-old-techniques",
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "type": "string",
+      "unreleased": true
+    },
+    "id": {
+      "migration_policy": "replace-old-techniques",
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "type": "string",
+      "unreleased": true
+    },
+    "migration_policy": "replace-old-techniques",
+    "nbf": {
+      "format": "date-time",
+      "migration_policy": "replace-old-techniques",
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "type": "string",
+      "unreleased": true
+    },
+    "proof": {
+      "migration_policy": "replace-old-techniques",
+      "properties": {
+        "migration_policy": "replace-old-techniques",
+        "n": {
+          "migration_policy": "replace-old-techniques",
+          "minimum": 1,
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "integer",
+          "unreleased": true
+        },
+        "release_status": "pre-alpha",
+        "scheme": {
+          "enum": [
+            "eddsa-t-of-n"
+          ],
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "unreleased": true
+        },
+        "signatures": {
+          "items": {
+            "migration_policy": "replace-old-techniques",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "type": "string",
+            "unreleased": true
+          },
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "array",
+          "unreleased": true
+        },
+        "stability": "experimental",
+        "t": {
+          "migration_policy": "replace-old-techniques",
+          "minimum": 1,
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "integer",
+          "unreleased": true
+        },
+        "unreleased": true
+      },
+      "release_status": "pre-alpha",
+      "required": [
+        "scheme",
+        "t",
+        "n",
+        "signatures"
+      ],
+      "stability": "experimental",
+      "type": "object",
+      "unreleased": true
+    },
+    "release_status": "pre-alpha",
+    "scope": {
+      "items": {
+        "migration_policy": "replace-old-techniques",
+        "release_status": "pre-alpha",
+        "stability": "experimental",
+        "type": "string",
+        "unreleased": true
+      },
+      "migration_policy": "replace-old-techniques",
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "type": "array",
+      "unreleased": true
+    },
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "release_status": "pre-alpha",
+  "required": [
+    "id",
+    "scope",
+    "aud",
+    "nbf",
+    "exp",
+    "proof"
+  ],
+  "stability": "experimental",
+  "title": "ClearanceCapsule",
+  "type": "object",
+  "unreleased": true
+}

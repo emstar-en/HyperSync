@@ -1,0 +1,30 @@
+{
+  "geometric_consensus": {
+    "meta": {
+      "description": "Consensus algorithms operating on Riemannian manifolds",
+      "status": "DRAFT"
+    },
+    "algorithms": {
+      "karcher_mean_consensus": {
+        "objective": "Minimize sum of squared geodesic distances: min_x Sum(d_M(x, y_i)^2)",
+        "algorithm": "Riemannian Center of Mass iteration",
+        "update_step": "x_{k+1} = Exp_{x_k}( alpha * Sum( Log_{x_k}(y_i) ) )",
+        "convergence": "Guaranteed for non-positive curvature (Hadamard manifolds)."
+      },
+      "geometric_median_consensus": {
+        "objective": "Minimize sum of geodesic distances (Robust to outliers): min_x Sum(d_M(x, y_i))",
+        "algorithm": "Weiszfeld's Algorithm on Manifolds",
+        "fault_tolerance": "Breakdown point depends on geometry; typically 0.5 for 1D, less for high-dim."
+      }
+    },
+    "fault_detection": {
+      "outlier_rejection": {
+        "logic": "If d_M(y_i, current_mean) > k * sigma, ignore y_i.",
+        "sigma_estimation": "Median Absolute Deviation (MAD) on Manifold."
+      },
+      "curvature_bounds": {
+        "check": "Ensure manifold curvature remains within bounds to guarantee convexity of the objective function."
+      }
+    }
+  }
+}

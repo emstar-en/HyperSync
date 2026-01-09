@@ -1,0 +1,10 @@
+{
+  "mechanism_id": "tendermint",
+  "parameters": {
+    "block_time_ms": 1000,
+    "timeout_commit_ms": 1000,
+    "timeout_precommit_ms": 1000,
+    "timeout_prevote_ms": 1000,
+    "timeout_propose_ms": 3000
+  }
+}

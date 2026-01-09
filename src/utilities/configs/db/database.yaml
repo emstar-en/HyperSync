@@ -1,0 +1,31 @@
+# HyperSync Database Configuration
+
+storage:
+  page_size: 8192
+  wal_sync_mode: fsync
+  checkpoint_interval: 300
+  data_directory: ./data/db
+
+transaction:
+  default_isolation: READ_COMMITTED
+  lock_timeout: 10.0
+  deadlock_detection: true
+  max_concurrent_transactions: 1000
+
+query:
+  execution_mode: streamed
+  batch_size: 1000
+  use_vectorization: true
+  enable_geodesic_optimization: true
+  max_plan_cost: 1000000
+
+curvature:
+  default_curvature: -1.0
+  precision: 0.001
+  validation: strict
+  allow_mixed_curvature: false
+
+telemetry:
+  enabled: true
+  metrics_interval: 60
+  export_plans: true

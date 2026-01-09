@@ -1,0 +1,81 @@
+{
+  "$id": "https://example.org/ico/sync.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "descriptor": {
+      "properties": {
+        "dimension": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "invariants": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "merge_policy": {
+          "enum": [
+            "E_vector",
+            "S_geodesic_project",
+            "H_pt_native"
+          ],
+          "type": "string"
+        },
+        "numeric_policy": {
+          "$ref": "../ico/icop.schema.json"
+        },
+        "profile": {
+          "enum": [
+            "E",
+            "H",
+            "S"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "profile",
+        "dimension",
+        "merge_policy",
+        "numeric_policy"
+      ],
+      "type": "object"
+    },
+    "op_record": {
+      "properties": {
+        "causal": {
+          "type": "object"
+        },
+        "id": {
+          "type": "string"
+        },
+        "op": {
+          "properties": {
+            "args": {
+              "type": "object"
+            },
+            "kind": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "type": "object"
+        },
+        "post": {
+          "type": "object"
+        },
+        "pre": {
+          "type": "object"
+        }
+      },
+      "type": "object"
+    }
+  },
+  "required": [
+    "descriptor"
+  ],
+  "type": "object"
+}

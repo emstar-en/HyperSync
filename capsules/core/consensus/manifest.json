@@ -1,0 +1,68 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "schema_version": "v1.0.0",
+  "id": "hypersync.core.consensus",
+  "version": "1.0.0",
+  "type": "logic",
+  "description": "Core consensus capsule family providing deterministic, geometry-aware agreement for HyperSync environments.",
+  "summary": "Deterministic consensus services for environment state, upgrades, and safety gates.",
+  "tags": [
+    "consensus",
+    "core",
+    "safety",
+    "governance",
+    "virtualization"
+  ],
+  "capabilities": {
+    "provides": [
+      "consensus.environment.state",
+      "consensus.environment.upgrade",
+      "consensus.safety.invariants"
+    ],
+    "requires": [
+      "geometry.manifold.core",
+      "crypto.signing.core"
+    ],
+    "input_schemas": [
+      "hypersync.schemas.consensus.proposal.v1",
+      "hypersync.schemas.consensus.vote.v1"
+    ],
+    "output_schemas": [
+      "hypersync.schemas.consensus.decision.v1",
+      "hypersync.schemas.consensus.view.v1"
+    ],
+    "determinism_tier": "D0_bit_exact",
+    "latency_class": "interactive"
+  },
+  "interfaces": {
+    "python": "impl.src.consensus_service:ConsensusService",
+    "rest": "/api/v1/consensus",
+    "tui": "hypersync.tui.consensus.status_panel"
+  },
+  "governance": {
+    "tier": "core",
+    "audit_level": "critical",
+    "owner": "hypersync-core-team",
+    "reviewed_by": [
+      "consensus-lead",
+      "safety-review",
+      "determinism-council"
+    ]
+  },
+  "runtime": {
+    "language": "python",
+    "requires_gpu": false,
+    "timeout_ms": 100,
+    "memory_limit_mb": 512
+  },
+  "security": {
+    "trust_zone": "system",
+    "sandbox_class": "core_strict_no_network"
+  },
+  "lineage": {
+    "derived_from": [
+      "hypersync.proto.consensus.v0"
+    ],
+    "supersedes": []
+  }
+}

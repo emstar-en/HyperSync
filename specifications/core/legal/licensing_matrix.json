@@ -1,0 +1,61 @@
+{
+  "components": [
+    {
+      "license": [
+        "AGPL-3.0-only",
+        "Commercial"
+      ],
+      "migration_policy": "replace-old-techniques",
+      "name": "reference_server",
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "unreleased": true
+    },
+    {
+      "license": [
+        "Apache-2.0"
+      ],
+      "migration_policy": "replace-old-techniques",
+      "name": "client_sdks",
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "unreleased": true
+    },
+    {
+      "license": [
+        "Apache-2.0",
+        "CC-BY-4.0"
+      ],
+      "migration_policy": "replace-old-techniques",
+      "name": "specs_and_schemas",
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "unreleased": true
+    },
+    {
+      "license": [
+        "Proprietary"
+      ],
+      "migration_policy": "replace-old-techniques",
+      "name": "enterprise_modules",
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "unreleased": true
+    },
+    {
+      "license": [
+        "Apache-2.0"
+      ],
+      "migration_policy": "replace-old-techniques",
+      "name": "tests_conformance",
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "unreleased": true
+    }
+  ],
+  "migration_policy": "replace-old-techniques",
+  "release_status": "pre-alpha",
+  "spdx": true,
+  "stability": "experimental",
+  "unreleased": true
+}

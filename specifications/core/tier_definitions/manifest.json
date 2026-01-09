@@ -1,0 +1,46 @@
+{
+  "path": "/current/specifications/core/tier_definitions",
+  "id": "11ZziXH7DRvTgvrLogR11OPrdA9IAPLeR",
+  "contents": [
+    {
+      "name": "core.tier.json",
+      "id": "1mELhysaTBkzYEkWAHMj0rM-7Od6rBiiI",
+      "type": "file"
+    },
+    {
+      "name": "basic.tier.json",
+      "id": "1Mv6gHX5d5akCZN3tncnC1QAJ8A3wVmeA",
+      "type": "file"
+    },
+    {
+      "name": "pro.tier.json",
+      "id": "1ongOVUIo2wS-sKeb6lO1qrROM_ww7nOY",
+      "type": "file"
+    },
+    {
+      "name": "advanced.tier.json",
+      "id": "1ClRXTTkV-GdSi-RfIGB0WTfXO1W5ZCqG",
+      "type": "file"
+    },
+    {
+      "name": "tier_manifest_core.json",
+      "type": "file"
+    },
+    {
+      "name": "tier_manifest_basic.json",
+      "type": "file"
+    },
+    {
+      "name": "tier_manifest_pro.json",
+      "type": "file"
+    },
+    {
+      "name": "tier_manifest_advanced.json",
+      "type": "file"
+    },
+    {
+      "name": "tier_manifest_quartermaster.json",
+      "type": "file"
+    }
+  ]
+}

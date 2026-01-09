@@ -1,0 +1,83 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "migration_policy": "replace-old-techniques",
+  "properties": {
+    "ModelHealthRecord": {
+      "migration_policy": "replace-old-techniques",
+      "properties": {
+        "avg_calibration_ece": {
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "number",
+          "unreleased": true
+        },
+        "black_hole_score": {
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "number",
+          "unreleased": true
+        },
+        "migration_policy": "replace-old-techniques",
+        "release_status": "pre-alpha",
+        "routing_accuracy_top1": {
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "number",
+          "unreleased": true
+        },
+        "stability": "experimental",
+        "unreleased": true
+      },
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "type": "object",
+      "unreleased": true
+    },
+    "NetworkHealthRecord": {
+      "migration_policy": "replace-old-techniques",
+      "properties": {
+        "incident_rate": {
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "number",
+          "unreleased": true
+        },
+        "migration_policy": "replace-old-techniques",
+        "p95_latency_ms": {
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "number",
+          "unreleased": true
+        },
+        "p99_latency_ms": {
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "number",
+          "unreleased": true
+        },
+        "release_status": "pre-alpha",
+        "stability": "experimental",
+        "unreleased": true
+      },
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "type": "object",
+      "unreleased": true
+    },
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "release_status": "pre-alpha",
+  "stability": "experimental",
+  "title": "HealthRecords",
+  "type": "object",
+  "unreleased": true
+}

@@ -1,0 +1,40 @@
+{
+  "$schema": "ext://f1fed686329b",
+  "properties": {
+    "W2_drift": {
+      "type": "number"
+    },
+    "accountant": {
+      "type": "string"
+    },
+    "delta": {
+      "type": "number"
+    },
+    "entropic_eps": {
+      "type": "number"
+    },
+    "epsilon": {
+      "type": "number"
+    },
+    "epsilon_radius": {
+      "type": "number"
+    },
+    "k": {
+      "type": "integer"
+    },
+    "receipt_kind": {
+      "const": "PrivacyReceipt"
+    },
+    "steps": {
+      "type": "integer"
+    },
+    "tau": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "receipt_kind"
+  ],
+  "title": "PrivacyReceipt",
+  "type": "object"
+}

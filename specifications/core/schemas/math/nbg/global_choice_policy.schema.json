@@ -1,0 +1,96 @@
+{
+  "$id": "https://hypersync.ai/schemas/math/global_choice_policy.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "NBG global choice compiled to deterministic selection rules",
+  "properties": {
+    "choice_functions": {
+      "items": {
+        "properties": {
+          "audit_trail": {
+            "description": "Whether to log selection decisions",
+            "type": "boolean"
+          },
+          "domain": {
+            "properties": {
+              "predicate": {
+                "type": "string"
+              },
+              "universe": {
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "function_id": {
+            "type": "string"
+          },
+          "selection_rule": {
+            "properties": {
+              "method": {
+                "enum": [
+                  "lexicographic",
+                  "canonical_order",
+                  "hash_based",
+                  "policy_priority"
+                ],
+                "type": "string"
+              },
+              "parameters": {
+                "type": "object"
+              },
+              "tie_breaker": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "method",
+              "parameters"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "function_id",
+          "domain",
+          "selection_rule"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "determinism_guarantee": {
+      "properties": {
+        "is_deterministic": {
+          "type": "boolean"
+        },
+        "seed": {
+          "description": "Deterministic seed if applicable",
+          "type": "string"
+        },
+        "verification_method": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "is_deterministic",
+        "verification_method"
+      ],
+      "type": "object"
+    },
+    "kind": {
+      "const": "GlobalChoicePolicy",
+      "type": "string"
+    },
+    "policy_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "kind",
+    "policy_id",
+    "choice_functions",
+    "determinism_guarantee"
+  ],
+  "title": "GlobalChoicePolicy",
+  "type": "object"
+}

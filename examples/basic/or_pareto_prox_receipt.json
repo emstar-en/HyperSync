@@ -1,0 +1,18 @@
+{
+  "diagnostics": {
+    "pareto_points": 21,
+    "reuse_factorizations": 19
+  },
+  "inputs_commitment": "sha256:instance|weights_grid|prox_mu|plan",
+  "iters": {
+    "avg_ipm": 145
+  },
+  "output_commitment": "sha256:front_points",
+  "pricing": {
+    "cached_subproblem_discount": 0.2,
+    "reuse_credit": 0.35,
+    "unit_price_per_iter": 0.0005
+  },
+  "receipt_kind": "ReductionReceipt",
+  "solver_binding_id": "solver://or/pareto/prox_scalar_lpqp@1.0.3"
+}

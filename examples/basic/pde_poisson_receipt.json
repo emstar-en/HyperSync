@@ -1,0 +1,17 @@
+{
+  "inputs_commitment": "sha256:mesh|bc|kappa|plan",
+  "iters": {
+    "cg": 842
+  },
+  "mesh_digest": "sha256:vertices|elements|order=2",
+  "output_commitment": "sha256:u_field",
+  "receipt_kind": "ReductionReceipt",
+  "residuals": {
+    "h1_est": 0.00032,
+    "l2": 8.7e-09
+  },
+  "solver_binding_id": "solver://pde/fem.poisson_cg@1.2.0",
+  "stability_metrics": {
+    "condition_est": 11000000.0
+  }
+}

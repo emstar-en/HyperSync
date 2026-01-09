@@ -1,0 +1,366 @@
+{
+  "$id": "hypersync_master_config.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "consensus_config": {
+      "properties": {
+        "barycenter": {
+          "properties": {
+            "adaptive_step_size": {
+              "type": "boolean"
+            },
+            "convergence_tolerance": {
+              "type": "number"
+            },
+            "default_algorithm": {
+              "type": "string"
+            },
+            "max_iterations": {
+              "type": "integer"
+            }
+          },
+          "type": "object"
+        },
+        "byzantine": {
+          "properties": {
+            "consensus_method": {
+              "type": "string"
+            },
+            "fault_tolerance_ratio": {
+              "type": "string"
+            },
+            "outlier_detection": {
+              "properties": {
+                "enabled": {
+                  "type": "boolean"
+                },
+                "method": {
+                  "type": "string"
+                },
+                "threshold_sigma": {
+                  "type": "number"
+                }
+              },
+              "type": "object"
+            }
+          },
+          "type": "object"
+        },
+        "synchronization": {
+          "properties": {
+            "convergence_tolerance": {
+              "type": "number"
+            },
+            "default_method": {
+              "type": "string"
+            },
+            "max_rounds": {
+              "type": "integer"
+            },
+            "timeout_seconds": {
+              "type": "integer"
+            }
+          },
+          "type": "object"
+        }
+      },
+      "type": "object"
+    },
+    "kappa_config": {
+      "properties": {
+        "allowed_range": {
+          "properties": {
+            "max": {
+              "type": "number"
+            },
+            "min": {
+              "type": "number"
+            }
+          },
+          "type": "object"
+        },
+        "default_kappa": {
+          "type": "number"
+        },
+        "density_regimes": {
+          "properties": {
+            "dense": {
+              "type": "object"
+            },
+            "rarified": {
+              "type": "object"
+            },
+            "standard": {
+              "type": "object"
+            }
+          },
+          "type": "object"
+        },
+        "transition_settings": {
+          "properties": {
+            "default_method": {
+              "type": "string"
+            },
+            "max_steps": {
+              "type": "integer"
+            },
+            "tolerance": {
+              "type": "number"
+            }
+          },
+          "type": "object"
+        },
+        "validation": {
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "strict_mode": {
+              "type": "boolean"
+            },
+            "tolerance": {
+              "type": "number"
+            }
+          },
+          "type": "object"
+        }
+      },
+      "required": [
+        "default_kappa",
+        "allowed_range"
+      ],
+      "type": "object"
+    },
+    "performance_config": {
+      "properties": {
+        "batch_size": {
+          "type": "integer"
+        },
+        "cache_enabled": {
+          "type": "boolean"
+        },
+        "cache_size_mb": {
+          "type": "integer"
+        },
+        "max_workers": {
+          "type": "integer"
+        },
+        "parallel_computation": {
+          "type": "boolean"
+        },
+        "timeout_seconds": {
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
+    "security_config": {
+      "properties": {
+        "authentication": {
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "method": {
+              "enum": [
+                "api_key",
+                "oauth2",
+                "jwt"
+              ],
+              "type": "string"
+            },
+            "token_expiry_seconds": {
+              "type": "integer"
+            }
+          },
+          "type": "object"
+        },
+        "encryption": {
+          "properties": {
+            "algorithm": {
+              "type": "string"
+            },
+            "enabled": {
+              "type": "boolean"
+            },
+            "key_size": {
+              "type": "integer"
+            }
+          },
+          "type": "object"
+        },
+        "rate_limiting": {
+          "properties": {
+            "burst_size": {
+              "type": "integer"
+            },
+            "enabled": {
+              "type": "boolean"
+            },
+            "requests_per_minute": {
+              "type": "integer"
+            }
+          },
+          "type": "object"
+        }
+      },
+      "type": "object"
+    },
+    "transport_config": {
+      "properties": {
+        "exponential_map": {
+          "properties": {
+            "default_method": {
+              "enum": [
+                "runge_kutta",
+                "euler",
+                "adaptive"
+              ],
+              "type": "string"
+            },
+            "step_size": {
+              "type": "number"
+            },
+            "tolerance": {
+              "type": "number"
+            }
+          },
+          "type": "object"
+        },
+        "geodesic_computation": {
+          "properties": {
+            "default_points": {
+              "type": "integer"
+            },
+            "max_points": {
+              "type": "integer"
+            },
+            "tolerance": {
+              "type": "number"
+            }
+          },
+          "type": "object"
+        },
+        "holonomy_validation": {
+          "properties": {
+            "check_curvature": {
+              "type": "boolean"
+            },
+            "enabled": {
+              "type": "boolean"
+            },
+            "tolerance": {
+              "type": "number"
+            }
+          },
+          "type": "object"
+        },
+        "parallel_transport": {
+          "properties": {
+            "default_connection": {
+              "enum": [
+                "levi_civita",
+                "affine"
+              ],
+              "type": "string"
+            },
+            "max_iterations": {
+              "type": "integer"
+            },
+            "numerical_method": {
+              "type": "string"
+            },
+            "tolerance": {
+              "type": "number"
+            }
+          },
+          "type": "object"
+        }
+      },
+      "type": "object"
+    },
+    "validation_config": {
+      "properties": {
+        "auto_correct": {
+          "type": "boolean"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "strict_mode": {
+          "type": "boolean"
+        },
+        "tolerance": {
+          "type": "number"
+        },
+        "validation_rules": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    }
+  },
+  "description": "Complete configuration schema for HyperSync system",
+  "properties": {
+    "consensus": {
+      "$ref": "#/definitions/consensus_config"
+    },
+    "kappa": {
+      "$ref": "#/definitions/kappa_config"
+    },
+    "performance": {
+      "$ref": "#/definitions/performance_config"
+    },
+    "security": {
+      "$ref": "#/definitions/security_config"
+    },
+    "system": {
+      "properties": {
+        "api_base_url": {
+          "format": "uri",
+          "type": "string"
+        },
+        "environment": {
+          "enum": [
+            "development",
+            "staging",
+            "production"
+          ],
+          "type": "string"
+        },
+        "log_level": {
+          "enum": [
+            "debug",
+            "info",
+            "warning",
+            "error",
+            "critical"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "version",
+        "environment"
+      ],
+      "type": "object"
+    },
+    "transport": {
+      "$ref": "#/definitions/transport_config"
+    },
+    "validation": {
+      "$ref": "#/definitions/validation_config"
+    }
+  },
+  "required": [
+    "system",
+    "kappa",
+    "transport",
+    "consensus"
+  ],
+  "title": "HyperSync Master Configuration Schema",
+  "type": "object"
+}

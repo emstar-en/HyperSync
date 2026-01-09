@@ -1,0 +1,24 @@
+{
+  "diagnostics": {
+    "eigs": [
+      0.0,
+      0.0012,
+      0.0019
+    ],
+    "gap_k": 0.0031,
+    "normalization": "L_sym"
+  },
+  "inputs_commitment": "sha256:W|sigma|lap=L_sym|k=10|seed=42",
+  "iters": {
+    "eig": 412
+  },
+  "output_commitment": "sha256:embedding|labels",
+  "postprocess": {
+    "kmeans": {
+      "inertia": 12.43,
+      "seed": 42
+    }
+  },
+  "receipt_kind": "ReductionReceipt",
+  "solver_binding_id": "solver://graph/spectral/lap_eig@1.0.2"
+}

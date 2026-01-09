@@ -1,0 +1,70 @@
+{
+  "$id": "schemas/predicate_proof.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "migration_policy": "replace-old-techniques",
+  "properties": {
+    "migration_policy": "replace-old-techniques",
+    "params": {
+      "migration_policy": "replace-old-techniques",
+      "properties": {
+        "R": {
+          "migration_policy": "replace-old-techniques",
+          "minimum": 0,
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "number",
+          "unreleased": true
+        },
+        "metric_id": {
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "string",
+          "unreleased": true
+        },
+        "migration_policy": "replace-old-techniques",
+        "release_status": "pre-alpha",
+        "stability": "experimental",
+        "unreleased": true
+      },
+      "release_status": "pre-alpha",
+      "required": [
+        "R"
+      ],
+      "stability": "experimental",
+      "type": "object",
+      "unreleased": true
+    },
+    "predicate": {
+      "enum": [
+        "distance_leq"
+      ],
+      "migration_policy": "replace-old-techniques",
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "type": "string",
+      "unreleased": true
+    },
+    "proof_artifact": {
+      "description": "opaque, base64",
+      "migration_policy": "replace-old-techniques",
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "type": "string",
+      "unreleased": true
+    },
+    "release_status": "pre-alpha",
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "release_status": "pre-alpha",
+  "required": [
+    "predicate",
+    "params",
+    "proof_artifact"
+  ],
+  "stability": "experimental",
+  "title": "Predicate Proof",
+  "type": "object",
+  "unreleased": true
+}

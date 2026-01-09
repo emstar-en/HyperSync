@@ -1,0 +1,6 @@
+{
+  "deterministic": true,
+  "id": "op://lp_simplex.0",
+  "kind": "lp",
+  "notes": "Deterministic pivot rules"
+}

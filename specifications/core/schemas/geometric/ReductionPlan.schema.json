@@ -1,0 +1,56 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "properties": {
+    "discretization": {
+      "type": "object"
+    },
+    "fallbacks": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "hyperparams": {
+      "type": "object"
+    },
+    "initialization": {
+      "type": "object"
+    },
+    "mapping": {
+      "enum": [
+        "eikonal\u2192geodesics",
+        "entropy\u2192wasserstein",
+        "euler\u2192sdiff",
+        "hamiltonian\u2192symplectic",
+        "custom"
+      ],
+      "type": "string"
+    },
+    "rationale": {
+      "type": "string"
+    },
+    "solverBinding": {
+      "$ref": "SolverBinding.schema.json"
+    },
+    "solver_binding_id": {
+      "type": "string"
+    },
+    "stopping_criteria": {
+      "type": "object"
+    },
+    "type": {
+      "const": "geometric.reduction.plan"
+    },
+    "variational": {
+      "$ref": "VariationalProblem.schema.json"
+    }
+  },
+  "required": [
+    "mapping",
+    "solverBinding",
+    "type",
+    "variational"
+  ],
+  "title": "ReductionPlan",
+  "type": "object"
+}

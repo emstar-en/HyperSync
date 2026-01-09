@@ -1,0 +1,93 @@
+{
+  "$id": "https://hypersync.ai/schemas/assembly/node_assembly.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "A deployable node composed of model stacks",
+  "properties": {
+    "assembly_id": {
+      "type": "string"
+    },
+    "created_at": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "created_by": {
+      "type": "string"
+    },
+    "deployed_at": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "deployment_config": {
+      "properties": {
+        "auto_scaling": {
+          "type": "object"
+        },
+        "health_check": {
+          "type": "object"
+        },
+        "load_balancing": {
+          "type": "object"
+        },
+        "replication": {
+          "type": "object"
+        },
+        "security_level": {
+          "type": "string"
+        },
+        "target_ld": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "deployment_id": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "metadata": {
+      "type": "object"
+    },
+    "monitoring_config": {
+      "type": "object"
+    },
+    "name": {
+      "type": "string"
+    },
+    "network_config": {
+      "type": "object"
+    },
+    "security_config": {
+      "type": "object"
+    },
+    "stack_id": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string"
+    },
+    "tags": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "updated_at": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "validation_results": {
+      "type": "object"
+    }
+  },
+  "required": [
+    "assembly_id",
+    "name",
+    "stack_id",
+    "deployment_config",
+    "created_at"
+  ],
+  "title": "Node Assembly",
+  "type": "object"
+}

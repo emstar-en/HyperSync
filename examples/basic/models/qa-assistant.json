@@ -1,0 +1,24 @@
+{
+  "capabilities": [
+    "qa:text",
+    "answer:questions"
+  ],
+  "description": "Question-answering assistant for document queries",
+  "entrypoint": {
+    "kind": "noop",
+    "note": "Replace with actual model endpoint"
+  },
+  "metadata": {
+    "language": "en",
+    "max_context_length": 2048,
+    "output_format": "text"
+  },
+  "name": "qa-assistant",
+  "tags": [
+    "offline",
+    "demo",
+    "nlp",
+    "qa"
+  ],
+  "type": "model"
+}

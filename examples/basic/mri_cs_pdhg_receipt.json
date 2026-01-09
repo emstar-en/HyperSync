@@ -1,0 +1,15 @@
+{
+  "diagnostics": {
+    "espirit_rank": 2
+  },
+  "inputs_commitment": "sha256:k|traj|coilmaps|priors|plan",
+  "iters": 1460,
+  "output_commitment": "sha256:recon_img",
+  "receipt_kind": "ReductionReceipt",
+  "residuals": {
+    "data_term": 0.0125,
+    "primal_dual_gap": 9.7e-06,
+    "tv_term": 0.0042
+  },
+  "solver_binding_id": "solver://img/mri/espirit_nufft_pdhg@1.3.0"
+}

@@ -1,0 +1,43 @@
+{
+  "$id": "exponential_map.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "Schema for exponential and logarithm map operations",
+  "properties": {
+    "base_point": {
+      "description": "Base point on manifold",
+      "type": "object"
+    },
+    "kappa": {
+      "description": "Curvature parameter",
+      "type": "number"
+    },
+    "numerical_method": {
+      "default": "runge_kutta",
+      "enum": [
+        "runge_kutta",
+        "euler",
+        "midpoint",
+        "adaptive"
+      ],
+      "type": "string"
+    },
+    "tangent_vector": {
+      "description": "Tangent vector at base point",
+      "items": {
+        "type": "number"
+      },
+      "type": "array"
+    },
+    "target_point": {
+      "description": "Target point (for logarithm map)",
+      "type": "object"
+    },
+    "time_parameter": {
+      "default": 1.0,
+      "description": "Flow time parameter",
+      "type": "number"
+    }
+  },
+  "title": "Exponential Map Schema",
+  "type": "object"
+}

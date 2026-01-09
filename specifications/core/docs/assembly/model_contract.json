@@ -1,0 +1,82 @@
+{
+  "assembly_tools": {
+    "description": "Tools for composing model stacks and deploying nodes",
+    "tools": [
+      {
+        "description": "Create a stack of models working together",
+        "name": "create_model_stack",
+        "parameters": {
+          "cpu_cores": "integer (optional) - CPU cores",
+          "gpu_count": "integer (optional) - Number of GPUs",
+          "memory_gb": "number (optional) - Memory in GB",
+          "models": "array (required) - List of models with roles",
+          "name": "string (required) - Stack name",
+          "orchestration_mode": "string (optional) - sequential, parallel, router, ensemble, pipeline"
+        },
+        "returns": "Stack ID and configuration"
+      },
+      {
+        "description": "Create a deployable node assembly from a stack",
+        "name": "create_node_assembly",
+        "parameters": {
+          "name": "string (required) - Assembly name",
+          "security_level": "string (optional) - public, restricted, secure, isolated",
+          "stack_id": "string (required) - Stack to deploy",
+          "target_ld": "string (required) - Target Lorentzian Domain"
+        },
+        "returns": "Assembly ID and configuration"
+      },
+      {
+        "description": "Deploy an assembly to the ICO network",
+        "name": "deploy_assembly",
+        "parameters": {
+          "assembly_id": "string (required) - Assembly to deploy"
+        },
+        "returns": "Deployment ID, node ID, and LD address"
+      },
+      {
+        "description": "List available model stacks",
+        "name": "list_stacks",
+        "parameters": {
+          "capabilities": "array (optional) - Filter by capabilities",
+          "tags": "array (optional) - Filter by tags"
+        },
+        "returns": "List of model stacks"
+      },
+      {
+        "description": "List node assemblies",
+        "name": "list_assemblies",
+        "parameters": {
+          "stack_id": "string (optional) - Filter by stack",
+          "status": "string (optional) - Filter by status"
+        },
+        "returns": "List of assemblies"
+      },
+      {
+        "description": "List active deployments",
+        "name": "list_deployments",
+        "parameters": {
+          "status": "string (optional) - Filter by status"
+        },
+        "returns": "List of deployments with health and metrics"
+      }
+    ]
+  },
+  "usage_guidance": {
+    "when_to_use": [
+      "Combining multiple models for complex tasks",
+      "Deploying multi-modal systems",
+      "Creating high-availability services",
+      "Building specialized task routers",
+      "Implementing consensus systems"
+    ],
+    "workflow": [
+      "1. Select models from catalogue",
+      "2. Create a model stack with roles and orchestration",
+      "3. Create a node assembly targeting a specific LD",
+      "4. Validate the assembly",
+      "5. Deploy to ICO network",
+      "6. Monitor deployment health and metrics"
+    ]
+  }
+}

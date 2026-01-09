@@ -1,0 +1,11 @@
+{
+  "files": [
+    "ico_algorithms.spec.json",
+    "ico_conformance.spec.json",
+    "README.md",
+    "ICO_CORE_SPEC.md"
+  ],
+  "folders": [
+    "schemas"
+  ]
+}

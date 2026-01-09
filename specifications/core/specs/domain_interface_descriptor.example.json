@@ -1,0 +1,18 @@
+{
+  "allowed_predicates": [
+    "distance_leq"
+  ],
+  "disallowed_exports": [
+    "embeddings",
+    "raw_distances",
+    "anchor_ids"
+  ],
+  "domain_id": "ld.example.v1",
+  "migration_policy": "replace-old-techniques",
+  "public_endpoints": [
+    "POST /predicate_proofs/verify"
+  ],
+  "release_status": "pre-alpha",
+  "stability": "experimental",
+  "unreleased": true
+}

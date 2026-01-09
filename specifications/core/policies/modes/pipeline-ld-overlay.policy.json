@@ -1,0 +1,17 @@
+{
+  "description": "Enable logical descriptor (LD) overlay and watermarking for Euclid pipeline surrogates",
+  "enabled": true,
+  "id": "modes/pipeline-ld-overlay",
+  "overlays": {
+    "ld": {
+      "enabled": true,
+      "style": "minimal"
+    },
+    "watermark": {
+      "enabled": true,
+      "opacity": 0.35,
+      "position": "br",
+      "text": "SYNTHETIC SURROGATE"
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "capsule": {
+    "name": "ricci_flow",
+    "type": "mechanism",
+    "properties": {
+      "equation": "dg_ij/dt = -2 * Ric_ij",
+      "purpose": "Smooth out curvature singularities."
+    },
+    "implementation": {
+      "algorithm": "Runge-Kutta 4th Order (RK4) on Manifolds",
+      "step_size_control": "Adaptive based on curvature norm"
+    },
+    "vnes_binding": "geometry.curvature.flow"
+  }
+}

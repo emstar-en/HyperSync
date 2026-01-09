@@ -1,0 +1,94 @@
+{
+  "$id": "schema://retrieval/exactness.receipt.v1.json",
+  "$schema": "ext://fcbd7642ed3f",
+  "properties": {
+    "ann_params": {
+      "type": "object"
+    },
+    "candidate_count": {
+      "type": "integer"
+    },
+    "codebook_commitment": {
+      "type": "string"
+    },
+    "determinism": {
+      "type": "object"
+    },
+    "index_commitment": {
+      "type": "string"
+    },
+    "k": {
+      "type": "integer"
+    },
+    "metric_id": {
+      "type": "string"
+    },
+    "query_commitment": {
+      "type": "string"
+    },
+    "receipt_kind": {
+      "const": "RetrievalExactnessReceipt"
+    },
+    "refine": {
+      "properties": {
+        "eps": {
+          "type": "number"
+        },
+        "mode": {
+          "enum": [
+            "exact_within_radius",
+            "exact_topk"
+          ]
+        },
+        "r": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "mode"
+      ],
+      "type": "object"
+    },
+    "results": {
+      "items": {
+        "properties": {
+          "d": {
+            "type": "number"
+          },
+          "id": {
+            "type": "string"
+          },
+          "rank": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "d",
+          "rank"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "timestamp": {
+      "type": "string"
+    },
+    "verification": {
+      "type": "object"
+    }
+  },
+  "required": [
+    "receipt_kind",
+    "metric_id",
+    "index_commitment",
+    "query_commitment",
+    "k",
+    "refine",
+    "candidate_count",
+    "determinism",
+    "results",
+    "timestamp"
+  ],
+  "type": "object"
+}

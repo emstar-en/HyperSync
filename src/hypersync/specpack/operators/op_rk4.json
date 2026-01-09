@@ -1,0 +1,6 @@
+{
+  "deterministic": true,
+  "id": "op://rk4.0",
+  "kind": "integrator",
+  "notes": "Fixed step RK4"
+}

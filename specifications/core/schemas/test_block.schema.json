@@ -1,0 +1,3785 @@
+{
+  "$defs": {
+    "geometry_mode": "native",
+    "localPath": {
+      "geometry_mode": "native",
+      "migration_policy": "replace-old-techniques",
+      "pattern": "^(?!/)(?!.*\\.\\.)(?!.*\\\\)(?!.*[\\r\\n\\t]).+$",
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "type": "string",
+      "unreleased": true
+    },
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "rfc3339z": {
+      "geometry_mode": "native",
+      "migration_policy": "replace-old-techniques",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$",
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "type": "string",
+      "unreleased": true
+    },
+    "sci": {
+      "geometry_mode": "native",
+      "migration_policy": "replace-old-techniques",
+      "pattern": "^-?[0-9]+\\.[0-9]+e[+-][0-9]+$",
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "type": "string",
+      "unreleased": true
+    },
+    "sha256": {
+      "geometry_mode": "native",
+      "migration_policy": "replace-old-techniques",
+      "pattern": "^[a-f0-9]{64}$",
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "type": "string",
+      "unreleased": true
+    },
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "$id": "https://example.org/schemas/conformance_block.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Single-file schema for a self-contained, single-directory test block with substrate + semantic transport + ops + geometry validation and proof hardening.",
+  "geometry_mode": "native",
+  "migration_policy": "replace-old-techniques",
+  "properties": {
+    "block_id": {
+      "geometry_mode": "native",
+      "migration_policy": "replace-old-techniques",
+      "pattern": "^[a-z0-9._:-]{3,128}$",
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "type": "string",
+      "unreleased": true
+    },
+    "checks": {
+      "additionalProperties": false,
+      "description": "Assertions across geometry invariants, ops behaviors, semantic transport, security/governance, and performance.",
+      "geometry_mode": "native",
+      "migration_policy": "replace-old-techniques",
+      "properties": {
+        "geometry_mode": "native",
+        "invariants": {
+          "geometry_mode": "native",
+          "items": {
+            "additionalProperties": false,
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "properties": {
+              "args": {
+                "geometry_mode": "native",
+                "items": {
+                  "geometry_mode": "native",
+                  "migration_policy": "replace-old-techniques",
+                  "release_status": "pre-alpha",
+                  "stability": "experimental",
+                  "type": "string",
+                  "unreleased": true
+                },
+                "migration_policy": "replace-old-techniques",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "array",
+                "unreleased": true
+              },
+              "expected": {
+                "additionalProperties": true,
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "object",
+                "unreleased": true
+              },
+              "geometry_mode": "native",
+              "id": {
+                "enum": [
+                  "INV.DIST.CORRECTNESS",
+                  "INV.EXP_LOG.INVERSE",
+                  "INV.TRANSPORT.CONSISTENCY",
+                  "INV.HOLONOMY.BOUNDS",
+                  "INV.UNWINDER.RETRACTION.NATIVE",
+                  "INV.UNWINDER.TRANSPORT.NATIVE",
+                  "INV.UNWINDER.PRECISION.ONTOLOGICAL",
+                  "INV.UNWINDER.HOLONOMY.INTRINSIC"
+                ],
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "string",
+                "unreleased": true
+              },
+              "metric": {
+                "enum": [
+                  "lorentz",
+                  "angular_spatial",
+                  "euclidean_spatial",
+                  "euclidean_raw",
+                  "holonomy_angle",
+                  "custom"
+                ],
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "string",
+                "unreleased": true
+              },
+              "migration_policy": "replace-old-techniques",
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "tolerance_overrides": {
+                "additionalProperties": false,
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "properties": {
+                  "abs": {
+                    "$ref": "#/$defs/sci",
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "unreleased": true
+                  },
+                  "geometry_mode": "native",
+                  "migration_policy": "replace-old-techniques",
+                  "rel": {
+                    "$ref": "#/$defs/sci",
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "unreleased": true
+                  },
+                  "release_status": "pre-alpha",
+                  "stability": "experimental",
+                  "unreleased": true
+                },
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "object",
+                "unreleased": true
+              },
+              "unreleased": true
+            },
+            "release_status": "pre-alpha",
+            "required": [
+              "id"
+            ],
+            "stability": "experimental",
+            "type": "object",
+            "unreleased": true
+          },
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "array",
+          "unreleased": true
+        },
+        "migration_policy": "replace-old-techniques",
+        "ops": {
+          "geometry_mode": "native",
+          "items": {
+            "additionalProperties": false,
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "properties": {
+              "expected": {
+                "additionalProperties": true,
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "object",
+                "unreleased": true
+              },
+              "geometry_mode": "native",
+              "kind": {
+                "enum": [
+                  "routing.path_valid",
+                  "routing.stretch_leq",
+                  "routing.success",
+                  "sync.converges_tol",
+                  "optimization.norm_decreases",
+                  "privacy.dp_epsilon_leq",
+                  "privacy.membership_risk_leq",
+                  "consensus.robust_to_f",
+                  "health.within_thresholds"
+                ],
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "string",
+                "unreleased": true
+              },
+              "migration_policy": "replace-old-techniques",
+              "params": {
+                "additionalProperties": true,
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "object",
+                "unreleased": true
+              },
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "target": {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "minLength": 1,
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "string",
+                "unreleased": true
+              },
+              "tolerance_overrides": {
+                "additionalProperties": false,
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "properties": {
+                  "abs": {
+                    "$ref": "#/$defs/sci",
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "unreleased": true
+                  },
+                  "geometry_mode": "native",
+                  "migration_policy": "replace-old-techniques",
+                  "rel": {
+                    "$ref": "#/$defs/sci",
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "unreleased": true
+                  },
+                  "release_status": "pre-alpha",
+                  "stability": "experimental",
+                  "unreleased": true
+                },
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "object",
+                "unreleased": true
+              },
+              "unreleased": true
+            },
+            "release_status": "pre-alpha",
+            "required": [
+              "kind",
+              "target"
+            ],
+            "stability": "experimental",
+            "type": "object",
+            "unreleased": true
+          },
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "array",
+          "unreleased": true
+        },
+        "performance": {
+          "additionalProperties": false,
+          "geometry_mode": "native",
+          "migration_policy": "replace-old-techniques",
+          "properties": {
+            "geometry_mode": "native",
+            "max_memory_mb": {
+              "geometry_mode": "native",
+              "migration_policy": "replace-old-techniques",
+              "minimum": 1,
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "integer",
+              "unreleased": true
+            },
+            "max_runtime_ms": {
+              "geometry_mode": "native",
+              "migration_policy": "replace-old-techniques",
+              "minimum": 1,
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "integer",
+              "unreleased": true
+            },
+            "migration_policy": "replace-old-techniques",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "object",
+          "unreleased": true
+        },
+        "release_status": "pre-alpha",
+        "security": {
+          "geometry_mode": "native",
+          "items": {
+            "additionalProperties": false,
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "properties": {
+              "expected": {
+                "additionalProperties": true,
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "object",
+                "unreleased": true
+              },
+              "geometry_mode": "native",
+              "kind": {
+                "enum": [
+                  "shadow_ops.diverted_on_violation",
+                  "policy.change_propagates",
+                  "audit.receipts_match"
+                ],
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "string",
+                "unreleased": true
+              },
+              "migration_policy": "replace-old-techniques",
+              "params": {
+                "additionalProperties": true,
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "object",
+                "unreleased": true
+              },
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "unreleased": true
+            },
+            "release_status": "pre-alpha",
+            "required": [
+              "kind"
+            ],
+            "stability": "experimental",
+            "type": "object",
+            "unreleased": true
+          },
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "array",
+          "unreleased": true
+        },
+        "stability": "experimental",
+        "transport": {
+          "geometry_mode": "native",
+          "items": {
+            "additionalProperties": false,
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "properties": {
+              "expected": {
+                "additionalProperties": true,
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "object",
+                "unreleased": true
+              },
+              "geometry_mode": "native",
+              "kind": {
+                "enum": [
+                  "delivery.qos_satisfied",
+                  "ordering.contract_satisfied",
+                  "idempotency.respected",
+                  "causality.clock_monotone",
+                  "partition.tolerance",
+                  "encryption.enforced",
+                  "auth.clearance_enforced"
+                ],
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "string",
+                "unreleased": true
+              },
+              "migration_policy": "replace-old-techniques",
+              "params": {
+                "additionalProperties": true,
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "object",
+                "unreleased": true
+              },
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "target": {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "string",
+                "unreleased": true
+              },
+              "unreleased": true
+            },
+            "release_status": "pre-alpha",
+            "required": [
+              "kind"
+            ],
+            "stability": "experimental",
+            "type": "object",
+            "unreleased": true
+          },
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "array",
+          "unreleased": true
+        },
+        "unreleased": true
+      },
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "type": "object",
+      "unreleased": true
+    },
+    "coverage": {
+      "additionalProperties": false,
+      "geometry_mode": "native",
+      "migration_policy": "replace-old-techniques",
+      "properties": {
+        "claims": {
+          "geometry_mode": "native",
+          "items": {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "type": "string",
+            "unreleased": true
+          },
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "array",
+          "uniqueItems": true,
+          "unreleased": true
+        },
+        "geometry_mode": "native",
+        "matrix": {
+          "description": "Audit mapping of claim \u2192 (program step, check).",
+          "geometry_mode": "native",
+          "items": {
+            "additionalProperties": false,
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "properties": {
+              "check": {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "string",
+                "unreleased": true
+              },
+              "claim_id": {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "string",
+                "unreleased": true
+              },
+              "geometry_mode": "native",
+              "migration_policy": "replace-old-techniques",
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "step": {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "string",
+                "unreleased": true
+              },
+              "unreleased": true
+            },
+            "release_status": "pre-alpha",
+            "required": [
+              "claim_id"
+            ],
+            "stability": "experimental",
+            "type": "object",
+            "unreleased": true
+          },
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "array",
+          "unreleased": true
+        },
+        "migration_policy": "replace-old-techniques",
+        "release_status": "pre-alpha",
+        "stability": "experimental",
+        "unreleased": true
+      },
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "type": "object",
+      "unreleased": true
+    },
+    "environment": {
+      "additionalProperties": false,
+      "geometry_mode": "native",
+      "migration_policy": "replace-old-techniques",
+      "properties": {
+        "accel": {
+          "enum": [
+            "cpu",
+            "cuda"
+          ],
+          "geometry_mode": "native",
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "string",
+          "unreleased": true
+        },
+        "arch": {
+          "enum": [
+            "x86_64",
+            "aarch64"
+          ],
+          "geometry_mode": "native",
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "string",
+          "unreleased": true
+        },
+        "blas": {
+          "default": "openblas",
+          "enum": [
+            "openblas",
+            "mkl",
+            "accelerate"
+          ],
+          "geometry_mode": "native",
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "string",
+          "unreleased": true
+        },
+        "blas_threads": {
+          "default": 1,
+          "geometry_mode": "native",
+          "migration_policy": "replace-old-techniques",
+          "minimum": 1,
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "integer",
+          "unreleased": true
+        },
+        "deterministic_reductions": {
+          "default": true,
+          "geometry_mode": "native",
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "boolean",
+          "unreleased": true
+        },
+        "geometry_mode": "native",
+        "global_seed": {
+          "geometry_mode": "native",
+          "migration_policy": "replace-old-techniques",
+          "pattern": "^[0-9]{1,32}$",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "string",
+          "unreleased": true
+        },
+        "migration_policy": "replace-old-techniques",
+        "numactl_policy": {
+          "default": "none",
+          "enum": [
+            "local",
+            "interleave",
+            "none"
+          ],
+          "geometry_mode": "native",
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "string",
+          "unreleased": true
+        },
+        "os": {
+          "enum": [
+            "linux",
+            "mac",
+            "windows"
+          ],
+          "geometry_mode": "native",
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "string",
+          "unreleased": true
+        },
+        "precision": {
+          "enum": [
+            "fp32",
+            "fp64"
+          ],
+          "geometry_mode": "native",
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "string",
+          "unreleased": true
+        },
+        "release_status": "pre-alpha",
+        "stability": "experimental",
+        "unreleased": true
+      },
+      "release_status": "pre-alpha",
+      "required": [
+        "os",
+        "arch",
+        "accel",
+        "precision",
+        "deterministic_reductions",
+        "blas_threads"
+      ],
+      "stability": "experimental",
+      "type": "object",
+      "unreleased": true
+    },
+    "fault_model": {
+      "additionalProperties": false,
+      "geometry_mode": "native",
+      "migration_policy": "replace-old-techniques",
+      "properties": {
+        "adversary_behaviors": {
+          "geometry_mode": "native",
+          "items": {
+            "enum": [
+              "flip_sign",
+              "add_outlier",
+              "route_blackhole",
+              "gradient_poison",
+              "reorder_messages",
+              "duplicate_messages",
+              "drop_acks"
+            ],
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "type": "string",
+            "unreleased": true
+          },
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "array",
+          "uniqueItems": true,
+          "unreleased": true
+        },
+        "attack_strength": {
+          "default": 0.0,
+          "geometry_mode": "native",
+          "migration_policy": "replace-old-techniques",
+          "minimum": 0,
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "number",
+          "unreleased": true
+        },
+        "byzantine": {
+          "default": 0,
+          "geometry_mode": "native",
+          "migration_policy": "replace-old-techniques",
+          "minimum": 0,
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "integer",
+          "unreleased": true
+        },
+        "geometry_mode": "native",
+        "migration_policy": "replace-old-techniques",
+        "release_status": "pre-alpha",
+        "scope": {
+          "enum": [
+            "node",
+            "edge",
+            "broker",
+            "client"
+          ],
+          "geometry_mode": "native",
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "string",
+          "unreleased": true
+        },
+        "stability": "experimental",
+        "unreleased": true
+      },
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "type": "object",
+      "unreleased": true
+    },
+    "fixtures": {
+      "additionalProperties": false,
+      "geometry_mode": "native",
+      "migration_policy": "replace-old-techniques",
+      "properties": {
+        "data": {
+          "additionalProperties": false,
+          "geometry_mode": "native",
+          "migration_policy": "replace-old-techniques",
+          "properties": {
+            "embeddings": {
+              "geometry_mode": "native",
+              "migration_policy": "replace-old-techniques",
+              "oneOf": [
+                {
+                  "additionalProperties": false,
+                  "geometry_mode": "native",
+                  "migration_policy": "replace-old-techniques",
+                  "properties": {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "path": {
+                      "$ref": "#/$defs/localPath",
+                      "geometry_mode": "native",
+                      "migration_policy": "replace-old-techniques",
+                      "release_status": "pre-alpha",
+                      "stability": "experimental",
+                      "unreleased": true
+                    },
+                    "release_status": "pre-alpha",
+                    "sha256": {
+                      "$ref": "#/$defs/sha256",
+                      "geometry_mode": "native",
+                      "migration_policy": "replace-old-techniques",
+                      "release_status": "pre-alpha",
+                      "stability": "experimental",
+                      "unreleased": true
+                    },
+                    "stability": "experimental",
+                    "unreleased": true
+                  },
+                  "release_status": "pre-alpha",
+                  "required": [
+                    "path",
+                    "sha256"
+                  ],
+                  "stability": "experimental",
+                  "type": "object",
+                  "unreleased": true
+                },
+                {
+                  "geometry_mode": "native",
+                  "items": {
+                    "additionalProperties": false,
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "properties": {
+                      "coords": {
+                        "geometry_mode": "native",
+                        "items": {
+                          "geometry_mode": "native",
+                          "migration_policy": "replace-old-techniques",
+                          "release_status": "pre-alpha",
+                          "stability": "experimental",
+                          "type": "number",
+                          "unreleased": true
+                        },
+                        "migration_policy": "replace-old-techniques",
+                        "minItems": 2,
+                        "release_status": "pre-alpha",
+                        "stability": "experimental",
+                        "type": "array",
+                        "unreleased": true
+                      },
+                      "geometry_mode": "native",
+                      "id": {
+                        "geometry_mode": "native",
+                        "migration_policy": "replace-old-techniques",
+                        "release_status": "pre-alpha",
+                        "stability": "experimental",
+                        "type": "string",
+                        "unreleased": true
+                      },
+                      "migration_policy": "replace-old-techniques",
+                      "release_status": "pre-alpha",
+                      "stability": "experimental",
+                      "unreleased": true
+                    },
+                    "release_status": "pre-alpha",
+                    "required": [
+                      "id",
+                      "coords"
+                    ],
+                    "stability": "experimental",
+                    "type": "object",
+                    "unreleased": true
+                  },
+                  "migration_policy": "replace-old-techniques",
+                  "release_status": "pre-alpha",
+                  "stability": "experimental",
+                  "type": "array",
+                  "unreleased": true
+                }
+              ],
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "unreleased": true
+            },
+            "geometry_mode": "native",
+            "gradients": {
+              "geometry_mode": "native",
+              "items": {
+                "additionalProperties": false,
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "properties": {
+                  "geometry_mode": "native",
+                  "migration_policy": "replace-old-techniques",
+                  "model_id": {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "type": "string",
+                    "unreleased": true
+                  },
+                  "release_status": "pre-alpha",
+                  "stability": "experimental",
+                  "unreleased": true,
+                  "values": {
+                    "geometry_mode": "native",
+                    "items": {
+                      "geometry_mode": "native",
+                      "migration_policy": "replace-old-techniques",
+                      "release_status": "pre-alpha",
+                      "stability": "experimental",
+                      "type": "number",
+                      "unreleased": true
+                    },
+                    "migration_policy": "replace-old-techniques",
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "type": "array",
+                    "unreleased": true
+                  }
+                },
+                "release_status": "pre-alpha",
+                "required": [
+                  "model_id",
+                  "values"
+                ],
+                "stability": "experimental",
+                "type": "object",
+                "unreleased": true
+              },
+              "migration_policy": "replace-old-techniques",
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "array",
+              "unreleased": true
+            },
+            "graph": {
+              "geometry_mode": "native",
+              "migration_policy": "replace-old-techniques",
+              "oneOf": [
+                {
+                  "additionalProperties": false,
+                  "geometry_mode": "native",
+                  "migration_policy": "replace-old-techniques",
+                  "properties": {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "path": {
+                      "$ref": "#/$defs/localPath",
+                      "geometry_mode": "native",
+                      "migration_policy": "replace-old-techniques",
+                      "release_status": "pre-alpha",
+                      "stability": "experimental",
+                      "unreleased": true
+                    },
+                    "release_status": "pre-alpha",
+                    "sha256": {
+                      "$ref": "#/$defs/sha256",
+                      "geometry_mode": "native",
+                      "migration_policy": "replace-old-techniques",
+                      "release_status": "pre-alpha",
+                      "stability": "experimental",
+                      "unreleased": true
+                    },
+                    "stability": "experimental",
+                    "unreleased": true
+                  },
+                  "release_status": "pre-alpha",
+                  "required": [
+                    "path",
+                    "sha256"
+                  ],
+                  "stability": "experimental",
+                  "type": "object",
+                  "unreleased": true
+                },
+                {
+                  "additionalProperties": false,
+                  "geometry_mode": "native",
+                  "migration_policy": "replace-old-techniques",
+                  "properties": {
+                    "directed": {
+                      "default": false,
+                      "geometry_mode": "native",
+                      "migration_policy": "replace-old-techniques",
+                      "release_status": "pre-alpha",
+                      "stability": "experimental",
+                      "type": "boolean",
+                      "unreleased": true
+                    },
+                    "edges": {
+                      "geometry_mode": "native",
+                      "items": {
+                        "additionalProperties": false,
+                        "geometry_mode": "native",
+                        "migration_policy": "replace-old-techniques",
+                        "properties": {
+                          "geometry_mode": "native",
+                          "migration_policy": "replace-old-techniques",
+                          "release_status": "pre-alpha",
+                          "stability": "experimental",
+                          "u": {
+                            "geometry_mode": "native",
+                            "migration_policy": "replace-old-techniques",
+                            "release_status": "pre-alpha",
+                            "stability": "experimental",
+                            "type": "string",
+                            "unreleased": true
+                          },
+                          "unreleased": true,
+                          "v": {
+                            "geometry_mode": "native",
+                            "migration_policy": "replace-old-techniques",
+                            "release_status": "pre-alpha",
+                            "stability": "experimental",
+                            "type": "string",
+                            "unreleased": true
+                          },
+                          "weight": {
+                            "default": 1.0,
+                            "geometry_mode": "native",
+                            "migration_policy": "replace-old-techniques",
+                            "release_status": "pre-alpha",
+                            "stability": "experimental",
+                            "type": "number",
+                            "unreleased": true
+                          }
+                        },
+                        "release_status": "pre-alpha",
+                        "required": [
+                          "u",
+                          "v"
+                        ],
+                        "stability": "experimental",
+                        "type": "object",
+                        "unreleased": true
+                      },
+                      "migration_policy": "replace-old-techniques",
+                      "release_status": "pre-alpha",
+                      "stability": "experimental",
+                      "type": "array",
+                      "unreleased": true
+                    },
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "nodes": {
+                      "geometry_mode": "native",
+                      "items": {
+                        "geometry_mode": "native",
+                        "migration_policy": "replace-old-techniques",
+                        "release_status": "pre-alpha",
+                        "stability": "experimental",
+                        "type": "string",
+                        "unreleased": true
+                      },
+                      "migration_policy": "replace-old-techniques",
+                      "release_status": "pre-alpha",
+                      "stability": "experimental",
+                      "type": "array",
+                      "uniqueItems": true,
+                      "unreleased": true
+                    },
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "unreleased": true
+                  },
+                  "release_status": "pre-alpha",
+                  "required": [
+                    "nodes",
+                    "edges"
+                  ],
+                  "stability": "experimental",
+                  "type": "object",
+                  "unreleased": true
+                }
+              ],
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "unreleased": true
+            },
+            "migration_policy": "replace-old-techniques",
+            "models": {
+              "geometry_mode": "native",
+              "items": {
+                "additionalProperties": false,
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "properties": {
+                  "geometry_mode": "native",
+                  "migration_policy": "replace-old-techniques",
+                  "model_id": {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "type": "string",
+                    "unreleased": true
+                  },
+                  "params_shape": {
+                    "geometry_mode": "native",
+                    "items": {
+                      "geometry_mode": "native",
+                      "migration_policy": "replace-old-techniques",
+                      "minimum": 1,
+                      "release_status": "pre-alpha",
+                      "stability": "experimental",
+                      "type": "integer",
+                      "unreleased": true
+                    },
+                    "migration_policy": "replace-old-techniques",
+                    "minItems": 1,
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "type": "array",
+                    "unreleased": true
+                  },
+                  "release_status": "pre-alpha",
+                  "stability": "experimental",
+                  "unreleased": true
+                },
+                "release_status": "pre-alpha",
+                "required": [
+                  "model_id",
+                  "params_shape"
+                ],
+                "stability": "experimental",
+                "type": "object",
+                "unreleased": true
+              },
+              "migration_policy": "replace-old-techniques",
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "array",
+              "unreleased": true
+            },
+            "points": {
+              "geometry_mode": "native",
+              "items": {
+                "geometry_mode": "native",
+                "items": {
+                  "geometry_mode": "native",
+                  "migration_policy": "replace-old-techniques",
+                  "release_status": "pre-alpha",
+                  "stability": "experimental",
+                  "type": "number",
+                  "unreleased": true
+                },
+                "migration_policy": "replace-old-techniques",
+                "minItems": 2,
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "array",
+                "unreleased": true
+              },
+              "migration_policy": "replace-old-techniques",
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "array",
+              "unreleased": true
+            },
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "object",
+          "unreleased": true
+        },
+        "geometry_mode": "native",
+        "migration_policy": "replace-old-techniques",
+        "release_status": "pre-alpha",
+        "stability": "experimental",
+        "unreleased": true
+      },
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "type": "object",
+      "unreleased": true
+    },
+    "geometry_mode": "native",
+    "integrity": {
+      "additionalProperties": false,
+      "geometry_mode": "native",
+      "migration_policy": "replace-old-techniques",
+      "properties": {
+        "canonicalization": {
+          "additionalProperties": false,
+          "geometry_mode": "native",
+          "migration_policy": "replace-old-techniques",
+          "properties": {
+            "byte_encoding": {
+              "enum": [
+                "utf8"
+              ],
+              "geometry_mode": "native",
+              "migration_policy": "replace-old-techniques",
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "string",
+              "unreleased": true
+            },
+            "field_order": {
+              "enum": [
+                "declared",
+                "lex"
+              ],
+              "geometry_mode": "native",
+              "migration_policy": "replace-old-techniques",
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "string",
+              "unreleased": true
+            },
+            "float_format": {
+              "enum": [
+                "scientific"
+              ],
+              "geometry_mode": "native",
+              "migration_policy": "replace-old-techniques",
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "string",
+              "unreleased": true
+            },
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "normalize_sign": {
+              "geometry_mode": "native",
+              "migration_policy": "replace-old-techniques",
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "boolean",
+              "unreleased": true
+            },
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          "release_status": "pre-alpha",
+          "required": [
+            "field_order",
+            "byte_encoding",
+            "float_format",
+            "normalize_sign"
+          ],
+          "stability": "experimental",
+          "type": "object",
+          "unreleased": true
+        },
+        "chain_of_custody": {
+          "geometry_mode": "native",
+          "items": {
+            "additionalProperties": false,
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "properties": {
+              "at": {
+                "$ref": "#/$defs/rfc3339z",
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "unreleased": true
+              },
+              "command_hash": {
+                "$ref": "#/$defs/sha256",
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "unreleased": true
+              },
+              "geometry_mode": "native",
+              "migration_policy": "replace-old-techniques",
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "tool": {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "string",
+                "unreleased": true
+              },
+              "unreleased": true
+            },
+            "release_status": "pre-alpha",
+            "required": [
+              "at",
+              "tool",
+              "version",
+              "command_hash"
+            ],
+            "stability": "experimental",
+            "type": "object",
+            "unreleased": true
+          },
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "array",
+          "unreleased": true
+        },
+        "dir_merkle_root": {
+          "description": "Merkle root over sorted [path, sha256] pairs.",
+          "geometry_mode": "native",
+          "migration_policy": "replace-old-techniques",
+          "pattern": "^[a-f0-9]{64}$",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "string",
+          "unreleased": true
+        },
+        "geometry_mode": "native",
+        "integrity_policy": {
+          "additionalProperties": false,
+          "geometry_mode": "native",
+          "migration_policy": "replace-old-techniques",
+          "properties": {
+            "allow_out_of_dir": {
+              "const": false,
+              "geometry_mode": "native",
+              "migration_policy": "replace-old-techniques",
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "boolean",
+              "unreleased": true
+            },
+            "deny_unknown_files": {
+              "const": true,
+              "geometry_mode": "native",
+              "migration_policy": "replace-old-techniques",
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "boolean",
+              "unreleased": true
+            },
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "must_match_manifest": {
+              "const": true,
+              "geometry_mode": "native",
+              "migration_policy": "replace-old-techniques",
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "boolean",
+              "unreleased": true
+            },
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          "release_status": "pre-alpha",
+          "required": [
+            "must_match_manifest",
+            "deny_unknown_files",
+            "allow_out_of_dir"
+          ],
+          "stability": "experimental",
+          "type": "object",
+          "unreleased": true
+        },
+        "manifest": {
+          "description": "All files in the block directory. Out-of-dir references are forbidden.",
+          "geometry_mode": "native",
+          "items": {
+            "additionalProperties": false,
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "properties": {
+              "bytes": {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "minimum": 0,
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "integer",
+                "unreleased": true
+              },
+              "geometry_mode": "native",
+              "migration_policy": "replace-old-techniques",
+              "path": {
+                "$ref": "#/$defs/localPath",
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "unreleased": true
+              },
+              "release_status": "pre-alpha",
+              "role": {
+                "enum": [
+                  "data",
+                  "program",
+                  "fixture",
+                  "doc",
+                  "secret",
+                  "proof"
+                ],
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "string",
+                "unreleased": true
+              },
+              "sha256": {
+                "$ref": "#/$defs/sha256",
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "unreleased": true
+              },
+              "stability": "experimental",
+              "unreleased": true
+            },
+            "release_status": "pre-alpha",
+            "required": [
+              "path",
+              "sha256"
+            ],
+            "stability": "experimental",
+            "type": "object",
+            "unreleased": true
+          },
+          "migration_policy": "replace-old-techniques",
+          "minItems": 1,
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "array",
+          "unreleased": true
+        },
+        "migration_policy": "replace-old-techniques",
+        "release_status": "pre-alpha",
+        "signing": {
+          "additionalProperties": false,
+          "geometry_mode": "native",
+          "migration_policy": "replace-old-techniques",
+          "properties": {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "release_status": "pre-alpha",
+            "sign_block": {
+              "default": false,
+              "geometry_mode": "native",
+              "migration_policy": "replace-old-techniques",
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "boolean",
+              "unreleased": true
+            },
+            "signatures": {
+              "geometry_mode": "native",
+              "items": {
+                "additionalProperties": false,
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "properties": {
+                  "alg": {
+                    "enum": [
+                      "ed25519",
+                      "p256-sha256"
+                    ],
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "type": "string",
+                    "unreleased": true
+                  },
+                  "geometry_mode": "native",
+                  "migration_policy": "replace-old-techniques",
+                  "pubkey_fingerprint": {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "minLength": 8,
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "type": "string",
+                    "unreleased": true
+                  },
+                  "release_status": "pre-alpha",
+                  "signature": {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "pattern": "^[a-f0-9]+$",
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "type": "string",
+                    "unreleased": true
+                  },
+                  "stability": "experimental",
+                  "unreleased": true
+                },
+                "release_status": "pre-alpha",
+                "required": [
+                  "alg",
+                  "pubkey_fingerprint",
+                  "signature"
+                ],
+                "stability": "experimental",
+                "type": "object",
+                "unreleased": true
+              },
+              "migration_policy": "replace-old-techniques",
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "array",
+              "unreleased": true
+            },
+            "stability": "experimental",
+            "unreleased": true
+          },
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "object",
+          "unreleased": true
+        },
+        "stability": "experimental",
+        "unreleased": true
+      },
+      "release_status": "pre-alpha",
+      "required": [
+        "manifest",
+        "dir_merkle_root",
+        "canonicalization",
+        "integrity_policy"
+      ],
+      "stability": "experimental",
+      "type": "object",
+      "unreleased": true
+    },
+    "manifold": {
+      "additionalProperties": false,
+      "geometry_mode": "native",
+      "migration_policy": "replace-old-techniques",
+      "properties": {
+        "curvature_K": {
+          "geometry_mode": "native",
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "number",
+          "unreleased": true
+        },
+        "dimension": {
+          "geometry_mode": "native",
+          "migration_policy": "replace-old-techniques",
+          "minimum": 2,
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "integer",
+          "unreleased": true
+        },
+        "geometry_mode": "native",
+        "migration_policy": "replace-old-techniques",
+        "model": {
+          "enum": [
+            "hyperboloid",
+            "poincare_ball",
+            "half_space"
+          ],
+          "geometry_mode": "native",
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "string",
+          "unreleased": true
+        },
+        "release_status": "pre-alpha",
+        "signature": {
+          "enum": [
+            "-++++",
+            "-+...+"
+          ],
+          "geometry_mode": "native",
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "string",
+          "unreleased": true
+        },
+        "stability": "experimental",
+        "unreleased": true
+      },
+      "release_status": "pre-alpha",
+      "required": [
+        "model",
+        "dimension",
+        "curvature_K"
+      ],
+      "stability": "experimental",
+      "type": "object",
+      "unreleased": true
+    },
+    "metadata": {
+      "additionalProperties": false,
+      "geometry_mode": "native",
+      "migration_policy": "replace-old-techniques",
+      "properties": {
+        "authors": {
+          "geometry_mode": "native",
+          "items": {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "type": "string",
+            "unreleased": true
+          },
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "array",
+          "uniqueItems": true,
+          "unreleased": true
+        },
+        "created_at": {
+          "$ref": "#/$defs/rfc3339z",
+          "geometry_mode": "native",
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "unreleased": true
+        },
+        "description": {
+          "geometry_mode": "native",
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "string",
+          "unreleased": true
+        },
+        "geometry_mode": "native",
+        "migration_policy": "replace-old-techniques",
+        "release_status": "pre-alpha",
+        "stability": "experimental",
+        "tags": {
+          "geometry_mode": "native",
+          "items": {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "type": "string",
+            "unreleased": true
+          },
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "array",
+          "uniqueItems": true,
+          "unreleased": true
+        },
+        "title": {
+          "geometry_mode": "native",
+          "migration_policy": "replace-old-techniques",
+          "minLength": 3,
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "string",
+          "unreleased": true
+        },
+        "unreleased": true
+      },
+      "release_status": "pre-alpha",
+      "required": [
+        "title",
+        "created_at"
+      ],
+      "stability": "experimental",
+      "type": "object",
+      "unreleased": true
+    },
+    "metamorphic": {
+      "additionalProperties": false,
+      "geometry_mode": "native",
+      "migration_policy": "replace-old-techniques",
+      "properties": {
+        "geometric": {
+          "additionalProperties": false,
+          "geometry_mode": "native",
+          "migration_policy": "replace-old-techniques",
+          "properties": {
+            "curvature_scaling": {
+              "additionalProperties": false,
+              "geometry_mode": "native",
+              "migration_policy": "replace-old-techniques",
+              "properties": {
+                "K_values": {
+                  "geometry_mode": "native",
+                  "items": {
+                    "$ref": "#/$defs/sci",
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "unreleased": true
+                  },
+                  "migration_policy": "replace-old-techniques",
+                  "minItems": 1,
+                  "release_status": "pre-alpha",
+                  "stability": "experimental",
+                  "type": "array",
+                  "unreleased": true
+                },
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "re_lift": {
+                  "default": true,
+                  "geometry_mode": "native",
+                  "migration_policy": "replace-old-techniques",
+                  "release_status": "pre-alpha",
+                  "stability": "experimental",
+                  "type": "boolean",
+                  "unreleased": true
+                },
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "unreleased": true
+              },
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "object",
+              "unreleased": true
+            },
+            "geometry_mode": "native",
+            "holonomy": {
+              "additionalProperties": false,
+              "description": "Holonomy tested intrinsically via geodesic loops and intrinsic transport; no chart rectangles or discrete Euclidean ladders.",
+              "geometry_mode": "native",
+              "migration_policy": "replace-old-techniques",
+              "properties": {
+                "geometry_mode": "native",
+                "loop_type": {
+                  "enum": [
+                    "geodesic_triangle",
+                    "intrinsic_loop"
+                  ],
+                  "geometry_mode": "native",
+                  "migration_policy": "replace-old-techniques",
+                  "release_status": "pre-alpha",
+                  "stability": "experimental",
+                  "type": "string",
+                  "unreleased": true
+                },
+                "migration_policy": "replace-old-techniques",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "step_counts": {
+                  "geometry_mode": "native",
+                  "items": {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "minimum": 1,
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "type": "integer",
+                    "unreleased": true
+                  },
+                  "migration_policy": "replace-old-techniques",
+                  "release_status": "pre-alpha",
+                  "stability": "experimental",
+                  "type": "array",
+                  "uniqueItems": true,
+                  "unreleased": true
+                },
+                "step_policy": {
+                  "additionalProperties": false,
+                  "geometry_mode": "native",
+                  "migration_policy": "replace-old-techniques",
+                  "properties": {
+                    "geometry_mode": "native",
+                    "max_step": {
+                      "$ref": "#/$defs/sci",
+                      "geometry_mode": "native",
+                      "migration_policy": "replace-old-techniques",
+                      "release_status": "pre-alpha",
+                      "stability": "experimental",
+                      "unreleased": true
+                    },
+                    "migration_policy": "replace-old-techniques",
+                    "refinement": {
+                      "default": "fixed_steps",
+                      "enum": [
+                        "fixed_steps",
+                        "adaptive"
+                      ],
+                      "geometry_mode": "native",
+                      "migration_policy": "replace-old-techniques",
+                      "release_status": "pre-alpha",
+                      "stability": "experimental",
+                      "type": "string",
+                      "unreleased": true
+                    },
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "tolerance": {
+                      "$ref": "#/$defs/sci",
+                      "geometry_mode": "native",
+                      "migration_policy": "replace-old-techniques",
+                      "release_status": "pre-alpha",
+                      "stability": "experimental",
+                      "unreleased": true
+                    },
+                    "unreleased": true
+                  },
+                  "release_status": "pre-alpha",
+                  "stability": "experimental",
+                  "type": "object",
+                  "unreleased": true
+                },
+                "transport_scheme": {
+                  "enum": [
+                    "levi_civita_continuous",
+                    "parallel_transport_intrinsic"
+                  ],
+                  "geometry_mode": "native",
+                  "migration_policy": "replace-old-techniques",
+                  "release_status": "pre-alpha",
+                  "stability": "experimental",
+                  "type": "string",
+                  "unreleased": true
+                },
+                "unreleased": true
+              },
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "object",
+              "unreleased": true
+            },
+            "isometries": {
+              "additionalProperties": false,
+              "geometry_mode": "native",
+              "migration_policy": "replace-old-techniques",
+              "properties": {
+                "boost_axes": {
+                  "geometry_mode": "native",
+                  "items": {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "minimum": 0,
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "type": "integer",
+                    "unreleased": true
+                  },
+                  "migration_policy": "replace-old-techniques",
+                  "release_status": "pre-alpha",
+                  "stability": "experimental",
+                  "type": "array",
+                  "uniqueItems": true,
+                  "unreleased": true
+                },
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "rapidity_range": {
+                  "geometry_mode": "native",
+                  "items": {
+                    "$ref": "#/$defs/sci",
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "unreleased": true
+                  },
+                  "maxItems": 2,
+                  "migration_policy": "replace-old-techniques",
+                  "minItems": 2,
+                  "release_status": "pre-alpha",
+                  "stability": "experimental",
+                  "type": "array",
+                  "unreleased": true
+                },
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "unreleased": true
+              },
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "object",
+              "unreleased": true
+            },
+            "migration_policy": "replace-old-techniques",
+            "release_status": "pre-alpha",
+            "rotations": {
+              "additionalProperties": false,
+              "geometry_mode": "native",
+              "migration_policy": "replace-old-techniques",
+              "properties": {
+                "angle_range": {
+                  "geometry_mode": "native",
+                  "items": {
+                    "$ref": "#/$defs/sci",
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "unreleased": true
+                  },
+                  "maxItems": 2,
+                  "migration_policy": "replace-old-techniques",
+                  "minItems": 2,
+                  "release_status": "pre-alpha",
+                  "stability": "experimental",
+                  "type": "array",
+                  "unreleased": true
+                },
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "planes": {
+                  "geometry_mode": "native",
+                  "items": {
+                    "geometry_mode": "native",
+                    "items": {
+                      "geometry_mode": "native",
+                      "migration_policy": "replace-old-techniques",
+                      "release_status": "pre-alpha",
+                      "stability": "experimental",
+                      "type": "string",
+                      "unreleased": true
+                    },
+                    "maxItems": 2,
+                    "migration_policy": "replace-old-techniques",
+                    "minItems": 2,
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "type": "array",
+                    "unreleased": true
+                  },
+                  "migration_policy": "replace-old-techniques",
+                  "release_status": "pre-alpha",
+                  "stability": "experimental",
+                  "type": "array",
+                  "unreleased": true
+                },
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "unreleased": true
+              },
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "object",
+              "unreleased": true
+            },
+            "stability": "experimental",
+            "unreleased": true
+          },
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "object",
+          "unreleased": true
+        },
+        "geometry_mode": "native",
+        "migration_policy": "replace-old-techniques",
+        "network": {
+          "additionalProperties": false,
+          "geometry_mode": "native",
+          "migration_policy": "replace-old-techniques",
+          "properties": {
+            "duplicate_prob": {
+              "geometry_mode": "native",
+              "items": {
+                "$ref": "#/$defs/sci",
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "unreleased": true
+              },
+              "maxItems": 2,
+              "migration_policy": "replace-old-techniques",
+              "minItems": 2,
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "array",
+              "unreleased": true
+            },
+            "geometry_mode": "native",
+            "graph_automorphisms": {
+              "default": 0,
+              "geometry_mode": "native",
+              "migration_policy": "replace-old-techniques",
+              "minimum": 0,
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "integer",
+              "unreleased": true
+            },
+            "jitter_ms_range": {
+              "geometry_mode": "native",
+              "items": {
+                "$ref": "#/$defs/sci",
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "unreleased": true
+              },
+              "maxItems": 2,
+              "migration_policy": "replace-old-techniques",
+              "minItems": 2,
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "array",
+              "unreleased": true
+            },
+            "link_drop_rate_range": {
+              "geometry_mode": "native",
+              "items": {
+                "$ref": "#/$defs/sci",
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "unreleased": true
+              },
+              "maxItems": 2,
+              "migration_policy": "replace-old-techniques",
+              "minItems": 2,
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "array",
+              "unreleased": true
+            },
+            "migration_policy": "replace-old-techniques",
+            "node_permutations": {
+              "default": 0,
+              "geometry_mode": "native",
+              "migration_policy": "replace-old-techniques",
+              "minimum": 0,
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "integer",
+              "unreleased": true
+            },
+            "release_status": "pre-alpha",
+            "reorder_prob": {
+              "geometry_mode": "native",
+              "items": {
+                "$ref": "#/$defs/sci",
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "unreleased": true
+              },
+              "maxItems": 2,
+              "migration_policy": "replace-old-techniques",
+              "minItems": 2,
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "array",
+              "unreleased": true
+            },
+            "stability": "experimental",
+            "unreleased": true
+          },
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "object",
+          "unreleased": true
+        },
+        "release_status": "pre-alpha",
+        "stability": "experimental",
+        "unreleased": true
+      },
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "type": "object",
+      "unreleased": true
+    },
+    "notes": {
+      "geometry_mode": "native",
+      "migration_policy": "replace-old-techniques",
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "type": "string",
+      "unreleased": true
+    },
+    "numeric_policy": {
+      "additionalProperties": false,
+      "geometry_mode": "native",
+      "migration_policy": "replace-old-techniques",
+      "properties": {
+        "denormals": {
+          "default": "preserve",
+          "enum": [
+            "preserve",
+            "flush_to_zero"
+          ],
+          "geometry_mode": "native",
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "string",
+          "unreleased": true
+        },
+        "geometry_mode": "native",
+        "migration_policy": "replace-old-techniques",
+        "release_status": "pre-alpha",
+        "retraction_native": {
+          "description": "Intrinsic hyperbolic retraction; no projection or Euclidean approximation.",
+          "enum": [
+            "exponential_map_intrinsic",
+            "no_retraction_needed"
+          ],
+          "geometry_mode": "native",
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "string",
+          "unreleased": true
+        },
+        "rng_impl": {
+          "enum": [
+            "xoshiro256**",
+            "philox"
+          ],
+          "geometry_mode": "native",
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "string",
+          "unreleased": true
+        },
+        "rounding_mode": {
+          "enum": [
+            "nearest_even"
+          ],
+          "geometry_mode": "native",
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "string",
+          "unreleased": true
+        },
+        "stability": "experimental",
+        "tolerances": {
+          "additionalProperties": false,
+          "description": "Ontological tolerances: small scales are real; do not annihilate beings, holonomy, or causal inner products.",
+          "geometry_mode": "native",
+          "migration_policy": "replace-old-techniques",
+          "properties": {
+            "distance_abs": {
+              "$ref": "#/$defs/sci",
+              "geometry_mode": "native",
+              "migration_policy": "replace-old-techniques",
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "unreleased": true
+            },
+            "distance_rel": {
+              "$ref": "#/$defs/sci",
+              "geometry_mode": "native",
+              "migration_policy": "replace-old-techniques",
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "unreleased": true
+            },
+            "geometry_mode": "native",
+            "holonomy_angle_abs": {
+              "$ref": "#/$defs/sci",
+              "geometry_mode": "native",
+              "migration_policy": "replace-old-techniques",
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "unreleased": true
+            },
+            "ip_abs": {
+              "$ref": "#/$defs/sci",
+              "geometry_mode": "native",
+              "migration_policy": "replace-old-techniques",
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "unreleased": true
+            },
+            "migration_policy": "replace-old-techniques",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          "release_status": "pre-alpha",
+          "required": [
+            "distance_abs",
+            "distance_rel"
+          ],
+          "stability": "experimental",
+          "type": "object",
+          "unreleased": true
+        },
+        "unreleased": true,
+        "vector_transport_native": {
+          "description": "Intrinsic parallel transport preserving worldline continuity.",
+          "enum": [
+            "levi_civita_intrinsic",
+            "geodesic_parallel_transport"
+          ],
+          "geometry_mode": "native",
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "string",
+          "unreleased": true
+        }
+      },
+      "release_status": "pre-alpha",
+      "required": [
+        "rounding_mode",
+        "denormals",
+        "retraction_native",
+        "vector_transport_native",
+        "rng_impl",
+        "tolerances"
+      ],
+      "stability": "experimental",
+      "type": "object",
+      "unreleased": true
+    },
+    "program": {
+      "description": "Sequence of deterministic steps; args may reference $fixtures.*, $substrate.*, $semantics.*, $prev.*, $env.*",
+      "geometry_mode": "native",
+      "items": {
+        "additionalProperties": false,
+        "geometry_mode": "native",
+        "migration_policy": "replace-old-techniques",
+        "properties": {
+          "args": {
+            "additionalProperties": true,
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "type": "object",
+            "unreleased": true
+          },
+          "geometry_mode": "native",
+          "migration_policy": "replace-old-techniques",
+          "name": {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "pattern": "^[a-zA-Z_][a-zA-Z0-9_]{0,63}$",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "type": "string",
+            "unreleased": true
+          },
+          "op": {
+            "enum": [
+              "net.emit",
+              "net.broadcast",
+              "net.partition",
+              "net.heal",
+              "net.drop_link",
+              "net.throttle_link",
+              "net.rotate_keys",
+              "sem.publish",
+              "sem.request_response",
+              "sem.apply_policy",
+              "ops.routing.route_path",
+              "ops.routing.next_hop",
+              "ops.sync.riemannian_consensus",
+              "ops.optimization.rsgd_intrinsic",
+              "ops.privacy.hyperbolic_obscuration",
+              "ops.consensus.riemannian_barycenter_respectful",
+              "ops.health.model_health_snapshot"
+            ],
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "type": "string",
+            "unreleased": true
+          },
+          "release_status": "pre-alpha",
+          "save_as": {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "pattern": "^[a-zA-Z_][a-zA-Z0-9_]{0,63}$",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "type": "string",
+            "unreleased": true
+          },
+          "seed_override": {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "pattern": "^[0-9]{1,32}$",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "type": "string",
+            "unreleased": true
+          },
+          "stability": "experimental",
+          "unreleased": true
+        },
+        "release_status": "pre-alpha",
+        "required": [
+          "name",
+          "op",
+          "args",
+          "save_as"
+        ],
+        "stability": "experimental",
+        "type": "object",
+        "unreleased": true
+      },
+      "migration_policy": "replace-old-techniques",
+      "minItems": 1,
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "type": "array",
+      "unreleased": true
+    },
+    "receipts": {
+      "additionalProperties": false,
+      "geometry_mode": "native",
+      "migration_policy": "replace-old-techniques",
+      "properties": {
+        "audit_export": {
+          "additionalProperties": false,
+          "geometry_mode": "native",
+          "migration_policy": "replace-old-techniques",
+          "properties": {
+            "format": {
+              "default": "jsonl",
+              "enum": [
+                "jsonl",
+                "parquet"
+              ],
+              "geometry_mode": "native",
+              "migration_policy": "replace-old-techniques",
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "string",
+              "unreleased": true
+            },
+            "geometry_mode": "native",
+            "include_traces": {
+              "default": true,
+              "geometry_mode": "native",
+              "migration_policy": "replace-old-techniques",
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "boolean",
+              "unreleased": true
+            },
+            "migration_policy": "replace-old-techniques",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "object",
+          "unreleased": true
+        },
+        "geometry_mode": "native",
+        "migration_policy": "replace-old-techniques",
+        "per_check": {
+          "geometry_mode": "native",
+          "items": {
+            "additionalProperties": false,
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "properties": {
+              "check_id": {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "string",
+                "unreleased": true
+              },
+              "geometry_mode": "native",
+              "migration_policy": "replace-old-techniques",
+              "release_status": "pre-alpha",
+              "sha256": {
+                "$ref": "#/$defs/sha256",
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "unreleased": true
+              },
+              "stability": "experimental",
+              "unreleased": true
+            },
+            "release_status": "pre-alpha",
+            "required": [
+              "check_id",
+              "sha256"
+            ],
+            "stability": "experimental",
+            "type": "object",
+            "unreleased": true
+          },
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "array",
+          "unreleased": true
+        },
+        "per_step": {
+          "geometry_mode": "native",
+          "items": {
+            "additionalProperties": false,
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "properties": {
+              "geometry_mode": "native",
+              "migration_policy": "replace-old-techniques",
+              "release_status": "pre-alpha",
+              "sha256": {
+                "$ref": "#/$defs/sha256",
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "unreleased": true
+              },
+              "stability": "experimental",
+              "step_name": {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "string",
+                "unreleased": true
+              },
+              "unreleased": true
+            },
+            "release_status": "pre-alpha",
+            "required": [
+              "step_name",
+              "sha256"
+            ],
+            "stability": "experimental",
+            "type": "object",
+            "unreleased": true
+          },
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "array",
+          "unreleased": true
+        },
+        "release_status": "pre-alpha",
+        "stability": "experimental",
+        "unreleased": true
+      },
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "type": "object",
+      "unreleased": true
+    },
+    "semantics": {
+      "additionalProperties": false,
+      "geometry_mode": "native",
+      "migration_policy": "replace-old-techniques",
+      "properties": {
+        "geometry_mode": "native",
+        "headers": {
+          "additionalProperties": false,
+          "geometry_mode": "native",
+          "migration_policy": "replace-old-techniques",
+          "properties": {
+            "causality": {
+              "enum": [
+                "lamport",
+                "vector"
+              ],
+              "geometry_mode": "native",
+              "migration_policy": "replace-old-techniques",
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "string",
+              "unreleased": true
+            },
+            "clearance_levels": {
+              "geometry_mode": "native",
+              "items": {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "string",
+                "unreleased": true
+              },
+              "migration_policy": "replace-old-techniques",
+              "minItems": 1,
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "array",
+              "unreleased": true
+            },
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "release_status": "pre-alpha",
+            "required_headers": {
+              "geometry_mode": "native",
+              "items": {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "string",
+                "unreleased": true
+              },
+              "migration_policy": "replace-old-techniques",
+              "minItems": 1,
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "array",
+              "unreleased": true
+            },
+            "stability": "experimental",
+            "trace": {
+              "enum": [
+                "enabled",
+                "disabled"
+              ],
+              "geometry_mode": "native",
+              "migration_policy": "replace-old-techniques",
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "string",
+              "unreleased": true
+            },
+            "unreleased": true
+          },
+          "release_status": "pre-alpha",
+          "required": [
+            "causality",
+            "trace",
+            "clearance_levels",
+            "required_headers"
+          ],
+          "stability": "experimental",
+          "type": "object",
+          "unreleased": true
+        },
+        "message_types": {
+          "geometry_mode": "native",
+          "items": {
+            "additionalProperties": false,
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "properties": {
+              "fields": {
+                "geometry_mode": "native",
+                "items": {
+                  "additionalProperties": false,
+                  "geometry_mode": "native",
+                  "migration_policy": "replace-old-techniques",
+                  "properties": {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "name": {
+                      "geometry_mode": "native",
+                      "migration_policy": "replace-old-techniques",
+                      "release_status": "pre-alpha",
+                      "stability": "experimental",
+                      "type": "string",
+                      "unreleased": true
+                    },
+                    "release_status": "pre-alpha",
+                    "required": {
+                      "geometry_mode": "native",
+                      "migration_policy": "replace-old-techniques",
+                      "release_status": "pre-alpha",
+                      "stability": "experimental",
+                      "type": "boolean",
+                      "unreleased": true
+                    },
+                    "stability": "experimental",
+                    "type": {
+                      "enum": [
+                        "string",
+                        "int",
+                        "float",
+                        "bytes"
+                      ],
+                      "geometry_mode": "native",
+                      "migration_policy": "replace-old-techniques",
+                      "release_status": "pre-alpha",
+                      "stability": "experimental",
+                      "type": "string",
+                      "unreleased": true
+                    },
+                    "unreleased": true
+                  },
+                  "release_status": "pre-alpha",
+                  "required": [
+                    "name",
+                    "type",
+                    "required"
+                  ],
+                  "stability": "experimental",
+                  "type": "object",
+                  "unreleased": true
+                },
+                "migration_policy": "replace-old-techniques",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "array",
+                "unreleased": true
+              },
+              "geometry_mode": "native",
+              "idempotency_key": {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "string",
+                "unreleased": true
+              },
+              "migration_policy": "replace-old-techniques",
+              "release_status": "pre-alpha",
+              "retention_ms": {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "minimum": 0,
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "integer",
+                "unreleased": true
+              },
+              "schema_ref": {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "string",
+                "unreleased": true
+              },
+              "sensitivity": {
+                "enum": [
+                  "public",
+                  "internal",
+                  "restricted",
+                  "secret"
+                ],
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "string",
+                "unreleased": true
+              },
+              "stability": "experimental",
+              "type_id": {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "string",
+                "unreleased": true
+              },
+              "unreleased": true
+            },
+            "release_status": "pre-alpha",
+            "required": [
+              "type_id",
+              "sensitivity"
+            ],
+            "stability": "experimental",
+            "type": "object",
+            "unreleased": true
+          },
+          "migration_policy": "replace-old-techniques",
+          "minItems": 1,
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "array",
+          "unreleased": true
+        },
+        "migration_policy": "replace-old-techniques",
+        "policies": {
+          "additionalProperties": false,
+          "geometry_mode": "native",
+          "migration_policy": "replace-old-techniques",
+          "properties": {
+            "clearance_rules": {
+              "geometry_mode": "native",
+              "items": {
+                "additionalProperties": false,
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "properties": {
+                  "geometry_mode": "native",
+                  "migration_policy": "replace-old-techniques",
+                  "min_clearance": {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "type": "string",
+                    "unreleased": true
+                  },
+                  "principal": {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "type": "string",
+                    "unreleased": true
+                  },
+                  "release_status": "pre-alpha",
+                  "scopes": {
+                    "geometry_mode": "native",
+                    "items": {
+                      "geometry_mode": "native",
+                      "migration_policy": "replace-old-techniques",
+                      "release_status": "pre-alpha",
+                      "stability": "experimental",
+                      "type": "string",
+                      "unreleased": true
+                    },
+                    "migration_policy": "replace-old-techniques",
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "type": "array",
+                    "unreleased": true
+                  },
+                  "stability": "experimental",
+                  "unreleased": true
+                },
+                "release_status": "pre-alpha",
+                "required": [
+                  "principal",
+                  "min_clearance"
+                ],
+                "stability": "experimental",
+                "type": "object",
+                "unreleased": true
+              },
+              "migration_policy": "replace-old-techniques",
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "array",
+              "unreleased": true
+            },
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "privacy_budget": {
+              "additionalProperties": false,
+              "geometry_mode": "native",
+              "migration_policy": "replace-old-techniques",
+              "properties": {
+                "delta": {
+                  "geometry_mode": "native",
+                  "migration_policy": "replace-old-techniques",
+                  "minimum": 0,
+                  "release_status": "pre-alpha",
+                  "stability": "experimental",
+                  "type": "number",
+                  "unreleased": true
+                },
+                "epsilon": {
+                  "geometry_mode": "native",
+                  "migration_policy": "replace-old-techniques",
+                  "minimum": 0,
+                  "release_status": "pre-alpha",
+                  "stability": "experimental",
+                  "type": "number",
+                  "unreleased": true
+                },
+                "geometry_mode": "native",
+                "mechanism": {
+                  "enum": [
+                    "gaussian",
+                    "laplace",
+                    "geodesic_noise"
+                  ],
+                  "geometry_mode": "native",
+                  "migration_policy": "replace-old-techniques",
+                  "release_status": "pre-alpha",
+                  "stability": "experimental",
+                  "type": "string",
+                  "unreleased": true
+                },
+                "migration_policy": "replace-old-techniques",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "unreleased": true
+              },
+              "release_status": "pre-alpha",
+              "required": [
+                "epsilon",
+                "delta",
+                "mechanism"
+              ],
+              "stability": "experimental",
+              "type": "object",
+              "unreleased": true
+            },
+            "release_status": "pre-alpha",
+            "shadow_ops_policy": {
+              "additionalProperties": false,
+              "geometry_mode": "native",
+              "migration_policy": "replace-old-techniques",
+              "properties": {
+                "enabled": {
+                  "geometry_mode": "native",
+                  "migration_policy": "replace-old-techniques",
+                  "release_status": "pre-alpha",
+                  "stability": "experimental",
+                  "type": "boolean",
+                  "unreleased": true
+                },
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "on_violation": {
+                  "enum": [
+                    "block",
+                    "shadow",
+                    "log"
+                  ],
+                  "geometry_mode": "native",
+                  "migration_policy": "replace-old-techniques",
+                  "release_status": "pre-alpha",
+                  "stability": "experimental",
+                  "type": "string",
+                  "unreleased": true
+                },
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "unreleased": true
+              },
+              "release_status": "pre-alpha",
+              "required": [
+                "enabled",
+                "on_violation"
+              ],
+              "stability": "experimental",
+              "type": "object",
+              "unreleased": true
+            },
+            "stability": "experimental",
+            "unreleased": true
+          },
+          "release_status": "pre-alpha",
+          "required": [
+            "clearance_rules",
+            "shadow_ops_policy",
+            "privacy_budget"
+          ],
+          "stability": "experimental",
+          "type": "object",
+          "unreleased": true
+        },
+        "release_status": "pre-alpha",
+        "stability": "experimental",
+        "topics": {
+          "geometry_mode": "native",
+          "items": {
+            "additionalProperties": false,
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "properties": {
+              "geometry_mode": "native",
+              "intent": {
+                "enum": [
+                  "telemetry",
+                  "control",
+                  "model_update",
+                  "policy_change",
+                  "custom"
+                ],
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "string",
+                "unreleased": true
+              },
+              "migration_policy": "replace-old-techniques",
+              "ordering": {
+                "enum": [
+                  "none",
+                  "per_key",
+                  "causal",
+                  "total"
+                ],
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "string",
+                "unreleased": true
+              },
+              "partition_key": {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "string",
+                "unreleased": true
+              },
+              "qos": {
+                "enum": [
+                  "at_most_once",
+                  "at_least_once",
+                  "exactly_once"
+                ],
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "string",
+                "unreleased": true
+              },
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "topic_id": {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "string",
+                "unreleased": true
+              },
+              "unreleased": true
+            },
+            "release_status": "pre-alpha",
+            "required": [
+              "topic_id",
+              "intent",
+              "qos",
+              "ordering"
+            ],
+            "stability": "experimental",
+            "type": "object",
+            "unreleased": true
+          },
+          "migration_policy": "replace-old-techniques",
+          "minItems": 1,
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "array",
+          "unreleased": true
+        },
+        "unreleased": true
+      },
+      "release_status": "pre-alpha",
+      "required": [
+        "message_types",
+        "topics",
+        "headers",
+        "policies"
+      ],
+      "stability": "experimental",
+      "type": "object",
+      "unreleased": true
+    },
+    "substrate": {
+      "additionalProperties": false,
+      "geometry_mode": "native",
+      "migration_policy": "replace-old-techniques",
+      "properties": {
+        "crypto_capabilities": {
+          "additionalProperties": false,
+          "geometry_mode": "native",
+          "migration_policy": "replace-old-techniques",
+          "properties": {
+            "auth": {
+              "enum": [
+                "none",
+                "hmac",
+                "sig"
+              ],
+              "geometry_mode": "native",
+              "migration_policy": "replace-old-techniques",
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "string",
+              "unreleased": true
+            },
+            "enc": {
+              "enum": [
+                "none",
+                "aes-gcm",
+                "chacha20"
+              ],
+              "geometry_mode": "native",
+              "migration_policy": "replace-old-techniques",
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "string",
+              "unreleased": true
+            },
+            "geometry_mode": "native",
+            "hash": {
+              "default": "sha256",
+              "enum": [
+                "sha256",
+                "blake3"
+              ],
+              "geometry_mode": "native",
+              "migration_policy": "replace-old-techniques",
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "string",
+              "unreleased": true
+            },
+            "key_rotation_ms": {
+              "default": 60000,
+              "geometry_mode": "native",
+              "migration_policy": "replace-old-techniques",
+              "minimum": 0,
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "integer",
+              "unreleased": true
+            },
+            "kms": {
+              "default": "local",
+              "enum": [
+                "local",
+                "hsm"
+              ],
+              "geometry_mode": "native",
+              "migration_policy": "replace-old-techniques",
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "string",
+              "unreleased": true
+            },
+            "migration_policy": "replace-old-techniques",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          "release_status": "pre-alpha",
+          "required": [
+            "enc",
+            "auth",
+            "hash"
+          ],
+          "stability": "experimental",
+          "type": "object",
+          "unreleased": true
+        },
+        "faults": {
+          "additionalProperties": false,
+          "geometry_mode": "native",
+          "migration_policy": "replace-old-techniques",
+          "properties": {
+            "drops": {
+              "geometry_mode": "native",
+              "items": {
+                "additionalProperties": false,
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "properties": {
+                  "at_ms": {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "minimum": 0,
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "type": "integer",
+                    "unreleased": true
+                  },
+                  "duration_ms": {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "minimum": 1,
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "type": "integer",
+                    "unreleased": true
+                  },
+                  "geometry_mode": "native",
+                  "link": {
+                    "additionalProperties": false,
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "properties": {
+                      "geometry_mode": "native",
+                      "migration_policy": "replace-old-techniques",
+                      "release_status": "pre-alpha",
+                      "stability": "experimental",
+                      "u": {
+                        "geometry_mode": "native",
+                        "migration_policy": "replace-old-techniques",
+                        "release_status": "pre-alpha",
+                        "stability": "experimental",
+                        "type": "string",
+                        "unreleased": true
+                      },
+                      "unreleased": true,
+                      "v": {
+                        "geometry_mode": "native",
+                        "migration_policy": "replace-old-techniques",
+                        "release_status": "pre-alpha",
+                        "stability": "experimental",
+                        "type": "string",
+                        "unreleased": true
+                      }
+                    },
+                    "release_status": "pre-alpha",
+                    "required": [
+                      "u",
+                      "v"
+                    ],
+                    "stability": "experimental",
+                    "type": "object",
+                    "unreleased": true
+                  },
+                  "migration_policy": "replace-old-techniques",
+                  "release_status": "pre-alpha",
+                  "stability": "experimental",
+                  "unreleased": true
+                },
+                "release_status": "pre-alpha",
+                "required": [
+                  "at_ms",
+                  "link",
+                  "duration_ms"
+                ],
+                "stability": "experimental",
+                "type": "object",
+                "unreleased": true
+              },
+              "migration_policy": "replace-old-techniques",
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "array",
+              "unreleased": true
+            },
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "node_failures": {
+              "geometry_mode": "native",
+              "items": {
+                "additionalProperties": false,
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "properties": {
+                  "at_ms": {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "minimum": 0,
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "type": "integer",
+                    "unreleased": true
+                  },
+                  "duration_ms": {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "minimum": 1,
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "type": "integer",
+                    "unreleased": true
+                  },
+                  "geometry_mode": "native",
+                  "id": {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "type": "string",
+                    "unreleased": true
+                  },
+                  "migration_policy": "replace-old-techniques",
+                  "release_status": "pre-alpha",
+                  "stability": "experimental",
+                  "unreleased": true
+                },
+                "release_status": "pre-alpha",
+                "required": [
+                  "id",
+                  "at_ms",
+                  "duration_ms"
+                ],
+                "stability": "experimental",
+                "type": "object",
+                "unreleased": true
+              },
+              "migration_policy": "replace-old-techniques",
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "array",
+              "unreleased": true
+            },
+            "partitions": {
+              "geometry_mode": "native",
+              "items": {
+                "additionalProperties": false,
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "properties": {
+                  "at_ms": {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "minimum": 0,
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "type": "integer",
+                    "unreleased": true
+                  },
+                  "components": {
+                    "geometry_mode": "native",
+                    "items": {
+                      "geometry_mode": "native",
+                      "items": {
+                        "geometry_mode": "native",
+                        "migration_policy": "replace-old-techniques",
+                        "release_status": "pre-alpha",
+                        "stability": "experimental",
+                        "type": "string",
+                        "unreleased": true
+                      },
+                      "migration_policy": "replace-old-techniques",
+                      "minItems": 1,
+                      "release_status": "pre-alpha",
+                      "stability": "experimental",
+                      "type": "array",
+                      "unreleased": true
+                    },
+                    "migration_policy": "replace-old-techniques",
+                    "minItems": 2,
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "type": "array",
+                    "unreleased": true
+                  },
+                  "geometry_mode": "native",
+                  "migration_policy": "replace-old-techniques",
+                  "release_status": "pre-alpha",
+                  "stability": "experimental",
+                  "unreleased": true
+                },
+                "release_status": "pre-alpha",
+                "required": [
+                  "at_ms",
+                  "components"
+                ],
+                "stability": "experimental",
+                "type": "object",
+                "unreleased": true
+              },
+              "migration_policy": "replace-old-techniques",
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "array",
+              "unreleased": true
+            },
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "throttles": {
+              "geometry_mode": "native",
+              "items": {
+                "additionalProperties": false,
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "properties": {
+                  "at_ms": {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "minimum": 0,
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "type": "integer",
+                    "unreleased": true
+                  },
+                  "capacity_mbps": {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "minimum": 0,
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "type": "number",
+                    "unreleased": true
+                  },
+                  "duration_ms": {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "minimum": 1,
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "type": "integer",
+                    "unreleased": true
+                  },
+                  "geometry_mode": "native",
+                  "link": {
+                    "additionalProperties": false,
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "properties": {
+                      "geometry_mode": "native",
+                      "migration_policy": "replace-old-techniques",
+                      "release_status": "pre-alpha",
+                      "stability": "experimental",
+                      "u": {
+                        "geometry_mode": "native",
+                        "migration_policy": "replace-old-techniques",
+                        "release_status": "pre-alpha",
+                        "stability": "experimental",
+                        "type": "string",
+                        "unreleased": true
+                      },
+                      "unreleased": true,
+                      "v": {
+                        "geometry_mode": "native",
+                        "migration_policy": "replace-old-techniques",
+                        "release_status": "pre-alpha",
+                        "stability": "experimental",
+                        "type": "string",
+                        "unreleased": true
+                      }
+                    },
+                    "release_status": "pre-alpha",
+                    "required": [
+                      "u",
+                      "v"
+                    ],
+                    "stability": "experimental",
+                    "type": "object",
+                    "unreleased": true
+                  },
+                  "migration_policy": "replace-old-techniques",
+                  "release_status": "pre-alpha",
+                  "stability": "experimental",
+                  "unreleased": true
+                },
+                "release_status": "pre-alpha",
+                "required": [
+                  "link",
+                  "capacity_mbps",
+                  "at_ms",
+                  "duration_ms"
+                ],
+                "stability": "experimental",
+                "type": "object",
+                "unreleased": true
+              },
+              "migration_policy": "replace-old-techniques",
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "array",
+              "unreleased": true
+            },
+            "unreleased": true
+          },
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "object",
+          "unreleased": true
+        },
+        "flow_control": {
+          "additionalProperties": false,
+          "geometry_mode": "native",
+          "migration_policy": "replace-old-techniques",
+          "properties": {
+            "algorithm": {
+              "enum": [
+                "none",
+                "reno",
+                "cubic",
+                "bbr"
+              ],
+              "geometry_mode": "native",
+              "migration_policy": "replace-old-techniques",
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "string",
+              "unreleased": true
+            },
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true,
+            "window_init": {
+              "default": 10,
+              "geometry_mode": "native",
+              "migration_policy": "replace-old-techniques",
+              "minimum": 1,
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "integer",
+              "unreleased": true
+            }
+          },
+          "release_status": "pre-alpha",
+          "required": [
+            "algorithm"
+          ],
+          "stability": "experimental",
+          "type": "object",
+          "unreleased": true
+        },
+        "geometry_mode": "native",
+        "migration_policy": "replace-old-techniques",
+        "observability": {
+          "additionalProperties": false,
+          "geometry_mode": "native",
+          "migration_policy": "replace-old-techniques",
+          "properties": {
+            "export": {
+              "default": "stdout",
+              "enum": [
+                "stdout",
+                "otlp"
+              ],
+              "geometry_mode": "native",
+              "migration_policy": "replace-old-techniques",
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "string",
+              "unreleased": true
+            },
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "release_status": "pre-alpha",
+            "sample_rate": {
+              "default": 1.0,
+              "geometry_mode": "native",
+              "maximum": 1,
+              "migration_policy": "replace-old-techniques",
+              "minimum": 0,
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "number",
+              "unreleased": true
+            },
+            "stability": "experimental",
+            "tracing": {
+              "default": "basic",
+              "enum": [
+                "off",
+                "basic",
+                "semantic"
+              ],
+              "geometry_mode": "native",
+              "migration_policy": "replace-old-techniques",
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "string",
+              "unreleased": true
+            },
+            "unreleased": true
+          },
+          "release_status": "pre-alpha",
+          "required": [
+            "tracing",
+            "export"
+          ],
+          "stability": "experimental",
+          "type": "object",
+          "unreleased": true
+        },
+        "queues": {
+          "additionalProperties": false,
+          "geometry_mode": "native",
+          "migration_policy": "replace-old-techniques",
+          "properties": {
+            "drop": {
+              "enum": [
+                "tail",
+                "random_early"
+              ],
+              "geometry_mode": "native",
+              "migration_policy": "replace-old-techniques",
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "string",
+              "unreleased": true
+            },
+            "geometry_mode": "native",
+            "max_depth": {
+              "default": 1000,
+              "geometry_mode": "native",
+              "migration_policy": "replace-old-techniques",
+              "minimum": 1,
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "integer",
+              "unreleased": true
+            },
+            "migration_policy": "replace-old-techniques",
+            "policy": {
+              "enum": [
+                "fifo",
+                "prio",
+                "wfq"
+              ],
+              "geometry_mode": "native",
+              "migration_policy": "replace-old-techniques",
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "string",
+              "unreleased": true
+            },
+            "priorities": {
+              "geometry_mode": "native",
+              "items": {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "string",
+                "unreleased": true
+              },
+              "migration_policy": "replace-old-techniques",
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "array",
+              "uniqueItems": true,
+              "unreleased": true
+            },
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          "release_status": "pre-alpha",
+          "required": [
+            "policy",
+            "drop"
+          ],
+          "stability": "experimental",
+          "type": "object",
+          "unreleased": true
+        },
+        "release_status": "pre-alpha",
+        "stability": "experimental",
+        "time_model": {
+          "additionalProperties": false,
+          "geometry_mode": "native",
+          "migration_policy": "replace-old-techniques",
+          "properties": {
+            "clock": {
+              "enum": [
+                "lamport",
+                "vector",
+                "hybrid",
+                "physical"
+              ],
+              "geometry_mode": "native",
+              "migration_policy": "replace-old-techniques",
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "string",
+              "unreleased": true
+            },
+            "clock_width": {
+              "default": 64,
+              "geometry_mode": "native",
+              "migration_policy": "replace-old-techniques",
+              "minimum": 32,
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "integer",
+              "unreleased": true
+            },
+            "drift_ppm": {
+              "default": 0.0,
+              "geometry_mode": "native",
+              "migration_policy": "replace-old-techniques",
+              "minimum": 0,
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "number",
+              "unreleased": true
+            },
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "release_status": "pre-alpha",
+            "skew_ms": {
+              "default": 0.0,
+              "geometry_mode": "native",
+              "migration_policy": "replace-old-techniques",
+              "minimum": 0,
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "number",
+              "unreleased": true
+            },
+            "stability": "experimental",
+            "sync_interval_ms": {
+              "default": 1000,
+              "geometry_mode": "native",
+              "migration_policy": "replace-old-techniques",
+              "minimum": 0,
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "integer",
+              "unreleased": true
+            },
+            "unreleased": true
+          },
+          "release_status": "pre-alpha",
+          "required": [
+            "clock"
+          ],
+          "stability": "experimental",
+          "type": "object",
+          "unreleased": true
+        },
+        "topology": {
+          "additionalProperties": false,
+          "geometry_mode": "native",
+          "migration_policy": "replace-old-techniques",
+          "properties": {
+            "directed": {
+              "default": false,
+              "geometry_mode": "native",
+              "migration_policy": "replace-old-techniques",
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "boolean",
+              "unreleased": true
+            },
+            "edges": {
+              "geometry_mode": "native",
+              "items": {
+                "additionalProperties": false,
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "properties": {
+                  "capacity_mbps": {
+                    "default": 1000,
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "minimum": 0,
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "type": "number",
+                    "unreleased": true
+                  },
+                  "duplicate_prob": {
+                    "default": 0.0,
+                    "geometry_mode": "native",
+                    "maximum": 1,
+                    "migration_policy": "replace-old-techniques",
+                    "minimum": 0,
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "type": "number",
+                    "unreleased": true
+                  },
+                  "geometry_mode": "native",
+                  "jitter_ms": {
+                    "default": 0.0,
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "minimum": 0,
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "type": "number",
+                    "unreleased": true
+                  },
+                  "latency_ms": {
+                    "default": 1.0,
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "minimum": 0,
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "type": "number",
+                    "unreleased": true
+                  },
+                  "loss_prob": {
+                    "default": 0.0,
+                    "geometry_mode": "native",
+                    "maximum": 1,
+                    "migration_policy": "replace-old-techniques",
+                    "minimum": 0,
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "type": "number",
+                    "unreleased": true
+                  },
+                  "migration_policy": "replace-old-techniques",
+                  "release_status": "pre-alpha",
+                  "reorder_prob": {
+                    "default": 0.0,
+                    "geometry_mode": "native",
+                    "maximum": 1,
+                    "migration_policy": "replace-old-techniques",
+                    "minimum": 0,
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "type": "number",
+                    "unreleased": true
+                  },
+                  "stability": "experimental",
+                  "u": {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "type": "string",
+                    "unreleased": true
+                  },
+                  "unreleased": true,
+                  "v": {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "type": "string",
+                    "unreleased": true
+                  },
+                  "weight": {
+                    "default": 1.0,
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "release_status": "pre-alpha",
+                    "stability": "experimental",
+                    "type": "number",
+                    "unreleased": true
+                  }
+                },
+                "release_status": "pre-alpha",
+                "required": [
+                  "u",
+                  "v"
+                ],
+                "stability": "experimental",
+                "type": "object",
+                "unreleased": true
+              },
+              "migration_policy": "replace-old-techniques",
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "array",
+              "unreleased": true
+            },
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "nodes": {
+              "geometry_mode": "native",
+              "items": {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "string",
+                "unreleased": true
+              },
+              "migration_policy": "replace-old-techniques",
+              "minItems": 1,
+              "release_status": "pre-alpha",
+              "stability": "experimental",
+              "type": "array",
+              "uniqueItems": true,
+              "unreleased": true
+            },
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          "release_status": "pre-alpha",
+          "required": [
+            "nodes",
+            "edges"
+          ],
+          "stability": "experimental",
+          "type": "object",
+          "unreleased": true
+        },
+        "unreleased": true
+      },
+      "release_status": "pre-alpha",
+      "required": [
+        "topology",
+        "queues",
+        "flow_control",
+        "time_model",
+        "crypto_capabilities",
+        "observability"
+      ],
+      "stability": "experimental",
+      "type": "object",
+      "unreleased": true
+    }
+  },
+  "release_status": "pre-alpha",
+  "required": [
+    "schema_version",
+    "block_id",
+    "metadata",
+    "integrity",
+    "environment",
+    "manifold",
+    "numeric_policy",
+    "substrate",
+    "semantics",
+    "fixtures",
+    "program",
+    "checks",
+    "coverage",
+    "receipts"
+  ],
+  "stability": "experimental",
+  "title": "HyperSync Unified Conformance Block",
+  "type": "object",
+  "unreleased": true
+}

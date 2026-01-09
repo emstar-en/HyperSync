@@ -1,0 +1,51 @@
+{
+  "geometric_foundations.capsule.json": {
+    "migration_policy": "none",
+    "release_status": "released",
+    "size_bytes": 594,
+    "stability": "stable",
+    "unreleased": false
+  },
+  "curvature_mechanisms.capsule.json": {
+    "migration_policy": "none",
+    "release_status": "released",
+    "size_bytes": 618,
+    "stability": "stable",
+    "unreleased": false
+  },
+  "advanced_consensus.capsule.json": {
+    "migration_policy": "none",
+    "release_status": "released",
+    "size_bytes": 607,
+    "stability": "stable",
+    "unreleased": false
+  },
+  "advanced_consensus.spec.json": {
+    "migration_policy": "none",
+    "release_status": "released",
+    "size_bytes": 1825,
+    "stability": "stable",
+    "unreleased": false
+  },
+  "geometry_capsules.spec.json": {
+    "migration_policy": "none",
+    "release_status": "released",
+    "size_bytes": 2920,
+    "stability": "stable",
+    "unreleased": false
+  },
+  "curvature_mechanisms.spec.json": {
+    "migration_policy": "none",
+    "release_status": "released",
+    "size_bytes": 1513,
+    "stability": "stable",
+    "unreleased": false
+  },
+  "geometric_foundations.spec.json": {
+    "migration_policy": "none",
+    "release_status": "released",
+    "size_bytes": 3067,
+    "stability": "stable",
+    "unreleased": false
+  }
+}

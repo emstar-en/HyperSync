@@ -1,0 +1,85 @@
+{
+  "$id": "https://hypersync.ai/schemas/policy/dimensional_policy_rule_schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "Defines policy rules for dimensional operations",
+  "properties": {
+    "action": {
+      "description": "Dimensional action pattern (supports wildcards)",
+      "type": "string"
+    },
+    "conditions": {
+      "properties": {
+        "clearance_level": {
+          "enum": [
+            "admin",
+            "power_user",
+            "user",
+            "restricted"
+          ],
+          "type": "string"
+        },
+        "dimension_count": {
+          "properties": {
+            "max": {
+              "type": "integer"
+            },
+            "min": {
+              "type": "integer"
+            }
+          },
+          "type": "object"
+        },
+        "subject_type": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "time_of_day": {
+          "properties": {
+            "end": {
+              "pattern": "^([0-1][0-9]|2[0-3]):[0-5][0-9]$",
+              "type": "string"
+            },
+            "start": {
+              "pattern": "^([0-1][0-9]|2[0-3]):[0-5][0-9]$",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "trust_level": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "effect": {
+      "description": "Rule effect",
+      "enum": [
+        "allow",
+        "deny"
+      ],
+      "type": "string"
+    },
+    "priority": {
+      "description": "Rule priority (higher = evaluated first)",
+      "minimum": 0,
+      "type": "integer"
+    },
+    "rule_id": {
+      "description": "Unique rule identifier",
+      "type": "string"
+    }
+  },
+  "required": [
+    "rule_id",
+    "action",
+    "effect"
+  ],
+  "title": "Dimensional Policy Rule Schema",
+  "type": "object"
+}

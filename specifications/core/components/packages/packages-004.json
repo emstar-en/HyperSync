@@ -1,0 +1,701 @@
+[
+  {
+    "geometry_mode": "native",
+    "migration_policy": "replace-old-techniques",
+    "modules": [
+      {
+        "classes": [
+          {
+            "attributes": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "log_path",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "str",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "merkle_tree",
+                "release_status": "pre-alpha",
+                "stability": "experimental",
+                "type": "MerkleTree",
+                "unreleased": true
+              }
+            ],
+            "geometry_mode": "native",
+            "methods": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "log",
+                "params": [
+                  {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "name": "event",
+                    "release_status": "pre-alpha",
+                    "required": true,
+                    "stability": "experimental",
+                    "type": "Dict",
+                    "unreleased": true
+                  }
+                ],
+                "release_status": "pre-alpha",
+                "returns": "None",
+                "stability": "experimental",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "verify_integrity",
+                "params": [
+                  {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "name": "since",
+                    "release_status": "pre-alpha",
+                    "required": true,
+                    "stability": "experimental",
+                    "type": "str",
+                    "unreleased": true
+                  }
+                ],
+                "release_status": "pre-alpha",
+                "returns": "bool",
+                "stability": "experimental",
+                "unreleased": true
+              }
+            ],
+            "migration_policy": "replace-old-techniques",
+            "name": "AuditLogger",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "methods": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "observe",
+                "params": [
+                  {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "name": "interaction",
+                    "release_status": "pre-alpha",
+                    "required": true,
+                    "stability": "experimental",
+                    "type": "Interaction",
+                    "unreleased": true
+                  },
+                  {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "name": "context",
+                    "release_status": "pre-alpha",
+                    "required": true,
+                    "stability": "experimental",
+                    "type": "Context",
+                    "unreleased": true
+                  }
+                ],
+                "release_status": "pre-alpha",
+                "returns": "None",
+                "stability": "experimental",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "compute_quality_score",
+                "params": [
+                  {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "name": "interaction",
+                    "release_status": "pre-alpha",
+                    "required": true,
+                    "stability": "experimental",
+                    "type": "Interaction",
+                    "unreleased": true
+                  }
+                ],
+                "release_status": "pre-alpha",
+                "returns": "float",
+                "stability": "experimental",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "extract_golden_samples",
+                "params": [
+                  {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "name": "threshold",
+                    "release_status": "pre-alpha",
+                    "required": true,
+                    "stability": "experimental",
+                    "type": "float",
+                    "unreleased": true
+                  },
+                  {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "name": "window",
+                    "release_status": "pre-alpha",
+                    "required": true,
+                    "stability": "experimental",
+                    "type": "int",
+                    "unreleased": true
+                  }
+                ],
+                "release_status": "pre-alpha",
+                "returns": "List[GoldenSample]",
+                "stability": "experimental",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "generate_lora_dataset",
+                "params": [
+                  {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "name": "samples",
+                    "release_status": "pre-alpha",
+                    "required": true,
+                    "stability": "experimental",
+                    "type": "List[GoldenSample]",
+                    "unreleased": true
+                  },
+                  {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "name": "target_model",
+                    "release_status": "pre-alpha",
+                    "required": true,
+                    "stability": "experimental",
+                    "type": "str",
+                    "unreleased": true
+                  }
+                ],
+                "release_status": "pre-alpha",
+                "returns": "LoRADataset",
+                "stability": "experimental",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "emit_mhr_metrics",
+                "params": [
+                  {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "name": "model_id",
+                    "release_status": "pre-alpha",
+                    "required": true,
+                    "stability": "experimental",
+                    "type": "str",
+                    "unreleased": true
+                  },
+                  {
+                    "geometry_mode": "native",
+                    "migration_policy": "replace-old-techniques",
+                    "name": "metrics",
+                    "release_status": "pre-alpha",
+                    "required": true,
+                    "stability": "experimental",
+                    "type": "Dict[str",
+                    "unreleased": true
+                  }
+                ],
+                "release_status": "pre-alpha",
+                "returns": "None",
+                "stability": "experimental",
+                "unreleased": true
+              }
+            ],
+            "migration_policy": "replace-old-techniques",
+            "name": "GoldenSampleCollector",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true
+          }
+        ],
+        "constants": [
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "CONTRACT_VALIDATIONS",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true,
+            "value": [
+              "MHR/NHR JSON canonicalization before hashing",
+              "MHR/NHR attestation signatures verified at publish time",
+              "MHR calibration_ece computed from validated predictions",
+              "NHR black_hole_score and holonomy_inconsistency computed from geometry module outputs"
+            ]
+          }
+        ],
+        "exports": [
+          "emit_metric",
+          "log_event",
+          "export_audit_trail",
+          "log_shadow_event",
+          "publish_mhr",
+          "publish_nhr",
+          "AuditLogger",
+          "GoldenSampleCollector",
+          "CONTRACT_VALIDATIONS"
+        ],
+        "functions": [
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "emit_metric",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "name",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "str",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "value",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "float",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "tags",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Dict",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "None",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "log_event",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "event",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Dict",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "context",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Context",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "None",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "export_audit_trail",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "since",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "str",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "format",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "str",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "bytes",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "log_shadow_event",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "event_type",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "str",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "shadow_id",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "str",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "model_id",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "str",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "metrics",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Dict",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "context",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Context",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "None",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "doc": "Append-only content-addressed MHR with attestation and provenance",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "publish_mhr",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "mhr",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "ModelHealthRecord",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "context",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Context",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "ContentAddress",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "doc": "Append-only content-addressed NHR summarizing network diagnostics",
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "publish_nhr",
+            "params": [
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "nhr",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "NetworkHealthRecord",
+                "unreleased": true
+              },
+              {
+                "geometry_mode": "native",
+                "migration_policy": "replace-old-techniques",
+                "name": "context",
+                "release_status": "pre-alpha",
+                "required": true,
+                "stability": "experimental",
+                "type": "Context",
+                "unreleased": true
+              }
+            ],
+            "release_status": "pre-alpha",
+            "returns": "ContentAddress",
+            "stability": "experimental",
+            "unreleased": true
+          }
+        ],
+        "geometry_mode": "native",
+        "migration_policy": "replace-old-techniques",
+        "path": "io/monitoring.py",
+        "purpose": "Metrics, logs, traces for geometry, policy, attestations, shadows, and golden samples",
+        "release_status": "pre-alpha",
+        "stability": "experimental",
+        "unreleased": true
+      },
+      {
+        "classes": [
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "OpenAIAdapter",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true
+          }
+        ],
+        "exports": [
+          "OpenAIAdapter"
+        ],
+        "geometry_mode": "native",
+        "migration_policy": "replace-old-techniques",
+        "path": "io/adapters/openai.py",
+        "purpose": "OpenAIAdapter client adapter",
+        "release_status": "pre-alpha",
+        "stability": "experimental",
+        "unreleased": true
+      },
+      {
+        "classes": [
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "AnthropicAdapter",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true
+          }
+        ],
+        "exports": [
+          "AnthropicAdapter"
+        ],
+        "geometry_mode": "native",
+        "migration_policy": "replace-old-techniques",
+        "path": "io/adapters/anthropic.py",
+        "purpose": "AnthropicAdapter client adapter",
+        "release_status": "pre-alpha",
+        "stability": "experimental",
+        "unreleased": true
+      },
+      {
+        "classes": [
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "FaissIndexAdapter",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true
+          }
+        ],
+        "exports": [
+          "FaissIndexAdapter"
+        ],
+        "geometry_mode": "native",
+        "migration_policy": "replace-old-techniques",
+        "path": "io/adapters/faissindex.py",
+        "purpose": "FaissIndexAdapter client adapter",
+        "release_status": "pre-alpha",
+        "stability": "experimental",
+        "unreleased": true
+      },
+      {
+        "classes": [
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "WeaviateIndexAdapter",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true
+          }
+        ],
+        "exports": [
+          "WeaviateIndexAdapter"
+        ],
+        "geometry_mode": "native",
+        "migration_policy": "replace-old-techniques",
+        "path": "io/adapters/weaviateindex.py",
+        "purpose": "WeaviateIndexAdapter client adapter",
+        "release_status": "pre-alpha",
+        "stability": "experimental",
+        "unreleased": true
+      },
+      {
+        "exports": [
+          "score_quality",
+          "select_for_collection",
+          "persist_sample",
+          "evict_policy"
+        ],
+        "functions": [
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "score_quality",
+            "params": [],
+            "release_status": "pre-alpha",
+            "returns": "Any",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "select_for_collection",
+            "params": [],
+            "release_status": "pre-alpha",
+            "returns": "Any",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "persist_sample",
+            "params": [],
+            "release_status": "pre-alpha",
+            "returns": "Any",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "evict_policy",
+            "params": [],
+            "release_status": "pre-alpha",
+            "returns": "Any",
+            "stability": "experimental",
+            "unreleased": true
+          }
+        ],
+        "geometry_mode": "native",
+        "migration_policy": "replace-old-techniques",
+        "path": "io/golden_samples.py",
+        "purpose": "Golden sample scoring, selection and persistence",
+        "release_status": "pre-alpha",
+        "stability": "experimental",
+        "unreleased": true
+      },
+      {
+        "exports": [
+          "append_event",
+          "query_rollups",
+          "export_audit_trail"
+        ],
+        "functions": [
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "append_event",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "query_rollups",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          {
+            "geometry_mode": "native",
+            "migration_policy": "replace-old-techniques",
+            "name": "export_audit_trail",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true
+          }
+        ],
+        "geometry_mode": "native",
+        "migration_policy": "replace-old-techniques",
+        "path": "io/transparency.py",
+        "purpose": "Append-only transparency log and audit export",
+        "release_status": "pre-alpha",
+        "stability": "experimental",
+        "unreleased": true
+      }
+    ],
+    "name": "io",
+    "release_status": "pre-alpha",
+    "stability": "experimental",
+    "unreleased": true
+  },
+  {
+    "geometry_mode": "native",
+    "migration_policy": "replace-old-techniques",
+    "modules": [],
+    "name": "testing",
+    "release_status": "pre-alpha",
+    "stability": "experimental",
+    "unreleased": true
+  }
+]

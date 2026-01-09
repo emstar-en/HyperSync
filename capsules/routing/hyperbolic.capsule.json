@@ -1,0 +1,25 @@
+{
+  "capsule": "hypersync.routing.hyperbolic",
+  "version": "1.0.0",
+  "dependencies": [
+    "hypersync.geometry.primitives",
+    "hypersync.core.embedding_store"
+  ],
+  "components": {
+    "HyperbolicRouter": {
+      "type": "class",
+      "description": "Routes messages based on hyperbolic coordinates in the overlay network.",
+      "methods": {
+        "route": {
+          "description": "Determines the next hop for a message based on greedy hyperbolic routing.",
+          "args": [
+            { "name": "target_coords", "type": "Point", "description": "The coordinates of the destination." },
+            { "name": "current_coords", "type": "Point", "description": "The coordinates of the current node." },
+            { "name": "neighbors", "type": "List[Node]", "description": "List of neighbor nodes with their coordinates." }
+          ],
+          "returns": "Node"
+        }
+      }
+    }
+  }
+}

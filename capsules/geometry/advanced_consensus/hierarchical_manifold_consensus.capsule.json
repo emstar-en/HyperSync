@@ -1,0 +1,12 @@
+{
+  "capsule": {
+    "name": "hierarchical_manifold_consensus",
+    "type": "consensus",
+    "properties": {
+      "mechanism": "Multi-level Riemannian Optimization",
+      "structure": "Tree of manifolds (Fiber Bundle)",
+      "algorithm": "Consensus on base manifold propagates to fibers"
+    },
+    "vnes_binding": "geometry.consensus.hierarchical"
+  }
+}

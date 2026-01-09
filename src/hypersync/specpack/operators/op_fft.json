@@ -1,0 +1,9 @@
+{
+  "deterministic": true,
+  "id": "op://fft.4",
+  "kind": "fft",
+  "libs": [
+    "FFTW"
+  ],
+  "notes": "Pinned plan, single-plan reuse, pairwise accumulations"
+}

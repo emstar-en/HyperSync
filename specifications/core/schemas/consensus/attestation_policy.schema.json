@@ -1,0 +1,182 @@
+{
+  "$id": "https://hypersync.ai/schemas/consensus/attestation_policy.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Policy for gating consensus commits with geometric/algebraic attestations",
+  "properties": {
+    "audit_trail": {
+      "properties": {
+        "capture_receipts": {
+          "type": "boolean"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "retention_days": {
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
+    "composition_logic": {
+      "properties": {
+        "operator": {
+          "enum": [
+            "AND",
+            "OR",
+            "THRESHOLD"
+          ],
+          "type": "string"
+        },
+        "predicates": {
+          "items": {
+            "properties": {
+              "attestation_type": {
+                "type": "string"
+              },
+              "required": {
+                "type": "boolean"
+              },
+              "weight": {
+                "type": "number"
+              }
+            },
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "threshold": {
+          "description": "For THRESHOLD operator",
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        }
+      },
+      "required": [
+        "operator",
+        "predicates"
+      ],
+      "type": "object"
+    },
+    "failure_handling": {
+      "properties": {
+        "escalation": {
+          "properties": {
+            "governance_ref": {
+              "type": "string"
+            },
+            "notification_channels": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            }
+          },
+          "type": "object"
+        },
+        "retry_policy": {
+          "properties": {
+            "alternate_models": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "backoff_strategy": {
+              "type": "string"
+            },
+            "max_retries": {
+              "type": "integer"
+            }
+          },
+          "type": "object"
+        },
+        "strategy": {
+          "enum": [
+            "quarantine",
+            "retry_different_model",
+            "escalate_governance",
+            "abort"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "strategy"
+      ],
+      "type": "object"
+    },
+    "kind": {
+      "const": "AttestationPolicy",
+      "type": "string"
+    },
+    "policy_id": {
+      "type": "string"
+    },
+    "required_attestations": {
+      "properties": {
+        "algebraic": {
+          "properties": {
+            "byzantine_detection": {
+              "type": "boolean"
+            },
+            "consistency_check": {
+              "type": "boolean"
+            }
+          },
+          "type": "object"
+        },
+        "divergence": {
+          "properties": {
+            "cycle_detection": {
+              "type": "boolean"
+            },
+            "growth_monitoring": {
+              "type": "boolean"
+            },
+            "numeric_stall_detection": {
+              "type": "boolean"
+            }
+          },
+          "type": "object"
+        },
+        "geometric": {
+          "properties": {
+            "cross_model_curvature": {
+              "type": "boolean"
+            },
+            "metric_compatibility": {
+              "type": "boolean"
+            },
+            "numerical_stability": {
+              "type": "boolean"
+            },
+            "topology_validation": {
+              "type": "boolean"
+            }
+          },
+          "type": "object"
+        },
+        "temporal": {
+          "properties": {
+            "braid_equivalence": {
+              "type": "boolean"
+            },
+            "causal_consistency": {
+              "type": "boolean"
+            }
+          },
+          "type": "object"
+        }
+      },
+      "type": "object"
+    }
+  },
+  "required": [
+    "kind",
+    "policy_id",
+    "required_attestations",
+    "failure_handling"
+  ],
+  "title": "AttestationPolicy",
+  "type": "object"
+}

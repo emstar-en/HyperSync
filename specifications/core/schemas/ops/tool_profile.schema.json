@@ -1,0 +1,37 @@
+{
+  "$id": "https://example.com/spec-pack/schemas/ops/tool_profile.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "cost_class": {
+      "enum": [
+        "O(1)",
+        "O(n)",
+        "O(n log n)",
+        "heuristic"
+      ],
+      "type": "string"
+    },
+    "kind": {
+      "const": "ToolProfile",
+      "type": "string"
+    },
+    "safety_notes": {
+      "type": "string"
+    },
+    "tool_id": {
+      "type": "string"
+    },
+    "worst_case_multiplier": {
+      "minimum": 1.0,
+      "type": "number"
+    }
+  },
+  "required": [
+    "kind",
+    "tool_id",
+    "cost_class"
+  ],
+  "title": "ToolProfile",
+  "type": "object"
+}

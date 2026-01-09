@@ -1,0 +1,25 @@
+{
+  "geoticket_definition": {
+    "meta": {
+      "description": "Deterministic, static routing exceptions (Wormholes/Shortcuts)",
+      "status": "FINAL"
+    },
+    "definition": {
+      "concept": "A Geoticket is a cryptographically signed instruction set for a deterministic path that ignores the manifold geometry.",
+      "structure": {
+        "ticket_id": "UUID",
+        "signature": "Ed25519 signature of the path/logic",
+        "logic": "Ordered list of hops OR a deterministic function (e.g., Mahalanobis distance in a flat projection).",
+        "constraints": "Must have a valid TTL and 'Exit Strategy' to re-enter the manifold."
+      }
+    },
+    "usage": {
+      "allowed_contexts": [
+        "Legacy Interop",
+        "Emergency Override",
+        "Static Backbone Links"
+      ],
+      "routing_mode_flag": "geoticket"
+    }
+  }
+}

@@ -1,0 +1,391 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://hypersync.io/schemas/geometry/metric_policy.schema.json",
+  "title": "Metric Policy Definition",
+  "description": "Defines how 'distance' and 'cost' are calculated within a specific geometric sector or domain. Supports custom physics and multi-dimensional metrics (latency, trust, cost, semantic drift, etc.).",
+  "type": "object",
+  "properties": {
+    "policy_id": {
+    "type": "string",
+    "description": "Unique identifier for this metric policy."
+    },
+    "name": {
+    "type": "string",
+    "description": "Human-readable name for this metric policy."
+    },
+    "version": {
+    "type": "string",
+    "description": "Logical version for this policy (e.g., semantic version, git hash)."
+    },
+    "status": {
+    "type": "string",
+    "description": "Lifecycle status of this metric policy.",
+    "enum": [
+    "draft",
+    "active",
+    "deprecated",
+    "experimental"
+    ]
+    },
+    "determinism_tier": {
+    "type": "string",
+    "description": "Determinism tier for metric evaluation (e.g., 'D0_BIT_EXACT', 'D1_REPLAYABLE', 'D2_STATISTICAL', 'D3_BEST_EFFORT')."
+    },
+    "description_long": {
+    "type": "string",
+    "description": "Optional extended description including intuitions, use cases, and cautions."
+    },
+    "base_metric": {
+    "type": "string",
+    "description": "Fundamental geometric model used for base distance calculation (e.g., 'poincare_disk', 'lorentz_model', 'klein_model', 'euclidean_fallback', or a custom metric space name).",
+    "default": "poincare_disk"
+    },
+    "dimensions": {
+    "type": "integer",
+    "minimum": 1,
+    "description": "Dimensionality of the manifold embedding for this policy. Usually >= 2."
+    },
+    "curvature_k": {
+    "type": "number",
+    "default": -1.0,
+    "description": "Constant curvature of the space when applicable. -1 is standard hyperbolic; 0 is Euclidean; positive values indicate spherical-like curvature."
+    },
+    "scope": {
+    "type": "object",
+    "description": "Describes where and for whom this metric policy applies.",
+    "properties": {
+    "node_types": {
+    "type": "array",
+    "description": "Optional list of manifold node types this policy applies to. Empty or omitted means 'all'.",
+    "items": {
+    "type": "string"
+    },
+    "uniqueItems": true
+    },
+    "edge_types": {
+    "type": "array",
+    "description": "Edge or relationship types this policy targets (e.g., 'replication', 'request_path', 'control_plane').",
+    "items": {
+    "type": "string"
+    },
+    "uniqueItems": true
+    },
+    "regions": {
+    "type": "array",
+    "description": "Optional list of region selectors (by coordinate, labels, or topology fragments) where this policy is in effect.",
+    "items": {
+    "type": "object",
+    "properties": {
+    "id": {
+    "type": "string"
+    },
+    "selector_type": {
+    "type": "string",
+    "description": "Mechanism for region selection (e.g., 'coordinate_bounds', 'label_selector', 'cluster_id')."
+    },
+    "expression": {
+    "type": "string",
+    "description": "Selector expression (e.g., JSONPath, label selector, or geometry bounds expression)."
+    }
+    },
+    "required": [
+    "selector_type",
+    "expression"
+    ]
+    }
+    },
+    "topology_labels": {
+    "type": "array",
+    "description": "Topology-level labels or tags this policy is associated with (e.g., 'prod', 'simulation', 'eu-region').",
+    "items": {
+    "type": "string"
+    },
+    "uniqueItems": true
+    }
+    }
+    },
+    "weights": {
+    "type": "object",
+    "description": "Coefficients for weighted cost calculation. Traditionally: D_total = w_geo * D_geo + w_lat * Latency + ..., but this object is intentionally extensible.",
+    "properties": {
+    "geometric": {
+    "type": "number",
+    "default": 1.0
+    },
+    "latency": {
+    "type": "number",
+    "default": 0.0
+    },
+    "trust": {
+    "type": "number",
+    "default": 0.0
+    },
+    "cost": {
+    "type": "number",
+    "default": 0.0
+    },
+    "semantic_drift": {
+    "type": "number",
+    "default": 0.0
+    }
+    },
+    "additionalProperties": {
+    "type": "number",
+    "description": "Weight for an additional named dimension (e.g., 'energy', 'regulatory_risk', 'retraining_cost')."
+    }
+    },
+    "dimensions_config": {
+    "type": "array",
+    "description": "Optional structured descriptions of each metric dimension that participates in cost calculation.",
+    "items": {
+    "type": "object",
+    "properties": {
+    "name": {
+    "type": "string",
+    "description": "Name of the dimension (e.g., 'geometric', 'latency', 'trust')."
+    },
+    "source": {
+    "type": "string",
+    "description": "Where this dimension is measured from (e.g., 'telemetry.latency_ms_p95', 'node.labels[\"trust\"]')."
+    },
+    "transform": {
+    "type": "string",
+    "description": "Optional symbolic description of how raw measurements are transformed (e.g., 'log1p(x)', 'x^2')."
+    },
+    "normalization": {
+    "type": "object",
+    "description": "Normalization strategy for this dimension.",
+    "properties": {
+    "mode": {
+    "type": "string",
+    "enum": [
+    "none",
+    "min_max",
+    "z_score",
+    "clipped"
+    ],
+    "default": "none"
+    },
+    "params": {
+    "type": "object",
+    "description": "Optional parameters for the chosen normalization mode.",
+    "additionalProperties": true
+    }
+    }
+    },
+    "default_weight": {
+    "type": "number",
+    "description": "Recommended default weight for this dimension."
+    }
+    },
+    "required": [
+    "name"
+    ]
+    }
+    },
+    "aggregation": {
+    "type": "object",
+    "description": "How local edge costs are aggregated into path or region-level metrics.",
+    "properties": {
+    "path_aggregation": {
+    "type": "string",
+    "description": "Aggregator for multi-hop paths.",
+    "enum": [
+    "sum",
+    "max",
+    "min",
+    "average",
+    "custom"
+    ],
+    "default": "sum"
+    },
+    "region_aggregation": {
+    "type": "string",
+    "description": "Aggregation across regions/clusters, if applicable.",
+    "enum": [
+    "average",
+    "weighted_average",
+    "max",
+    "custom"
+    ],
+    "default": "average"
+    },
+    "tie_breakers": {
+    "type": "array",
+    "description": "Ordered list of dimensions to use for tie-breaking in routing decisions.",
+    "items": {
+    "type": "string"
+    },
+    "uniqueItems": true
+    },
+    "custom_aggregation_spec": {
+    "type": "string",
+    "description": "Optional, machine-readable description of a custom aggregation rule."
+    }
+    }
+    },
+    "custom_tensors": {
+    "type": "array",
+    "description": "Advanced: Definitions of custom metric tensors for non-uniform or anisotropic regions of the space.",
+    "items": {
+    "type": "object",
+    "properties": {
+    "region_selector": {
+    "type": "string",
+    "description": "Selector for where this tensor applies (e.g., coordinate bounds, cluster IDs, or label selectors)."
+    },
+    "tensor_matrix": {
+    "type": "array",
+    "description": "Metric tensor g_ij for this region. Represented as a numeric matrix.",
+    "items": {
+    "type": "array",
+    "items": {
+    "type": "number"
+    }
+    }
+    },
+    "valid_for": {
+    "type": "object",
+    "description": "Optional temporal validity window for this tensor.",
+    "properties": {
+    "from": {
+    "type": "string",
+    "format": "date-time"
+    },
+    "until": {
+    "type": "string",
+    "format": "date-time"
+    }
+    }
+    },
+    "priority": {
+    "type": "integer",
+    "description": "Priority when multiple tensors match the same region. Higher wins.",
+    "default": 0
+    },
+    "notes": {
+    "type": "string",
+    "description": "Free-form explanation or constraints for this region-specific tensor."
+    }
+    },
+    "required": [
+    "region_selector",
+    "tensor_matrix"
+    ]
+    }
+    },
+    "composition": {
+    "type": "object",
+    "description": "Policy composition configuration for building this metric policy from others.",
+    "properties": {
+    "inherits_from": {
+    "type": "array",
+    "description": "List of parent metric_policy IDs that this policy extends or refines.",
+    "items": {
+    "type": "string"
+    },
+    "uniqueItems": true
+    },
+    "overrides": {
+    "type": "array",
+    "description": "List of fields or dimensions that this policy explicitly overrides from its parents.",
+    "items": {
+    "type": "string"
+    },
+    "uniqueItems": true
+    }
+    }
+    },
+    "runtime_constraints": {
+    "type": "object",
+    "description": "Hints and constraints for runtime evaluation.",
+    "properties": {
+    "max_eval_cost_hint": {
+    "type": "number",
+    "description": "Approximate upper bound on computational cost of evaluating this metric on a single edge or sample."
+    },
+    "supports_online_update": {
+    "type": "boolean",
+    "description": "True if this policy can be updated incrementally at runtime without recomputing global state."
+    },
+    "deterministic_seed_strategy": {
+    "type": "string",
+    "description": "Description of how randomness, if any, is seeded deterministically."
+    }
+    }
+    },
+    "mechanism_profile": {
+    "description": "Optional mechanism profile describing underlying physical/logical mechanism for this metric.",
+    "oneOf": [
+    {
+    "type": "string",
+    "description": "Identifier of a mechanism_profile."
+    },
+    {
+    "$ref": "https://hypersync.io/schemas/mechanism_profile.schema.json#"
+    }
+    ]
+    },
+    "language_bindings": {
+    "type": "object",
+    "description": "Hints for STUNIR and code generators on how to implement this efficiently in target languages.",
+    "properties": {
+    "python": {
+    "type": "string",
+    "description": "e.g., 'Use numpy.einsum for tensor contraction'"
+    },
+    "rust": {
+    "type": "string",
+    "description": "e.g., 'Use nalgebra for SIMD operations'"
+    },
+    "go": {
+    "type": "string",
+    "description": "e.g., 'Use gonum/mat'"
+    },
+    "cpp": {
+    "type": "string",
+    "description": "e.g., 'Use Eigen library with AVX2'"
+    },
+    "other": {
+    "type": "object",
+    "description": "Additional language or runtime-specific hints keyed by language/runtime ID.",
+    "additionalProperties": {
+    "type": "string"
+    }
+    }
+    }
+    },
+    "metadata": {
+    "type": "object",
+    "description": "Free-form metadata, labels, and ownership information.",
+    "properties": {
+    "owner": {
+    "type": "string"
+    },
+    "labels": {
+    "type": "object",
+    "additionalProperties": {
+    "type": "string"
+    }
+    },
+    "tags": {
+    "type": "array",
+    "items": {
+    "type": "string"
+    },
+    "uniqueItems": true
+    }
+    }
+    },
+    "extensions": {
+    "type": "object",
+    "description": "Namespace for domain or deployment-specific extensions.",
+    "additionalProperties": true
+    }
+  },
+  "required": [
+    "policy_id",
+    "base_metric"
+  ],
+  "additionalProperties": true
+}

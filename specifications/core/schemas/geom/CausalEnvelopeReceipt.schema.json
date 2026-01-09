@@ -1,0 +1,38 @@
+{
+  "$id": "schema://schemas/geom/CausalEnvelopeReceipt.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true,
+  "allOf": [
+    {
+      "$ref": "schema://spec-pack/schemas/common/ReceiptBase.schema.json"
+    },
+    {
+      "$ref": "schema://spec-pack/schemas/common/TransportEnvelopeBase.schema.json"
+    },
+    {
+      "properties": {
+        "domainId": {
+          "description": "Logical domain identifier (URI/UUID)",
+          "type": "string"
+        },
+        "frameId": {
+          "description": "Frame/namespace identifier (URI/IRI)",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    }
+  ],
+  "properties": {
+    "domainId": {
+      "description": "Logical domain identifier (URI/UUID)",
+      "type": "string"
+    },
+    "frameId": {
+      "description": "Frame/namespace identifier (URI/IRI)",
+      "type": "string"
+    }
+  },
+  "title": "CausalEnvelopeReceipt",
+  "type": "object"
+}

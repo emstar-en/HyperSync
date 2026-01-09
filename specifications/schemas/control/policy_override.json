@@ -1,0 +1,270 @@
+{
+  "$id": "https://hypersync.dev/schemas/control/policy_override.v1.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "Schema for temporary policy deviations and overrides",
+  "examples": [
+    {
+      "kind": "PolicyOverride",
+      "metadata": {
+        "name": "emergency-budget-override",
+        "namespace": "production"
+      },
+      "spec": {
+        "approval": {
+          "approvers": [
+            "platform-admin",
+            "finance-lead"
+          ],
+          "auto_approve_emergency": false,
+          "required": true
+        },
+        "duration": {
+          "ttl": 86400
+        },
+        "justification": {
+          "emergency": true,
+          "reason": "Critical ML training deadline for customer demo",
+          "requestor": "ml-team-lead",
+          "ticket": "JIRA-1234"
+        },
+        "override": {
+          "action": "modify",
+          "parameters": {
+            "enforcement": "soft",
+            "token_limit": 10000000
+          },
+          "scope": {
+            "namespaces": [
+              "ml-workloads"
+            ],
+            "resources": [
+              "ml-training-*"
+            ]
+          }
+        },
+        "policy": {
+          "name": "token-budget-limit",
+          "type": "budget"
+        }
+      }
+    }
+  ],
+  "properties": {
+    "kind": {
+      "const": "PolicyOverride",
+      "type": "string"
+    },
+    "metadata": {
+      "properties": {
+        "labels": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "name": {
+          "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+          "type": "string"
+        },
+        "namespace": {
+          "default": "default",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "type": "object"
+    },
+    "spec": {
+      "properties": {
+        "approval": {
+          "properties": {
+            "approvers": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "auto_approve_emergency": {
+              "default": false,
+              "type": "boolean"
+            },
+            "required": {
+              "default": true,
+              "type": "boolean"
+            }
+          },
+          "type": "object"
+        },
+        "duration": {
+          "properties": {
+            "end": {
+              "description": "Override end time",
+              "format": "date-time",
+              "type": "string"
+            },
+            "start": {
+              "description": "Override start time",
+              "format": "date-time",
+              "type": "string"
+            },
+            "ttl": {
+              "description": "Time-to-live in seconds",
+              "minimum": 60,
+              "type": "integer"
+            }
+          },
+          "type": "object"
+        },
+        "justification": {
+          "properties": {
+            "emergency": {
+              "default": false,
+              "description": "Emergency override flag",
+              "type": "boolean"
+            },
+            "reason": {
+              "description": "Detailed justification",
+              "minLength": 10,
+              "type": "string"
+            },
+            "requestor": {
+              "description": "Override requestor",
+              "type": "string"
+            },
+            "ticket": {
+              "description": "Related ticket/issue",
+              "type": "string"
+            }
+          },
+          "required": [
+            "reason",
+            "requestor"
+          ],
+          "type": "object"
+        },
+        "override": {
+          "description": "Override specification",
+          "properties": {
+            "action": {
+              "description": "Override action",
+              "enum": [
+                "disable",
+                "modify",
+                "bypass"
+              ],
+              "type": "string"
+            },
+            "parameters": {
+              "additionalProperties": true,
+              "description": "Modified policy parameters",
+              "type": "object"
+            },
+            "scope": {
+              "properties": {
+                "namespaces": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "resources": {
+                  "description": "Affected resources",
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                }
+              },
+              "type": "object"
+            }
+          },
+          "type": "object"
+        },
+        "policy": {
+          "properties": {
+            "name": {
+              "description": "Policy name to override",
+              "type": "string"
+            },
+            "type": {
+              "description": "Policy type",
+              "enum": [
+                "governance",
+                "budget",
+                "placement",
+                "resource",
+                "security"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "name",
+            "type"
+          ],
+          "type": "object"
+        }
+      },
+      "required": [
+        "policy",
+        "override",
+        "justification"
+      ],
+      "type": "object"
+    },
+    "status": {
+      "properties": {
+        "activatedAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "approvals": {
+          "items": {
+            "properties": {
+              "approved": {
+                "type": "boolean"
+              },
+              "approver": {
+                "type": "string"
+              },
+              "comment": {
+                "type": "string"
+              },
+              "timestamp": {
+                "format": "date-time",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "expiresAt": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "phase": {
+          "enum": [
+            "pending",
+            "approved",
+            "active",
+            "expired",
+            "revoked"
+          ],
+          "type": "string"
+        }
+      },
+      "type": "object"
+    }
+  },
+  "required": [
+    "apiVersion",
+    "kind",
+    "metadata",
+    "spec"
+  ],
+  "title": "Policy Override",
+  "type": "object"
+}

@@ -1,0 +1,103 @@
+{
+  "$id": "https://hypersync.ai/schemas/ico/node_address.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "Addressing schema for nodes/blocks in ICO network",
+  "properties": {
+    "address_type": {
+      "description": "Type of entity at this address",
+      "enum": [
+        "model",
+        "stack",
+        "block",
+        "network",
+        "service"
+      ],
+      "type": "string"
+    },
+    "coordinates": {
+      "description": "Position in the Lorentzian Domain",
+      "properties": {
+        "chart": {
+          "default": "standard",
+          "description": "Coordinate chart being used",
+          "type": "string"
+        },
+        "spacelike": {
+          "description": "Spacelike coordinates (x, y, z, ...)",
+          "items": {
+            "type": "number"
+          },
+          "type": "array"
+        },
+        "timelike": {
+          "description": "Timelike coordinate (\u03c4)",
+          "type": "number"
+        }
+      },
+      "required": [
+        "timelike",
+        "spacelike"
+      ],
+      "type": "object"
+    },
+    "ld_id": {
+      "description": "Lorentzian Domain this node resides in",
+      "pattern": "^ld:[a-f0-9]{64}$",
+      "type": "string"
+    },
+    "node_id": {
+      "description": "Unique node identifier",
+      "pattern": "^node:[a-f0-9]{64}$",
+      "type": "string"
+    },
+    "reachability": {
+      "description": "Reachability constraints",
+      "properties": {
+        "allowed_sources": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "public": {
+          "default": false,
+          "type": "boolean"
+        },
+        "requires_auth": {
+          "default": true,
+          "type": "boolean"
+        }
+      },
+      "type": "object"
+    },
+    "routing_hints": {
+      "description": "Hints for efficient routing",
+      "properties": {
+        "avoid_regions": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "nearest_gateway": {
+          "type": "string"
+        },
+        "preferred_paths": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    }
+  },
+  "required": [
+    "node_id",
+    "ld_id",
+    "coordinates",
+    "address_type"
+  ],
+  "title": "ICO Node Address",
+  "type": "object"
+}

@@ -1,0 +1,13 @@
+{
+  "mechanism_id": "gossip_protocol",
+  "parameters": {
+    "fanout": 3,
+    "interval_ms": 100,
+    "max_hops": 5,
+    "timeout_ms": 1000
+  },
+  "tuning": {
+    "aggressive_propagation": false,
+    "compression_enabled": true
+  }
+}

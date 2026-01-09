@@ -1,0 +1,20 @@
+{
+  "expect": {
+    "policiesEnabled": true,
+    "schemasLoadable": true
+  },
+  "given": {
+    "policies": [
+      "spec-pack/policies/studio/contribution-accounting.json",
+      "spec-pack/policies/healthcare/data-provenance-accounting.json",
+      "spec-pack/policies/defense/data-provenance-accounting.json"
+    ],
+    "schemas": [
+      "spec-pack/schemas/provenance/ModelLineageReceipt.schema.json",
+      "spec-pack/schemas/provenance/OrchestrationTraceReceipt.schema.json",
+      "spec-pack/schemas/provenance/DeterministicProcessReceipt.schema.json",
+      "spec-pack/schemas/provenance/ContributionShareReceipt.schema.json"
+    ]
+  },
+  "name": "provenance-accounting-v1"
+}

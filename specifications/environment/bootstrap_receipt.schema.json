@@ -1,0 +1,130 @@
+{
+  "$id": "https://hypersync.dev/specs/environment/bootstrap_receipt.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Receipt capturing the outcome of a runtime's first-run bootstrap sequence.",
+  "properties": {
+    "hardware_profile_id": {
+      "description": "Identifier of the hardware profile document used during this run.",
+      "type": "string"
+    },
+    "hardware_profile_path": {
+      "description": "Optional path or locator for the hardware profile within NVM/SDL.",
+      "type": "string"
+    },
+    "id": {
+      "description": "Stable identifier for this receipt instance.",
+      "type": "string"
+    },
+    "metadata": {
+      "additionalProperties": true,
+      "description": "Free-form metadata for implementors and tooling.",
+      "type": "object"
+    },
+    "nvm_blocks_created": {
+      "description": "Summary of NVM blocks created or initialized during bootstrap.",
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "description": "Runtime-visible name or identifier of the NVM block.",
+            "type": "string"
+          },
+          "purpose": {
+            "description": "Intended purpose (e.g. system_docs, user_workspace, system_experience).",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "purpose"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "run_id": {
+      "description": "Identifier for the bootstrap run (may align with diagnostic receipts).",
+      "type": "string"
+    },
+    "sdl_shards_discovered": {
+      "description": "IDs of SDL shards used to configure starter behavior.",
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "states": {
+      "description": "List of high-level states traversed during bootstrap.",
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "details": {
+            "description": "Optional human-readable details or error information.",
+            "type": "string"
+          },
+          "name": {
+            "description": "Logical state name (e.g. BOOT_MINIMAL_CORE, PROBE_ENVIRONMENT).",
+            "type": "string"
+          },
+          "status": {
+            "description": "Outcome status for this state.",
+            "enum": [
+              "ok",
+              "skipped",
+              "degraded",
+              "failed"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "status"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "timestamp_utc": {
+      "description": "Time at which the bootstrap sequence completed (UTC).",
+      "format": "date-time",
+      "type": "string"
+    },
+    "vnes_decisions": {
+      "description": "Summary of key VNES decisions taken during bootstrap.",
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "decision_id": {
+            "description": "Identifier for this decision (for cross-reference with audit logs).",
+            "type": "string"
+          },
+          "kind": {
+            "description": "Short description of the decision kind (e.g. enable_operator, select_profile).",
+            "type": "string"
+          },
+          "summary": {
+            "description": "Human-readable summary of the decision.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "decision_id",
+          "kind"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "id",
+    "run_id",
+    "timestamp_utc",
+    "hardware_profile_id",
+    "states"
+  ],
+  "title": "HyperSync First-Run Bootstrap Receipt",
+  "type": "object"
+}

@@ -1,0 +1,12 @@
+{
+  "id": "hypersync.core.kernel",
+  "version": "1.0.0",
+  "type": "capsule",
+  "description": "VNES kernel interface and system calls.",
+  "capabilities": [
+    "process_management",
+    "memory_allocation",
+    "inter_capsule_messaging"
+  ],
+  "dependencies": []
+}

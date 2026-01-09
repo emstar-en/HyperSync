@@ -1,0 +1,28 @@
+{
+  "determinism": {
+    "engine": "esc-renderer@1.2.0",
+    "seedStrategy": "hmac-sha256",
+    "spriteAtlas": "atlas://esc/basic@2025-10-30"
+  },
+  "id": "euclid-pipeline-v1",
+  "planes": {
+    "euclidean": {
+      "grid": {
+        "layout": "row-major",
+        "tile": "256x256"
+      }
+    },
+    "hyperbolic": {
+      "metrics": [
+        "depth",
+        "scope"
+      ],
+      "model": "poincare-disk"
+    },
+    "spherical": {
+      "projection": "gnomonic",
+      "unit": "unit-sphere"
+    }
+  },
+  "type": "geometry.pipeline.profile"
+}

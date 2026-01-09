@@ -1,0 +1,33 @@
+{
+  "capsule_type": "diagnostic",
+  "name": "hypersync.diagnostics.watchdog",
+  "version": "1.0.1",
+  "description": "Operational monitoring logic for fault detection",
+  "monitors": [
+    {
+      "name": "determinism_monitor",
+      "target": "D0_VIOLATION",
+      "interval": "per_transaction",
+      "logic_ref": "capsules/diagnostics/diagnostics_logic.md#1-d0-violation-determinism",
+      "implementation_class": "D0Validator"
+    },
+    {
+      "name": "statistical_monitor",
+      "target": "D1_VIOLATION",
+      "interval": "batch_end",
+      "logic_ref": "capsules/diagnostics/diagnostics_logic.md#2-d1-violation-statistical-consistency",
+      "implementation_class": "D1Validator"
+    },
+    {
+      "name": "liveness_monitor",
+      "target": "LIVENESS_FAILURE",
+      "interval": "1000ms",
+      "logic_ref": "capsules/diagnostics/diagnostics_logic.md#3-liveness-failure",
+      "implementation_class": "LivenessCheck"
+    }
+  ],
+  "policy": {
+    "max_retries": 3,
+    "escalation_threshold": 5
+  }
+}

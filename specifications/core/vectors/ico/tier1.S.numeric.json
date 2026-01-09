@@ -1,0 +1,26 @@
+{
+  "dimension": 2,
+  "expected": {
+    "distance_max": 1.6,
+    "distance_min": 1.2,
+    "roundtrip_tol": 1e-06
+  },
+  "inputs": {
+    "x": {
+      "ambient": [
+        0,
+        0,
+        1
+      ]
+    },
+    "y": {
+      "ambient": [
+        0,
+        1,
+        0
+      ]
+    }
+  },
+  "profile": "S",
+  "test_id": "TV-ICO-S-010"
+}

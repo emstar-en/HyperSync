@@ -1,0 +1,14 @@
+{
+  "id": "hypersync.adv.ai.reasoning",
+  "version": "1.0.0",
+  "type": "capsule",
+  "description": "Advanced AI reasoning capabilities.",
+  "capabilities": [
+    "inference_engine",
+    "knowledge_graph",
+    "planning_search"
+  ],
+  "dependencies": [
+    "hypersync.std.data.processing"
+  ]
+}

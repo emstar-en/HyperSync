@@ -1,0 +1,48 @@
+{
+  "geometry_mode": "native",
+  "id": "domain_shim",
+  "invariants": [
+    "INV-no-euclidean-projection"
+  ],
+  "migration_policy": "replace-old-techniques",
+  "name": "Domain Shim",
+  "parameters": {
+    "base_geometry": {
+      "enum": [
+        "lorentzian",
+        "hyperbolic",
+        "riemannian",
+        "product"
+      ],
+      "geometry_mode": "native",
+      "migration_policy": "replace-old-techniques",
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "unreleased": true
+    },
+    "constraints": {
+      "geometry_mode": "native",
+      "migration_policy": "replace-old-techniques",
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "type": "object",
+      "unreleased": true
+    },
+    "curvature_param": {
+      "geometry_mode": "native",
+      "migration_policy": "replace-old-techniques",
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "type": "number",
+      "unreleased": true
+    },
+    "geometry_mode": "native",
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "release_status": "pre-alpha",
+  "stability": "experimental",
+  "unreleased": true
+}

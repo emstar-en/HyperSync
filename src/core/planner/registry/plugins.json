@@ -1,0 +1,50 @@
+{
+  "plugins": [
+    {
+      "id": "plugin://planner/ext_manifest_loader",
+      "manifest_schema": "schema://planner/solver_manifest.v1.schema.json",
+      "overlay": "overlay://planner/user_registry",
+      "watch_dirs": [
+        "ext/solvers",
+        "ext/operators",
+        "overlays"
+      ]
+    },
+    {
+      "emit_reduction_intents": true,
+      "id": "plugin://planner/intent_shim",
+      "wrap_internal_tasks": true
+    },
+    {
+      "apply": {
+        "set_geodesic_preferred": true,
+        "set_tags": true
+      },
+      "id": "plugin://planner/capability_probe",
+      "scan_dirs": [
+        "ext/solvers"
+      ],
+      "tag_rules": {
+        "geodesic_preferred": [
+          "geodesic",
+          "adjoint",
+          "riemann"
+        ],
+        "geometry-native": [
+          "manifold",
+          "riemann",
+          "connection",
+          "adjoint",
+          "geodesic",
+          "ode"
+        ]
+      }
+    },
+    {
+      "conformance_schema": "schema://planner/conformance_result.v1.schema.json",
+      "id": "plugin://planner/conformance_autopref",
+      "promote_if_pass": true,
+      "results_dir": "ext/conformance/results"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "routing_mechanisms": {
+    "meta": {
+      "description": "Routing algorithms native to the Hyperbolic Manifold",
+      "status": "DRAFT",
+      "geometry": "Poincare Disk / Hyperbolic"
+    },
+    "algorithms": {
+      "hyperbolic_greedy_forwarding": {
+        "logic": "Select neighbor n_i that minimizes dist_H(n_i, destination).",
+        "metric": "dist_H(u, v) = arccosh(1 + 2 * ||u-v||^2 / ((1-||u||^2)(1-||v||^2)))",
+        "local_minima_handling": {
+          "strategy": "Geodesic Backtracking",
+          "description": "If no neighbor is closer, backtrack along the incoming geodesic and try the next best angular sector."
+        }
+      },
+      "geodesic_multipath": {
+        "logic": "Spray-and-Wait along Geodesics",
+        "mechanism": "Emit k packets with initial tangent vectors separated by angle theta. Packets follow geodesics until TTL or destination."
+      }
+    }
+  }
+}

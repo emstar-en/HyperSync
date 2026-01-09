@@ -1,0 +1,61 @@
+{
+  "dashboard": {
+    "panels": [
+      {
+        "targets": [
+          {
+            "expr": "count by (tier) (hypersync_placement_tier)"
+          }
+        ],
+        "title": "Services by Tier",
+        "type": "graph"
+      },
+      {
+        "targets": [
+          {
+            "expr": "avg by (tier) (hypersync_placement_radius)"
+          }
+        ],
+        "title": "Average Radius by Tier",
+        "type": "graph"
+      },
+      {
+        "targets": [
+          {
+            "expr": "hypersync_curvature"
+          }
+        ],
+        "title": "Curvature Distribution",
+        "type": "heatmap"
+      },
+      {
+        "targets": [
+          {
+            "expr": "hypersync_replication_factor"
+          }
+        ],
+        "title": "Replication Factor",
+        "type": "graph"
+      },
+      {
+        "targets": [
+          {
+            "expr": "hypersync_mesh_services"
+          }
+        ],
+        "title": "Mesh Services",
+        "type": "stat"
+      },
+      {
+        "targets": [
+          {
+            "expr": "hypersync_mesh_routes"
+          }
+        ],
+        "title": "Mesh Routes",
+        "type": "stat"
+      }
+    ],
+    "title": "HyperSync Orchestrator"
+  }
+}

@@ -1,0 +1,137 @@
+{
+  "$id": "https://hypersync.ai/schemas/assembly/model_stack.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "A composition of multiple models working together",
+  "properties": {
+    "capabilities": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "created_at": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "created_by": {
+      "type": "string"
+    },
+    "description": {
+      "description": "Description of the stack's purpose",
+      "type": "string"
+    },
+    "metadata": {
+      "type": "object"
+    },
+    "models": {
+      "description": "Models in the stack",
+      "items": {
+        "properties": {
+          "catalogue_entry": {
+            "type": "string"
+          },
+          "checkpoint": {
+            "type": "string"
+          },
+          "config": {
+            "type": "object"
+          },
+          "fallback": {
+            "type": "string"
+          },
+          "model_id": {
+            "type": "string"
+          },
+          "priority": {
+            "minimum": 0,
+            "type": "integer"
+          },
+          "role": {
+            "description": "Role of this model in the stack",
+            "type": "string"
+          }
+        },
+        "required": [
+          "role",
+          "model_id"
+        ],
+        "type": "object"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "name": {
+      "description": "Human-readable name for the stack",
+      "maxLength": 128,
+      "minLength": 1,
+      "type": "string"
+    },
+    "nvm_assignments": {
+      "type": "array"
+    },
+    "orchestration": {
+      "properties": {
+        "aggregation": {
+          "type": "string"
+        },
+        "mode": {
+          "enum": [
+            "sequential",
+            "parallel",
+            "router",
+            "ensemble",
+            "pipeline"
+          ],
+          "type": "string"
+        },
+        "pipeline_flow": {
+          "type": "array"
+        },
+        "routing_strategy": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "resource_requirements": {
+      "properties": {
+        "cpu_cores": {
+          "type": "integer"
+        },
+        "gpu_count": {
+          "type": "integer"
+        },
+        "gpu_memory_gb": {
+          "type": "number"
+        },
+        "memory_gb": {
+          "type": "number"
+        }
+      },
+      "type": "object"
+    },
+    "stack_id": {
+      "description": "Unique identifier for the stack",
+      "pattern": "^stack-[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$",
+      "type": "string"
+    },
+    "tags": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "updated_at": {
+      "format": "date-time",
+      "type": "string"
+    }
+  },
+  "required": [
+    "stack_id",
+    "name",
+    "models",
+    "created_at"
+  ],
+  "title": "Model Stack",
+  "type": "object"
+}

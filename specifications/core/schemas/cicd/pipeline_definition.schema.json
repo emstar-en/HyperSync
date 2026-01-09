@@ -1,0 +1,265 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "GoldSampleConfig": {
+      "properties": {
+        "collection_triggers": {
+          "items": {
+            "enum": [
+              "on_success",
+              "on_tag",
+              "manual",
+              "scheduled"
+            ],
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "enabled": {
+          "default": true,
+          "type": "boolean"
+        },
+        "retention_policy": {
+          "properties": {
+            "max_age_days": {
+              "default": 365,
+              "type": "integer"
+            },
+            "max_samples": {
+              "default": 100,
+              "type": "integer"
+            }
+          },
+          "type": "object"
+        },
+        "storage_path": {
+          "description": "Path to store gold samples",
+          "type": "string"
+        },
+        "validation_threshold": {
+          "default": 0.95,
+          "description": "Similarity threshold for gold sample comparison (0-1)",
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        }
+      },
+      "type": "object"
+    },
+    "Notification": {
+      "properties": {
+        "config": {
+          "type": "object"
+        },
+        "on_events": {
+          "items": {
+            "enum": [
+              "start",
+              "success",
+              "failure",
+              "rollback",
+              "gold_sample_mismatch"
+            ],
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "type": {
+          "enum": [
+            "email",
+            "webhook",
+            "slack",
+            "log"
+          ],
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "RollbackPolicy": {
+      "properties": {
+        "auto_rollback_on_failure": {
+          "default": true,
+          "type": "boolean"
+        },
+        "enabled": {
+          "default": true,
+          "type": "boolean"
+        },
+        "health_check_timeout": {
+          "default": 300,
+          "type": "integer"
+        },
+        "rollback_stages": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "Stage": {
+      "properties": {
+        "continue_on_error": {
+          "default": false,
+          "type": "boolean"
+        },
+        "name": {
+          "type": "string"
+        },
+        "parallel": {
+          "default": false,
+          "type": "boolean"
+        },
+        "steps": {
+          "items": {
+            "$ref": "#/definitions/Step"
+          },
+          "type": "array"
+        },
+        "timeout_seconds": {
+          "default": 3600,
+          "type": "integer"
+        },
+        "type": {
+          "enum": [
+            "build",
+            "test",
+            "validate",
+            "deploy",
+            "rollback",
+            "gold_sample_collection"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "type",
+        "steps"
+      ],
+      "type": "object"
+    },
+    "Step": {
+      "properties": {
+        "action": {
+          "description": "Action to execute (script, command, tool)",
+          "type": "string"
+        },
+        "artifacts": {
+          "description": "Artifacts to collect from this step",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "gold_sample_capture": {
+          "default": false,
+          "description": "Whether to capture output as gold sample",
+          "type": "boolean"
+        },
+        "name": {
+          "type": "string"
+        },
+        "params": {
+          "description": "Action-specific parameters",
+          "type": "object"
+        }
+      },
+      "required": [
+        "name",
+        "action"
+      ],
+      "type": "object"
+    },
+    "Trigger": {
+      "properties": {
+        "branches": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "config": {
+          "description": "Trigger-specific configuration",
+          "type": "object"
+        },
+        "schedule": {
+          "description": "Cron expression for scheduled triggers",
+          "type": "string"
+        },
+        "type": {
+          "enum": [
+            "git_push",
+            "git_tag",
+            "manual",
+            "scheduled",
+            "webhook",
+            "model_update"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "type"
+      ],
+      "type": "object"
+    }
+  },
+  "description": "Defines a complete CI/CD pipeline with stages, triggers, and gold sample collection",
+  "properties": {
+    "deployment_strategy": {
+      "enum": [
+        "rolling",
+        "blue_green",
+        "canary",
+        "immediate"
+      ],
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "gold_sample_config": {
+      "$ref": "#/definitions/GoldSampleConfig"
+    },
+    "name": {
+      "description": "Human-readable pipeline name",
+      "type": "string"
+    },
+    "notifications": {
+      "items": {
+        "$ref": "#/definitions/Notification"
+      },
+      "type": "array"
+    },
+    "pipeline_id": {
+      "description": "Unique identifier for the pipeline",
+      "type": "string"
+    },
+    "rollback_policy": {
+      "$ref": "#/definitions/RollbackPolicy"
+    },
+    "stages": {
+      "items": {
+        "$ref": "#/definitions/Stage"
+      },
+      "type": "array"
+    },
+    "triggers": {
+      "items": {
+        "$ref": "#/definitions/Trigger"
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "pipeline_id",
+    "name",
+    "version",
+    "stages"
+  ],
+  "title": "CI/CD Pipeline Definition",
+  "type": "object"
+}

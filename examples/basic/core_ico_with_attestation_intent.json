@@ -1,0 +1,13 @@
+{
+  "attestations": {
+    "signatures_ref": "artifact://receipts/mofn_signatures.json",
+    "validation_receipt_ref": "artifact://receipts/attestation_validation.json"
+  },
+  "intent_kind": "ReductionIntent",
+  "params": {
+    "payload": "hello-core-attested"
+  },
+  "profile": "CORE",
+  "service_ref": "network://ico/ping",
+  "task": "network_ico_service_call"
+}

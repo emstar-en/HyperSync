@@ -1,0 +1,32 @@
+[
+  {
+    "geometry_mode": "native",
+    "migration_policy": "replace-old-techniques",
+    "op": "test",
+    "path": "/spec_version",
+    "release_status": "pre-alpha",
+    "stability": "experimental",
+    "unreleased": true,
+    "value": "v1.6.3"
+  },
+  {
+    "geometry_mode": "native",
+    "migration_policy": "replace-old-techniques",
+    "op": "add",
+    "path": "/meta/patch_ledger/-",
+    "release_status": "pre-alpha",
+    "stability": "experimental",
+    "unreleased": true,
+    "value": {
+      "": "HS-IMPL-6902-017LD-BUNDLE",
+      "geometry_mode": "native",
+      "migration_policy": "replace-old-techniques",
+      "note": "Adds ops/routing_domains.py, security/lorentzian_domains.py, geometry.compute_domain_transfer_efficiency; keeps Realm APIs for backward compatibility.",
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "status": "applied",
+      "title": "Lorentzian Domains introduction + compatibility (combined)",
+      "unreleased": true
+    }
+  }
+]

@@ -1,0 +1,12 @@
+{
+  "files": [
+    "routing_algorithms.spec.json",
+    "routing_algorithms.capsule.json",
+    "iam_crypto_protocols.capsule.json",
+    "iam_crypto_protocols.spec.json",
+    "integration_profile.schema.json",
+    "hypersync_service_descriptor.schema.json",
+    "integration_index.json"
+  ],
+  "folders": []
+}

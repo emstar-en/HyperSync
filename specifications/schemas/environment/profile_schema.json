@@ -1,0 +1,160 @@
+{
+  "$id": "https://hypersync.ai/schemas/environment/profile_schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "Defines optional environment profiles with toolchains, configs, and services",
+  "properties": {
+    "config_files": {
+      "description": "Configuration files to install",
+      "items": {
+        "properties": {
+          "content": {
+            "type": "string"
+          },
+          "mode": {
+            "pattern": "^[0-7]{3,4}$",
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "path",
+          "content"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "dependencies": {
+      "description": "Other profiles this depends on",
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "description": {
+      "description": "Profile description",
+      "type": "string"
+    },
+    "environment_vars": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "Environment variables to set",
+      "type": "object"
+    },
+    "metadata": {
+      "properties": {
+        "author": {
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "updated_at": {
+          "format": "date-time",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "name": {
+      "description": "Human-readable profile name",
+      "type": "string"
+    },
+    "packages": {
+      "description": "System packages to install",
+      "items": {
+        "properties": {
+          "manager": {
+            "default": "apt",
+            "enum": [
+              "apt",
+              "yum",
+              "brew",
+              "pip",
+              "npm",
+              "cargo"
+            ],
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "profile_id": {
+      "description": "Unique profile identifier",
+      "pattern": "^profile-[a-z0-9-]+$",
+      "type": "string"
+    },
+    "scripts": {
+      "description": "Setup scripts to run",
+      "items": {
+        "properties": {
+          "content": {
+            "type": "string"
+          },
+          "interpreter": {
+            "default": "bash",
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "content"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "services": {
+      "description": "Services to enable",
+      "items": {
+        "properties": {
+          "autostart": {
+            "default": false,
+            "type": "boolean"
+          },
+          "enabled": {
+            "default": true,
+            "type": "boolean"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "tags": {
+      "description": "Profile tags",
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "profile_id",
+    "name",
+    "version"
+  ],
+  "title": "Environment Profile Schema",
+  "type": "object"
+}

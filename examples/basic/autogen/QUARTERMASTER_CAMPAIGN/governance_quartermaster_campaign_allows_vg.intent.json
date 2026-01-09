@@ -1,0 +1,9 @@
+{
+  "intent_kind": "ReductionIntent",
+  "op_ref": "op://vg/probe",
+  "params": {
+    "probe": true
+  },
+  "profile": "QUARTERMASTER_CAMPAIGN",
+  "task": "vg_probe_probe"
+}

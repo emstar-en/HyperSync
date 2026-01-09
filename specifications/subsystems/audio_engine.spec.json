@@ -1,0 +1,79 @@
+{
+  "system": "UI Audio Engine",
+  "type": "default_subsystem",
+  "meta": {
+    "description": "Spatial audio mixing and feedback engine for UI interactions",
+    "status": "ALPHA",
+    "version": "0.1.0"
+  },
+  "role": "user_feedback_and_immersion",
+  "capabilities": [
+    "spatial_audio",
+    "adaptive_mixing",
+    "accessibility_profiles",
+    "hierarchical_interrupts"
+  ],
+  "mathematical_foundations": {
+    "spatialization": {
+      "panning_law": "constant_power",
+      "formula": "L = cos(theta) * S, R = sin(theta) * S",
+      "distance_attenuation": "inverse_square_law_clamped"
+    },
+    "mixing": {
+      "ducking_curve": "exponential_decay",
+      "formula": "V_bg = V_target + (V_current - V_target) * exp(-t/tau)"
+    }
+  },
+  "fault_detection": {
+    "buffer_underrun": {
+      "trigger": "buffer_level < threshold",
+      "action": "interpolate_silence",
+      "log_level": "warning"
+    },
+    "asset_missing": {
+      "trigger": "load_failure",
+      "action": "fallback_to_system_beep",
+      "log_level": "error"
+    },
+    "latency_violation": {
+      "trigger": "processing_time > frame_budget",
+      "action": "drop_spatialization_effects",
+      "log_level": "warning"
+    }
+  },
+  "detailed_mechanisms": {
+    "interrupt_handling": {
+      "structure": "priority_queue",
+      "logic": "Higher priority events duck lower priority streams immediately. Equal priority mixes.",
+      "priority_table": {
+        "critical_system_alert": 100,
+        "incoming_call": 90,
+        "navigation_instruction": 80,
+        "ui_feedback": 50,
+        "media_playback": 10,
+        "ambient_background": 1
+      },
+      "preemption_logic": "Event A preempts Event B if priority(A) > priority(B)."
+    },
+    "accessibility_mapping": {
+      "visual_only": "Map audio cues to visual flash events via event_bus"
+    }
+  },
+  "categories": [
+    "success",
+    "warning",
+    "error",
+    "notification",
+    "ambient",
+    "focus"
+  ],
+  "defaults": {
+    "accessibility": {
+      "hearing_profiles": [
+        "age_related_hf_loss",
+        "noise_env"
+      ],
+      "visual_only_mode": true
+    }
+  }
+}

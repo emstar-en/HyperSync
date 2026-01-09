@@ -1,0 +1,13 @@
+{
+  "allow_tiers": [
+    "Pro Essentials",
+    "Pro Advanced",
+    "QuarterMaster"
+  ],
+  "caps_kind": "tiers",
+  "deny_tiers": [
+    "Core"
+  ],
+  "name": "finance_pro_only",
+  "notes": "Finance, Risk & Econometrics modules are not available in Core tier."
+}

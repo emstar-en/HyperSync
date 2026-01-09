@@ -1,0 +1,39 @@
+{
+  "$schema": "ext://f1fed686329b",
+  "properties": {
+    "clustering_algo": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "k": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "metric_digest": {
+      "type": "string"
+    },
+    "metric_kind": {
+      "type": "string"
+    },
+    "receipt_kind": {
+      "const": "CurationReceipt"
+    },
+    "seeds": {
+      "type": [
+        "integer",
+        "object",
+        "array",
+        "null"
+      ]
+    }
+  },
+  "required": [
+    "receipt_kind"
+  ],
+  "title": "CurationReceipt",
+  "type": "object"
+}

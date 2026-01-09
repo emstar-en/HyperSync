@@ -1,0 +1,72 @@
+{
+  "camera": {
+    "distortion": {
+      "k1": -0.12,
+      "k2": 0.02,
+      "p1": 0,
+      "p2": 0
+    },
+    "intrinsics": {
+      "cx": 640,
+      "cy": 360,
+      "fx": 1020,
+      "fy": 1018
+    },
+    "projection": "gnomonic"
+  },
+  "commit": {
+    "byteLength": 1248893,
+    "hash": {
+      "algo": "sha256",
+      "value": "sha256-BASE64\u2026"
+    },
+    "uri": "cas://streams/cam-entrance-01/10234"
+  },
+  "poseTimeline": [
+    {
+      "quat": [
+        0.99,
+        0.01,
+        0.01,
+        0.02
+      ],
+      "ts": "2025-11-01T18:25:44.200Z"
+    }
+  ],
+  "seeds": {
+    "salt": "s:cam-entrance-01",
+    "strategy": "hmac"
+  },
+  "streamId": "cam-entrance-01",
+  "style": {
+    "atlas": "atlas://esc/basic@2025-10-30",
+    "mode": "silhouettes"
+  },
+  "timebinding": {
+    "interp": "linear",
+    "maxJitterMs": 80,
+    "sequence": 10234,
+    "timestamp": "2025-11-01T18:25:44.200Z"
+  },
+  "tracks": [
+    {
+      "bbox": [
+        0.12,
+        0.22,
+        0.28,
+        0.55
+      ],
+      "id": "t:person#42",
+      "label": "person",
+      "occluded": false,
+      "z": 0.4
+    }
+  ],
+  "type": "media.reconstruction.instructions",
+  "video": {
+    "colorspace": "bt709",
+    "fps": 15,
+    "height": 720,
+    "width": 1280
+  }
+}

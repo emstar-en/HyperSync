@@ -1,0 +1,12 @@
+{
+  "byteLength": 1248893,
+  "durationMs": 2000,
+  "hash": {
+    "algo": "sha256",
+    "value": "sha256-BASE64\u2026"
+  },
+  "sequence": 10234,
+  "streamId": "cam-entrance-01",
+  "type": "media.segment.commitment",
+  "uri": "cas://streams/cam-entrance-01/10234"
+}

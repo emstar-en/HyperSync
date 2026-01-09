@@ -1,0 +1,19 @@
+{
+  "m": 2,
+  "n": 3,
+  "participants": [
+    {
+      "id": "node-a",
+      "pubKey": "ed25519:AAA..."
+    },
+    {
+      "id": "node-b",
+      "pubKey": "ed25519:BBB..."
+    },
+    {
+      "id": "node-c",
+      "pubKey": "ed25519:CCC..."
+    }
+  ],
+  "scope": "core"
+}

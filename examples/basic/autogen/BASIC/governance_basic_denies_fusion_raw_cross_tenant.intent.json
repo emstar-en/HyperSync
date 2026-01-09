@@ -1,0 +1,9 @@
+{
+  "intent_kind": "ReductionIntent",
+  "op_ref": "op://fusion/raw_cross_tenant/probe",
+  "params": {
+    "probe": true
+  },
+  "profile": "BASIC",
+  "task": "fusion_raw_cross_tenant_probe"
+}

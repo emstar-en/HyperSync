@@ -1,0 +1,62 @@
+{
+  "created": "2025-11-18T10:31:16.501282",
+  "description": "Validation rules for consensus mechanism configurations",
+  "global_rules": {
+    "quorum_size": {
+      "description": "Quorum size must be positive",
+      "min": 1,
+      "type": "integer"
+    },
+    "timeout_ms": {
+      "description": "Timeout must be between 100ms and 60s",
+      "max": 60000,
+      "min": 100,
+      "type": "integer"
+    }
+  },
+  "mechanism_specific_rules": {
+    "geometric_consensus": {
+      "manifold_dimension": {
+        "max": 128,
+        "min": 2,
+        "must_match_tier_dimensions": true
+      }
+    },
+    "raft": {
+      "election_timeout_ms": {
+        "max": 10000,
+        "min": 500,
+        "recommended_min": 1000
+      },
+      "heartbeat_interval_ms": {
+        "max": 1000,
+        "min": 50,
+        "must_be_less_than": "election_timeout_ms"
+      }
+    },
+    "simple_bft": {
+      "quorum_size": {
+        "min": 3,
+        "must_satisfy": "2f + 1 where f is max faulty nodes"
+      }
+    }
+  },
+  "tier_constraints": {
+    "Advanced": {
+      "max_quorum_size": null,
+      "max_timeout_ms": 30000
+    },
+    "Basic": {
+      "max_quorum_size": 12,
+      "max_timeout_ms": 10000
+    },
+    "CORE": {
+      "max_quorum_size": 8,
+      "max_timeout_ms": 5000
+    },
+    "PRO": {
+      "max_quorum_size": 24,
+      "max_timeout_ms": 15000
+    }
+  }
+}

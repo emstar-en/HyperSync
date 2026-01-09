@@ -1,0 +1,148 @@
+{
+  "$id": "https://hypersync.ai/schemas/ico/lorentzian_domain.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "Schema for Lorentzian Domain addressing and geometry in ICO networks",
+  "properties": {
+    "address_space": {
+      "description": "Addressing configuration for this domain",
+      "properties": {
+        "allocation_strategy": {
+          "default": "geometric",
+          "enum": [
+            "sequential",
+            "random",
+            "hash_based",
+            "geometric"
+          ],
+          "type": "string"
+        },
+        "capacity": {
+          "description": "Maximum number of addressable entities",
+          "type": "integer"
+        },
+        "prefix": {
+          "description": "Address prefix for entities in this domain",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "bridges": {
+      "description": "Connections to other Lorentzian Domains",
+      "items": {
+        "properties": {
+          "bandwidth": {
+            "type": "number"
+          },
+          "bridge_type": {
+            "enum": [
+              "wormhole",
+              "embedding",
+              "projection",
+              "fiber_bundle"
+            ],
+            "type": "string"
+          },
+          "latency_bound": {
+            "type": "number"
+          },
+          "target_ld": {
+            "pattern": "^ld:[a-f0-9]{64}$",
+            "type": "string"
+          },
+          "transform": {
+            "description": "Coordinate transformation between domains",
+            "type": "object"
+          }
+        },
+        "required": [
+          "target_ld",
+          "bridge_type"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "created_at": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "geometry": {
+      "properties": {
+        "curvature": {
+          "description": "Scalar curvature (0 for flat, negative for hyperbolic)",
+          "type": "number"
+        },
+        "dimension": {
+          "description": "Spacetime dimension",
+          "minimum": 2,
+          "type": "integer"
+        },
+        "metric_type": {
+          "default": "minkowski",
+          "enum": [
+            "minkowski",
+            "schwarzschild",
+            "kerr",
+            "ads",
+            "custom"
+          ],
+          "type": "string"
+        },
+        "signature": {
+          "description": "Metric signature (e.g., [-1, 1, 1, 1] for Minkowski)",
+          "items": {
+            "enum": [
+              -1,
+              1
+            ],
+            "type": "integer"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "signature",
+        "dimension",
+        "curvature"
+      ],
+      "type": "object"
+    },
+    "ld_id": {
+      "description": "Unique identifier for this Lorentzian Domain",
+      "pattern": "^ld:[a-f0-9]{64}$",
+      "type": "string"
+    },
+    "metadata": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "name": {
+      "description": "Human-readable name for the domain",
+      "type": "string"
+    },
+    "parent_ld": {
+      "description": "Parent domain ID if this is a subdomain",
+      "pattern": "^ld:[a-f0-9]{64}$",
+      "type": "string"
+    },
+    "security_level": {
+      "description": "Security classification of this domain",
+      "enum": [
+        "public",
+        "protected",
+        "private",
+        "isolated"
+      ],
+      "type": "string"
+    }
+  },
+  "required": [
+    "ld_id",
+    "geometry",
+    "security_level",
+    "created_at"
+  ],
+  "title": "Lorentzian Domain",
+  "type": "object"
+}

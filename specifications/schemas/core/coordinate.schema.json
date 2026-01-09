@@ -1,0 +1,52 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://hypersync.io/schemas/core/coordinate.schema.json",
+  "title": "Manifold Coordinate",
+  "description": "Reusable coordinate definition for manifold entities in HyperSync.",
+  "type": "object",
+  "properties": {
+    "system": {
+    "type": "string",
+    "description": "Coordinate system identifier (e.g., 'polar_complex', 'poincare_disk', 'lorentz', 'klein_model', 'euclidean_fallback').",
+    "default": "polar_complex"
+    },
+    "values": {
+    "type": "array",
+    "description": "Numeric coordinate values in the chosen system (order is system-dependent).",
+    "items": {
+    "type": "number"
+    },
+    "minItems": 2
+    },
+    "chart": {
+    "type": "string",
+    "description": "Optional chart/patch identifier when the manifold is covered by multiple overlapping coordinate charts."
+    },
+    "reference_frame": {
+    "type": "string",
+    "description": "Optional reference frame or embedding namespace (e.g., 'prod-eu-west-1', 'simulated_cluster_A')."
+    },
+    "tolerance": {
+    "type": "number",
+    "description": "Optional numerical tolerance (epsilon) associated with this coordinate for equality / snapping decisions."
+    },
+    "valid_for": {
+    "type": "object",
+    "description": "Optional temporal validity window for this coordinate assignment.",
+    "properties": {
+    "from": {
+    "type": "string",
+    "format": "date-time"
+    },
+    "until": {
+    "type": "string",
+    "format": "date-time"
+    }
+    }
+    }
+  },
+  "required": [
+    "values"
+  ],
+  "additionalProperties": false
+}

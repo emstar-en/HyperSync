@@ -1,0 +1,189 @@
+{
+  "dashboard": {
+    "panels": [
+      {
+        "id": 1,
+        "targets": [
+          {
+            "expr": "rate(hyperql_queries_total[5m])",
+            "legendFormat": "{{operation}}"
+          }
+        ],
+        "title": "Query Throughput",
+        "type": "graph",
+        "yaxes": [
+          {
+            "label": "queries/sec"
+          },
+          {}
+        ]
+      },
+      {
+        "id": 2,
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(hyperql_query_duration_seconds_bucket[5m]))",
+            "legendFormat": "p95"
+          }
+        ],
+        "title": "Query Latency (p95)",
+        "type": "graph",
+        "yaxes": [
+          {
+            "label": "seconds"
+          },
+          {}
+        ]
+      },
+      {
+        "id": 3,
+        "targets": [
+          {
+            "expr": "rate(db_transaction_commits_total[5m])",
+            "legendFormat": "commits"
+          },
+          {
+            "expr": "rate(db_transaction_aborts_total[5m])",
+            "legendFormat": "aborts"
+          }
+        ],
+        "title": "Transaction Commits vs Aborts",
+        "type": "graph"
+      },
+      {
+        "alert": {
+          "conditions": [
+            {
+              "evaluator": {
+                "params": [
+                  10
+                ],
+                "type": "gt"
+              },
+              "query": {
+                "params": [
+                  "A",
+                  "5m",
+                  "now"
+                ]
+              }
+            }
+          ]
+        },
+        "id": 4,
+        "targets": [
+          {
+            "expr": "wal_lag_seconds",
+            "legendFormat": "{{node}}"
+          }
+        ],
+        "title": "WAL Lag",
+        "type": "graph",
+        "yaxes": [
+          {
+            "label": "seconds"
+          },
+          {}
+        ]
+      },
+      {
+        "id": 5,
+        "targets": [
+          {
+            "expr": "sum(rate(db_curvature_violation_total[5m]))"
+          }
+        ],
+        "thresholds": [
+          {
+            "color": "green",
+            "value": 0
+          },
+          {
+            "color": "yellow",
+            "value": 1
+          },
+          {
+            "color": "red",
+            "value": 10
+          }
+        ],
+        "title": "Curvature Violations",
+        "type": "stat"
+      },
+      {
+        "id": 6,
+        "targets": [
+          {
+            "expr": "rate(db_geodesic_distance_computations_total[5m])",
+            "legendFormat": "computations/sec"
+          }
+        ],
+        "title": "Geodesic Distance Computations",
+        "type": "graph"
+      },
+      {
+        "id": 7,
+        "targets": [
+          {
+            "expr": "rate(db_lock_wait_time_seconds_bucket[5m])"
+          }
+        ],
+        "title": "Lock Wait Time",
+        "type": "heatmap"
+      },
+      {
+        "id": 8,
+        "targets": [
+          {
+            "expr": "federation_node_healthy",
+            "format": "table"
+          }
+        ],
+        "title": "Federation Node Health",
+        "type": "table"
+      },
+      {
+        "id": 9,
+        "targets": [
+          {
+            "expr": "rate(mount_cache_hits_total[5m]) / (rate(mount_cache_hits_total[5m]) + rate(mount_cache_misses_total[5m]))"
+          }
+        ],
+        "thresholds": [
+          {
+            "color": "red",
+            "value": 0
+          },
+          {
+            "color": "yellow",
+            "value": 0.5
+          },
+          {
+            "color": "green",
+            "value": 0.8
+          }
+        ],
+        "title": "Cache Hit Rate",
+        "type": "gauge"
+      },
+      {
+        "id": 10,
+        "targets": [
+          {
+            "expr": "sync_job_status",
+            "legendFormat": "{{job_id}}: {{status}}"
+          }
+        ],
+        "title": "Sync Job Status",
+        "type": "stat"
+      }
+    ],
+    "refresh": "30s",
+    "tags": [
+      "hypersync",
+      "database"
+    ],
+    "timezone": "browser",
+    "title": "HyperSync Database Metrics"
+  }
+}

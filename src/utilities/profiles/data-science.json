@@ -1,0 +1,53 @@
+{
+  "config_files": [
+    {
+      "content": "c.NotebookApp.open_browser = False\\nc.NotebookApp.port = 8888\\n",
+      "path": "~/.jupyter/jupyter_notebook_config.py"
+    }
+  ],
+  "dependencies": [
+    "profile-python-dev"
+  ],
+  "description": "Data science environment with Jupyter, pandas, numpy, etc.",
+  "environment_vars": {
+    "JUPYTER_CONFIG_DIR": "~/.jupyter"
+  },
+  "metadata": {
+    "author": "HyperSync Team",
+    "created_at": "2025-01-01T00:00:00Z"
+  },
+  "name": "Data Science Lab",
+  "packages": [
+    {
+      "manager": "pip",
+      "name": "jupyter"
+    },
+    {
+      "manager": "pip",
+      "name": "pandas"
+    },
+    {
+      "manager": "pip",
+      "name": "numpy"
+    },
+    {
+      "manager": "pip",
+      "name": "matplotlib"
+    },
+    {
+      "manager": "pip",
+      "name": "scikit-learn"
+    },
+    {
+      "manager": "pip",
+      "name": "scipy"
+    }
+  ],
+  "profile_id": "profile-data-science",
+  "tags": [
+    "data-science",
+    "jupyter",
+    "python",
+    "ml"
+  ]
+}

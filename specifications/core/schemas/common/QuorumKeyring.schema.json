@@ -1,0 +1,50 @@
+{
+  "$id": "schema://spec-pack/schemas/common/QuorumKeyring.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true,
+  "properties": {
+    "m": {
+      "minimum": 1,
+      "type": "integer"
+    },
+    "n": {
+      "minimum": 1,
+      "type": "integer"
+    },
+    "participants": {
+      "items": {
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "pubKey": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "pubKey"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "scope": {
+      "enum": [
+        "core",
+        "privacy",
+        "robot",
+        "geom"
+      ],
+      "type": "string"
+    }
+  },
+  "required": [
+    "scope",
+    "m",
+    "n",
+    "participants"
+  ],
+  "title": "QuorumKeyring",
+  "type": "object"
+}

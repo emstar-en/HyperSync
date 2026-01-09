@@ -1,0 +1,32 @@
+{
+  "$id": "schema://spec-pack/schemas/geometry/EncodedEntityBase.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true,
+  "properties": {
+    "coordinates": {
+      "items": {
+        "type": "number"
+      },
+      "type": "array"
+    },
+    "domainId": {
+      "type": "string"
+    },
+    "encoding": {
+      "enum": [
+        "binary",
+        "json",
+        "compact64"
+      ],
+      "type": "string"
+    },
+    "frameId": {
+      "type": "string"
+    },
+    "metricRef": {
+      "type": "string"
+    }
+  },
+  "title": "EncodedEntityBase",
+  "type": "object"
+}

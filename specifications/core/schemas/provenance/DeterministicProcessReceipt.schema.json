@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "properties": {
+    "digest": {
+      "type": "string"
+    },
+    "engine": {
+      "type": "string"
+    },
+    "params": {
+      "type": "object"
+    },
+    "processId": {
+      "type": "string"
+    },
+    "timestamp": {
+      "type": "string"
+    },
+    "type": {
+      "const": "provenance.deterministic.process.receipt"
+    }
+  },
+  "required": [
+    "type",
+    "processId",
+    "engine",
+    "params",
+    "digest",
+    "timestamp"
+  ],
+  "title": "Deterministic Process Receipt",
+  "type": "object"
+}

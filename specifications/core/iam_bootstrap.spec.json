@@ -1,0 +1,174 @@
+{
+  "id": "hypersync.core.iam_bootstrap.v1",
+  "kind": "bootstrap_policy",
+  "meta": {
+    "version": "1.1.0",
+    "description": "Policy and mechanisms for the Initialization Assistant Model (IAM)."
+  },
+  "policy": {
+    "allow": [
+      "create_ld",
+      "register_node",
+      "compute_route",
+      "catalog_models",
+      "compose_agent",
+      "status_summary"
+    ],
+    "consent": {
+      "default": "deny",
+      "required_for": [
+        "external_api_calls",
+        "data_sharing",
+        "telemetry_upload"
+      ]
+    },
+    "deny": [
+      "external_call_without_consent",
+      "file_system_write_outside_hypersync",
+      "network_call_without_approval",
+      "delete_domain_without_confirmation",
+      "modify_system_files"
+    ],
+    "description": "Policy for Initialization Assistant Model operations",
+    "metadata": {
+      "docs_first_run": "07_documentation/first_run_nvm_bootstrap.md",
+      "docs_iam": "07_documentation/human/reference/iam.md",
+      "hardware_profile_aware": true,
+      "initialization_assistant_model": true
+    },
+    "name": "iam-policy",
+    "rules": [
+      {
+        "action": "create_ld",
+        "conditions": {
+          "security_level": [
+            "isolated",
+            "shared",
+            "public"
+          ]
+        },
+        "rate_limit": {
+          "max_per_minute": 10
+        }
+      },
+      {
+        "action": "register_node",
+        "conditions": {
+          "address_type": [
+            "model",
+            "agent",
+            "service"
+          ]
+        },
+        "rate_limit": {
+          "max_per_minute": 60
+        }
+      },
+      {
+        "action": "compute_route",
+        "conditions": {},
+        "rate_limit": {
+          "max_per_minute": 60
+        }
+      },
+      {
+        "action": "catalog_models",
+        "conditions": {},
+        "rate_limit": {
+          "max_per_minute": 10
+        }
+      },
+      {
+        "action": "compose_agent",
+        "conditions": {
+          "max_members": 10,
+          "min_members": 1
+        },
+        "rate_limit": {
+          "max_per_minute": 10
+        }
+      },
+      {
+        "action": "status_summary",
+        "conditions": {},
+        "rate_limit": {
+          "max_per_minute": 30
+        }
+      }
+    ],
+    "telemetry": {
+      "enabled": true,
+      "redact_pii": true,
+      "retention_days": 30,
+      "store_locally": true
+    }
+  },
+  "mathematical_foundations": {
+    "policy_logic": {
+      "formalism": "Boolean Algebra over Permission Sets",
+      "axiom": "Deny overrides Allow (P_deny OR P_allow -> Deny)",
+      "completeness": "All actions must map to {Allow, Deny, Consent}"
+    },
+    "confidence_scoring": {
+      "algorithm": "Weighted Sum Model",
+      "equation": "Score = sum(w_i * feature_match_i) / sum(w_i)"
+    }
+  },
+  "fault_detection": {
+    "hardware_incompatibility": {
+      "check": "Compare detected hardware against Hardware Compatibility List (HCL)",
+      "action": "Warn and fallback to 'Generic' profile if critical features missing"
+    },
+    "network_partition": {
+      "detection": "Active probing of known anchors (DNS, NTP)",
+      "action": "Enter 'Offline Mode' and disable external_api_calls"
+    },
+    "state_corruption": {
+      "check": "Checksum verification of NVM blocks before load",
+      "action": "Trigger 'NVM Recovery' flow"
+    }
+  },
+  "detailed_mechanisms": {
+    "environment_detection": {
+      "heuristics": [
+        "CPUID",
+        "Memory Map",
+        "PCI Enumeration",
+        "OS Capabilities"
+      ],
+      "scoring": "Weighted sum of feature matches -> Profile Confidence Score"
+    },
+    "profile_selection": {
+      "logic": "Select highest confidence profile > threshold (0.8), else fallback to 'Safe Mode'",
+      "user_override": "Allow manual selection via CLI/GUI if confidence is low"
+    },
+    "bootstrap_sequence": {
+      "steps": [
+        "Load Kernel",
+        "Mount VFS",
+        "Start IAM",
+        "Load Policy",
+        "User Handshake"
+      ],
+      "rollback": "On failure, revert to last known good state (LKGS)"
+    }
+  },
+  "flow": {
+    "states": [
+      "DETECT_ENVIRONMENT",
+      "LOAD_OR_CREATE_HARDWARE_PROFILE",
+      "INITIALIZE_CORE_NVM_BLOCKS",
+      "SDL_DISCOVERY",
+      "VNES_SELECTION",
+      "BOOTSTRAP_DIALOG",
+      "APPLY_PROFILE_AND_INITIALIZE",
+      "EMIT_BOOTSTRAP_RECEIPTS",
+      "READY_FOR_USER"
+    ],
+    "requirements": {
+      "hardware_profile": "required",
+      "sdl_connectivity": "optional",
+      "vnes_catalog": "required"
+    }
+  }
+}

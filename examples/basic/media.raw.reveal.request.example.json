@@ -1,0 +1,12 @@
+{
+  "policyRef": "policies/reveal/incident.json",
+  "proofsRequired": [
+    "integrity",
+    "origin",
+    "timebinding"
+  ],
+  "purpose": "incident-review",
+  "sequence": 10234,
+  "streamId": "cam-entrance-01",
+  "type": "media.raw.reveal.request"
+}

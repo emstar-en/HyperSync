@@ -1,0 +1,28 @@
+{
+  "$id": "schema://receipts/SafetyEnvelopeReceipt.json",
+  "$schema": "ext://fcbd7642ed3f",
+  "properties": {
+    "budget_ok": {
+      "type": "boolean"
+    },
+    "causal_ok": {
+      "type": "boolean"
+    },
+    "geofence_ok": {
+      "type": "boolean"
+    },
+    "predicate_details": {
+      "type": "object"
+    },
+    "receipt_kind": {
+      "const": "SafetyEnvelopeReceipt"
+    }
+  },
+  "required": [
+    "receipt_kind",
+    "causal_ok",
+    "budget_ok",
+    "geofence_ok"
+  ],
+  "type": "object"
+}

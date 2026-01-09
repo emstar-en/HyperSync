@@ -1,0 +1,44 @@
+{
+  "$schema": "ext://f1fed686329b",
+  "properties": {
+    "engine": {
+      "enum": [
+        "cpu",
+        "gpu"
+      ]
+    },
+    "impl_id": {
+      "type": "string"
+    },
+    "libs": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "params_schema_ref": {
+      "type": "string"
+    },
+    "precision": {
+      "enum": [
+        "fp32",
+        "fp64",
+        "deterministic-mixed"
+      ]
+    },
+    "reuses": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "impl_id",
+    "version",
+    "engine",
+    "precision"
+  ],
+  "title": "SolverBinding",
+  "type": "object"
+}

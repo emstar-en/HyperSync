@@ -1,0 +1,95 @@
+{
+  "$id": "https://hypersync.ai/schemas/consensus/coxeter_registry.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Registry of Coxeter groups and Artin relations for braid equivalence",
+  "properties": {
+    "artin_relations": {
+      "items": {
+        "properties": {
+          "generators": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "order": {
+            "type": "integer"
+          },
+          "relation": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "coxeter_groups": {
+      "items": {
+        "properties": {
+          "coxeter_matrix": {
+            "items": {
+              "items": {
+                "type": "integer"
+              },
+              "type": "array"
+            },
+            "type": "array"
+          },
+          "generators": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "group_id": {
+            "type": "string"
+          },
+          "relations": {
+            "items": {
+              "properties": {
+                "lhs": {
+                  "type": "string"
+                },
+                "relation_type": {
+                  "enum": [
+                    "artin",
+                    "commutation",
+                    "involution"
+                  ],
+                  "type": "string"
+                },
+                "rhs": {
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "group_id",
+          "generators",
+          "relations"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "kind": {
+      "const": "CoxeterRegistry",
+      "type": "string"
+    },
+    "registry_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "kind",
+    "registry_id",
+    "coxeter_groups",
+    "artin_relations"
+  ],
+  "title": "CoxeterRegistry",
+  "type": "object"
+}

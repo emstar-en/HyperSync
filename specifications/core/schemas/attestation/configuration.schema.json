@@ -1,0 +1,91 @@
+{
+  "$id": "https://hypersync.ai/schemas/attestation/configuration.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "Applied attestation configuration",
+  "properties": {
+    "attestation_frequency": {
+      "properties": {
+        "interval_seconds": {
+          "type": "integer"
+        },
+        "on_events": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "config_id": {
+      "type": "string"
+    },
+    "created_at": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "created_by": {
+      "type": "string"
+    },
+    "metadata": {
+      "type": "object"
+    },
+    "parameters": {
+      "type": "object"
+    },
+    "protocol_id": {
+      "type": "string"
+    },
+    "receipts": {
+      "items": {
+        "properties": {
+          "proof": {
+            "type": "object"
+          },
+          "receipt_id": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "verified": {
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "status": {
+      "type": "string"
+    },
+    "target_id": {
+      "type": "string"
+    },
+    "target_type": {
+      "enum": [
+        "stack",
+        "assembly",
+        "deployment",
+        "node"
+      ],
+      "type": "string"
+    },
+    "updated_at": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "verification_level": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "config_id",
+    "target_type",
+    "target_id",
+    "protocol_id",
+    "created_at"
+  ],
+  "title": "Attestation Configuration",
+  "type": "object"
+}

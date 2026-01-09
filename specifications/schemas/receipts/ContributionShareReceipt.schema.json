@@ -1,0 +1,35 @@
+{
+  "$schema": "ext://f1fed686329b",
+  "properties": {
+    "contributors": {
+      "items": {
+        "properties": {
+          "entity": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "share": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "entity",
+          "share"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "receipt_kind": {
+      "const": "ContributionShareReceipt"
+    }
+  },
+  "required": [
+    "receipt_kind",
+    "contributors"
+  ],
+  "title": "ContributionShareReceipt",
+  "type": "object"
+}

@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "id": "capsule.integration.iam_crypto",
+    "type": "vnes_capsule",
+    "version": "1.0.0",
+    "status": "ALPHA"
+  },
+  "encapsulation": {
+    "target_spec": "specifications/integration/iam_crypto_protocols.spec.json",
+    "isolation_level": "enclave",
+    "state_management": "secure_key_store"
+  },
+  "interfaces": {
+    "ingress": [
+      "auth_requests",
+      "signatures"
+    ],
+    "egress": [
+      "auth_tokens",
+      "verification_results"
+    ]
+  },
+  "vnes_config": {
+    "runtime": "rust_sgx",
+    "resources": {
+      "cpu": "medium",
+      "memory": "secure_enclave"
+    }
+  }
+}

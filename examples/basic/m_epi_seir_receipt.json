@@ -1,0 +1,14 @@
+{
+  "diagnostics": {
+    "Rt_median": 1.12,
+    "calib_poisson_deviance": 0.83
+  },
+  "inputs_commitment": "sha256:regions|mobility|cases|SEIR|dt=1|T=120",
+  "output_commitment": "sha256:trajectories|forecast",
+  "privacy": {
+    "receipt_kind": "PrivacyReceipt",
+    "suppressed_low_counts": true
+  },
+  "receipt_kind": "ReductionReceipt",
+  "solver_binding_id": "solver://epi/graph_diffusion@0.8.5"
+}

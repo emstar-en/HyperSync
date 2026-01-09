@@ -1,0 +1,176 @@
+{
+  "$id": "https://hypersync.ai/schemas/catalogue/model_entry.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "Complete catalogue entry for a model",
+  "properties": {
+    "added_date": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "basic_info": {
+      "properties": {
+        "format": {
+          "enum": [
+            "GGUF",
+            "SafeTensors",
+            "PyTorch",
+            "ONNX",
+            "TensorFlow",
+            "Pickle",
+            "CoreML",
+            "TensorRT",
+            "OpenVINO",
+            "Custom"
+          ],
+          "type": "string"
+        },
+        "hash": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        },
+        "size_bytes": {
+          "minimum": 0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "name",
+        "path",
+        "format",
+        "size_bytes"
+      ],
+      "type": "object"
+    },
+    "capabilities": {
+      "properties": {
+        "language_support": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "primary": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "specialization": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "compatibility": {
+      "properties": {
+        "api_type": {
+          "type": "string"
+        },
+        "conflicts_with": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "works_with": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "identity": {
+      "$ref": "model_identity.schema.json"
+    },
+    "nld_profile": {
+      "$ref": "nld_profile.schema.json"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "performance": {
+      "properties": {
+        "benchmark_scores": {
+          "type": "object"
+        },
+        "tokens_per_second": {
+          "type": [
+            "number",
+            "null"
+          ]
+        }
+      },
+      "type": "object"
+    },
+    "provenance": {
+      "$ref": "model_provenance.schema.json"
+    },
+    "requirements": {
+      "properties": {
+        "min_ram_gb": {
+          "type": "number"
+        },
+        "min_vram_gb": {
+          "type": "number"
+        },
+        "quantization": {
+          "type": "string"
+        },
+        "recommended_context": {
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
+    "tags": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "tuning_history": {
+      "$ref": "tuning_history.schema.json"
+    },
+    "updated_date": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "usage_stats": {
+      "properties": {
+        "avg_user_rating": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "last_used": {
+          "format": "date-time",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "times_used": {
+          "minimum": 0,
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    }
+  },
+  "required": [
+    "identity",
+    "basic_info",
+    "capabilities",
+    "requirements"
+  ],
+  "title": "Model Catalogue Entry",
+  "type": "object"
+}

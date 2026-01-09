@@ -1,0 +1,13 @@
+{
+  "mechanism_id": "simple_bft",
+  "parameters": {
+    "max_retries": 3,
+    "quorum_size": 3,
+    "timeout_ms": 5000,
+    "view_change_timeout_ms": 10000
+  },
+  "safety": {
+    "require_signatures": true,
+    "validate_all_messages": true
+  }
+}

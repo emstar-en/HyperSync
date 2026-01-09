@@ -1,0 +1,14 @@
+{
+  "diagnostics": {
+    "avg_sparsity": 0.87,
+    "max_coherence": 0.88,
+    "recon_rmse": 0.021
+  },
+  "inputs_commitment": "sha256:X|lambda=0.05|n_atoms=256|plan",
+  "iters": {
+    "outer": 37
+  },
+  "output_commitment": "sha256:D|Z",
+  "receipt_kind": "ReductionReceipt",
+  "solver_binding_id": "solver://ml/dict/admm@0.9.5"
+}

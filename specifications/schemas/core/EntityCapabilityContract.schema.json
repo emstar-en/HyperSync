@@ -1,0 +1,62 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "properties": {
+    "audience": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "capabilities": {
+      "items": {
+        "properties": {
+          "conditions": {
+            "type": "object"
+          },
+          "name": {
+            "type": "string"
+          },
+          "scope": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "constraints": {
+      "type": "object"
+    },
+    "entityId": {
+      "type": "string"
+    },
+    "issuedAt": {
+      "type": "string"
+    },
+    "issuer": {
+      "type": "string"
+    },
+    "signatures": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "ttl": {
+      "type": "string"
+    },
+    "type": {
+      "const": "core.ecc.contract"
+    }
+  },
+  "required": [
+    "type",
+    "entityId",
+    "capabilities"
+  ],
+  "title": "EntityCapabilityContract",
+  "type": "object"
+}

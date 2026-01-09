@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name: {{ include "hypersync-orchestrator.fullname" . }}
+ labels:
+ {{- include "hypersync-orchestrator.labels" . | nindent 4 }}
+spec:
+ replicas: {{ .Values.replicaCount }}
+ selector:
+ matchLabels:
+ {{- include "hypersync-orchestrator.selectorLabels" . | nindent 6 }}
+ template:
+ metadata:
+ labels:
+ {{- include "hypersync-orchestrator.selectorLabels" . | nindent 8 }}
+ spec:
+ containers:
+ - name: orchestrator
+ image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+ imagePullPolicy: {{ .Values.image.pullPolicy }}
+ ports:
+ - name: http
+ containerPort: 8080
+ protocol: TCP
+ - name: metrics
+ containerPort: 9090
+ protocol: TCP
+ env:
+ - name: HYPERSYNC_DIMENSION
+ value: "4"
+ - name: HYPERSYNC_MODEL
+ value: "hyperboloid"
+ - name: CASSANDRA_HOSTS
+ value: "{{ include "hypersync-orchestrator.fullname" . }}-cassandra"
+ resources:
+ {{- toYaml .Values.resources | nindent 12 }}
+ volumeMounts:
+ - name: data
+ mountPath: /data
+ volumes:
+ - name: data
+ {{- if .Values.persistence.enabled }}
+ persistentVolumeClaim:
+ claimName: {{ include "hypersync-orchestrator.fullname" . }}-data
+ {{- else }}
+ emptyDir: {}
+ {{- end }}

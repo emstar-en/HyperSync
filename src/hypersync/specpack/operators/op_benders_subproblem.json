@@ -1,0 +1,6 @@
+{
+  "deterministic": true,
+  "id": "op://benders_subproblem.0",
+  "kind": "decomposition",
+  "notes": "Subproblem solve with caching by scenario hash"
+}

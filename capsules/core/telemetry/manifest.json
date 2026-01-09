@@ -1,0 +1,35 @@
+{
+  "id": "hypersync.core.telemetry",
+  "version": "1.0.0",
+  "type": "capsule",
+  "description": "Enhanced telemetry manager for HyperSync, supporting multi-backend export, receipt generation, and metrics aggregation.",
+  "capabilities": [
+    "telemetry.events.emit",
+    "telemetry.metrics.record",
+    "telemetry.export.prometheus",
+    "telemetry.export.json",
+    "telemetry.backend.stdout",
+    "telemetry.backend.prometheus",
+    "telemetry.backend.grafana",
+    "telemetry.backend.datadog",
+    "telemetry.backend.cloudwatch"
+  ],
+  "dependencies": [
+    "hypersync.core.kernel"
+  ],
+  "configuration": {
+    "backends": {
+      "type": "list",
+      "default": ["stdout"],
+      "description": "List of enabled telemetry backends."
+    },
+    "metrics_prefix": {
+      "type": "string",
+      "default": "hypersync_",
+      "description": "Prefix for all exported metrics."
+    }
+  },
+  "files": [
+    "telemetry_manager.py"
+  ]
+}

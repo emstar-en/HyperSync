@@ -1,0 +1,42 @@
+{
+  "capsule_type": "diagnostic",
+  "name": "hypersync.diagnostics.fault_detection",
+  "version": "1.0.1",
+  "description": "Core fault definitions aligned with determinism tiers",
+  "faults": {
+    "D0_VIOLATION": {
+      "severity": "CRITICAL",
+      "description": "Bit-exact reproducibility failure in D0 domain",
+      "detection_mechanism": "checksum_mismatch",
+      "logic_definition": "capsules/diagnostics/diagnostics_logic.md#1-d0-violation-determinism",
+      "recovery_action": "halt_and_rollback"
+    },
+    "D1_VIOLATION": {
+      "severity": "HIGH",
+      "description": "Statistical deviation exceeding epsilon in D1 domain",
+      "detection_mechanism": "epsilon_check",
+      "parameters": {
+        "epsilon": 1e-10
+      },
+      "logic_definition": "capsules/diagnostics/diagnostics_logic.md#2-d1-violation-statistical-consistency",
+      "recovery_action": "escalate_to_D0_retry"
+    },
+    "LIVENESS_FAILURE": {
+      "severity": "HIGH",
+      "description": "Node failed to respond within heartbeat interval",
+      "detection_mechanism": "heartbeat_timeout",
+      "logic_definition": "capsules/diagnostics/diagnostics_logic.md#3-liveness-failure",
+      "recovery_action": "peer_reselection"
+    },
+    "INTEGRITY_FAILURE": {
+      "severity": "CRITICAL",
+      "description": "Cryptographic signature or receipt validation failed",
+      "detection_mechanism": "signature_verification",
+      "recovery_action": "quarantine_node"
+    }
+  },
+  "integration": {
+    "determinism_tiers": "specifications/core/determinism_tiers.json",
+    "reporting_channel": "op://diagnostics/fault_report"
+  }
+}

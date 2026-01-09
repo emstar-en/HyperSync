@@ -1,0 +1,25 @@
+{
+  "clinical": {
+    "dicom_digest": "sha256:...",
+    "modality": "CT+MR",
+    "receipt_kind": "ClinicalTransformReceipt"
+  },
+  "diagnostics": {
+    "jac_det_max": 1.58,
+    "jac_det_min": 0.64,
+    "ncc_final": 0.921
+  },
+  "inputs_commitment": "sha256:CT|MR_T1|atlas_v2|pyramid=[4,2,1]",
+  "output_commitment": "sha256:warp|mask",
+  "privacy": {
+    "phi_scrubbed": true,
+    "receipt_kind": "PrivacyReceipt"
+  },
+  "receipt_kind": "ReductionReceipt",
+  "segmentation": {
+    "dice_vs_atlas": 0.89,
+    "labels": 12,
+    "tv_gap": 8.3e-08
+  },
+  "solver_binding_id": "solver://medreg/svf_lddmm@1.2.0"
+}

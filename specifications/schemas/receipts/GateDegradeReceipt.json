@@ -1,0 +1,20 @@
+{
+  "$id": "schema://receipts/GateDegradeReceipt.json",
+  "$schema": "ext://fcbd7642ed3f",
+  "properties": {
+    "degradations": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "receipt_kind": {
+      "const": "GateDegradeReceipt"
+    }
+  },
+  "required": [
+    "receipt_kind",
+    "degradations"
+  ],
+  "type": "object"
+}

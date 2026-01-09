@@ -1,0 +1,42 @@
+{
+  "description": "A simple pipeline for testing",
+  "gold_sample_config": {
+    "collection_triggers": [
+      "on_success"
+    ],
+    "enabled": true,
+    "validation_threshold": 0.95
+  },
+  "name": "Simple Test Pipeline",
+  "pipeline_id": "simple-test-pipeline",
+  "stages": [
+    {
+      "name": "build",
+      "steps": [
+        {
+          "action": "command:echo 'Building...'",
+          "name": "echo_test",
+          "params": {}
+        }
+      ],
+      "type": "build"
+    },
+    {
+      "name": "test",
+      "steps": [
+        {
+          "action": "command:echo 'Testing...'",
+          "gold_sample_capture": true,
+          "name": "run_tests",
+          "params": {}
+        }
+      ],
+      "type": "test"
+    }
+  ],
+  "triggers": [
+    {
+      "type": "manual"
+    }
+  ]
+}

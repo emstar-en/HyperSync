@@ -1,0 +1,9 @@
+{
+  "module": "ico-connect",
+  "schemas": [
+    "schemas/ico-connect/connect.schema.json"
+  ],
+  "vectors": [
+    "vectors/ico-connect/interop.tier1.json"
+  ]
+}

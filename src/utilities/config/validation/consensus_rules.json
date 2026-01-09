@@ -1,0 +1,77 @@
+{
+  "description": "Validation rules for consensus operations",
+  "rule_set_id": "consensus_validation_rules",
+  "rules": [
+    {
+      "action": "reject",
+      "category": "security",
+      "conditions": [
+        {
+          "field": "byzantine_nodes",
+          "operator": "lt",
+          "tolerance": 0.0,
+          "value": "total_nodes / 3"
+        }
+      ],
+      "description": "Ensure f < n/3 for Byzantine consensus",
+      "enabled": true,
+      "error_message": "Byzantine nodes {byzantine_nodes} exceeds threshold (n/3 = {threshold})",
+      "rule_id": "byzantine_tolerance",
+      "rule_name": "Byzantine Fault Tolerance Check",
+      "severity": "error"
+    },
+    {
+      "action": "reject",
+      "category": "geometric",
+      "conditions": [
+        {
+          "field": "in_convex_hull",
+          "operator": "eq",
+          "tolerance": 1e-06,
+          "value": true
+        }
+      ],
+      "description": "Verify consensus result is within convex hull of honest proposals",
+      "enabled": true,
+      "error_message": "Consensus result outside convex hull of honest proposals",
+      "rule_id": "consensus_validity",
+      "rule_name": "Consensus Validity Check",
+      "severity": "error"
+    },
+    {
+      "action": "warn",
+      "category": "geometric",
+      "conditions": [
+        {
+          "field": "is_local_minimum",
+          "operator": "eq",
+          "tolerance": 1e-06,
+          "value": true
+        }
+      ],
+      "description": "Verify barycenter minimizes Fr\u00e9chet variance",
+      "enabled": true,
+      "rule_id": "barycenter_optimality",
+      "rule_name": "Barycenter Optimality Check",
+      "severity": "warning"
+    },
+    {
+      "action": "reject",
+      "category": "numerical",
+      "conditions": [
+        {
+          "field": "max_distance",
+          "operator": "lt",
+          "tolerance": 0.0,
+          "value": 1e-06
+        }
+      ],
+      "description": "Ensure distributed states converge",
+      "enabled": true,
+      "error_message": "Synchronization failed: max distance {max_distance} exceeds tolerance",
+      "rule_id": "synchronization_convergence",
+      "rule_name": "Synchronization Convergence Check",
+      "severity": "error"
+    }
+  ]
+}

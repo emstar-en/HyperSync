@@ -1,0 +1,29 @@
+{
+  "capsule": "hypersync.geometry.foundations",
+  "version": "1.0.0",
+  "capabilities": [
+    "metric_space_definition",
+    "manifold_topology",
+    "affine_connections"
+  ],
+  "components": {
+    "MetricSpace": {
+      "description": "Abstract base class for all metric spaces.",
+      "methods": [
+        "distance",
+        "is_compact"
+      ]
+    },
+    "Manifold": {
+      "description": "Topological manifold with local Euclidean structure.",
+      "properties": [
+        "dimension",
+        "atlas"
+      ]
+    }
+  },
+  "configuration": {
+    "default_dimension": 3,
+    "precision": "float64"
+  }
+}

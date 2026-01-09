@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "id": "capsule.geometry.advanced_consensus",
+    "type": "vnes_capsule",
+    "version": "1.0.0",
+    "status": "ALPHA"
+  },
+  "encapsulation": {
+    "target_spec": "specifications/geometry/advanced_consensus.spec.json",
+    "isolation_level": "process",
+    "state_management": "geometric_state_db"
+  },
+  "interfaces": {
+    "ingress": [
+      "consensus_proposals",
+      "votes"
+    ],
+    "egress": [
+      "committed_blocks",
+      "view_changes"
+    ]
+  },
+  "vnes_config": {
+    "runtime": "rust_optimized",
+    "resources": {
+      "cpu": "high",
+      "memory": "high"
+    }
+  }
+}

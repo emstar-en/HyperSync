@@ -1,0 +1,95 @@
+{
+  "$id": "symplectic_core.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "canonical_coordinates": {
+      "properties": {
+        "p": {
+          "items": {
+            "type": "number"
+          },
+          "type": "array"
+        },
+        "q": {
+          "items": {
+            "type": "number"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "q",
+        "p"
+      ],
+      "type": "object"
+    },
+    "hamiltonian": {
+      "properties": {
+        "conserved": {
+          "description": "Energy conservation along Hamiltonian flow",
+          "type": "boolean"
+        },
+        "expr": {
+          "description": "Symbolic or executable form of H(q,p)",
+          "type": "string"
+        }
+      },
+      "required": [
+        "expr"
+      ],
+      "type": "object"
+    },
+    "manifold": {
+      "description": "Semantic phase space manifold (e.g., R^{2n}, Sp(2n))",
+      "type": "string"
+    },
+    "omega": {
+      "description": "Symplectic 2-form \u03c9",
+      "properties": {
+        "closed": {
+          "const": true,
+          "description": "d\u03c9 = 0",
+          "type": "boolean"
+        },
+        "non_degenerate": {
+          "const": true,
+          "description": "\u03c9^n \u2260 0",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "closed",
+        "non_degenerate"
+      ],
+      "type": "object"
+    },
+    "poisson": {
+      "properties": {
+        "bracket": {
+          "description": "Definition of {f,g}",
+          "type": "string"
+        },
+        "jacobi_identity": {
+          "const": true,
+          "type": "boolean"
+        },
+        "leibniz_rule": {
+          "const": true,
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "bracket",
+        "jacobi_identity",
+        "leibniz_rule"
+      ],
+      "type": "object"
+    }
+  },
+  "required": [
+    "manifold",
+    "omega"
+  ],
+  "title": "Symplectic Core",
+  "type": "object"
+}

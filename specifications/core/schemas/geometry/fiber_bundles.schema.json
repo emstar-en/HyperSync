@@ -1,0 +1,94 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "migration_policy": "replace-old-techniques",
+  "properties": {
+    "bundle_types": {
+      "items": {
+        "enum": [
+          "vector_bundle",
+          "principal_bundle",
+          "associated_bundle"
+        ],
+        "migration_policy": "replace-old-techniques",
+        "release_status": "pre-alpha",
+        "stability": "experimental",
+        "unreleased": true
+      },
+      "migration_policy": "replace-old-techniques",
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "type": "array",
+      "unreleased": true
+    },
+    "migration_policy": "replace-old-techniques",
+    "ops": {
+      "migration_policy": "replace-old-techniques",
+      "properties": {
+        "characteristic_classes": {
+          "items": {
+            "enum": [
+              "chern",
+              "pontryagin",
+              "euler"
+            ],
+            "migration_policy": "replace-old-techniques",
+            "release_status": "pre-alpha",
+            "stability": "experimental",
+            "unreleased": true
+          },
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "array",
+          "unreleased": true
+        },
+        "connection_form": {
+          "enum": [
+            "bundle.connection.1form.v1"
+          ],
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "string",
+          "unreleased": true
+        },
+        "curvature_form": {
+          "enum": [
+            "bundle.curvature.2form.v1"
+          ],
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "string",
+          "unreleased": true
+        },
+        "holonomy": {
+          "enum": [
+            "bundle.holonomy.loop_transport.v1"
+          ],
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "string",
+          "unreleased": true
+        },
+        "migration_policy": "replace-old-techniques",
+        "release_status": "pre-alpha",
+        "stability": "experimental",
+        "unreleased": true
+      },
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "type": "object",
+      "unreleased": true
+    },
+    "release_status": "pre-alpha",
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "release_status": "pre-alpha",
+  "stability": "experimental",
+  "title": "FiberBundlesAPI",
+  "type": "object",
+  "unreleased": true
+}

@@ -1,0 +1,38 @@
+version: 1
+description: HyperSync Initialization Assistant Tool Registry
+tools:
+ - name: ico.ld.create
+ description: Create a Lorentzian Domain (workspace)
+ schema: iam/tools/cards/ico.ld.create.json
+ entrypoint: "hypersync.assistant.tools_bridge:create_ld"
+ category: domain_management
+
+ - name: ico.node.register
+ description: Register a node (model/agent/service) in an LD
+ schema: iam/tools/cards/ico.node.register.json
+ entrypoint: "hypersync.assistant.tools_bridge:register_node"
+ category: node_management
+
+ - name: ico.route.compute
+ description: Compute a route between two nodes
+ schema: iam/tools/cards/ico.route.compute.json
+ entrypoint: "hypersync.assistant.tools_bridge:compute_route"
+ category: routing
+
+ - name: catalog.models
+ description: Catalog model descriptors from .hypersync/models/
+ schema: iam/tools/cards/catalog.models.json
+ entrypoint: "hypersync.assistant.tools_bridge:catalog_models"
+ category: discovery
+
+ - name: agent.compose
+ description: Compose a network operator agent from multiple models
+ schema: iam/tools/cards/agent.compose.json
+ entrypoint: "hypersync.assistant.tools_bridge:compose_agent"
+ category: composition
+
+ - name: status.summary
+ description: Get a summary of the current HyperSync environment
+ schema: iam/tools/cards/status.summary.json
+ entrypoint: "hypersync.assistant.tools_bridge:status_summary"
+ category: monitoring

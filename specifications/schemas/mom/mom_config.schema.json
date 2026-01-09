@@ -1,0 +1,95 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "MOM System Configuration",
+  "description": "Global configuration for Machine Orchestration Management v2",
+  "type": "object",
+  "properties": {
+    "system_identity": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "type": "string",
+          "default": "2.0.0-ALPHA"
+        },
+        "paradigm": {
+          "type": "string",
+          "default": "autonomous_geometric_distributed_orchestration"
+        }
+      }
+    },
+    "orchestration_mode": {
+      "type": "string",
+      "enum": [
+        "centralized",
+        "federated",
+        "fully_distributed",
+        "geometric_mesh"
+      ],
+      "default": "geometric_mesh"
+    },
+    "optimization_goals": {
+      "type": "object",
+      "properties": {
+        "performance_weight": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "cost_weight": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "reliability_weight": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "sustainability_weight": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      },
+      "description": "Weights must sum to 1.0"
+    },
+    "geometric_settings": {
+      "type": "object",
+      "properties": {
+        "curvature_k": {
+          "type": "number",
+          "default": -1.0
+        },
+        "embedding_dimension": {
+          "type": "integer",
+          "default": 5
+        },
+        "routing_algorithm": {
+          "type": "string",
+          "enum": [
+            "greedy_forwarding",
+            "multipath_hyperbolic",
+            "gradient_flow"
+          ]
+        }
+      }
+    },
+    "stunir_integration": {
+      "type": "object",
+      "properties": {
+        "receipt_generation": {
+          "type": "boolean",
+          "default": true
+        },
+        "verification_level": {
+          "type": "string",
+          "enum": [
+            "none",
+            "sample",
+            "full_audit"
+          ]
+        }
+      }
+    }
+  }
+}

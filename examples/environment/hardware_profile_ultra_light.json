@@ -1,0 +1,34 @@
+{
+  "class": "ultra_light",
+  "constraints": {
+    "max_model_size_gb": 2,
+    "no_large_models": true,
+    "power_saving_mode": true
+  },
+  "id": "hw_ultra_light_2c_4g_no_gpu",
+  "metadata": {
+    "example": true,
+    "note": "Example hardware profile for first-run bootstrap on constrained devices."
+  },
+  "resources": {
+    "accelerator": {
+      "kind": "none",
+      "memory_gb": 0,
+      "present": false
+    },
+    "cpu": {
+      "approx_speed_class": "low",
+      "logical_cores": 2
+    },
+    "memory_gb": 4,
+    "network": {
+      "connectivity": "intermittent",
+      "latency_class": "high"
+    },
+    "storage": {
+      "size_gb": 128,
+      "speed_class": "medium"
+    }
+  },
+  "summary": "Ultra-light laptop: 2 logical cores, 4GB RAM, no discrete GPU, intermittent connectivity."
+}

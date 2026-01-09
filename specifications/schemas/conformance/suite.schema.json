@@ -1,0 +1,23 @@
+{
+  "$id": "schema://conformance/suite.schema.json",
+  "$schema": "ext://fcbd7642ed3f",
+  "properties": {
+    "description": {
+      "type": "string"
+    },
+    "id": {
+      "type": "string"
+    },
+    "vectors": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "id",
+    "vectors"
+  ],
+  "type": "object"
+}

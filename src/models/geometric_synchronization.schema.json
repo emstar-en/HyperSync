@@ -1,0 +1,63 @@
+{
+  "$id": "geometric_synchronization.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "Schema for synchronizing states across geometric manifolds",
+  "properties": {
+    "convergence_criteria": {
+      "properties": {
+        "max_distance": {
+          "type": "number"
+        },
+        "max_iterations": {
+          "type": "integer"
+        },
+        "timeout_seconds": {
+          "type": "number"
+        }
+      },
+      "type": "object"
+    },
+    "node_states": {
+      "description": "Current states of all nodes",
+      "items": {
+        "properties": {
+          "kappa": {
+            "type": "number"
+          },
+          "node_id": {
+            "type": "string"
+          },
+          "state": {
+            "type": "object"
+          },
+          "timestamp": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "sync_method": {
+      "default": "consensus_pull",
+      "enum": [
+        "consensus_pull",
+        "leader_push",
+        "peer_to_peer",
+        "hierarchical"
+      ],
+      "type": "string"
+    },
+    "target_kappa": {
+      "description": "Target curvature for synchronization",
+      "type": "number"
+    }
+  },
+  "required": [
+    "node_states",
+    "target_kappa"
+  ],
+  "title": "Geometric Synchronization Schema",
+  "type": "object"
+}

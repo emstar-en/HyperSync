@@ -1,0 +1,58 @@
+{
+  "$id": "https://hypersync.ai/schemas/providers/external_model.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "Reference to an external cloud model",
+  "properties": {
+    "capabilities": {
+      "type": "array"
+    },
+    "catalogue_entry": {
+      "type": "string"
+    },
+    "created_at": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "default_config": {
+      "type": "object"
+    },
+    "display_name": {
+      "type": "string"
+    },
+    "external_model_id": {
+      "type": "string"
+    },
+    "metadata": {
+      "type": "object"
+    },
+    "model_id": {
+      "type": "string"
+    },
+    "model_type": {
+      "type": "string"
+    },
+    "parameters": {
+      "type": "object"
+    },
+    "pricing": {
+      "type": "object"
+    },
+    "provider_id": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "array"
+    },
+    "updated_at": {
+      "format": "date-time",
+      "type": "string"
+    }
+  },
+  "required": [
+    "model_id",
+    "provider_id",
+    "external_model_id"
+  ],
+  "title": "External Model Reference",
+  "type": "object"
+}

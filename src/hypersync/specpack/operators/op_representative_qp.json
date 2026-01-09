@@ -1,0 +1,6 @@
+{
+  "deterministic": true,
+  "id": "op://representative_qp.0",
+  "kind": "canonical",
+  "notes": "QP exemplar selection under constraints"
+}

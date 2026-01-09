@@ -1,0 +1,30 @@
+{
+  "hyperparams": {
+    "cov_mode": "sensor_cal",
+    "gate_prob": 0.997
+  },
+  "plan_kind": "ReductionPlan",
+  "postprocess": [
+    {
+      "jpda": true,
+      "solver_binding_id": "solver://fusion/assoc_lp"
+    },
+    {
+      "delta": 1.2,
+      "max_iters": 150,
+      "rho": "huber",
+      "sigma": 0.8,
+      "solver_binding_id": "solver://fusion/var_filter_pdhg",
+      "tau": 0.8
+    },
+    {
+      "birth_thr": 0.92,
+      "death_p95": 10,
+      "solver_binding_id": "solver://fusion/track_mgmt"
+    }
+  ],
+  "precision": {
+    "dtype": "fp64"
+  },
+  "solver_binding_id": "solver://fusion/gating_chi2"
+}

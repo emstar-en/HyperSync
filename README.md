@@ -48,3 +48,6 @@ At a high level, HyperSync:
 1.  **Spec → IR:** STUNIR parses this Spec Pack and normalizes it.
 2.  **IR → Code:** STUNIR generates the implementation code (Python, Rust, etc.).
 3.  **Verification:** STUNIR produces a receipt proving the code matches the spec.
+
+## Distribution & Licensing
+HyperSync follows a tiered licensing model. See `00_meta/distribution_model.md` for details.

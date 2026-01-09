@@ -1,0 +1,101 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "Panel definitions, constraints, and default data channels",
+  "properties": {
+    "config": {
+      "description": "Panel-specific configuration",
+      "type": "object"
+    },
+    "constraints": {
+      "properties": {
+        "max_height": {
+          "type": "integer"
+        },
+        "max_width": {
+          "type": "integer"
+        },
+        "min_height": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "min_width": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "preferred_height": {
+          "type": "integer"
+        },
+        "preferred_width": {
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
+    "data_channels": {
+      "description": "Data channels to subscribe to",
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "id": {
+      "description": "Unique panel identifier",
+      "type": "string"
+    },
+    "position": {
+      "properties": {
+        "col": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "height": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "row": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "width": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "z_order": {
+          "default": 0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "row",
+        "col",
+        "height",
+        "width"
+      ],
+      "type": "object"
+    },
+    "priority": {
+      "default": 0,
+      "description": "Panel priority (higher = more important)",
+      "type": "integer"
+    },
+    "title": {
+      "description": "Panel title",
+      "type": "string"
+    },
+    "type": {
+      "description": "Panel type",
+      "type": "string"
+    },
+    "visible": {
+      "default": true,
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "id",
+    "type",
+    "position"
+  ],
+  "title": "Panel Configuration",
+  "type": "object"
+}

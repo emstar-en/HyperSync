@@ -1,0 +1,14 @@
+{
+  "id": "hypersync.adv.security.crypto",
+  "version": "1.0.0",
+  "type": "capsule",
+  "description": "Advanced cryptographic primitives and security protocols.",
+  "capabilities": [
+    "zero_knowledge_proofs",
+    "homomorphic_encryption",
+    "secure_multiparty_computation"
+  ],
+  "dependencies": [
+    "hypersync.core.kernel"
+  ]
+}

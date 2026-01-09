@@ -1,0 +1,145 @@
+{
+  "version": "1.0.1",
+  "description": "System KPIs with targets, guarantees, and measurement methods",
+  "performance": {
+    "latency_p50_ms": {
+      "target": 10,
+      "current": 8.5,
+      "guarantee": 15,
+      "measurement_method": "histogram_percentile",
+      "measurement_interval_seconds": 60
+    },
+    "latency_p99_ms": {
+      "target": 50,
+      "current": 45,
+      "guarantee": 100,
+      "measurement_method": "histogram_percentile",
+      "measurement_interval_seconds": 60
+    },
+    "throughput_ops_per_sec": {
+      "target": 10000,
+      "current": 12500,
+      "guarantee": 5000,
+      "measurement_method": "counter_rate",
+      "measurement_interval_seconds": 60
+    }
+  },
+  "reliability": {
+    "availability_percent": {
+      "target": 99.99,
+      "current": 99.995,
+      "guarantee": 99.9,
+      "measurement_method": "uptime_ratio",
+      "measurement_interval_seconds": 86400
+    },
+    "error_rate_percent": {
+      "target": 0.01,
+      "current": 0.005,
+      "guarantee": 0.1,
+      "measurement_method": "error_count_ratio",
+      "measurement_interval_seconds": 300
+    },
+    "mtbf_hours": {
+      "target": 8760,
+      "current": 10000,
+      "guarantee": 4380,
+      "measurement_method": "time_between_failures",
+      "measurement_interval_seconds": 2592000
+    }
+  },
+  "security": {
+    "auth_success_rate_percent": {
+      "target": 99.9,
+      "current": 99.95,
+      "guarantee": 99.0,
+      "measurement_method": "success_ratio",
+      "measurement_interval_seconds": 300
+    },
+    "encryption_coverage_percent": {
+      "target": 100,
+      "current": 100,
+      "guarantee": 100,
+      "measurement_method": "encrypted_data_ratio",
+      "measurement_interval_seconds": 3600
+    },
+    "vulnerability_remediation_days": {
+      "target": 7,
+      "current": 5,
+      "guarantee": 30,
+      "measurement_method": "time_to_patch",
+      "measurement_interval_seconds": 86400
+    }
+  },
+  "efficiency": {
+    "cpu_utilization_percent": {
+      "target": 70,
+      "current": 65,
+      "guarantee": 90,
+      "measurement_method": "average_utilization",
+      "measurement_interval_seconds": 60
+    },
+    "memory_utilization_percent": {
+      "target": 75,
+      "current": 68,
+      "guarantee": 90,
+      "measurement_method": "average_utilization",
+      "measurement_interval_seconds": 60
+    },
+    "cost_per_operation_usd": {
+      "target": 0.0001,
+      "current": 8e-05,
+      "guarantee": 0.001,
+      "measurement_method": "total_cost_divided_by_ops",
+      "measurement_interval_seconds": 86400
+    }
+  },
+  "alerting": {
+    "breach_action": "page_oncall",
+    "warning_threshold_percent": 80,
+    "critical_threshold_percent": 95
+  },
+  "mathematical_foundations": {
+    "percentile_estimation": {
+      "algorithm": "T-Digest or HDR Histogram",
+      "error_bound": "Relative error < 1% for P99",
+      "formula": "P_q = value v such that count(x <= v) / total_count = q"
+    },
+    "availability_calculus": {
+      "formula": "A = (Total_Time - Downtime) / Total_Time",
+      "downtime_definition": "Interval where error_rate > threshold or latency > timeout"
+    },
+    "statistical_significance": {
+      "sample_size_rule": "Minimum N samples required for 95% confidence interval width < 5% of target"
+    }
+  },
+  "fault_detection": {
+    "guarantee_breach": {
+      "logic": "If current_value violates guarantee (e.g. > max or < min) for > 1 interval",
+      "action": "Trigger critical alert and automated remediation (e.g. scaling)"
+    },
+    "trend_degradation": {
+      "logic": "Linear regression slope m > threshold over last 10 intervals",
+      "action": "Trigger warning alert"
+    },
+    "metric_staleness": {
+      "logic": "Time since last update > 2 * measurement_interval_seconds",
+      "action": "Flag monitoring system health"
+    }
+  },
+  "detailed_mechanisms": {
+    "data_collection": {
+      "push_model": "Agents push metrics to aggregator every 10s",
+      "pull_model": "Scrapers pull from /metrics endpoint every 15s"
+    },
+    "aggregation": {
+      "spatial": "Sum/Avg across all nodes in cluster",
+      "temporal": "Rollup to 1m, 5m, 1h buckets"
+    },
+    "storage": {
+      "hot_tier": "In-memory TSDB (24h retention)",
+      "cold_tier": "Object storage (1 year retention)"
+    }
+  },
+  "spec_version": "0.0.2",
+  "release_type": "PROTOTYPE"
+}

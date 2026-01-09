@@ -1,0 +1,6 @@
+{
+  "deterministic": true,
+  "id": "op://sn_sweep.0",
+  "kind": "transport",
+  "notes": "Discrete ordinates sweep with fixed quadrature"
+}

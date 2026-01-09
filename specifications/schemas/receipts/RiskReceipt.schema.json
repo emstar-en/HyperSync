@@ -1,0 +1,43 @@
+{
+  "$schema": "ext://f1fed686329b",
+  "properties": {
+    "alpha": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "constraint_slacks": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "cvar": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "dro": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "receipt_kind": {
+      "const": "RiskReceipt"
+    },
+    "var": {
+      "type": [
+        "number",
+        "null"
+      ]
+    }
+  },
+  "required": [
+    "receipt_kind"
+  ],
+  "title": "RiskReceipt",
+  "type": "object"
+}

@@ -1,0 +1,130 @@
+{
+  "$id": "https://hypersync.ai/schemas/math/nbg_metatype.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "NBG set/class distinction for proper-class-scale objects",
+  "properties": {
+    "definition": {
+      "oneOf": [
+        {
+          "properties": {
+            "cardinality": {
+              "type": "integer"
+            },
+            "elements": {
+              "description": "Materialized runtime elements",
+              "type": "array"
+            },
+            "provenance": {
+              "type": "string"
+            },
+            "type": {
+              "const": "set"
+            }
+          },
+          "required": [
+            "type",
+            "elements"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "predicate": {
+              "description": "Defining predicate (spec-level only)",
+              "type": "string"
+            },
+            "representative_subset": {
+              "description": "Finite representative subset for runtime",
+              "type": "array"
+            },
+            "type": {
+              "const": "class"
+            },
+            "universe": {
+              "enum": [
+                "Surreal",
+                "Ordinal",
+                "CurvatureStable",
+                "GeometryOps"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "type",
+            "universe",
+            "predicate"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "note": {
+              "description": "Cannot be materialized; spec-level only",
+              "type": "string"
+            },
+            "type": {
+              "const": "proper_class"
+            },
+            "universe": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "type",
+            "universe"
+          ],
+          "type": "object"
+        }
+      ],
+      "type": "object"
+    },
+    "kind": {
+      "const": "NBGMetatype",
+      "type": "string"
+    },
+    "metatype": {
+      "description": "NBG type: set (materializable), class (spec-level), proper_class (universe-scale)",
+      "enum": [
+        "set",
+        "class",
+        "proper_class"
+      ],
+      "type": "string"
+    },
+    "runtime_policy": {
+      "properties": {
+        "materialization": {
+          "description": "How to handle at runtime",
+          "enum": [
+            "full",
+            "representative_subset",
+            "forbidden"
+          ],
+          "type": "string"
+        },
+        "max_cardinality": {
+          "description": "Maximum elements if materialized",
+          "type": "integer"
+        },
+        "selection_method": {
+          "description": "How to select representative subset",
+          "enum": [
+            "deterministic",
+            "global_choice",
+            "policy_guided"
+          ],
+          "type": "string"
+        }
+      },
+      "type": "object"
+    }
+  },
+  "required": [
+    "kind",
+    "metatype",
+    "definition"
+  ],
+  "title": "NBGMetatype",
+  "type": "object"
+}

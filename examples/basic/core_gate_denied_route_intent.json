@@ -1,0 +1,9 @@
+{
+  "graph_ref": "artifact://geo/graph_small.parquet",
+  "intent_kind": "ReductionIntent",
+  "metric_ref": "artifact://geo/metrics/exposure_small.parquet",
+  "profile": "CORE",
+  "source": "n1",
+  "target": "n2",
+  "task": "route_planning_robust"
+}

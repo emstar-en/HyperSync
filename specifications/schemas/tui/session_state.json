@@ -1,0 +1,123 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "Canonical TUI session payload",
+  "properties": {
+    "capabilities": {
+      "properties": {
+        "color_support": {
+          "enum": [
+            "NONE",
+            "BASIC_8",
+            "EXTENDED_256",
+            "TRUE_COLOR"
+          ],
+          "type": "string"
+        },
+        "cols": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "features": {
+          "type": "object"
+        },
+        "mouse_support": {
+          "type": "boolean"
+        },
+        "rows": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "term": {
+          "type": "string"
+        },
+        "tier": {
+          "enum": [
+            "MICRO",
+            "SMALL",
+            "STANDARD",
+            "LARGE",
+            "ULTRA"
+          ],
+          "type": "string"
+        },
+        "unicode_support": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "term",
+        "rows",
+        "cols",
+        "tier"
+      ],
+      "type": "object"
+    },
+    "created_at": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "last_activity": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "layout": {
+      "properties": {
+        "panels": {
+          "items": {
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "position": {
+                "properties": {
+                  "col": {
+                    "type": "integer"
+                  },
+                  "height": {
+                    "type": "integer"
+                  },
+                  "row": {
+                    "type": "integer"
+                  },
+                  "width": {
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
+              },
+              "type": {
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "template": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "operator_id": {
+      "description": "Operator identifier",
+      "type": "string"
+    },
+    "preferences": {
+      "description": "Operator preferences",
+      "type": "object"
+    },
+    "session_id": {
+      "description": "Unique session identifier",
+      "format": "uuid",
+      "type": "string"
+    }
+  },
+  "required": [
+    "session_id",
+    "operator_id",
+    "capabilities"
+  ],
+  "title": "TUI Session State",
+  "type": "object"
+}

@@ -1,0 +1,59 @@
+{
+  "description": "Validation rules for transport operations",
+  "rule_set_id": "transport_validation_rules",
+  "rules": [
+    {
+      "action": "reject",
+      "category": "geometric",
+      "conditions": [
+        {
+          "field": "norm_change",
+          "operator": "lt",
+          "tolerance": 0.0,
+          "value": 1e-06
+        }
+      ],
+      "description": "Verify parallel transport preserves vector norm",
+      "enabled": true,
+      "error_message": "Parallel transport changed vector norm by {norm_change}",
+      "rule_id": "parallel_transport_norm_preservation",
+      "rule_name": "Parallel Transport Norm Preservation",
+      "severity": "error"
+    },
+    {
+      "action": "warn",
+      "category": "geometric",
+      "conditions": [
+        {
+          "field": "tangent_norm",
+          "operator": "lt",
+          "tolerance": 0.0,
+          "value": "injectivity_radius"
+        }
+      ],
+      "description": "Check exponential map is injective in injectivity radius",
+      "enabled": true,
+      "rule_id": "exponential_map_injectivity",
+      "rule_name": "Exponential Map Injectivity",
+      "severity": "warning"
+    },
+    {
+      "action": "reject",
+      "category": "geometric",
+      "conditions": [
+        {
+          "field": "geodesic_error",
+          "operator": "lt",
+          "tolerance": 0.0,
+          "value": 1e-06
+        }
+      ],
+      "description": "Verify curve satisfies geodesic equation",
+      "enabled": true,
+      "error_message": "Geodesic equation error {geodesic_error} exceeds tolerance",
+      "rule_id": "geodesic_equation_satisfaction",
+      "rule_name": "Geodesic Equation Satisfaction",
+      "severity": "error"
+    }
+  ]
+}

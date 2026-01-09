@@ -1,0 +1,9 @@
+{
+  "intent_kind": "ReductionIntent",
+  "op_ref": "op://redteam/probe",
+  "params": {
+    "probe": true
+  },
+  "profile": "CORE",
+  "task": "redteam_probe_probe"
+}

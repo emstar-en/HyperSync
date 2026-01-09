@@ -1,0 +1,126 @@
+{
+  "ico_algorithms": {
+    "meta": {
+      "description": "Canonical mathematical definitions and algorithmic procedures for ICO geometry operations",
+      "status": "ALPHA",
+      "references": [
+        "Cannon et al., Hyperbolic Geometry",
+        "Ungar, Analytic Hyperbolic Geometry",
+        "J.M. Lee, Riemannian Manifolds"
+      ]
+    },
+    "profiles": {
+      "ICO-E": {
+        "model": "Euclidean R^n",
+        "metric": "g_ij = delta_ij",
+        "operations": {
+          "distance": {
+            "math": "||x - y||_2",
+            "impl": "sqrt(sum((x_i - y_i)^2))"
+          },
+          "exp_map": {
+            "math": "x + v",
+            "impl": "vector_add(x, v)"
+          },
+          "log_map": {
+            "math": "y - x",
+            "impl": "vector_sub(y, x)"
+          },
+          "parallel_transport": {
+            "math": "Identity",
+            "impl": "return v"
+          },
+          "barycenter": {
+            "math": "Arithmetic Mean",
+            "impl": "sum(w_i * x_i) / sum(w_i)"
+          }
+        }
+      },
+      "ICO-H": {
+        "model": "Lorentz (Hyperboloid) H^n in R^{n+1}",
+        "constraint": "-x_0^2 + sum(x_i^2) = -1, x_0 > 0",
+        "metric": "Minkowski <u,v>_L = -u_0v_0 + sum(u_i v_i)",
+        "operations": {
+          "distance": {
+            "math": "acosh(-<x,y>_L)",
+            "impl": "arccosh(max(1.0, -minkowski_dot(x, y)))",
+            "fault_detection": "Error if -<x,y>_L < 1.0 (numerical noise)"
+          },
+          "exp_map": {
+            "math": "cosh(||v||_L) * x + sinh(||v||_L) * (v / ||v||_L)",
+            "impl": "theta = norm_L(v); if theta < eps: return x + v; return x*cosh(theta) + (v/theta)*sinh(theta)",
+            "fault_detection": "If theta < eps, use Taylor expansion x + v + v^2/2 to avoid division by zero."
+          },
+          "log_map": {
+            "math": "dist(x,y) * (y + <x,y>_L * x) / ||y + <x,y>_L * x||_L",
+            "impl": "alpha = -minkowski_dot(x, y); theta = acosh(alpha); if theta < eps return 0; return (y - x*alpha) * (theta / sinh(theta))",
+            "fault_detection": "If -<x,y>_L <= 1.0 (coincident) or approaches infinity (ideal point), return 0 or flag 'Point at Infinity'."
+          },
+          "parallel_transport": {
+            "math": "v + <v,y>_L / (1 - <x,y>_L) * (x + y)",
+            "impl": "denom = 1.0 - minkowski_dot(x, y); return v + (minkowski_dot(v, y) / denom) * (x + y)"
+          }
+        }
+      },
+      "ICO-S": {
+        "model": "Unit Sphere S^n in R^{n+1}",
+        "constraint": "sum(x_i^2) = 1",
+        "metric": "Induced Euclidean <u,v> = sum(u_i v_i)",
+        "operations": {
+          "distance": {
+            "math": "arccos(<x,y>)",
+            "impl": "arccos(clamp(dot(x, y), -1.0, 1.0))",
+            "fault_detection": "Warn if abs(norm(x) - 1.0) > eps"
+          },
+          "exp_map": {
+            "math": "cos(||v||) * x + sin(||v||) * (v / ||v||)",
+            "impl": "theta = norm(v); if theta < eps return x; return x*cos(theta) + (v/theta)*sin(theta)"
+          },
+          "log_map": {
+            "math": "(y - <x,y>x) * (theta / sin(theta))",
+            "impl": "p = y - x*dot(x,y); theta = norm(p); return p * (dist(x,y) / theta)",
+            "fault_detection": "If dot(x, y) approx -1.0 (Antipodal), log map is undefined (multiple geodesics). Return Error or specific branch cut."
+          },
+          "parallel_transport": {
+            "math": "v - <v,y> / (1 + <x,y>) * (x + y)",
+            "impl": "denom = 1.0 + dot(x, y); return v - (dot(v, y) / denom) * (x + y)"
+          }
+        }
+      }
+    },
+    "mathematical_foundations": {
+      "manifold_theory": {
+        "euclidean": "Flat space with zero curvature (R^n). Metric tensor g_ij = delta_ij.",
+        "hyperbolic": "Constant negative curvature space (H^n). Modeled via Lorentz hyperboloid in R^{n+1} with Minkowski metric.",
+        "spherical": "Constant positive curvature space (S^n). Modeled as unit sphere in R^{n+1} with induced Euclidean metric."
+      },
+      "isometries": {
+        "definition": "Distance-preserving transformations mapping M -> M.",
+        "group_structure": {
+          "euclidean": "E(n) = R^n x SO(n)",
+          "hyperbolic": "O+(n, 1) (Lorentz group preserving time direction)",
+          "spherical": "O(n+1)"
+        }
+      }
+    },
+    "fault_detection": {
+      "domain_error": {
+        "logic": "Input outside manifold constraints (e.g. acosh(x) where x < 1)",
+        "action": "Return NaN or raise DomainError"
+      },
+      "singularity_proximity": {
+        "logic": "Distance to singularity < epsilon",
+        "action": "Use asymptotic approximation"
+      }
+    },
+    "detailed_mechanisms": {
+      "algorithm_selection": {
+        "strategy": "Runtime dispatch based on geometry profile",
+        "fallback": "Euclidean approximation if curvature -> 0"
+      },
+      "numerical_stabilization": {
+        "technique": "Taylor series expansion for small arguments (e.g. sin(x)/x near 0)"
+      }
+    }
+  }
+}

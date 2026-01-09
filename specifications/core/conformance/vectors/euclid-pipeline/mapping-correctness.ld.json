@@ -1,0 +1,11 @@
+{
+  "expect": {
+    "maxAngleErrorDeg": 0.5,
+    "maxPositionErrorPx": 1.0
+  },
+  "given": {
+    "h2e": "examples/geometry.map.h2e.example.json",
+    "s2e": "examples/geometry.map.s2e.example.json"
+  },
+  "name": "mapping-correctness-ld-v1"
+}

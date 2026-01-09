@@ -1,0 +1,42 @@
+{
+  "domains": [
+    {
+      "geometry_mode": "native",
+      "id": "lorentzian",
+      "migration_policy": "replace-old-techniques",
+      "release_status": "pre-alpha",
+      "signature": [
+        -1,
+        1,
+        1
+      ],
+      "stability": "experimental",
+      "unreleased": true
+    },
+    {
+      "curvature": -1,
+      "geometry_mode": "native",
+      "id": "hyperbolic",
+      "migration_policy": "replace-old-techniques",
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "unreleased": true
+    },
+    {
+      "geometry_mode": "native",
+      "id": "riemannian",
+      "migration_policy": "replace-old-techniques",
+      "positive_definite": true,
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "unreleased": true
+    }
+  ],
+  "geometry_mode": "native",
+  "id": "domain_registry",
+  "migration_policy": "replace-old-techniques",
+  "name": "Domain Registry",
+  "release_status": "pre-alpha",
+  "stability": "experimental",
+  "unreleased": true
+}

@@ -1,0 +1,6 @@
+{
+  "deterministic": true,
+  "id": "op://epi_graph_diffusion.0",
+  "kind": "epi",
+  "notes": "Graph Laplacian compartment spread; fixed time-step"
+}

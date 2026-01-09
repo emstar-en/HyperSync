@@ -1,0 +1,77 @@
+{
+  "version": "1.0.0",
+  "description": "Determinism tier system with domain-specific constraints",
+  "tiers": {
+    "D0": {
+      "name": "Fully Deterministic",
+      "description": "Bit-exact reproducibility required",
+      "constraints": {
+        "rounding_mode": "to_nearest_ties_to_even",
+        "random_seed": "required",
+        "parallelism": "sequential_only",
+        "floating_point": "strict_ieee754"
+      },
+      "domains": [
+        "financial_calculations",
+        "cryptographic_operations",
+        "legal_compliance"
+      ]
+    },
+    "D1": {
+      "name": "Statistically Deterministic",
+      "description": "Results within epsilon tolerance",
+      "constraints": {
+        "epsilon": 1e-10,
+        "random_seed": "required",
+        "parallelism": "deterministic_reduction",
+        "floating_point": "relaxed_ieee754"
+      },
+      "domains": [
+        "scientific_computing",
+        "ml_training",
+        "simulations"
+      ]
+    },
+    "D2": {
+      "name": "Non-Deterministic",
+      "description": "Best-effort, no guarantees",
+      "constraints": {
+        "epsilon": null,
+        "random_seed": "optional",
+        "parallelism": "unrestricted",
+        "floating_point": "fast_math_allowed"
+      },
+      "domains": [
+        "exploratory_analysis",
+        "visualization",
+        "approximate_queries"
+      ]
+    }
+  },
+  "selection_rules": {
+    "default_tier": "D1",
+    "domain_mapping": {
+      "financial": "D0",
+      "crypto": "D0",
+      "legal": "D0",
+      "science": "D1",
+      "ml": "D1",
+      "analytics": "D2",
+      "viz": "D2"
+    }
+  },
+  "escalation": {
+    "trigger_conditions": [
+      "precision_loss_detected",
+      "reproducibility_failure",
+      "compliance_requirement"
+    ],
+    "escalation_path": [
+      "D2 -> D1",
+      "D1 -> D0"
+    ],
+    "receipt_schema": "receipts/determinism/tier_escalation.json"
+  },
+  "spec_version": "0.0.1",
+  "release_type": "PROTOTYPE"
+}

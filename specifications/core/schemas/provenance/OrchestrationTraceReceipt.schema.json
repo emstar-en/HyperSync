@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "properties": {
+    "steps": {
+      "items": {
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "timestamp": {
+      "type": "string"
+    },
+    "traceId": {
+      "type": "string"
+    },
+    "type": {
+      "const": "provenance.orchestration.trace.receipt"
+    }
+  },
+  "required": [
+    "type",
+    "traceId",
+    "steps",
+    "timestamp"
+  ],
+  "title": "Orchestration Trace Receipt",
+  "type": "object"
+}

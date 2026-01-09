@@ -1,0 +1,38 @@
+{
+  "$id": "geometry.map.s2e.json",
+  "$schema": "ext://f1fed686329b",
+  "properties": {
+    "cameraPose": {
+      "type": "object"
+    },
+    "fovDeg": {
+      "type": "number"
+    },
+    "projection": {
+      "enum": [
+        "gnomonic",
+        "equirect",
+        "stereographic"
+      ]
+    },
+    "sphereROI": {
+      "type": "object"
+    },
+    "streamId": {
+      "type": "string"
+    },
+    "type": {
+      "const": "geometry.map.s2e"
+    }
+  },
+  "required": [
+    "type",
+    "version",
+    "streamId",
+    "projection",
+    "cameraPose",
+    "fovDeg"
+  ],
+  "title": "Spherical to Euclidean Projection",
+  "type": "object"
+}

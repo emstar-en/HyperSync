@@ -1,0 +1,71 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "schema_version": "v1.0.0",
+  "id": "hypersync.core.environment",
+  "version": "1.0.0",
+  "type": "logic",
+  "description": "Core environment capsule family providing deterministic virtual environments for users and AI agents.",
+  "summary": "Deterministic environment templates, instances, and sessions that virtualize the world in which HyperSync, users, and AI agents operate.",
+  "tags": [
+    "environment",
+    "virtualization",
+    "core",
+    "governance",
+    "ai_containment",
+    "safety"
+  ],
+  "capabilities": {
+    "provides": [
+      "environment.template.core",
+      "environment.instance.core",
+      "environment.session.core"
+    ],
+    "requires": [
+      "geometry.manifold.core",
+      "consensus.environment.state",
+      "consensus.environment.upgrade",
+      "auth.identity.core",
+      "stunir.runtime.core"
+    ],
+    "input_schemas": [
+      "hypersync.schemas.environment.request.v1"
+    ],
+    "output_schemas": [
+      "hypersync.schemas.environment.response.v1"
+    ],
+    "determinism_tier": "D0_bit_exact",
+    "latency_class": "control_plane"
+  },
+  "interfaces": {
+    "python": "impl.src.environment_service:EnvironmentService",
+    "rest": "/api/v1/environment",
+    "tui": "hypersync.tui.environment.overview_panel"
+  },
+  "governance": {
+    "tier": "core",
+    "audit_level": "critical",
+    "owner": "hypersync-core-team",
+    "reviewed_by": [
+      "env-arch-lead",
+      "safety-review",
+      "governance-board",
+      "determinism-council"
+    ]
+  },
+  "runtime": {
+    "language": "python",
+    "requires_gpu": false,
+    "timeout_ms": 250,
+    "memory_limit_mb": 512
+  },
+  "security": {
+    "trust_zone": "system",
+    "sandbox_class": "core_strict_mesh_only"
+  },
+  "lineage": {
+    "derived_from": [
+      "hypersync.proto.environment.v0"
+    ],
+    "supersedes": []
+  }
+}

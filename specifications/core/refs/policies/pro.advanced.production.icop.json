@@ -1,0 +1,9 @@
+{
+  "deterministic": true,
+  "name": "pro.advanced.production.icop",
+  "tolerances": {
+    "numeric_abs": 1e-12,
+    "numeric_rel": 1e-09
+  },
+  "vectors_pack_ref": "refs/conformance/vectors/core/tier12_vectors.jsonl"
+}

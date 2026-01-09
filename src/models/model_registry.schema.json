@@ -1,0 +1,91 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Model Registry",
+  "description": "Registry of available AI models, their capabilities, and deployment requirements.",
+  "type": "object",
+  "properties": {
+    "models": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the model (e.g., 'llama-3-70b-instruct')"
+          },
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "llm",
+              "embedding",
+              "vision",
+              "audio",
+              "classifier",
+              "tool_use"
+            ]
+          },
+          "provider": {
+            "type": "string",
+            "enum": [
+              "local",
+              "openai",
+              "anthropic",
+              "huggingface",
+              "vllm",
+              "ollama"
+            ]
+          },
+          "specs": {
+            "type": "object",
+            "properties": {
+              "context_window": {
+                "type": "integer"
+              },
+              "parameters": {
+                "type": "string"
+              },
+              "quantization": {
+                "type": "string"
+              }
+            }
+          },
+          "capabilities": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Tags for what this model is good at (e.g., 'coding', 'creative_writing', 'json_output')"
+          },
+          "deployment_config": {
+            "type": "object",
+            "description": "Configuration for spinning up this model",
+            "properties": {
+              "image": {
+                "type": "string"
+              },
+              "resource_requirements": {
+                "type": "object",
+                "properties": {
+                  "gpu_memory": {
+                    "type": "string"
+                  },
+                  "cpu_cores": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "provider"
+        ]
+      }
+    }
+  }
+}

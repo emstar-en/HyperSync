@@ -1,0 +1,22 @@
+{
+  "checkpointing": {
+    "every_steps": 1000
+  },
+  "determinism": {
+    "accumulation": "pairwise",
+    "required": true,
+    "seed": 1337
+  },
+  "policy_requirements": {
+    "*": [
+      "policy://modes/geometric-reduction.policy.json",
+      "policy://studio/contribution-accounting.json"
+    ],
+    "diffusion_synthesis": [
+      "policy://safety/generative-synthesis.policy.json"
+    ]
+  },
+  "precision": {
+    "dtype": "fp32"
+  }
+}

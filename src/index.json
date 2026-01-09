@@ -1,0 +1,105 @@
+{
+  "entries": {
+    "manifest.json": {
+      "id": "1BTcExxFLwf_h1lCoDWIrjV4ywA_eA9yA",
+      "path": "/current/src/manifest.json",
+      "mime_type": "application/json",
+      "last_modified": "2026-01-04T05:41:39.681Z",
+      "size_bytes": 301
+    },
+    "hypersync": {
+      "id": "10bD5cqShkQPSt-XVrSxFjzmF_jTxhwJ7",
+      "path": "/current/src/hypersync",
+      "mime_type": "application/vnd.google-apps.folder",
+      "last_modified": "2026-01-03T06:18:10.858Z"
+    },
+    "models": {
+      "id": "1xzeHiXsI6HhmhwJA-L6WvMIe3MxAoUXx",
+      "path": "/current/src/models",
+      "mime_type": "application/vnd.google-apps.folder",
+      "last_modified": "2026-01-02T20:39:48.316Z"
+    },
+    "run_conformance.py": {
+      "id": "1A2ZBr2jY_45yPJvxttSsyIPAVnMvNLUZ",
+      "path": "/current/src/run_conformance.py",
+      "mime_type": "text/x-python",
+      "last_modified": "2026-01-02T12:32:51.448Z",
+      "size_bytes": 1333
+    },
+    "main.py": {
+      "id": "1delhf67pZe8FcTHDVBdA05x_jfxJyQOd",
+      "path": "/current/src/main.py",
+      "mime_type": "text/x-python",
+      "last_modified": "2026-01-02T12:32:41.817Z",
+      "size_bytes": 1484
+    },
+    "codegen": {
+      "id": "1JcbOaMw-CxnvnEQSdS0xkIAJmNdnZCQf",
+      "path": "/current/src/codegen",
+      "mime_type": "application/vnd.google-apps.folder",
+      "last_modified": "2026-01-02T10:07:38.256Z"
+    },
+    "utilities": {
+      "id": "1wPkppK4kTj7N1tWJEU3rlKZC3T411CcF",
+      "path": "/current/src/utilities",
+      "mime_type": "application/vnd.google-apps.folder",
+      "last_modified": "2026-01-02T08:13:51.691Z"
+    },
+    "subsystems": {
+      "id": "1NC0erkezDCG6Sox8-D9Y0GDYe8Qe7kvL",
+      "path": "/current/src/subsystems",
+      "mime_type": "application/vnd.google-apps.folder",
+      "last_modified": "2026-01-02T08:13:49.119Z"
+    },
+    "core": {
+      "id": "1sIEH8tkW1MqHfgpFJt8-AJQ5vHWPIrxD",
+      "path": "/current/src/core",
+      "mime_type": "application/vnd.google-apps.folder",
+      "last_modified": "2026-01-02T08:13:41.097Z"
+    },
+    "api": {
+      "id": "1xETHhyiYdsPvIfZMU09Yzqto8YxDmwst",
+      "path": "/current/src/api",
+      "mime_type": "application/vnd.google-apps.folder",
+      "last_modified": "2026-01-02T08:13:32.067Z"
+    },
+    "agents": {
+      "id": "1lqne_sUIAHFas5Xue0IuVrVa2fWAw6Ep",
+      "path": "/current/src/agents",
+      "mime_type": "application/vnd.google-apps.folder",
+      "last_modified": "2026-01-02T08:13:24.161Z"
+    },
+    "__init__.py": {
+      "id": "1lroqkC3ViU4AiuO4wooQPHVSoE9h87uh",
+      "path": "/current/src/__init__.py",
+      "mime_type": "text/x-python",
+      "last_modified": "2025-12-19T11:28:44.000Z",
+      "size_bytes": 35
+    },
+    "Dockerfile": {
+      "id": "126M7gh8t4kRryX1wsxUsA3bY0Hnhv7Nc",
+      "path": "/current/src/Dockerfile",
+      "mime_type": "application/octet-stream",
+      "last_modified": "2025-12-19T11:28:44.000Z",
+      "size_bytes": 597
+    },
+    "requirements.txt": {
+      "id": "1L60VF3taCrMYyc3OUzhD5phmqZhuRQ2s",
+      "path": "/current/src/requirements.txt",
+      "mime_type": "text/plain",
+      "last_modified": "2025-12-19T11:28:44.000Z",
+      "size_bytes": 212
+    },
+    "README.md": {
+      "id": "13dLHu0bcfLSu8L147dIgYEH9VMF9SmvA",
+      "path": "/current/src/README.md",
+      "mime_type": "text/markdown",
+      "last_modified": "2025-12-19T11:28:44.000Z",
+      "size_bytes": 554
+    }
+  },
+  "metadata": {
+    "generated_at": "2026-01-09T01:58:29.924378Z",
+    "count": 15
+  }
+}

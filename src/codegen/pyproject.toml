@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hypersync"
+version = "0.0.9"
+description = "HyperSync Python skeleton wired to the spec pack"
+readme = "README.md"
+authors = [{name="HyperSync"}]
+requires-python = ">=3.9"
+dependencies = [
+  "click>=8.1",
+  "rich>=13.7",
+  "pydantic>=2.7",
+  "jsonschema>=4.23",
+  "pyyaml>=6.0",
+  "numpy>=1.23",
+]
+
+[project.scripts]
+hypersync-conformance = "hypersync.conformance.cli:main"
+hypersync = "hypersync.cli:main"
+hypersync-nvm = "hypersync.tools.nvm_cli:main"
+
+[tool.setuptools.package-data]
+"hypersync.service.data" = ["*.json"]
+"hypersync.specpack" = ["**/*"]

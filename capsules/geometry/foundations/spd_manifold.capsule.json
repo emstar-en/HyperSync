@@ -1,0 +1,17 @@
+{
+  "capsule": {
+    "name": "spd_manifold",
+    "type": "manifold",
+    "properties": {
+      "description": "Symmetric Positive Definite Matrices",
+      "metric": "Affine-Invariant Riemannian Metric",
+      "distance": "dist_M(A, B) = ||log(A^-1/2 * B * A^-1/2)||_F",
+      "constraints": "eigenvalues(A) > 0"
+    },
+    "operations": {
+      "geodesic": "gamma(t) = A^1/2 * exp(t * A^-1/2 * V * A^-1/2) * A^1/2",
+      "parallel_transport": "PT_{A->B}(V) = E * V * E^T, where E = (B * A^-1)^1/2"
+    },
+    "vnes_binding": "geometry.manifolds.spd"
+  }
+}

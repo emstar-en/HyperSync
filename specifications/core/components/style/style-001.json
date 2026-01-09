@@ -1,0 +1,19 @@
+{
+  "docstring_style": "google",
+  "formatter": "black",
+  "geometry_mode": "native",
+  "lint": {
+    "flake8": true,
+    "geometry_mode": "native",
+    "isort": true,
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "migration_policy": "replace-old-techniques",
+  "release_status": "pre-alpha",
+  "stability": "experimental",
+  "type_check": "mypy",
+  "unreleased": true
+}

@@ -1,0 +1,13 @@
+{
+  "diagnostics": {
+    "W2": 0.348,
+    "entropy": 1.12
+  },
+  "inputs_commitment": "sha256:src|tgt|M_v3|eps=0.01",
+  "output_commitment": "sha256:weights_digest",
+  "receipt_kind": "ReductionReceipt",
+  "residuals": {
+    "duality_gap": 7.6e-10
+  },
+  "solver_binding_id": "solver://ot/sinkhorn_balancing@0.9.7"
+}

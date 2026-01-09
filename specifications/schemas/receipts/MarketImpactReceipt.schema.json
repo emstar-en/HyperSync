@@ -1,0 +1,49 @@
+{
+  "$schema": "ext://f1fed686329b",
+  "properties": {
+    "H_digest": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "kappa": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "realized_imp": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "realized_tx": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "receipt_kind": {
+      "const": "MarketImpactReceipt"
+    },
+    "tau1": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "tau2": {
+      "type": [
+        "number",
+        "null"
+      ]
+    }
+  },
+  "required": [
+    "receipt_kind"
+  ],
+  "title": "MarketImpactReceipt",
+  "type": "object"
+}

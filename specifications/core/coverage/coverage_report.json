@@ -1,0 +1,2189 @@
+{
+  "entries": [
+    {
+      "entry_manifolds": [],
+      "function": "blue_green_deployments",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "ab_testing_hyperbolic",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "progressive_rollout",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "chaos_engineering_hyperbolic",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "capacity_planning_geom",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "deploy_dependency_tracking",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "semantic_consensus",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "causal_message_ordering",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "collab_anchor_refine",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "hyperbolic_model_averaging",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "cross_model_semantic_preservation",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "dynamic_dim_collab",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "distributed_hyperbolic_consensus",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "model_negotiation_protocol",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "hyperbolic_convex_hull",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "geodesic_regression",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "hyperbolic_pca",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "manifold_stitching",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [
+        "SO(n)",
+        "SE(n)",
+        "Sphere S^n",
+        "Grassmann G(k,n)",
+        "R^n",
+        "SIM(3)",
+        "SPD(k)",
+        "Hyperbolic PoincareBall",
+        "Hyperboloid H^n",
+        "Stiefel St(k,n)",
+        "Symplectic Sp(2n)",
+        "Unitary U(n)",
+        "Special Unitary SU(n)",
+        "Projective CP^n",
+        "Projective RP^n",
+        "Torus T^n",
+        "Heisenberg H(n)",
+        "Product(M1xM2)",
+        "Quotient(M/G)",
+        "LieAlgebra so(n)",
+        "LieAlgebra se(n)",
+        "LieAlgebra su(n)",
+        "AnyLieGroup",
+        "AnyRiemannian"
+      ],
+      "function": "curvature_flow",
+      "variants": [
+        {
+          "has_references": true,
+          "id": "geometry_native/holonomy",
+          "manifolds": [
+            "SO(n)",
+            "SE(n)",
+            "Sphere S^n",
+            "Grassmann G(k,n)",
+            "R^n",
+            "SIM(3)",
+            "SPD(k)",
+            "Hyperbolic PoincareBall",
+            "Hyperboloid H^n",
+            "Stiefel St(k,n)",
+            "Symplectic Sp(2n)",
+            "Unitary U(n)",
+            "Special Unitary SU(n)",
+            "Projective CP^n",
+            "Projective RP^n",
+            "Torus T^n",
+            "Heisenberg H(n)",
+            "Product(M1xM2)",
+            "Quotient(M/G)",
+            "LieAlgebra so(n)",
+            "LieAlgebra se(n)",
+            "LieAlgebra su(n)",
+            "AnyLieGroup",
+            "AnyRiemannian"
+          ],
+          "status": "beta"
+        }
+      ]
+    },
+    {
+      "entry_manifolds": [],
+      "function": "hyperbolic_fourier_transform",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "shadow_bundle_extraction",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "lora_from_shadows",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "golden_sample_id",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "shadow_replay_engine",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "continuous_learning_pipeline",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "content_addressed_artifacts",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "semantic_multicast",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "policy_locked_artifact",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "artifact_provenance_chain",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "cross_format_consistency",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "repulsive_policy_balls",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "tightening_only_policy",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "policy_aware_routing",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "geom_compliance_verification",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "policy_inheritance",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "policy_conflict_resolution",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "time_bounded_policies",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "hnn_search",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "hierarchical_indexing",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "twelve_byte_tags",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "hyperbolic_range_query",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "ann_hyperbolic",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "capability_aware_indexing",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [
+        "SO(n)",
+        "SE(n)",
+        "SPD(k)",
+        "Sphere S^n",
+        "Hyperbolic PoincareBall",
+        "R^n",
+        "SIM(3)",
+        "Hyperboloid H^n",
+        "Grassmann G(k,n)",
+        "Stiefel St(k,n)",
+        "Symplectic Sp(2n)",
+        "Unitary U(n)",
+        "Special Unitary SU(n)",
+        "Projective CP^n",
+        "Projective RP^n",
+        "Torus T^n",
+        "Heisenberg H(n)",
+        "Product(M1xM2)",
+        "Quotient(M/G)",
+        "LieAlgebra so(n)",
+        "LieAlgebra se(n)",
+        "LieAlgebra su(n)",
+        "AnyLieGroup",
+        "AnyRiemannian"
+      ],
+      "function": "geometric_compression",
+      "variants": [
+        {
+          "has_references": true,
+          "id": "geometry_native/gauge_invariant_distance",
+          "manifolds": [
+            "SO(n)",
+            "SE(n)",
+            "SPD(k)",
+            "Sphere S^n",
+            "Hyperbolic PoincareBall",
+            "R^n",
+            "SIM(3)",
+            "Hyperboloid H^n",
+            "Grassmann G(k,n)",
+            "Stiefel St(k,n)",
+            "Symplectic Sp(2n)",
+            "Unitary U(n)",
+            "Special Unitary SU(n)",
+            "Projective CP^n",
+            "Projective RP^n",
+            "Torus T^n",
+            "Heisenberg H(n)",
+            "Product(M1xM2)",
+            "Quotient(M/G)",
+            "LieAlgebra so(n)",
+            "LieAlgebra se(n)",
+            "LieAlgebra su(n)",
+            "AnyLieGroup",
+            "AnyRiemannian"
+          ],
+          "status": "beta"
+        }
+      ]
+    },
+    {
+      "entry_manifolds": [],
+      "function": "semantic_dedup",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "hierarchical_summarization",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [
+        "SO(n)",
+        "SE(n)",
+        "SPD(k)",
+        "Sphere S^n",
+        "Hyperbolic PoincareBall",
+        "R^n",
+        "SIM(3)",
+        "Hyperboloid H^n",
+        "Grassmann G(k,n)",
+        "Stiefel St(k,n)",
+        "Symplectic Sp(2n)",
+        "Unitary U(n)",
+        "Special Unitary SU(n)",
+        "Projective CP^n",
+        "Projective RP^n",
+        "Torus T^n",
+        "Heisenberg H(n)",
+        "Product(M1xM2)",
+        "Quotient(M/G)",
+        "LieAlgebra so(n)",
+        "LieAlgebra se(n)",
+        "LieAlgebra su(n)",
+        "AnyLieGroup",
+        "AnyRiemannian"
+      ],
+      "function": "context_prune_distance",
+      "variants": [
+        {
+          "has_references": true,
+          "id": "geometry_native/gauge_invariant_distance",
+          "manifolds": [
+            "SO(n)",
+            "SE(n)",
+            "SPD(k)",
+            "Sphere S^n",
+            "Hyperbolic PoincareBall",
+            "R^n",
+            "SIM(3)",
+            "Hyperboloid H^n",
+            "Grassmann G(k,n)",
+            "Stiefel St(k,n)",
+            "Symplectic Sp(2n)",
+            "Unitary U(n)",
+            "Special Unitary SU(n)",
+            "Projective CP^n",
+            "Projective RP^n",
+            "Torus T^n",
+            "Heisenberg H(n)",
+            "Product(M1xM2)",
+            "Quotient(M/G)",
+            "LieAlgebra so(n)",
+            "LieAlgebra se(n)",
+            "LieAlgebra su(n)",
+            "AnyLieGroup",
+            "AnyRiemannian"
+          ],
+          "status": "beta"
+        }
+      ]
+    },
+    {
+      "entry_manifolds": [],
+      "function": "live_manifold_diagnostics",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "multi_dim_projection",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [
+        "SO(n)",
+        "SE(n)",
+        "Sphere S^n",
+        "Grassmann G(k,n)",
+        "R^n",
+        "SIM(3)",
+        "SPD(k)",
+        "Hyperbolic PoincareBall",
+        "Hyperboloid H^n",
+        "Stiefel St(k,n)",
+        "Symplectic Sp(2n)",
+        "Unitary U(n)",
+        "Special Unitary SU(n)",
+        "Projective CP^n",
+        "Projective RP^n",
+        "Torus T^n",
+        "Heisenberg H(n)",
+        "Product(M1xM2)",
+        "Quotient(M/G)",
+        "LieAlgebra so(n)",
+        "LieAlgebra se(n)",
+        "LieAlgebra su(n)",
+        "AnyLieGroup",
+        "AnyRiemannian"
+      ],
+      "function": "adaptive_curvature_monitoring",
+      "variants": [
+        {
+          "has_references": true,
+          "id": "geometry_native/holonomy",
+          "manifolds": [
+            "SO(n)",
+            "SE(n)",
+            "Sphere S^n",
+            "Grassmann G(k,n)",
+            "R^n",
+            "SIM(3)",
+            "SPD(k)",
+            "Hyperbolic PoincareBall",
+            "Hyperboloid H^n",
+            "Stiefel St(k,n)",
+            "Symplectic Sp(2n)",
+            "Unitary U(n)",
+            "Special Unitary SU(n)",
+            "Projective CP^n",
+            "Projective RP^n",
+            "Torus T^n",
+            "Heisenberg H(n)",
+            "Product(M1xM2)",
+            "Quotient(M/G)",
+            "LieAlgebra so(n)",
+            "LieAlgebra se(n)",
+            "LieAlgebra su(n)",
+            "AnyLieGroup",
+            "AnyRiemannian"
+          ],
+          "status": "beta"
+        }
+      ]
+    },
+    {
+      "entry_manifolds": [
+        "SO(n)",
+        "SE(n)",
+        "SPD(k)",
+        "Sphere S^n",
+        "Hyperbolic PoincareBall",
+        "R^n",
+        "SIM(3)",
+        "Hyperboloid H^n",
+        "Grassmann G(k,n)",
+        "Stiefel St(k,n)",
+        "Symplectic Sp(2n)",
+        "Unitary U(n)",
+        "Special Unitary SU(n)",
+        "Projective CP^n",
+        "Projective RP^n",
+        "Torus T^n",
+        "Heisenberg H(n)",
+        "Product(M1xM2)",
+        "Quotient(M/G)",
+        "LieAlgebra so(n)",
+        "LieAlgebra se(n)",
+        "LieAlgebra su(n)",
+        "AnyLieGroup",
+        "AnyRiemannian"
+      ],
+      "function": "geometric_anomaly_detection",
+      "variants": [
+        {
+          "has_references": true,
+          "id": "geometry_native/gauge_invariant_distance",
+          "manifolds": [
+            "SO(n)",
+            "SE(n)",
+            "SPD(k)",
+            "Sphere S^n",
+            "Hyperbolic PoincareBall",
+            "R^n",
+            "SIM(3)",
+            "Hyperboloid H^n",
+            "Grassmann G(k,n)",
+            "Stiefel St(k,n)",
+            "Symplectic Sp(2n)",
+            "Unitary U(n)",
+            "Special Unitary SU(n)",
+            "Projective CP^n",
+            "Projective RP^n",
+            "Torus T^n",
+            "Heisenberg H(n)",
+            "Product(M1xM2)",
+            "Quotient(M/G)",
+            "LieAlgebra so(n)",
+            "LieAlgebra se(n)",
+            "LieAlgebra su(n)",
+            "AnyLieGroup",
+            "AnyRiemannian"
+          ],
+          "status": "beta"
+        }
+      ]
+    },
+    {
+      "entry_manifolds": [],
+      "function": "causal_trace_viz",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "health_scoring_geometry",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "sync_chain",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "triangle_inequality_preservation",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "geodesic_optimality_verification",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "lorentz_constraint_enforcement",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "causal_consistency_proof",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "continuous_authorization",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [
+        "R^n",
+        "SO(n)",
+        "SE(n)",
+        "SIM(3)",
+        "SPD(k)",
+        "Sphere S^n",
+        "Hyperbolic PoincareBall",
+        "Hyperboloid H^n",
+        "Grassmann G(k,n)",
+        "Stiefel St(k,n)",
+        "Symplectic Sp(2n)",
+        "Unitary U(n)",
+        "Special Unitary SU(n)",
+        "Projective CP^n",
+        "Projective RP^n",
+        "Torus T^n",
+        "Heisenberg H(n)",
+        "Product(M1xM2)",
+        "Quotient(M/G)",
+        "LieAlgebra so(n)",
+        "LieAlgebra se(n)",
+        "LieAlgebra su(n)",
+        "AnyLieGroup",
+        "AnyRiemannian"
+      ],
+      "function": "exponential_clearance_radius",
+      "variants": [
+        {
+          "has_references": true,
+          "id": "geometry_native/exp_log",
+          "manifolds": [
+            "R^n",
+            "SO(n)",
+            "SE(n)",
+            "SIM(3)",
+            "SPD(k)",
+            "Sphere S^n",
+            "Hyperbolic PoincareBall",
+            "Hyperboloid H^n",
+            "Grassmann G(k,n)",
+            "Stiefel St(k,n)",
+            "Symplectic Sp(2n)",
+            "Unitary U(n)",
+            "Special Unitary SU(n)",
+            "Projective CP^n",
+            "Projective RP^n",
+            "Torus T^n",
+            "Heisenberg H(n)",
+            "Product(M1xM2)",
+            "Quotient(M/G)",
+            "LieAlgebra so(n)",
+            "LieAlgebra se(n)",
+            "LieAlgebra su(n)",
+            "AnyLieGroup",
+            "AnyRiemannian"
+          ],
+          "status": "beta"
+        }
+      ]
+    },
+    {
+      "entry_manifolds": [],
+      "function": "projection_permissions",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "archetype_registry",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "drift_triggered_recertain",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "entity_economics_bounded_force",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "sandbox_potential_barriers",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [
+        "R^n",
+        "SO(n)",
+        "SE(n)",
+        "SIM(3)",
+        "SPD(k)",
+        "Sphere S^n",
+        "Hyperbolic PoincareBall",
+        "Hyperboloid H^n",
+        "Grassmann G(k,n)",
+        "Stiefel St(k,n)",
+        "Symplectic Sp(2n)",
+        "Unitary U(n)",
+        "Special Unitary SU(n)",
+        "Projective CP^n",
+        "Projective RP^n",
+        "Torus T^n",
+        "Heisenberg H(n)",
+        "Product(M1xM2)",
+        "Quotient(M/G)",
+        "LieAlgebra so(n)",
+        "LieAlgebra se(n)",
+        "LieAlgebra su(n)",
+        "AnyLieGroup",
+        "AnyRiemannian"
+      ],
+      "function": "velocity_aligned_message_cost",
+      "variants": [
+        {
+          "has_references": true,
+          "id": "geometry_native/kabsch_align",
+          "manifolds": [
+            "R^n",
+            "SO(n)",
+            "SE(n)",
+            "SIM(3)",
+            "SPD(k)",
+            "Sphere S^n",
+            "Hyperbolic PoincareBall",
+            "Hyperboloid H^n",
+            "Grassmann G(k,n)",
+            "Stiefel St(k,n)",
+            "Symplectic Sp(2n)",
+            "Unitary U(n)",
+            "Special Unitary SU(n)",
+            "Projective CP^n",
+            "Projective RP^n",
+            "Torus T^n",
+            "Heisenberg H(n)",
+            "Product(M1xM2)",
+            "Quotient(M/G)",
+            "LieAlgebra so(n)",
+            "LieAlgebra se(n)",
+            "LieAlgebra su(n)",
+            "AnyLieGroup",
+            "AnyRiemannian"
+          ],
+          "status": "beta"
+        }
+      ]
+    },
+    {
+      "entry_manifolds": [],
+      "function": "adapter_monotonicity_stability",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "policy_continuity_bounds",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "spec_driven_test_generation",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "threat_potential_guardian_response",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [
+        "SO(n)",
+        "SE(n)",
+        "SPD(k)",
+        "Sphere S^n",
+        "Hyperbolic PoincareBall",
+        "R^n",
+        "SIM(3)",
+        "Hyperboloid H^n",
+        "Grassmann G(k,n)",
+        "Stiefel St(k,n)",
+        "Symplectic Sp(2n)",
+        "Unitary U(n)",
+        "Special Unitary SU(n)",
+        "Projective CP^n",
+        "Projective RP^n",
+        "Torus T^n",
+        "Heisenberg H(n)",
+        "Product(M1xM2)",
+        "Quotient(M/G)",
+        "LieAlgebra so(n)",
+        "LieAlgebra se(n)",
+        "LieAlgebra su(n)",
+        "AnyLieGroup",
+        "AnyRiemannian"
+      ],
+      "function": "metric_immutability_bound",
+      "variants": [
+        {
+          "has_references": true,
+          "id": "geometry_native/gauge_invariant_distance",
+          "manifolds": [
+            "SO(n)",
+            "SE(n)",
+            "SPD(k)",
+            "Sphere S^n",
+            "Hyperbolic PoincareBall",
+            "R^n",
+            "SIM(3)",
+            "Hyperboloid H^n",
+            "Grassmann G(k,n)",
+            "Stiefel St(k,n)",
+            "Symplectic Sp(2n)",
+            "Unitary U(n)",
+            "Special Unitary SU(n)",
+            "Projective CP^n",
+            "Projective RP^n",
+            "Torus T^n",
+            "Heisenberg H(n)",
+            "Product(M1xM2)",
+            "Quotient(M/G)",
+            "LieAlgebra so(n)",
+            "LieAlgebra se(n)",
+            "LieAlgebra su(n)",
+            "AnyLieGroup",
+            "AnyRiemannian"
+          ],
+          "status": "beta"
+        }
+      ]
+    },
+    {
+      "entry_manifolds": [
+        "SO(n)",
+        "SE(n)",
+        "Sphere S^n",
+        "Grassmann G(k,n)",
+        "R^n",
+        "SIM(3)",
+        "SPD(k)",
+        "Hyperbolic PoincareBall",
+        "Hyperboloid H^n",
+        "Stiefel St(k,n)",
+        "Symplectic Sp(2n)",
+        "Unitary U(n)",
+        "Special Unitary SU(n)",
+        "Projective CP^n",
+        "Projective RP^n",
+        "Torus T^n",
+        "Heisenberg H(n)",
+        "Product(M1xM2)",
+        "Quotient(M/G)",
+        "LieAlgebra so(n)",
+        "LieAlgebra se(n)",
+        "LieAlgebra su(n)",
+        "AnyLieGroup",
+        "AnyRiemannian"
+      ],
+      "function": "curvature_rate_limiter",
+      "variants": [
+        {
+          "has_references": true,
+          "id": "geometry_native/holonomy",
+          "manifolds": [
+            "SO(n)",
+            "SE(n)",
+            "Sphere S^n",
+            "Grassmann G(k,n)",
+            "R^n",
+            "SIM(3)",
+            "SPD(k)",
+            "Hyperbolic PoincareBall",
+            "Hyperboloid H^n",
+            "Stiefel St(k,n)",
+            "Symplectic Sp(2n)",
+            "Unitary U(n)",
+            "Special Unitary SU(n)",
+            "Projective CP^n",
+            "Projective RP^n",
+            "Torus T^n",
+            "Heisenberg H(n)",
+            "Product(M1xM2)",
+            "Quotient(M/G)",
+            "LieAlgebra so(n)",
+            "LieAlgebra se(n)",
+            "LieAlgebra su(n)",
+            "AnyLieGroup",
+            "AnyRiemannian"
+          ],
+          "status": "beta"
+        }
+      ]
+    },
+    {
+      "entry_manifolds": [],
+      "function": "causal_diamond_attestation",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [
+        "SO(n)",
+        "SE(n)",
+        "SPD(k)",
+        "Sphere S^n",
+        "Hyperbolic PoincareBall",
+        "R^n",
+        "SIM(3)",
+        "Hyperboloid H^n",
+        "Grassmann G(k,n)",
+        "Stiefel St(k,n)",
+        "Symplectic Sp(2n)",
+        "Unitary U(n)",
+        "Special Unitary SU(n)",
+        "Projective CP^n",
+        "Projective RP^n",
+        "Torus T^n",
+        "Heisenberg H(n)",
+        "Product(M1xM2)",
+        "Quotient(M/G)",
+        "LieAlgebra so(n)",
+        "LieAlgebra se(n)",
+        "LieAlgebra su(n)",
+        "AnyLieGroup",
+        "AnyRiemannian"
+      ],
+      "function": "dual_metric_consistency",
+      "variants": [
+        {
+          "has_references": true,
+          "id": "geometry_native/gauge_invariant_distance",
+          "manifolds": [
+            "SO(n)",
+            "SE(n)",
+            "SPD(k)",
+            "Sphere S^n",
+            "Hyperbolic PoincareBall",
+            "R^n",
+            "SIM(3)",
+            "Hyperboloid H^n",
+            "Grassmann G(k,n)",
+            "Stiefel St(k,n)",
+            "Symplectic Sp(2n)",
+            "Unitary U(n)",
+            "Special Unitary SU(n)",
+            "Projective CP^n",
+            "Projective RP^n",
+            "Torus T^n",
+            "Heisenberg H(n)",
+            "Product(M1xM2)",
+            "Quotient(M/G)",
+            "LieAlgebra so(n)",
+            "LieAlgebra se(n)",
+            "LieAlgebra su(n)",
+            "AnyLieGroup",
+            "AnyRiemannian"
+          ],
+          "status": "beta"
+        }
+      ]
+    },
+    {
+      "entry_manifolds": [],
+      "function": "bundle_commit_reveal_timelock",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "baseline_per_target",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "entity_locked_manifests",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [
+        "R^n",
+        "SO(n)",
+        "SE(n)",
+        "SIM(3)",
+        "SPD(k)",
+        "Sphere S^n",
+        "Hyperbolic PoincareBall",
+        "Hyperboloid H^n",
+        "Grassmann G(k,n)",
+        "Stiefel St(k,n)",
+        "Symplectic Sp(2n)",
+        "Unitary U(n)",
+        "Special Unitary SU(n)",
+        "Projective CP^n",
+        "Projective RP^n",
+        "Torus T^n",
+        "Heisenberg H(n)",
+        "Product(M1xM2)",
+        "Quotient(M/G)",
+        "LieAlgebra so(n)",
+        "LieAlgebra se(n)",
+        "LieAlgebra su(n)",
+        "AnyLieGroup",
+        "AnyRiemannian"
+      ],
+      "function": "transparency_log_geom",
+      "variants": [
+        {
+          "has_references": true,
+          "id": "geometry_native/exp_log",
+          "manifolds": [
+            "R^n",
+            "SO(n)",
+            "SE(n)",
+            "SIM(3)",
+            "SPD(k)",
+            "Sphere S^n",
+            "Hyperbolic PoincareBall",
+            "Hyperboloid H^n",
+            "Grassmann G(k,n)",
+            "Stiefel St(k,n)",
+            "Symplectic Sp(2n)",
+            "Unitary U(n)",
+            "Special Unitary SU(n)",
+            "Projective CP^n",
+            "Projective RP^n",
+            "Torus T^n",
+            "Heisenberg H(n)",
+            "Product(M1xM2)",
+            "Quotient(M/G)",
+            "LieAlgebra so(n)",
+            "LieAlgebra se(n)",
+            "LieAlgebra su(n)",
+            "AnyLieGroup",
+            "AnyRiemannian"
+          ],
+          "status": "beta"
+        }
+      ]
+    },
+    {
+      "entry_manifolds": [],
+      "function": "hybrid_semantic_lossless_remediation",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "pkg_manager_hooks",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "file_integrity_geom_baseline",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "tpm_ima_attestation",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "instant_drift_awareness",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "staged_rollout_attestation",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "unapproved_drift_auto_approval",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "policy_driven_remediation",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "manifest_entity_framework",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "multi_stage_entity_approval",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "event_driven_entity_orchestration",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "no_runtime_projection",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [
+        "SO(n)",
+        "SE(n)",
+        "SPD(k)",
+        "Sphere S^n",
+        "Grassmann G(k,n)",
+        "R^n",
+        "SIM(3)",
+        "Hyperbolic PoincareBall",
+        "Hyperboloid H^n",
+        "Stiefel St(k,n)",
+        "Symplectic Sp(2n)",
+        "Unitary U(n)",
+        "Special Unitary SU(n)",
+        "Projective CP^n",
+        "Projective RP^n",
+        "Torus T^n",
+        "Heisenberg H(n)",
+        "Product(M1xM2)",
+        "Quotient(M/G)",
+        "LieAlgebra so(n)",
+        "LieAlgebra se(n)",
+        "LieAlgebra su(n)",
+        "AnyLieGroup",
+        "AnyRiemannian"
+      ],
+      "function": "levi_civita_transport_required",
+      "variants": [
+        {
+          "has_references": true,
+          "id": "geometry_native/parallel_transport",
+          "manifolds": [
+            "SO(n)",
+            "SE(n)",
+            "SPD(k)",
+            "Sphere S^n",
+            "Grassmann G(k,n)",
+            "R^n",
+            "SIM(3)",
+            "Hyperbolic PoincareBall",
+            "Hyperboloid H^n",
+            "Stiefel St(k,n)",
+            "Symplectic Sp(2n)",
+            "Unitary U(n)",
+            "Special Unitary SU(n)",
+            "Projective CP^n",
+            "Projective RP^n",
+            "Torus T^n",
+            "Heisenberg H(n)",
+            "Product(M1xM2)",
+            "Quotient(M/G)",
+            "LieAlgebra so(n)",
+            "LieAlgebra se(n)",
+            "LieAlgebra su(n)",
+            "AnyLieGroup",
+            "AnyRiemannian"
+          ],
+          "status": "beta"
+        }
+      ]
+    },
+    {
+      "entry_manifolds": [
+        "SO(n)",
+        "SE(n)",
+        "Sphere S^n",
+        "Grassmann G(k,n)",
+        "R^n",
+        "SIM(3)",
+        "SPD(k)",
+        "Hyperbolic PoincareBall",
+        "Hyperboloid H^n",
+        "Stiefel St(k,n)",
+        "Symplectic Sp(2n)",
+        "Unitary U(n)",
+        "Special Unitary SU(n)",
+        "Projective CP^n",
+        "Projective RP^n",
+        "Torus T^n",
+        "Heisenberg H(n)",
+        "Product(M1xM2)",
+        "Quotient(M/G)",
+        "LieAlgebra so(n)",
+        "LieAlgebra se(n)",
+        "LieAlgebra su(n)",
+        "AnyLieGroup",
+        "AnyRiemannian"
+      ],
+      "function": "holonomy_monitoring",
+      "variants": [
+        {
+          "has_references": true,
+          "id": "geometry_native/holonomy",
+          "manifolds": [
+            "SO(n)",
+            "SE(n)",
+            "Sphere S^n",
+            "Grassmann G(k,n)",
+            "R^n",
+            "SIM(3)",
+            "SPD(k)",
+            "Hyperbolic PoincareBall",
+            "Hyperboloid H^n",
+            "Stiefel St(k,n)",
+            "Symplectic Sp(2n)",
+            "Unitary U(n)",
+            "Special Unitary SU(n)",
+            "Projective CP^n",
+            "Projective RP^n",
+            "Torus T^n",
+            "Heisenberg H(n)",
+            "Product(M1xM2)",
+            "Quotient(M/G)",
+            "LieAlgebra so(n)",
+            "LieAlgebra se(n)",
+            "LieAlgebra su(n)",
+            "AnyLieGroup",
+            "AnyRiemannian"
+          ],
+          "status": "beta"
+        },
+        {
+          "has_references": true,
+          "id": "geometry_native/differential_forms",
+          "manifolds": [
+            "R^n",
+            "SO(n)",
+            "SE(n)",
+            "SIM(3)",
+            "SPD(k)",
+            "Sphere S^n",
+            "Hyperbolic PoincareBall",
+            "Hyperboloid H^n",
+            "Grassmann G(k,n)",
+            "Stiefel St(k,n)",
+            "Symplectic Sp(2n)",
+            "Unitary U(n)",
+            "Special Unitary SU(n)",
+            "Projective CP^n",
+            "Projective RP^n",
+            "Torus T^n",
+            "Heisenberg H(n)",
+            "Product(M1xM2)",
+            "Quotient(M/G)",
+            "LieAlgebra so(n)",
+            "LieAlgebra se(n)",
+            "LieAlgebra su(n)",
+            "AnyLieGroup",
+            "AnyRiemannian"
+          ],
+          "status": "beta"
+        },
+        {
+          "has_references": true,
+          "id": "geometry_native/fiber_bundle_connection",
+          "manifolds": [
+            "R^n",
+            "SO(n)",
+            "SE(n)",
+            "SIM(3)",
+            "SPD(k)",
+            "Sphere S^n",
+            "Hyperbolic PoincareBall",
+            "Hyperboloid H^n",
+            "Grassmann G(k,n)",
+            "Stiefel St(k,n)",
+            "Symplectic Sp(2n)",
+            "Unitary U(n)",
+            "Special Unitary SU(n)",
+            "Projective CP^n",
+            "Projective RP^n",
+            "Torus T^n",
+            "Heisenberg H(n)",
+            "Product(M1xM2)",
+            "Quotient(M/G)",
+            "LieAlgebra so(n)",
+            "LieAlgebra se(n)",
+            "LieAlgebra su(n)",
+            "AnyLieGroup",
+            "AnyRiemannian"
+          ],
+          "status": "beta"
+        }
+      ]
+    },
+    {
+      "entry_manifolds": [],
+      "function": "rapidity_based_similarity",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "native_ops_mandate",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [
+        "SO(n)",
+        "SE(n)",
+        "SPD(k)",
+        "Sphere S^n",
+        "Hyperbolic PoincareBall",
+        "R^n",
+        "SIM(3)",
+        "Hyperboloid H^n",
+        "Grassmann G(k,n)",
+        "Stiefel St(k,n)",
+        "Symplectic Sp(2n)",
+        "Unitary U(n)",
+        "Special Unitary SU(n)",
+        "Projective CP^n",
+        "Projective RP^n",
+        "Torus T^n",
+        "Heisenberg H(n)",
+        "Product(M1xM2)",
+        "Quotient(M/G)",
+        "LieAlgebra so(n)",
+        "LieAlgebra se(n)",
+        "LieAlgebra su(n)",
+        "AnyLieGroup",
+        "AnyRiemannian"
+      ],
+      "function": "distance_inference_guard",
+      "variants": [
+        {
+          "has_references": true,
+          "id": "geometry_native/gauge_invariant_distance",
+          "manifolds": [
+            "SO(n)",
+            "SE(n)",
+            "SPD(k)",
+            "Sphere S^n",
+            "Hyperbolic PoincareBall",
+            "R^n",
+            "SIM(3)",
+            "Hyperboloid H^n",
+            "Grassmann G(k,n)",
+            "Stiefel St(k,n)",
+            "Symplectic Sp(2n)",
+            "Unitary U(n)",
+            "Special Unitary SU(n)",
+            "Projective CP^n",
+            "Projective RP^n",
+            "Torus T^n",
+            "Heisenberg H(n)",
+            "Product(M1xM2)",
+            "Quotient(M/G)",
+            "LieAlgebra so(n)",
+            "LieAlgebra se(n)",
+            "LieAlgebra su(n)",
+            "AnyLieGroup",
+            "AnyRiemannian"
+          ],
+          "status": "beta"
+        }
+      ]
+    },
+    {
+      "entry_manifolds": [
+        "SO(n)",
+        "SE(n)",
+        "SPD(k)",
+        "Sphere S^n",
+        "Grassmann G(k,n)",
+        "R^n",
+        "SIM(3)",
+        "Hyperbolic PoincareBall",
+        "Hyperboloid H^n",
+        "Stiefel St(k,n)",
+        "Symplectic Sp(2n)",
+        "Unitary U(n)",
+        "Special Unitary SU(n)",
+        "Projective CP^n",
+        "Projective RP^n",
+        "Torus T^n",
+        "Heisenberg H(n)",
+        "Product(M1xM2)",
+        "Quotient(M/G)",
+        "LieAlgebra so(n)",
+        "LieAlgebra se(n)",
+        "LieAlgebra su(n)",
+        "AnyLieGroup",
+        "AnyRiemannian"
+      ],
+      "function": "semantic_transport_consistency",
+      "variants": [
+        {
+          "has_references": true,
+          "id": "geometry_native/parallel_transport",
+          "manifolds": [
+            "SO(n)",
+            "SE(n)",
+            "SPD(k)",
+            "Sphere S^n",
+            "Grassmann G(k,n)",
+            "R^n",
+            "SIM(3)",
+            "Hyperbolic PoincareBall",
+            "Hyperboloid H^n",
+            "Stiefel St(k,n)",
+            "Symplectic Sp(2n)",
+            "Unitary U(n)",
+            "Special Unitary SU(n)",
+            "Projective CP^n",
+            "Projective RP^n",
+            "Torus T^n",
+            "Heisenberg H(n)",
+            "Product(M1xM2)",
+            "Quotient(M/G)",
+            "LieAlgebra so(n)",
+            "LieAlgebra se(n)",
+            "LieAlgebra su(n)",
+            "AnyLieGroup",
+            "AnyRiemannian"
+          ],
+          "status": "beta"
+        }
+      ]
+    },
+    {
+      "entry_manifolds": [
+        "R^n",
+        "SO(n)",
+        "SE(n)",
+        "SIM(3)",
+        "SPD(k)",
+        "Sphere S^n",
+        "Hyperbolic PoincareBall",
+        "Hyperboloid H^n",
+        "Grassmann G(k,n)",
+        "Stiefel St(k,n)",
+        "Symplectic Sp(2n)",
+        "Unitary U(n)",
+        "Special Unitary SU(n)",
+        "Projective CP^n",
+        "Projective RP^n",
+        "Torus T^n",
+        "Heisenberg H(n)",
+        "Product(M1xM2)",
+        "Quotient(M/G)",
+        "LieAlgebra so(n)",
+        "LieAlgebra se(n)",
+        "LieAlgebra su(n)",
+        "AnyLieGroup",
+        "AnyRiemannian"
+      ],
+      "function": "ontological_integrity_enforcement",
+      "variants": [
+        {
+          "has_references": true,
+          "id": "geometry_native/exp_log",
+          "manifolds": [
+            "R^n",
+            "SO(n)",
+            "SE(n)",
+            "SIM(3)",
+            "SPD(k)",
+            "Sphere S^n",
+            "Hyperbolic PoincareBall",
+            "Hyperboloid H^n",
+            "Grassmann G(k,n)",
+            "Stiefel St(k,n)",
+            "Symplectic Sp(2n)",
+            "Unitary U(n)",
+            "Special Unitary SU(n)",
+            "Projective CP^n",
+            "Projective RP^n",
+            "Torus T^n",
+            "Heisenberg H(n)",
+            "Product(M1xM2)",
+            "Quotient(M/G)",
+            "LieAlgebra so(n)",
+            "LieAlgebra se(n)",
+            "LieAlgebra su(n)",
+            "AnyLieGroup",
+            "AnyRiemannian"
+          ],
+          "status": "beta"
+        }
+      ]
+    },
+    {
+      "entry_manifolds": [],
+      "function": "semantic_causality_gate",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "worldline_integrity",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [
+        "SO(n)",
+        "SE(n)",
+        "SPD(k)",
+        "Sphere S^n",
+        "Hyperbolic PoincareBall",
+        "R^n",
+        "SIM(3)",
+        "Hyperboloid H^n",
+        "Grassmann G(k,n)",
+        "Stiefel St(k,n)",
+        "Symplectic Sp(2n)",
+        "Unitary U(n)",
+        "Special Unitary SU(n)",
+        "Projective CP^n",
+        "Projective RP^n",
+        "Torus T^n",
+        "Heisenberg H(n)",
+        "Product(M1xM2)",
+        "Quotient(M/G)",
+        "LieAlgebra so(n)",
+        "LieAlgebra se(n)",
+        "LieAlgebra su(n)",
+        "AnyLieGroup",
+        "AnyRiemannian"
+      ],
+      "function": "shadow_region_metric_modification",
+      "variants": [
+        {
+          "has_references": true,
+          "id": "geometry_native/gauge_invariant_distance",
+          "manifolds": [
+            "SO(n)",
+            "SE(n)",
+            "SPD(k)",
+            "Sphere S^n",
+            "Hyperbolic PoincareBall",
+            "R^n",
+            "SIM(3)",
+            "Hyperboloid H^n",
+            "Grassmann G(k,n)",
+            "Stiefel St(k,n)",
+            "Symplectic Sp(2n)",
+            "Unitary U(n)",
+            "Special Unitary SU(n)",
+            "Projective CP^n",
+            "Projective RP^n",
+            "Torus T^n",
+            "Heisenberg H(n)",
+            "Product(M1xM2)",
+            "Quotient(M/G)",
+            "LieAlgebra so(n)",
+            "LieAlgebra se(n)",
+            "LieAlgebra su(n)",
+            "AnyLieGroup",
+            "AnyRiemannian"
+          ],
+          "status": "beta"
+        }
+      ]
+    },
+    {
+      "entry_manifolds": [],
+      "function": "semantic_antimatter_guardrails",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "information_laundering_detection",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [
+        "R^n",
+        "SO(n)",
+        "SE(n)",
+        "SIM(3)",
+        "SPD(k)",
+        "Sphere S^n",
+        "Hyperbolic PoincareBall",
+        "Hyperboloid H^n",
+        "Grassmann G(k,n)",
+        "Stiefel St(k,n)",
+        "Symplectic Sp(2n)",
+        "Unitary U(n)",
+        "Special Unitary SU(n)",
+        "Projective CP^n",
+        "Projective RP^n",
+        "Torus T^n",
+        "Heisenberg H(n)",
+        "Product(M1xM2)",
+        "Quotient(M/G)",
+        "LieAlgebra so(n)",
+        "LieAlgebra se(n)",
+        "LieAlgebra su(n)",
+        "AnyLieGroup",
+        "AnyRiemannian"
+      ],
+      "function": "ontological_test_vectors_mandate",
+      "variants": [
+        {
+          "has_references": true,
+          "id": "geometry_native/exp_log",
+          "manifolds": [
+            "R^n",
+            "SO(n)",
+            "SE(n)",
+            "SIM(3)",
+            "SPD(k)",
+            "Sphere S^n",
+            "Hyperbolic PoincareBall",
+            "Hyperboloid H^n",
+            "Grassmann G(k,n)",
+            "Stiefel St(k,n)",
+            "Symplectic Sp(2n)",
+            "Unitary U(n)",
+            "Special Unitary SU(n)",
+            "Projective CP^n",
+            "Projective RP^n",
+            "Torus T^n",
+            "Heisenberg H(n)",
+            "Product(M1xM2)",
+            "Quotient(M/G)",
+            "LieAlgebra so(n)",
+            "LieAlgebra se(n)",
+            "LieAlgebra su(n)",
+            "AnyLieGroup",
+            "AnyRiemannian"
+          ],
+          "status": "beta"
+        }
+      ]
+    },
+    {
+      "entry_manifolds": [
+        "R^n",
+        "SO(n)",
+        "SE(n)",
+        "SIM(3)",
+        "SPD(k)",
+        "Sphere S^n",
+        "Hyperbolic PoincareBall",
+        "Hyperboloid H^n",
+        "Grassmann G(k,n)",
+        "Stiefel St(k,n)",
+        "Symplectic Sp(2n)",
+        "Unitary U(n)",
+        "Special Unitary SU(n)",
+        "Projective CP^n",
+        "Projective RP^n",
+        "Torus T^n",
+        "Heisenberg H(n)",
+        "Product(M1xM2)",
+        "Quotient(M/G)",
+        "LieAlgebra so(n)",
+        "LieAlgebra se(n)",
+        "LieAlgebra su(n)",
+        "AnyLieGroup",
+        "AnyRiemannian"
+      ],
+      "function": "consensus_riemannian_barycenter",
+      "variants": [
+        {
+          "has_references": true,
+          "id": "geometry_native/frechet_karcher_mean",
+          "manifolds": [
+            "R^n",
+            "SO(n)",
+            "SE(n)",
+            "SIM(3)",
+            "SPD(k)",
+            "Sphere S^n",
+            "Hyperbolic PoincareBall",
+            "Hyperboloid H^n",
+            "Grassmann G(k,n)",
+            "Stiefel St(k,n)",
+            "Symplectic Sp(2n)",
+            "Unitary U(n)",
+            "Special Unitary SU(n)",
+            "Projective CP^n",
+            "Projective RP^n",
+            "Torus T^n",
+            "Heisenberg H(n)",
+            "Product(M1xM2)",
+            "Quotient(M/G)",
+            "LieAlgebra so(n)",
+            "LieAlgebra se(n)",
+            "LieAlgebra su(n)",
+            "AnyLieGroup",
+            "AnyRiemannian"
+          ],
+          "status": "beta"
+        },
+        {
+          "has_references": true,
+          "id": "geometry_native/differential_forms",
+          "manifolds": [
+            "R^n",
+            "SO(n)",
+            "SE(n)",
+            "SIM(3)",
+            "SPD(k)",
+            "Sphere S^n",
+            "Hyperbolic PoincareBall",
+            "Hyperboloid H^n",
+            "Grassmann G(k,n)",
+            "Stiefel St(k,n)",
+            "Symplectic Sp(2n)",
+            "Unitary U(n)",
+            "Special Unitary SU(n)",
+            "Projective CP^n",
+            "Projective RP^n",
+            "Torus T^n",
+            "Heisenberg H(n)",
+            "Product(M1xM2)",
+            "Quotient(M/G)",
+            "LieAlgebra so(n)",
+            "LieAlgebra se(n)",
+            "LieAlgebra su(n)",
+            "AnyLieGroup",
+            "AnyRiemannian"
+          ],
+          "status": "beta"
+        },
+        {
+          "has_references": true,
+          "id": "geometry_native/fiber_bundle_connection",
+          "manifolds": [
+            "R^n",
+            "SO(n)",
+            "SE(n)",
+            "SIM(3)",
+            "SPD(k)",
+            "Sphere S^n",
+            "Hyperbolic PoincareBall",
+            "Hyperboloid H^n",
+            "Grassmann G(k,n)",
+            "Stiefel St(k,n)",
+            "Symplectic Sp(2n)",
+            "Unitary U(n)",
+            "Special Unitary SU(n)",
+            "Projective CP^n",
+            "Projective RP^n",
+            "Torus T^n",
+            "Heisenberg H(n)",
+            "Product(M1xM2)",
+            "Quotient(M/G)",
+            "LieAlgebra so(n)",
+            "LieAlgebra se(n)",
+            "LieAlgebra su(n)",
+            "AnyLieGroup",
+            "AnyRiemannian"
+          ],
+          "status": "beta"
+        }
+      ]
+    },
+    {
+      "entry_manifolds": [],
+      "function": "privacy_geodesic_noise",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [
+        "SO(n)",
+        "SE(n)",
+        "Sphere S^n",
+        "Grassmann G(k,n)",
+        "R^n",
+        "SIM(3)",
+        "SPD(k)",
+        "Hyperbolic PoincareBall",
+        "Hyperboloid H^n",
+        "Stiefel St(k,n)",
+        "Symplectic Sp(2n)",
+        "Unitary U(n)",
+        "Special Unitary SU(n)",
+        "Projective CP^n",
+        "Projective RP^n",
+        "Torus T^n",
+        "Heisenberg H(n)",
+        "Product(M1xM2)",
+        "Quotient(M/G)",
+        "LieAlgebra so(n)",
+        "LieAlgebra se(n)",
+        "LieAlgebra su(n)",
+        "AnyLieGroup",
+        "AnyRiemannian"
+      ],
+      "function": "shadow_negative_curvature",
+      "variants": [
+        {
+          "has_references": true,
+          "id": "geometry_native/holonomy",
+          "manifolds": [
+            "SO(n)",
+            "SE(n)",
+            "Sphere S^n",
+            "Grassmann G(k,n)",
+            "R^n",
+            "SIM(3)",
+            "SPD(k)",
+            "Hyperbolic PoincareBall",
+            "Hyperboloid H^n",
+            "Stiefel St(k,n)",
+            "Symplectic Sp(2n)",
+            "Unitary U(n)",
+            "Special Unitary SU(n)",
+            "Projective CP^n",
+            "Projective RP^n",
+            "Torus T^n",
+            "Heisenberg H(n)",
+            "Product(M1xM2)",
+            "Quotient(M/G)",
+            "LieAlgebra so(n)",
+            "LieAlgebra se(n)",
+            "LieAlgebra su(n)",
+            "AnyLieGroup",
+            "AnyRiemannian"
+          ],
+          "status": "beta"
+        }
+      ]
+    },
+    {
+      "entry_manifolds": [
+        "R^n",
+        "SO(n)",
+        "SE(n)",
+        "SIM(3)",
+        "SPD(k)",
+        "Sphere S^n",
+        "Hyperbolic PoincareBall",
+        "Hyperboloid H^n",
+        "Grassmann G(k,n)",
+        "Stiefel St(k,n)",
+        "Symplectic Sp(2n)",
+        "Unitary U(n)",
+        "Special Unitary SU(n)",
+        "Projective CP^n",
+        "Projective RP^n",
+        "Torus T^n",
+        "Heisenberg H(n)",
+        "Product(M1xM2)",
+        "Quotient(M/G)",
+        "LieAlgebra so(n)",
+        "LieAlgebra se(n)",
+        "LieAlgebra su(n)",
+        "AnyLieGroup",
+        "AnyRiemannian"
+      ],
+      "function": "lorentz_inner_product_preservation",
+      "variants": [
+        {
+          "has_references": true,
+          "id": "geometry_native/product_manifold_ops",
+          "manifolds": [
+            "R^n",
+            "SO(n)",
+            "SE(n)",
+            "SIM(3)",
+            "SPD(k)",
+            "Sphere S^n",
+            "Hyperbolic PoincareBall",
+            "Hyperboloid H^n",
+            "Grassmann G(k,n)",
+            "Stiefel St(k,n)",
+            "Symplectic Sp(2n)",
+            "Unitary U(n)",
+            "Special Unitary SU(n)",
+            "Projective CP^n",
+            "Projective RP^n",
+            "Torus T^n",
+            "Heisenberg H(n)",
+            "Product(M1xM2)",
+            "Quotient(M/G)",
+            "LieAlgebra so(n)",
+            "LieAlgebra se(n)",
+            "LieAlgebra su(n)",
+            "AnyLieGroup",
+            "AnyRiemannian"
+          ],
+          "status": "beta"
+        }
+      ]
+    },
+    {
+      "entry_manifolds": [],
+      "function": "semantic_violence_prevention",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "causal_paradox_prevention",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "worldline_continuity",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "event_horizon_information_loss_validation",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "kappa_channels_defined",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "kappa_native_operations_mandate",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "kappa_transition_protocols",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "dense_consensus_behavior",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "rarified_consensus_behavior",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "transition_zone_stabilization_required",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [
+        "R^n",
+        "SO(n)",
+        "SE(n)",
+        "SIM(3)",
+        "SPD(k)",
+        "Sphere S^n",
+        "Hyperbolic PoincareBall",
+        "Hyperboloid H^n",
+        "Grassmann G(k,n)",
+        "Stiefel St(k,n)",
+        "Symplectic Sp(2n)",
+        "Unitary U(n)",
+        "Special Unitary SU(n)",
+        "Projective CP^n",
+        "Projective RP^n",
+        "Torus T^n",
+        "Heisenberg H(n)",
+        "Product(M1xM2)",
+        "Quotient(M/G)",
+        "LieAlgebra so(n)",
+        "LieAlgebra se(n)",
+        "LieAlgebra su(n)",
+        "AnyLieGroup",
+        "AnyRiemannian"
+      ],
+      "function": "spherical_chronology_protection",
+      "variants": [
+        {
+          "has_references": true,
+          "id": "geometry_native/exp_log",
+          "manifolds": [
+            "R^n",
+            "SO(n)",
+            "SE(n)",
+            "SIM(3)",
+            "SPD(k)",
+            "Sphere S^n",
+            "Hyperbolic PoincareBall",
+            "Hyperboloid H^n",
+            "Grassmann G(k,n)",
+            "Stiefel St(k,n)",
+            "Symplectic Sp(2n)",
+            "Unitary U(n)",
+            "Special Unitary SU(n)",
+            "Projective CP^n",
+            "Projective RP^n",
+            "Torus T^n",
+            "Heisenberg H(n)",
+            "Product(M1xM2)",
+            "Quotient(M/G)",
+            "LieAlgebra so(n)",
+            "LieAlgebra se(n)",
+            "LieAlgebra su(n)",
+            "AnyLieGroup",
+            "AnyRiemannian"
+          ],
+          "status": "beta"
+        }
+      ]
+    },
+    {
+      "entry_manifolds": [],
+      "function": "kappa_respect_levels",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "kappa_interactions_defined",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [
+        "SO(n)",
+        "SE(n)",
+        "SPD(k)",
+        "Sphere S^n",
+        "Hyperbolic PoincareBall",
+        "R^n",
+        "SIM(3)",
+        "Hyperboloid H^n",
+        "Grassmann G(k,n)",
+        "Stiefel St(k,n)",
+        "Symplectic Sp(2n)",
+        "Unitary U(n)",
+        "Special Unitary SU(n)",
+        "Projective CP^n",
+        "Projective RP^n",
+        "Torus T^n",
+        "Heisenberg H(n)",
+        "Product(M1xM2)",
+        "Quotient(M/G)",
+        "LieAlgebra so(n)",
+        "LieAlgebra se(n)",
+        "LieAlgebra su(n)",
+        "AnyLieGroup",
+        "AnyRiemannian"
+      ],
+      "function": "metric_coupling_validity",
+      "variants": [
+        {
+          "has_references": true,
+          "id": "geometry_native/gauge_invariant_distance",
+          "manifolds": [
+            "SO(n)",
+            "SE(n)",
+            "SPD(k)",
+            "Sphere S^n",
+            "Hyperbolic PoincareBall",
+            "R^n",
+            "SIM(3)",
+            "Hyperboloid H^n",
+            "Grassmann G(k,n)",
+            "Stiefel St(k,n)",
+            "Symplectic Sp(2n)",
+            "Unitary U(n)",
+            "Special Unitary SU(n)",
+            "Projective CP^n",
+            "Projective RP^n",
+            "Torus T^n",
+            "Heisenberg H(n)",
+            "Product(M1xM2)",
+            "Quotient(M/G)",
+            "LieAlgebra so(n)",
+            "LieAlgebra se(n)",
+            "LieAlgebra su(n)",
+            "AnyLieGroup",
+            "AnyRiemannian"
+          ],
+          "status": "beta"
+        }
+      ]
+    },
+    {
+      "entry_manifolds": [],
+      "function": "ultra_dense_interaction_safety",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [
+        "SO(n)",
+        "SE(n)",
+        "Sphere S^n",
+        "Grassmann G(k,n)",
+        "R^n",
+        "SIM(3)",
+        "SPD(k)",
+        "Hyperbolic PoincareBall",
+        "Hyperboloid H^n",
+        "Stiefel St(k,n)",
+        "Symplectic Sp(2n)",
+        "Unitary U(n)",
+        "Special Unitary SU(n)",
+        "Projective CP^n",
+        "Projective RP^n",
+        "Torus T^n",
+        "Heisenberg H(n)",
+        "Product(M1xM2)",
+        "Quotient(M/G)",
+        "LieAlgebra so(n)",
+        "LieAlgebra se(n)",
+        "LieAlgebra su(n)",
+        "AnyLieGroup",
+        "AnyRiemannian"
+      ],
+      "function": "curvature_driven_computation",
+      "variants": [
+        {
+          "has_references": true,
+          "id": "geometry_native/holonomy",
+          "manifolds": [
+            "SO(n)",
+            "SE(n)",
+            "Sphere S^n",
+            "Grassmann G(k,n)",
+            "R^n",
+            "SIM(3)",
+            "SPD(k)",
+            "Hyperbolic PoincareBall",
+            "Hyperboloid H^n",
+            "Stiefel St(k,n)",
+            "Symplectic Sp(2n)",
+            "Unitary U(n)",
+            "Special Unitary SU(n)",
+            "Projective CP^n",
+            "Projective RP^n",
+            "Torus T^n",
+            "Heisenberg H(n)",
+            "Product(M1xM2)",
+            "Quotient(M/G)",
+            "LieAlgebra so(n)",
+            "LieAlgebra se(n)",
+            "LieAlgebra su(n)",
+            "AnyLieGroup",
+            "AnyRiemannian"
+          ],
+          "status": "beta"
+        }
+      ]
+    },
+    {
+      "entry_manifolds": [],
+      "function": "quantum_vacuum_privacy",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "transition_superposition_being_protocol",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [],
+      "function": "temporal_paradox_interaction_guard",
+      "variants": []
+    },
+    {
+      "entry_manifolds": [
+        "SO(n)",
+        "SE(n)",
+        "SPD(k)",
+        "Sphere S^n",
+        "Grassmann G(k,n)",
+        "R^n",
+        "SIM(3)",
+        "Hyperbolic PoincareBall",
+        "Hyperboloid H^n",
+        "Stiefel St(k,n)",
+        "Symplectic Sp(2n)",
+        "Unitary U(n)",
+        "Special Unitary SU(n)",
+        "Projective CP^n",
+        "Projective RP^n",
+        "Torus T^n",
+        "Heisenberg H(n)",
+        "Product(M1xM2)",
+        "Quotient(M/G)",
+        "LieAlgebra so(n)",
+        "LieAlgebra se(n)",
+        "LieAlgebra su(n)",
+        "AnyLieGroup",
+        "AnyRiemannian"
+      ],
+      "function": "flow_powered_transport_policy",
+      "variants": [
+        {
+          "has_references": true,
+          "id": "geometry_native/parallel_transport",
+          "manifolds": [
+            "SO(n)",
+            "SE(n)",
+            "SPD(k)",
+            "Sphere S^n",
+            "Grassmann G(k,n)",
+            "R^n",
+            "SIM(3)",
+            "Hyperbolic PoincareBall",
+            "Hyperboloid H^n",
+            "Stiefel St(k,n)",
+            "Symplectic Sp(2n)",
+            "Unitary U(n)",
+            "Special Unitary SU(n)",
+            "Projective CP^n",
+            "Projective RP^n",
+            "Torus T^n",
+            "Heisenberg H(n)",
+            "Product(M1xM2)",
+            "Quotient(M/G)",
+            "LieAlgebra so(n)",
+            "LieAlgebra se(n)",
+            "LieAlgebra su(n)",
+            "AnyLieGroup",
+            "AnyRiemannian"
+          ],
+          "status": "beta"
+        }
+      ]
+    }
+  ],
+  "generated_at": 1761859011
+}

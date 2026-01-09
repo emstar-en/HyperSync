@@ -1,0 +1,8 @@
+{
+  "id": "hypersync.core.catalogue",
+  "version": "1.1.0",
+  "type": "core",
+  "determinism": "D1",
+  "description": "The Local Intelligence Registry. Manages available LLMs/SLMs and routes inference tasks.",
+  "capabilities": ["model_discovery", "inference_routing", "quantization_aware_scheduling"]
+}

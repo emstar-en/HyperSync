@@ -1,0 +1,42 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "Stored preferences and accessibility settings",
+  "properties": {
+    "accessibility_mode": {
+      "default": "DEFAULT",
+      "enum": [
+        "DEFAULT",
+        "MONOCHROME",
+        "HIGH_CONTRAST",
+        "SCREEN_READER",
+        "FOCUS_MODE"
+      ],
+      "type": "string"
+    },
+    "color_scheme": {
+      "default": "default",
+      "type": "string"
+    },
+    "key_bindings": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "Custom key bindings",
+      "type": "object"
+    },
+    "layout_template": {
+      "description": "Preferred layout template",
+      "type": "string"
+    },
+    "mouse_enabled": {
+      "default": true,
+      "type": "boolean"
+    },
+    "panel_preferences": {
+      "description": "Per-panel preferences",
+      "type": "object"
+    }
+  },
+  "title": "Operator Preferences",
+  "type": "object"
+}

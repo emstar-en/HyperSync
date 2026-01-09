@@ -1,0 +1,784 @@
+{
+  "id_updates": [
+    {
+      "new_id": "schemas/proof_api.schema.json",
+      "path": "spec-pack/schemas/proof_api.schema.json"
+    },
+    {
+      "new_id": "schemas/proof_api.schema.json",
+      "path": "refs/surreal_systems/spec-pack/schemas/proof_api.schema.json"
+    },
+    {
+      "new_id": "schemas/proof_api.schema.json",
+      "path": "refs/surreal_capsules/spec-pack/schemas/proof_api.schema.json"
+    },
+    {
+      "new_id": "schemas/proof_api.schema.json",
+      "path": "refs/surreal_systems/refs/surreal_capsules/spec-pack/schemas/proof_api.schema.json"
+    },
+    {
+      "new_id": "https://example.org/schemas/conformance_block.schema.json",
+      "path": "spec-pack/schemas/test_block.schema.json"
+    },
+    {
+      "new_id": "https://example.org/schemas/conformance_block.schema.json",
+      "path": "refs/surreal_systems/spec-pack/schemas/test_block.schema.json"
+    },
+    {
+      "new_id": "https://example.org/schemas/conformance_block.schema.json",
+      "path": "refs/surreal_capsules/spec-pack/schemas/test_block.schema.json"
+    },
+    {
+      "new_id": "https://example.org/schemas/conformance_block.schema.json",
+      "path": "refs/surreal_systems/refs/surreal_capsules/spec-pack/schemas/test_block.schema.json"
+    },
+    {
+      "new_id": "schemas/predicate_proof.schema.json",
+      "path": "spec-pack/schemas/predicate_proof.schema.json"
+    },
+    {
+      "new_id": "schemas/predicate_proof.schema.json",
+      "path": "refs/surreal_systems/spec-pack/schemas/predicate_proof.schema.json"
+    },
+    {
+      "new_id": "schemas/predicate_proof.schema.json",
+      "path": "refs/surreal_capsules/spec-pack/schemas/predicate_proof.schema.json"
+    },
+    {
+      "new_id": "schemas/predicate_proof.schema.json",
+      "path": "refs/surreal_systems/refs/surreal_capsules/spec-pack/schemas/predicate_proof.schema.json"
+    },
+    {
+      "new_id": "schemas/domain_interface_descriptor.schema.json",
+      "path": "spec-pack/schemas/domain_interface_descriptor.schema.json"
+    },
+    {
+      "new_id": "schemas/domain_interface_descriptor.schema.json",
+      "path": "refs/surreal_systems/spec-pack/schemas/domain_interface_descriptor.schema.json"
+    },
+    {
+      "new_id": "schemas/domain_interface_descriptor.schema.json",
+      "path": "refs/surreal_capsules/spec-pack/schemas/domain_interface_descriptor.schema.json"
+    },
+    {
+      "new_id": "schemas/domain_interface_descriptor.schema.json",
+      "path": "refs/surreal_systems/refs/surreal_capsules/spec-pack/schemas/domain_interface_descriptor.schema.json"
+    },
+    {
+      "new_id": "schemas/attestation.schema.json",
+      "path": "spec-pack/schemas/attestation.schema.json"
+    },
+    {
+      "new_id": "schemas/attestation.schema.json",
+      "path": "refs/surreal_systems/spec-pack/schemas/attestation.schema.json"
+    },
+    {
+      "new_id": "schemas/attestation.schema.json",
+      "path": "refs/surreal_capsules/spec-pack/schemas/attestation.schema.json"
+    },
+    {
+      "new_id": "schemas/attestation.schema.json",
+      "path": "refs/surreal_systems/refs/surreal_capsules/spec-pack/schemas/attestation.schema.json"
+    },
+    {
+      "new_id": "symplectic_core.schema.json",
+      "path": "spec-pack/schemas/geometry/symplectic_core.schema.json"
+    },
+    {
+      "new_id": "symplectic_core.schema.json",
+      "path": "refs/surreal_systems/spec-pack/schemas/geometry/symplectic_core.schema.json"
+    },
+    {
+      "new_id": "symplectic_core.schema.json",
+      "path": "refs/surreal_capsules/spec-pack/schemas/geometry/symplectic_core.schema.json"
+    },
+    {
+      "new_id": "symplectic_core.schema.json",
+      "path": "refs/surreal_systems/refs/surreal_capsules/spec-pack/schemas/geometry/symplectic_core.schema.json"
+    },
+    {
+      "new_id": "kappa_symplectic_channels.schema.json",
+      "path": "spec-pack/schemas/geometry/kappa_symplectic_channels.schema.json"
+    },
+    {
+      "new_id": "kappa_symplectic_channels.schema.json",
+      "path": "refs/surreal_systems/spec-pack/schemas/geometry/kappa_symplectic_channels.schema.json"
+    },
+    {
+      "new_id": "kappa_symplectic_channels.schema.json",
+      "path": "refs/surreal_capsules/spec-pack/schemas/geometry/kappa_symplectic_channels.schema.json"
+    },
+    {
+      "new_id": "kappa_symplectic_channels.schema.json",
+      "path": "refs/surreal_systems/refs/surreal_capsules/spec-pack/schemas/geometry/kappa_symplectic_channels.schema.json"
+    },
+    {
+      "new_id": "https://example.org/ico/connect.schema.json",
+      "path": "spec-pack/schemas/ico-connect/connect.schema.json"
+    },
+    {
+      "new_id": "https://example.org/ico/connect.schema.json",
+      "path": "refs/surreal_systems/spec-pack/schemas/ico-connect/connect.schema.json"
+    },
+    {
+      "new_id": "https://example.org/ico/connect.schema.json",
+      "path": "refs/surreal_capsules/spec-pack/schemas/ico-connect/connect.schema.json"
+    },
+    {
+      "new_id": "https://example.org/ico/connect.schema.json",
+      "path": "refs/surreal_systems/refs/surreal_capsules/spec-pack/schemas/ico-connect/connect.schema.json"
+    },
+    {
+      "new_id": "https://example.com/spec-pack/schemas/ops/tool_profile.schema.json",
+      "path": "spec-pack/schemas/ops/tool_profile.schema.json"
+    },
+    {
+      "new_id": "https://example.com/spec-pack/schemas/ops/tool_profile.schema.json",
+      "path": "refs/surreal_systems/spec-pack/schemas/ops/tool_profile.schema.json"
+    },
+    {
+      "new_id": "https://example.com/spec-pack/schemas/ops/tool_profile.schema.json",
+      "path": "refs/surreal_capsules/spec-pack/schemas/ops/tool_profile.schema.json"
+    },
+    {
+      "new_id": "https://example.com/spec-pack/schemas/ops/tool_profile.schema.json",
+      "path": "refs/surreal_systems/refs/surreal_capsules/spec-pack/schemas/ops/tool_profile.schema.json"
+    },
+    {
+      "new_id": "https://example.com/spec-pack/schemas/reasoning/reasoning_step.schema.json",
+      "path": "spec-pack/schemas/reasoning/reasoning_step.schema.json"
+    },
+    {
+      "new_id": "https://example.com/spec-pack/schemas/reasoning/reasoning_step.schema.json",
+      "path": "refs/surreal_systems/spec-pack/schemas/reasoning/reasoning_step.schema.json"
+    },
+    {
+      "new_id": "https://example.com/spec-pack/schemas/reasoning/reasoning_step.schema.json",
+      "path": "refs/surreal_capsules/spec-pack/schemas/reasoning/reasoning_step.schema.json"
+    },
+    {
+      "new_id": "https://example.com/spec-pack/schemas/reasoning/reasoning_step.schema.json",
+      "path": "refs/surreal_systems/refs/surreal_capsules/spec-pack/schemas/reasoning/reasoning_step.schema.json"
+    },
+    {
+      "new_id": "https://example.com/spec-pack/schemas/reasoning/divergence_attestation.schema.json",
+      "path": "spec-pack/schemas/reasoning/divergence_attestation.schema.json"
+    },
+    {
+      "new_id": "https://example.com/spec-pack/schemas/reasoning/divergence_attestation.schema.json",
+      "path": "refs/surreal_systems/spec-pack/schemas/reasoning/divergence_attestation.schema.json"
+    },
+    {
+      "new_id": "https://example.com/spec-pack/schemas/reasoning/divergence_attestation.schema.json",
+      "path": "refs/surreal_capsules/spec-pack/schemas/reasoning/divergence_attestation.schema.json"
+    },
+    {
+      "new_id": "https://example.com/spec-pack/schemas/reasoning/divergence_attestation.schema.json",
+      "path": "refs/surreal_systems/refs/surreal_capsules/spec-pack/schemas/reasoning/divergence_attestation.schema.json"
+    },
+    {
+      "new_id": "https://example.com/spec-pack/schemas/reasoning/reasoning_plan.schema.json",
+      "path": "spec-pack/schemas/reasoning/reasoning_plan.schema.json"
+    },
+    {
+      "new_id": "https://example.com/spec-pack/schemas/reasoning/reasoning_plan.schema.json",
+      "path": "refs/surreal_systems/spec-pack/schemas/reasoning/reasoning_plan.schema.json"
+    },
+    {
+      "new_id": "https://example.com/spec-pack/schemas/reasoning/reasoning_plan.schema.json",
+      "path": "refs/surreal_capsules/spec-pack/schemas/reasoning/reasoning_plan.schema.json"
+    },
+    {
+      "new_id": "https://example.com/spec-pack/schemas/reasoning/reasoning_plan.schema.json",
+      "path": "refs/surreal_systems/refs/surreal_capsules/spec-pack/schemas/reasoning/reasoning_plan.schema.json"
+    },
+    {
+      "new_id": "https://example.org/ico/sync.schema.json",
+      "path": "spec-pack/schemas/ico-sync/sync.schema.json"
+    },
+    {
+      "new_id": "https://example.org/ico/sync.schema.json",
+      "path": "refs/surreal_systems/spec-pack/schemas/ico-sync/sync.schema.json"
+    },
+    {
+      "new_id": "https://example.org/ico/sync.schema.json",
+      "path": "refs/surreal_capsules/spec-pack/schemas/ico-sync/sync.schema.json"
+    },
+    {
+      "new_id": "https://example.org/ico/sync.schema.json",
+      "path": "refs/surreal_systems/refs/surreal_capsules/spec-pack/schemas/ico-sync/sync.schema.json"
+    },
+    {
+      "new_id": "https://example.org/ico/icov.schema.json",
+      "path": "spec-pack/schemas/ico/icov.schema.json"
+    },
+    {
+      "new_id": "https://example.org/ico/icov.schema.json",
+      "path": "refs/surreal_systems/spec-pack/schemas/ico/icov.schema.json"
+    },
+    {
+      "new_id": "https://example.org/ico/icov.schema.json",
+      "path": "refs/surreal_capsules/spec-pack/schemas/ico/icov.schema.json"
+    },
+    {
+      "new_id": "https://example.org/ico/icov.schema.json",
+      "path": "refs/surreal_systems/refs/surreal_capsules/spec-pack/schemas/ico/icov.schema.json"
+    },
+    {
+      "new_id": "https://example.org/ico/icop.schema.json",
+      "path": "spec-pack/schemas/ico/icop.schema.json"
+    },
+    {
+      "new_id": "https://example.org/ico/icop.schema.json",
+      "path": "refs/surreal_systems/spec-pack/schemas/ico/icop.schema.json"
+    },
+    {
+      "new_id": "https://example.org/ico/icop.schema.json",
+      "path": "refs/surreal_capsules/spec-pack/schemas/ico/icop.schema.json"
+    },
+    {
+      "new_id": "https://example.org/ico/icop.schema.json",
+      "path": "refs/surreal_systems/refs/surreal_capsules/spec-pack/schemas/ico/icop.schema.json"
+    },
+    {
+      "new_id": "https://example.org/ico/icod.schema.json",
+      "path": "spec-pack/schemas/ico/icod.schema.json"
+    },
+    {
+      "new_id": "https://example.org/ico/icod.schema.json",
+      "path": "refs/surreal_systems/spec-pack/schemas/ico/icod.schema.json"
+    },
+    {
+      "new_id": "https://example.org/ico/icod.schema.json",
+      "path": "refs/surreal_capsules/spec-pack/schemas/ico/icod.schema.json"
+    },
+    {
+      "new_id": "https://example.org/ico/icod.schema.json",
+      "path": "refs/surreal_systems/refs/surreal_capsules/spec-pack/schemas/ico/icod.schema.json"
+    },
+    {
+      "new_id": "https://example.com/spec-pack/schemas/geometry/geometry_safety_report.v2.schema.json",
+      "path": "refs/surreal_capsules/spec-pack/schemas/geometry/geometry_safety_report.v2.schema.json"
+    },
+    {
+      "new_id": "https://example.com/spec-pack/schemas/geometry/geometry_safety_report.v2.schema.json",
+      "path": "refs/surreal_systems/refs/surreal_capsules/spec-pack/schemas/geometry/geometry_safety_report.v2.schema.json"
+    },
+    {
+      "new_id": "https://example.com/spec-pack/schemas/ops/surreal_containment_receipt.schema.json",
+      "path": "refs/surreal_capsules/spec-pack/schemas/ops/surreal_containment_receipt.schema.json"
+    },
+    {
+      "new_id": "https://example.com/spec-pack/schemas/ops/surreal_containment_receipt.schema.json",
+      "path": "refs/surreal_systems/refs/surreal_capsules/spec-pack/schemas/ops/surreal_containment_receipt.schema.json"
+    },
+    {
+      "new_id": "https://example.com/spec-pack/schemas/math/conway_cut.schema.json",
+      "path": "refs/surreal_capsules/spec-pack/schemas/math/conway_cut.schema.json"
+    },
+    {
+      "new_id": "https://example.com/spec-pack/schemas/math/conway_cut.schema.json",
+      "path": "refs/surreal_systems/refs/surreal_capsules/spec-pack/schemas/math/conway_cut.schema.json"
+    },
+    {
+      "new_id": "https://example.com/spec-pack/schemas/math/surreal_birthday.schema.json",
+      "path": "refs/surreal_capsules/spec-pack/schemas/math/surreal_birthday.schema.json"
+    },
+    {
+      "new_id": "https://example.com/spec-pack/schemas/math/surreal_birthday.schema.json",
+      "path": "refs/surreal_systems/refs/surreal_capsules/spec-pack/schemas/math/surreal_birthday.schema.json"
+    },
+    {
+      "new_id": "https://example.com/spec-pack/schemas/learning/stability_attestation.schema.json",
+      "path": "refs/sgv_capsules/spec-pack/schemas/learning/stability_attestation.schema.json"
+    },
+    {
+      "new_id": "https://example.com/spec-pack/schemas/learning/stability_attestation.schema.json",
+      "path": "refs/surreal_systems/refs/sgv_capsules/spec-pack/schemas/learning/stability_attestation.schema.json"
+    },
+    {
+      "new_id": "https://example.com/spec-pack/schemas/learning/stability_attestation.schema.json",
+      "path": "refs/surreal_systems/refs/surreal_capsules/refs/sgv_capsules/spec-pack/schemas/learning/stability_attestation.schema.json"
+    },
+    {
+      "new_id": "https://example.com/spec-pack/schemas/learning/stability_attestation.schema.json",
+      "path": "refs/surreal_capsules/refs/sgv_capsules/spec-pack/schemas/learning/stability_attestation.schema.json"
+    },
+    {
+      "new_id": "https://example.com/spec-pack/schemas/learning/concept_capsule.schema.json",
+      "path": "refs/sgv_capsules/spec-pack/schemas/learning/concept_capsule.schema.json"
+    },
+    {
+      "new_id": "https://example.com/spec-pack/schemas/learning/concept_capsule.schema.json",
+      "path": "refs/surreal_systems/refs/sgv_capsules/spec-pack/schemas/learning/concept_capsule.schema.json"
+    },
+    {
+      "new_id": "https://example.com/spec-pack/schemas/learning/concept_capsule.schema.json",
+      "path": "refs/surreal_systems/refs/surreal_capsules/refs/sgv_capsules/spec-pack/schemas/learning/concept_capsule.schema.json"
+    },
+    {
+      "new_id": "https://example.com/spec-pack/schemas/learning/concept_capsule.schema.json",
+      "path": "refs/surreal_capsules/refs/sgv_capsules/spec-pack/schemas/learning/concept_capsule.schema.json"
+    },
+    {
+      "new_id": "https://example.com/spec-pack/schemas/geometry/manifold_patch.schema.json",
+      "path": "refs/sgv_capsules/spec-pack/schemas/geometry/manifold_patch.schema.json"
+    },
+    {
+      "new_id": "https://example.com/spec-pack/schemas/geometry/manifold_patch.schema.json",
+      "path": "refs/surreal_systems/refs/sgv_capsules/spec-pack/schemas/geometry/manifold_patch.schema.json"
+    },
+    {
+      "new_id": "https://example.com/spec-pack/schemas/geometry/manifold_patch.schema.json",
+      "path": "refs/surreal_systems/refs/surreal_capsules/refs/sgv_capsules/spec-pack/schemas/geometry/manifold_patch.schema.json"
+    },
+    {
+      "new_id": "https://example.com/spec-pack/schemas/geometry/manifold_patch.schema.json",
+      "path": "refs/surreal_capsules/refs/sgv_capsules/spec-pack/schemas/geometry/manifold_patch.schema.json"
+    },
+    {
+      "new_id": "https://example.com/spec-pack/schemas/geometry/encoding_profile.schema.json",
+      "path": "refs/sgv_capsules/spec-pack/schemas/geometry/encoding_profile.schema.json"
+    },
+    {
+      "new_id": "https://example.com/spec-pack/schemas/geometry/encoding_profile.schema.json",
+      "path": "refs/surreal_systems/refs/sgv_capsules/spec-pack/schemas/geometry/encoding_profile.schema.json"
+    },
+    {
+      "new_id": "https://example.com/spec-pack/schemas/geometry/encoding_profile.schema.json",
+      "path": "refs/surreal_systems/refs/surreal_capsules/refs/sgv_capsules/spec-pack/schemas/geometry/encoding_profile.schema.json"
+    },
+    {
+      "new_id": "https://example.com/spec-pack/schemas/geometry/encoding_profile.schema.json",
+      "path": "refs/surreal_capsules/refs/sgv_capsules/spec-pack/schemas/geometry/encoding_profile.schema.json"
+    },
+    {
+      "new_id": "https://example.com/spec-pack/schemas/geometry/geometry_safety_report.schema.json",
+      "path": "refs/sgv_capsules/spec-pack/schemas/geometry/geometry_safety_report.schema.json"
+    },
+    {
+      "new_id": "https://example.com/spec-pack/schemas/geometry/geometry_safety_report.schema.json",
+      "path": "refs/surreal_systems/refs/sgv_capsules/spec-pack/schemas/geometry/geometry_safety_report.schema.json"
+    },
+    {
+      "new_id": "https://example.com/spec-pack/schemas/geometry/geometry_safety_report.schema.json",
+      "path": "refs/surreal_systems/refs/surreal_capsules/refs/sgv_capsules/spec-pack/schemas/geometry/geometry_safety_report.schema.json"
+    },
+    {
+      "new_id": "https://example.com/spec-pack/schemas/geometry/geometry_safety_report.schema.json",
+      "path": "refs/surreal_capsules/refs/sgv_capsules/spec-pack/schemas/geometry/geometry_safety_report.schema.json"
+    },
+    {
+      "new_id": "https://example.com/spec-pack/schemas/ops/offload_receipt.schema.json",
+      "path": "refs/sgv_capsules/spec-pack/schemas/ops/offload_receipt.schema.json"
+    },
+    {
+      "new_id": "https://example.com/spec-pack/schemas/ops/offload_receipt.schema.json",
+      "path": "refs/surreal_systems/refs/sgv_capsules/spec-pack/schemas/ops/offload_receipt.schema.json"
+    },
+    {
+      "new_id": "https://example.com/spec-pack/schemas/ops/offload_receipt.schema.json",
+      "path": "refs/surreal_systems/refs/surreal_capsules/refs/sgv_capsules/spec-pack/schemas/ops/offload_receipt.schema.json"
+    },
+    {
+      "new_id": "https://example.com/spec-pack/schemas/ops/offload_receipt.schema.json",
+      "path": "refs/surreal_capsules/refs/sgv_capsules/spec-pack/schemas/ops/offload_receipt.schema.json"
+    }
+  ],
+  "module_patch": {
+    "added": {
+      "configs": 1,
+      "policies": 6,
+      "schemas": 97,
+      "tools": 88
+    },
+    "skipped_dupes": 19
+  },
+  "renamed": [
+    {
+      "from": "spec-pack/schemas/proof_api.schema.json",
+      "to": "spec-pack/schemas/proof_api.schema.json"
+    },
+    {
+      "from": "refs/surreal_systems/spec-pack/schemas/proof_api.schema.json",
+      "to": "refs/surreal_systems/spec-pack/schemas/proof_api.schema.json"
+    },
+    {
+      "from": "refs/surreal_capsules/spec-pack/schemas/proof_api.schema.json",
+      "to": "refs/surreal_capsules/spec-pack/schemas/proof_api.schema.json"
+    },
+    {
+      "from": "refs/surreal_systems/refs/surreal_capsules/spec-pack/schemas/proof_api.schema.json",
+      "to": "refs/surreal_systems/refs/surreal_capsules/spec-pack/schemas/proof_api.schema.json"
+    },
+    {
+      "from": "spec-pack/schemas/test_block.schema.json",
+      "to": "spec-pack/schemas/test_block.schema.json"
+    },
+    {
+      "from": "refs/surreal_systems/spec-pack/schemas/test_block.schema.json",
+      "to": "refs/surreal_systems/spec-pack/schemas/test_block.schema.json"
+    },
+    {
+      "from": "refs/surreal_capsules/spec-pack/schemas/test_block.schema.json",
+      "to": "refs/surreal_capsules/spec-pack/schemas/test_block.schema.json"
+    },
+    {
+      "from": "refs/surreal_systems/refs/surreal_capsules/spec-pack/schemas/test_block.schema.json",
+      "to": "refs/surreal_systems/refs/surreal_capsules/spec-pack/schemas/test_block.schema.json"
+    },
+    {
+      "from": "spec-pack/schemas/predicate_proof.schema.json",
+      "to": "spec-pack/schemas/predicate_proof.schema.json"
+    },
+    {
+      "from": "refs/surreal_systems/spec-pack/schemas/predicate_proof.schema.json",
+      "to": "refs/surreal_systems/spec-pack/schemas/predicate_proof.schema.json"
+    },
+    {
+      "from": "refs/surreal_capsules/spec-pack/schemas/predicate_proof.schema.json",
+      "to": "refs/surreal_capsules/spec-pack/schemas/predicate_proof.schema.json"
+    },
+    {
+      "from": "refs/surreal_systems/refs/surreal_capsules/spec-pack/schemas/predicate_proof.schema.json",
+      "to": "refs/surreal_systems/refs/surreal_capsules/spec-pack/schemas/predicate_proof.schema.json"
+    },
+    {
+      "from": "spec-pack/schemas/domain_interface_descriptor.schema.json",
+      "to": "spec-pack/schemas/domain_interface_descriptor.schema.json"
+    },
+    {
+      "from": "refs/surreal_systems/spec-pack/schemas/domain_interface_descriptor.schema.json",
+      "to": "refs/surreal_systems/spec-pack/schemas/domain_interface_descriptor.schema.json"
+    },
+    {
+      "from": "refs/surreal_capsules/spec-pack/schemas/domain_interface_descriptor.schema.json",
+      "to": "refs/surreal_capsules/spec-pack/schemas/domain_interface_descriptor.schema.json"
+    },
+    {
+      "from": "refs/surreal_systems/refs/surreal_capsules/spec-pack/schemas/domain_interface_descriptor.schema.json",
+      "to": "refs/surreal_systems/refs/surreal_capsules/spec-pack/schemas/domain_interface_descriptor.schema.json"
+    },
+    {
+      "from": "spec-pack/schemas/attestation.schema.json",
+      "to": "spec-pack/schemas/attestation.schema.json"
+    },
+    {
+      "from": "refs/surreal_systems/spec-pack/schemas/attestation.schema.json",
+      "to": "refs/surreal_systems/spec-pack/schemas/attestation.schema.json"
+    },
+    {
+      "from": "refs/surreal_capsules/spec-pack/schemas/attestation.schema.json",
+      "to": "refs/surreal_capsules/spec-pack/schemas/attestation.schema.json"
+    },
+    {
+      "from": "refs/surreal_systems/refs/surreal_capsules/spec-pack/schemas/attestation.schema.json",
+      "to": "refs/surreal_systems/refs/surreal_capsules/spec-pack/schemas/attestation.schema.json"
+    },
+    {
+      "from": "spec-pack/schemas/geometry/symplectic_core.schema.json",
+      "to": "spec-pack/schemas/geometry/symplectic_core.schema.json"
+    },
+    {
+      "from": "refs/surreal_systems/spec-pack/schemas/geometry/symplectic_core.schema.json",
+      "to": "refs/surreal_systems/spec-pack/schemas/geometry/symplectic_core.schema.json"
+    },
+    {
+      "from": "refs/surreal_capsules/spec-pack/schemas/geometry/symplectic_core.schema.json",
+      "to": "refs/surreal_capsules/spec-pack/schemas/geometry/symplectic_core.schema.json"
+    },
+    {
+      "from": "refs/surreal_systems/refs/surreal_capsules/spec-pack/schemas/geometry/symplectic_core.schema.json",
+      "to": "refs/surreal_systems/refs/surreal_capsules/spec-pack/schemas/geometry/symplectic_core.schema.json"
+    },
+    {
+      "from": "spec-pack/schemas/geometry/kappa_symplectic_channels.schema.json",
+      "to": "spec-pack/schemas/geometry/kappa_symplectic_channels.schema.json"
+    },
+    {
+      "from": "refs/surreal_systems/spec-pack/schemas/geometry/kappa_symplectic_channels.schema.json",
+      "to": "refs/surreal_systems/spec-pack/schemas/geometry/kappa_symplectic_channels.schema.json"
+    },
+    {
+      "from": "refs/surreal_capsules/spec-pack/schemas/geometry/kappa_symplectic_channels.schema.json",
+      "to": "refs/surreal_capsules/spec-pack/schemas/geometry/kappa_symplectic_channels.schema.json"
+    },
+    {
+      "from": "refs/surreal_systems/refs/surreal_capsules/spec-pack/schemas/geometry/kappa_symplectic_channels.schema.json",
+      "to": "refs/surreal_systems/refs/surreal_capsules/spec-pack/schemas/geometry/kappa_symplectic_channels.schema.json"
+    },
+    {
+      "from": "spec-pack/schemas/ico-connect/connect.schema.json",
+      "to": "spec-pack/schemas/ico-connect/connect.schema.json"
+    },
+    {
+      "from": "refs/surreal_systems/spec-pack/schemas/ico-connect/connect.schema.json",
+      "to": "refs/surreal_systems/spec-pack/schemas/ico-connect/connect.schema.json"
+    },
+    {
+      "from": "refs/surreal_capsules/spec-pack/schemas/ico-connect/connect.schema.json",
+      "to": "refs/surreal_capsules/spec-pack/schemas/ico-connect/connect.schema.json"
+    },
+    {
+      "from": "refs/surreal_systems/refs/surreal_capsules/spec-pack/schemas/ico-connect/connect.schema.json",
+      "to": "refs/surreal_systems/refs/surreal_capsules/spec-pack/schemas/ico-connect/connect.schema.json"
+    },
+    {
+      "from": "spec-pack/schemas/ops/tool_profile.schema.json",
+      "to": "spec-pack/schemas/ops/tool_profile.schema.json"
+    },
+    {
+      "from": "refs/surreal_systems/spec-pack/schemas/ops/tool_profile.schema.json",
+      "to": "refs/surreal_systems/spec-pack/schemas/ops/tool_profile.schema.json"
+    },
+    {
+      "from": "refs/surreal_capsules/spec-pack/schemas/ops/tool_profile.schema.json",
+      "to": "refs/surreal_capsules/spec-pack/schemas/ops/tool_profile.schema.json"
+    },
+    {
+      "from": "refs/surreal_systems/refs/surreal_capsules/spec-pack/schemas/ops/tool_profile.schema.json",
+      "to": "refs/surreal_systems/refs/surreal_capsules/spec-pack/schemas/ops/tool_profile.schema.json"
+    },
+    {
+      "from": "spec-pack/schemas/reasoning/reasoning_step.schema.json",
+      "to": "spec-pack/schemas/reasoning/reasoning_step.schema.json"
+    },
+    {
+      "from": "refs/surreal_systems/spec-pack/schemas/reasoning/reasoning_step.schema.json",
+      "to": "refs/surreal_systems/spec-pack/schemas/reasoning/reasoning_step.schema.json"
+    },
+    {
+      "from": "refs/surreal_capsules/spec-pack/schemas/reasoning/reasoning_step.schema.json",
+      "to": "refs/surreal_capsules/spec-pack/schemas/reasoning/reasoning_step.schema.json"
+    },
+    {
+      "from": "refs/surreal_systems/refs/surreal_capsules/spec-pack/schemas/reasoning/reasoning_step.schema.json",
+      "to": "refs/surreal_systems/refs/surreal_capsules/spec-pack/schemas/reasoning/reasoning_step.schema.json"
+    },
+    {
+      "from": "spec-pack/schemas/reasoning/divergence_attestation.schema.json",
+      "to": "spec-pack/schemas/reasoning/divergence_attestation.schema.json"
+    },
+    {
+      "from": "refs/surreal_systems/spec-pack/schemas/reasoning/divergence_attestation.schema.json",
+      "to": "refs/surreal_systems/spec-pack/schemas/reasoning/divergence_attestation.schema.json"
+    },
+    {
+      "from": "refs/surreal_capsules/spec-pack/schemas/reasoning/divergence_attestation.schema.json",
+      "to": "refs/surreal_capsules/spec-pack/schemas/reasoning/divergence_attestation.schema.json"
+    },
+    {
+      "from": "refs/surreal_systems/refs/surreal_capsules/spec-pack/schemas/reasoning/divergence_attestation.schema.json",
+      "to": "refs/surreal_systems/refs/surreal_capsules/spec-pack/schemas/reasoning/divergence_attestation.schema.json"
+    },
+    {
+      "from": "spec-pack/schemas/reasoning/reasoning_plan.schema.json",
+      "to": "spec-pack/schemas/reasoning/reasoning_plan.schema.json"
+    },
+    {
+      "from": "refs/surreal_systems/spec-pack/schemas/reasoning/reasoning_plan.schema.json",
+      "to": "refs/surreal_systems/spec-pack/schemas/reasoning/reasoning_plan.schema.json"
+    },
+    {
+      "from": "refs/surreal_capsules/spec-pack/schemas/reasoning/reasoning_plan.schema.json",
+      "to": "refs/surreal_capsules/spec-pack/schemas/reasoning/reasoning_plan.schema.json"
+    },
+    {
+      "from": "refs/surreal_systems/refs/surreal_capsules/spec-pack/schemas/reasoning/reasoning_plan.schema.json",
+      "to": "refs/surreal_systems/refs/surreal_capsules/spec-pack/schemas/reasoning/reasoning_plan.schema.json"
+    },
+    {
+      "from": "spec-pack/schemas/ico-sync/sync.schema.json",
+      "to": "spec-pack/schemas/ico-sync/sync.schema.json"
+    },
+    {
+      "from": "refs/surreal_systems/spec-pack/schemas/ico-sync/sync.schema.json",
+      "to": "refs/surreal_systems/spec-pack/schemas/ico-sync/sync.schema.json"
+    },
+    {
+      "from": "refs/surreal_capsules/spec-pack/schemas/ico-sync/sync.schema.json",
+      "to": "refs/surreal_capsules/spec-pack/schemas/ico-sync/sync.schema.json"
+    },
+    {
+      "from": "refs/surreal_systems/refs/surreal_capsules/spec-pack/schemas/ico-sync/sync.schema.json",
+      "to": "refs/surreal_systems/refs/surreal_capsules/spec-pack/schemas/ico-sync/sync.schema.json"
+    },
+    {
+      "from": "spec-pack/schemas/ico/icov.schema.json",
+      "to": "spec-pack/schemas/ico/icov.schema.json"
+    },
+    {
+      "from": "refs/surreal_systems/spec-pack/schemas/ico/icov.schema.json",
+      "to": "refs/surreal_systems/spec-pack/schemas/ico/icov.schema.json"
+    },
+    {
+      "from": "refs/surreal_capsules/spec-pack/schemas/ico/icov.schema.json",
+      "to": "refs/surreal_capsules/spec-pack/schemas/ico/icov.schema.json"
+    },
+    {
+      "from": "refs/surreal_systems/refs/surreal_capsules/spec-pack/schemas/ico/icov.schema.json",
+      "to": "refs/surreal_systems/refs/surreal_capsules/spec-pack/schemas/ico/icov.schema.json"
+    },
+    {
+      "from": "spec-pack/schemas/ico/icop.schema.json",
+      "to": "spec-pack/schemas/ico/icop.schema.json"
+    },
+    {
+      "from": "refs/surreal_systems/spec-pack/schemas/ico/icop.schema.json",
+      "to": "refs/surreal_systems/spec-pack/schemas/ico/icop.schema.json"
+    },
+    {
+      "from": "refs/surreal_capsules/spec-pack/schemas/ico/icop.schema.json",
+      "to": "refs/surreal_capsules/spec-pack/schemas/ico/icop.schema.json"
+    },
+    {
+      "from": "refs/surreal_systems/refs/surreal_capsules/spec-pack/schemas/ico/icop.schema.json",
+      "to": "refs/surreal_systems/refs/surreal_capsules/spec-pack/schemas/ico/icop.schema.json"
+    },
+    {
+      "from": "spec-pack/schemas/ico/icod.schema.json",
+      "to": "spec-pack/schemas/ico/icod.schema.json"
+    },
+    {
+      "from": "refs/surreal_systems/spec-pack/schemas/ico/icod.schema.json",
+      "to": "refs/surreal_systems/spec-pack/schemas/ico/icod.schema.json"
+    },
+    {
+      "from": "refs/surreal_capsules/spec-pack/schemas/ico/icod.schema.json",
+      "to": "refs/surreal_capsules/spec-pack/schemas/ico/icod.schema.json"
+    },
+    {
+      "from": "refs/surreal_systems/refs/surreal_capsules/spec-pack/schemas/ico/icod.schema.json",
+      "to": "refs/surreal_systems/refs/surreal_capsules/spec-pack/schemas/ico/icod.schema.json"
+    },
+    {
+      "from": "refs/surreal_capsules/spec-pack/schemas/geometry/geometry_safety_report.v2.schema.json",
+      "to": "refs/surreal_capsules/spec-pack/schemas/geometry/geometry_safety_report.v2.schema.json"
+    },
+    {
+      "from": "refs/surreal_systems/refs/surreal_capsules/spec-pack/schemas/geometry/geometry_safety_report.v2.schema.json",
+      "to": "refs/surreal_systems/refs/surreal_capsules/spec-pack/schemas/geometry/geometry_safety_report.v2.schema.json"
+    },
+    {
+      "from": "refs/surreal_capsules/spec-pack/schemas/ops/surreal_containment_receipt.schema.json",
+      "to": "refs/surreal_capsules/spec-pack/schemas/ops/surreal_containment_receipt.schema.json"
+    },
+    {
+      "from": "refs/surreal_systems/refs/surreal_capsules/spec-pack/schemas/ops/surreal_containment_receipt.schema.json",
+      "to": "refs/surreal_systems/refs/surreal_capsules/spec-pack/schemas/ops/surreal_containment_receipt.schema.json"
+    },
+    {
+      "from": "refs/surreal_capsules/spec-pack/schemas/math/conway_cut.schema.json",
+      "to": "refs/surreal_capsules/spec-pack/schemas/math/conway_cut.schema.json"
+    },
+    {
+      "from": "refs/surreal_systems/refs/surreal_capsules/spec-pack/schemas/math/conway_cut.schema.json",
+      "to": "refs/surreal_systems/refs/surreal_capsules/spec-pack/schemas/math/conway_cut.schema.json"
+    },
+    {
+      "from": "refs/surreal_capsules/spec-pack/schemas/math/surreal_birthday.schema.json",
+      "to": "refs/surreal_capsules/spec-pack/schemas/math/surreal_birthday.schema.json"
+    },
+    {
+      "from": "refs/surreal_systems/refs/surreal_capsules/spec-pack/schemas/math/surreal_birthday.schema.json",
+      "to": "refs/surreal_systems/refs/surreal_capsules/spec-pack/schemas/math/surreal_birthday.schema.json"
+    },
+    {
+      "from": "refs/sgv_capsules/spec-pack/schemas/learning/stability_attestation.schema.json",
+      "to": "refs/sgv_capsules/spec-pack/schemas/learning/stability_attestation.schema.json"
+    },
+    {
+      "from": "refs/surreal_systems/refs/sgv_capsules/spec-pack/schemas/learning/stability_attestation.schema.json",
+      "to": "refs/surreal_systems/refs/sgv_capsules/spec-pack/schemas/learning/stability_attestation.schema.json"
+    },
+    {
+      "from": "refs/surreal_systems/refs/surreal_capsules/refs/sgv_capsules/spec-pack/schemas/learning/stability_attestation.schema.json",
+      "to": "refs/surreal_systems/refs/surreal_capsules/refs/sgv_capsules/spec-pack/schemas/learning/stability_attestation.schema.json"
+    },
+    {
+      "from": "refs/surreal_capsules/refs/sgv_capsules/spec-pack/schemas/learning/stability_attestation.schema.json",
+      "to": "refs/surreal_capsules/refs/sgv_capsules/spec-pack/schemas/learning/stability_attestation.schema.json"
+    },
+    {
+      "from": "refs/sgv_capsules/spec-pack/schemas/learning/concept_capsule.schema.json",
+      "to": "refs/sgv_capsules/spec-pack/schemas/learning/concept_capsule.schema.json"
+    },
+    {
+      "from": "refs/surreal_systems/refs/sgv_capsules/spec-pack/schemas/learning/concept_capsule.schema.json",
+      "to": "refs/surreal_systems/refs/sgv_capsules/spec-pack/schemas/learning/concept_capsule.schema.json"
+    },
+    {
+      "from": "refs/surreal_systems/refs/surreal_capsules/refs/sgv_capsules/spec-pack/schemas/learning/concept_capsule.schema.json",
+      "to": "refs/surreal_systems/refs/surreal_capsules/refs/sgv_capsules/spec-pack/schemas/learning/concept_capsule.schema.json"
+    },
+    {
+      "from": "refs/surreal_capsules/refs/sgv_capsules/spec-pack/schemas/learning/concept_capsule.schema.json",
+      "to": "refs/surreal_capsules/refs/sgv_capsules/spec-pack/schemas/learning/concept_capsule.schema.json"
+    },
+    {
+      "from": "refs/sgv_capsules/spec-pack/schemas/geometry/manifold_patch.schema.json",
+      "to": "refs/sgv_capsules/spec-pack/schemas/geometry/manifold_patch.schema.json"
+    },
+    {
+      "from": "refs/surreal_systems/refs/sgv_capsules/spec-pack/schemas/geometry/manifold_patch.schema.json",
+      "to": "refs/surreal_systems/refs/sgv_capsules/spec-pack/schemas/geometry/manifold_patch.schema.json"
+    },
+    {
+      "from": "refs/surreal_systems/refs/surreal_capsules/refs/sgv_capsules/spec-pack/schemas/geometry/manifold_patch.schema.json",
+      "to": "refs/surreal_systems/refs/surreal_capsules/refs/sgv_capsules/spec-pack/schemas/geometry/manifold_patch.schema.json"
+    },
+    {
+      "from": "refs/surreal_capsules/refs/sgv_capsules/spec-pack/schemas/geometry/manifold_patch.schema.json",
+      "to": "refs/surreal_capsules/refs/sgv_capsules/spec-pack/schemas/geometry/manifold_patch.schema.json"
+    },
+    {
+      "from": "refs/sgv_capsules/spec-pack/schemas/geometry/encoding_profile.schema.json",
+      "to": "refs/sgv_capsules/spec-pack/schemas/geometry/encoding_profile.schema.json"
+    },
+    {
+      "from": "refs/surreal_systems/refs/sgv_capsules/spec-pack/schemas/geometry/encoding_profile.schema.json",
+      "to": "refs/surreal_systems/refs/sgv_capsules/spec-pack/schemas/geometry/encoding_profile.schema.json"
+    },
+    {
+      "from": "refs/surreal_systems/refs/surreal_capsules/refs/sgv_capsules/spec-pack/schemas/geometry/encoding_profile.schema.json",
+      "to": "refs/surreal_systems/refs/surreal_capsules/refs/sgv_capsules/spec-pack/schemas/geometry/encoding_profile.schema.json"
+    },
+    {
+      "from": "refs/surreal_capsules/refs/sgv_capsules/spec-pack/schemas/geometry/encoding_profile.schema.json",
+      "to": "refs/surreal_capsules/refs/sgv_capsules/spec-pack/schemas/geometry/encoding_profile.schema.json"
+    },
+    {
+      "from": "refs/sgv_capsules/spec-pack/schemas/geometry/geometry_safety_report.schema.json",
+      "to": "refs/sgv_capsules/spec-pack/schemas/geometry/geometry_safety_report.schema.json"
+    },
+    {
+      "from": "refs/surreal_systems/refs/sgv_capsules/spec-pack/schemas/geometry/geometry_safety_report.schema.json",
+      "to": "refs/surreal_systems/refs/sgv_capsules/spec-pack/schemas/geometry/geometry_safety_report.schema.json"
+    },
+    {
+      "from": "refs/surreal_systems/refs/surreal_capsules/refs/sgv_capsules/spec-pack/schemas/geometry/geometry_safety_report.schema.json",
+      "to": "refs/surreal_systems/refs/surreal_capsules/refs/sgv_capsules/spec-pack/schemas/geometry/geometry_safety_report.schema.json"
+    },
+    {
+      "from": "refs/surreal_capsules/refs/sgv_capsules/spec-pack/schemas/geometry/geometry_safety_report.schema.json",
+      "to": "refs/surreal_capsules/refs/sgv_capsules/spec-pack/schemas/geometry/geometry_safety_report.schema.json"
+    },
+    {
+      "from": "refs/sgv_capsules/spec-pack/schemas/ops/offload_receipt.schema.json",
+      "to": "refs/sgv_capsules/spec-pack/schemas/ops/offload_receipt.schema.json"
+    },
+    {
+      "from": "refs/surreal_systems/refs/sgv_capsules/spec-pack/schemas/ops/offload_receipt.schema.json",
+      "to": "refs/surreal_systems/refs/sgv_capsules/spec-pack/schemas/ops/offload_receipt.schema.json"
+    },
+    {
+      "from": "refs/surreal_systems/refs/surreal_capsules/refs/sgv_capsules/spec-pack/schemas/ops/offload_receipt.schema.json",
+      "to": "refs/surreal_systems/refs/surreal_capsules/refs/sgv_capsules/spec-pack/schemas/ops/offload_receipt.schema.json"
+    },
+    {
+      "from": "refs/surreal_capsules/refs/sgv_capsules/spec-pack/schemas/ops/offload_receipt.schema.json",
+      "to": "refs/surreal_capsules/refs/sgv_capsules/spec-pack/schemas/ops/offload_receipt.schema.json"
+    }
+  ],
+  "renamed_missing": []
+}

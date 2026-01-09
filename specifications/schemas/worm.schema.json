@@ -1,0 +1,37 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "properties": {
+    "content_hash": {
+      "type": "string"
+    },
+    "object_id": {
+      "type": "string"
+    },
+    "retention_policy": {
+      "enum": [
+        "permanent",
+        "7_years",
+        "5_years",
+        "3_years",
+        "1_year",
+        "90_days",
+        "30_days"
+      ]
+    },
+    "status": {
+      "enum": [
+        "active",
+        "legal_hold",
+        "expired",
+        "deleted"
+      ]
+    }
+  },
+  "required": [
+    "object_id",
+    "content_hash",
+    "retention_policy"
+  ],
+  "title": "WORM Object",
+  "type": "object"
+}

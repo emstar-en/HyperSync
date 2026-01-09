@@ -1,0 +1,29 @@
+{
+  "$schema": "ext://f1fed686329b",
+  "properties": {
+    "input_hashes": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "map_digest": {
+      "type": "string"
+    },
+    "output_hashes": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "receipt_kind": {
+      "const": "LineageReceipt"
+    }
+  },
+  "required": [
+    "receipt_kind",
+    "map_digest"
+  ],
+  "title": "LineageReceipt",
+  "type": "object"
+}

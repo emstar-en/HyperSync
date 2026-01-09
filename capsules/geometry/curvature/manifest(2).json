@@ -1,0 +1,11 @@
+{
+  "name": "curvature",
+  "version": "1.0.0",
+  "description": "Differential geometry and curvature analysis modules.",
+  "type": "capsule",
+  "namespace": "hypersync.geometry.curvature",
+  "dependencies": [
+    "foundations"
+  ],
+  "tier_requirement": "basic"
+}

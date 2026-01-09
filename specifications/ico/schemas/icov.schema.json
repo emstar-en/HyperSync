@@ -1,0 +1,49 @@
+{
+  "$id": "https://example.org/ico/icov.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "dimension": {
+      "minimum": 1,
+      "type": "integer"
+    },
+    "expected_output": {
+      "type": "object"
+    },
+    "inputs": {
+      "type": "object"
+    },
+    "invariants": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "model": {
+      "enum": [
+        "lorentz",
+        "poincare_ball",
+        "half_space",
+        null
+      ],
+      "type": "string"
+    },
+    "profile": {
+      "enum": [
+        "E",
+        "H",
+        "S"
+      ],
+      "type": "string"
+    },
+    "test_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "test_id",
+    "profile",
+    "inputs",
+    "expected_output"
+  ],
+  "type": "object"
+}

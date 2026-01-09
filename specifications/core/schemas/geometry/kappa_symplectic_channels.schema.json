@@ -1,0 +1,34 @@
+{
+  "$id": "kappa_symplectic_channels.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "channel": {
+      "enum": [
+        "dense_hyperbolic",
+        "rarified_quantum",
+        "transition_bridge",
+        "spherical_compact"
+      ],
+      "type": "string"
+    },
+    "constraints": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "kappa": {
+      "description": "Channel curvature parameter \u03ba",
+      "type": "number"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "kappa",
+    "channel"
+  ],
+  "title": "Kappa-Channel Symplectic Integration",
+  "type": "object"
+}

@@ -1,0 +1,6 @@
+{
+  "deterministic": true,
+  "id": "op://scen_jko_flow.0",
+  "kind": "scenario",
+  "notes": "JKO proximal flow toward targets"
+}

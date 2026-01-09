@@ -1,0 +1,144 @@
+# HyperSync Integration Modes Configuration
+# Default profiles for orchestration adoption tiers
+
+# Current active mode
+current_mode: wrapper
+
+# Profile configurations
+profiles:
+  wrapper:
+    capabilities:
+      capability_detection: true
+      token_accounting: true
+      external_sync: true
+      advisory_mode: true
+      receipt_generation: true
+      telemetry_export: true
+      verbose_receipts: true
+    config_overrides:
+      telemetry:
+        export_interval: 30
+        verbose: true
+      advisory:
+        log_suggestions: true
+        suggestion_threshold: 0.8
+
+  backend_router:
+    capabilities:
+      capability_detection: true
+      hyperbolic_placement: true
+      token_accounting: true
+      external_sync: true
+      advisory_mode: true
+      receipt_generation: true
+      telemetry_export: true
+      verbose_receipts: true
+      policy_enforcement: true
+    config_overrides:
+      placement:
+        advisory_only: true
+        compute_optimal: true
+      sync:
+        bidirectional: true
+        sync_interval: 10
+
+  hybrid:
+    capabilities:
+      capability_detection: true
+      hyperbolic_placement: true
+      token_accounting: true
+      agent_composition: true
+      direct_scheduling: true
+      lifecycle_management: true
+      resource_enforcement: true
+      external_sync: true
+      receipt_generation: true
+      telemetry_export: true
+      verbose_receipts: true
+      policy_enforcement: true
+      approval_gates: true
+    config_overrides:
+      scheduling:
+        native_selector: "hypersync.io/managed=true"
+        fallback_to_external: true
+      governance:
+        require_approval_for:
+          - workload_migration
+          - resource_scaling
+          - mode_transition
+
+  native:
+    capabilities:
+      capability_detection: true
+      hyperbolic_placement: true
+      token_accounting: true
+      agent_composition: true
+      direct_scheduling: true
+      lifecycle_management: true
+      resource_enforcement: true
+      receipt_generation: true
+      telemetry_export: true
+      verbose_receipts: true
+      policy_enforcement: true
+      approval_gates: true
+    config_overrides:
+      scheduling:
+        exclusive_control: true
+        preemption_enabled: true
+      enforcement:
+        strict_limits: true
+        oom_kill_enabled: true
+
+  feature_extraction:
+    capabilities:
+      capability_detection: true
+      external_sync: true
+      advisory_mode: true
+      receipt_generation: true
+      telemetry_export: true
+    config_overrides:
+      features:
+        token_cloud: false
+        placement: false
+        agents: false
+      # Operators can enable specific features
+      enabled_features: []
+
+# Transition rules
+transitions:
+  # Safe transitions (no approval needed)
+  safe:
+    - [wrapper, backend_router]
+    - [backend_router, wrapper]
+    - [feature_extraction, wrapper]
+
+  # Requires approval
+  approval_required:
+    - [backend_router, hybrid]
+    - [hybrid, native]
+    - [wrapper, hybrid]
+
+  # Requires staged rollout
+  staged_rollout:
+    - [hybrid, native]
+
+  # Forbidden transitions (must go through intermediate)
+  forbidden:
+    - [wrapper, native]
+    - [backend_router, native]
+
+# Environment-specific overrides
+environments:
+  development:
+    default_mode: native
+    skip_approvals: true
+
+  staging:
+    default_mode: hybrid
+    require_receipts: true
+
+  production:
+    default_mode: backend_router
+    require_receipts: true
+    require_approvals: true
+    verbose_receipts: true

@@ -1,0 +1,25 @@
+{
+  "tier_id": "advanced",
+  "name": "Advanced",
+  "description": "Enterprise Scale. Full integration and security.",
+  "included_specs": [
+    "specifications/core",
+    "specifications/ico",
+    "specifications/geometry",
+    "specifications/vnes",
+    "specifications/schemas",
+    "specifications/api",
+    "specifications/policies",
+    "specifications/subsystems",
+    "specifications/ops",
+    "specifications/config",
+    "specifications/integration",
+    "specifications/sdl",
+    "specifications/environment"
+  ],
+  "feature_flags": {
+    "ico_probe_access": "unconditional",
+    "sla_support": true,
+    "routing_attestation": "dedicated"
+  }
+}

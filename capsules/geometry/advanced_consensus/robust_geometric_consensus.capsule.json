@@ -1,0 +1,16 @@
+{
+  "capsule": {
+    "name": "robust_geometric_consensus",
+    "type": "consensus",
+    "properties": {
+      "mechanism": "Geometric Median (Fermat Point)",
+      "objective": "argmin_x sum(dist(x, p_i))",
+      "algorithm": "Weiszfeld's Algorithm on Manifolds",
+      "advantage": "Robust to outliers compared to Fr\u00e9chet Mean (L2)"
+    },
+    "mathematical_foundations": {
+      "convergence": "Global convergence on Hadamard manifolds (non-positive curvature)."
+    },
+    "vnes_binding": "geometry.consensus.robust"
+  }
+}

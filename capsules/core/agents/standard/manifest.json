@@ -1,0 +1,85 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "schema_version": "v1.0.0",
+  "id": "hypersync.agent.standard",
+  "version": "1.1.0",
+  "type": "logic",
+  "description": "Standard agent capsule for HyperSync environments, representing the canonical inhabitant model for both human- and AI-driven agents.",
+  "summary": "Baseline inhabitant capable of movement, local sensing, communication, and hosting cognitive modules (LLMs, humans, or classical controllers).",
+  "tags": [
+    "agent",
+    "standard",
+    "inhabitant",
+    "mobile",
+    "user",
+    "ai",
+    "cognitive_host"
+  ],
+  "capabilities": {
+    "provides": [
+      "agent.act.standard",
+      "agent.sense.local",
+      "agent.control.loop",
+      "agent.communication.local",
+      "agent.state.introspect",
+      "agent.cognitive.host"
+    ],
+    "requires": [
+      "hypersync.core.geometry",
+      "hypersync.core.environment",
+      "auth.identity.core",
+      "telemetry.core"
+    ],
+    "input_schemas": [
+      "hypersync.schemas.agent.tick.v1"
+    ],
+    "output_schemas": [
+      "hypersync.schemas.agent.tick_result.v1",
+      "hypersync.schemas.agent.state.v1"
+    ],
+    "determinism_tier": "D1_platform_agnostic",
+    "latency_class": "interactive_realtime"
+  },
+  "interfaces": {
+    "python": "impl.src.agent_standard:StandardAgent",
+    "tui": "hypersync.tui.agent.inspector",
+    "rest": "/api/v1/agents/standard"
+  },
+  "governance": {
+    "tier": "user",
+    "audit_level": "standard",
+    "owner": "hypersync-users",
+    "reviewed_by": [
+      "automated-safety-check",
+      "safety-review"
+    ]
+  },
+  "runtime": {
+    "language": "python",
+    "requires_gpu": false,
+    "timeout_ms": 10,
+    "memory_limit_mb": 64
+  },
+  "security": {
+    "trust_zone": "guest",
+    "sandbox_class": "agent_standard",
+    "max_trust_level": "standard_user"
+  },
+  "agent_profile": {
+    "class": "standard_inhabitant",
+    "modes": [
+      "AUTONOMOUS",
+      "HUMAN_CONTROLLED",
+      "MIXED",
+      "OBSERVER"
+    ],
+    "supports_cognitive_attach": true,
+    "supports_multi_session": true
+  },
+  "lineage": {
+    "derived_from": [
+      "hypersync.agent.standard@1.0.0"
+    ],
+    "supersedes": []
+  }
+}

@@ -1,0 +1,82 @@
+{
+  "algorithms": {
+    "geometric_median": {
+      "byzantine_tolerance": "f < n/2 for median",
+      "description": "Minimize sum of distances (L1 norm)",
+      "robustness": "50% breakdown point"
+    },
+    "gradient_descent": {
+      "convergence_rate": "linear",
+      "description": "Minimize Fr\u00e9chet variance via Riemannian gradient",
+      "step_size": "adaptive or fixed",
+      "update_rule": "x_{k+1} = exp_{x_k}(-\u03b1 * grad_F(x_k))"
+    },
+    "karcher_flow": {
+      "convergence": "to global minimum for small spread",
+      "description": "Flow along gradient of Fr\u00e9chet function",
+      "differential_equation": "dx/dt = -grad_F(x)"
+    }
+  },
+  "byzantine_fault_model": {
+    "assumptions": [
+      "Up to f nodes can behave arbitrarily",
+      "f < n/3 for consensus",
+      "Synchronous or partially synchronous network"
+    ],
+    "guarantees": [
+      "Safety: honest nodes agree",
+      "Liveness: termination in finite rounds",
+      "Validity: result within convex hull of honest proposals"
+    ]
+  },
+  "dependencies": [
+    "numpy",
+    "scipy"
+  ],
+  "description": "Geometric consensus algorithms for distributed systems",
+  "implementation_id": "geometric_consensus_v1",
+  "language": "python",
+  "operations": {
+    "byzantine_consensus": {
+      "algorithm": "geometric_median_with_outlier_rejection",
+      "complexity": "O(n^2 * d)",
+      "description": "Achieve consensus tolerating f < n/3 Byzantine faults",
+      "fault_tolerance": "f < n/3",
+      "function": "byzantine_geometric_consensus",
+      "properties": {
+        "byzantine_resilient": true,
+        "deterministic": true,
+        "geometric_median_property": true
+      }
+    },
+    "consensus_validation": {
+      "checks": [
+        "geometric_median_property",
+        "byzantine_tolerance_bound",
+        "convergence_certificate",
+        "distance_optimality"
+      ],
+      "complexity": "O(n * d)",
+      "function": "validate_consensus_result"
+    },
+    "geometric_synchronization": {
+      "algorithm": "consensus_based_synchronization",
+      "complexity": "O(rounds * n * d)",
+      "convergence": "exponential under connectivity",
+      "description": "Synchronize distributed states on manifolds",
+      "function": "synchronize_geometric_states"
+    },
+    "riemannian_barycenter": {
+      "algorithm": "gradient_descent_on_manifold",
+      "complexity": "O(iterations * n * d^2)",
+      "convergence": "linear for small curvature",
+      "description": "Compute Fr\u00e9chet mean minimizing sum of squared distances",
+      "function": "compute_riemannian_barycenter",
+      "properties": {
+        "equivariant_under_isometries": true,
+        "reduces_to_euclidean_mean": "when kappa \u2192 0",
+        "unique_for_small_spread": true
+      }
+    }
+  }
+}

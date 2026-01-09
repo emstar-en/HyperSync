@@ -1,0 +1,40 @@
+{
+  "$id": "media.surrogate.recipe.json",
+  "$schema": "ext://f1fed686329b",
+  "properties": {
+    "appearance": {
+      "type": "object"
+    },
+    "compatibility": {
+      "type": "object"
+    },
+    "profile": {
+      "type": "string"
+    },
+    "streamId": {
+      "type": "string"
+    },
+    "timeline": {
+      "items": {
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "type": {
+      "const": "media.surrogate.recipe"
+    },
+    "video": {
+      "type": "object"
+    }
+  },
+  "required": [
+    "type",
+    "version",
+    "streamId",
+    "profile",
+    "video",
+    "timeline"
+  ],
+  "title": "Surrogate Rendering Recipe",
+  "type": "object"
+}

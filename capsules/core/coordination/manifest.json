@@ -1,0 +1,15 @@
+{
+  "id": "hypersync.adv.coordination",
+  "version": "1.0.0",
+  "type": "capsule",
+  "description": "Advanced multi-agent coordination and consensus.",
+  "capabilities": [
+    "distributed_consensus",
+    "leader_election",
+    "swarm_intelligence"
+  ],
+  "dependencies": [
+    "hypersync.std.agents.basic",
+    "hypersync.std.network.http"
+  ]
+}

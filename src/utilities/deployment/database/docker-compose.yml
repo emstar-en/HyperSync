@@ -1,0 +1,86 @@
+version: '3.8'
+
+services:
+ hypersync-db:
+ image: hypersync/database:latest
+ container_name: hypersync-database
+ environment:
+ - HYPERSYNC_MODE=hybrid
+ - HYPERSYNC_FEDERATION=true
+ - HYPERSYNC_REPLICATION_FACTOR=3
+ - HYPERSYNC_CACHE_LEVELS=3
+ - HYPERSYNC_COMPRESSION=true
+ ports:
+ - "8000:8000" # API
+ - "9000:9000" # Metrics
+ - "7000:7000" # Federation
+ volumes:
+ - hypersync-data:/data
+ - hypersync-config:/config
+ networks:
+ - hypersync-net
+ restart: unless-stopped
+ healthcheck:
+ test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/database/health"]
+ interval: 30s
+ timeout: 10s
+ retries: 3
+ start_period: 40s
+
+ hypersync-orchestrator:
+ image: hypersync/orchestrator:latest
+ container_name: hypersync-orchestrator
+ environment:
+ - HYPERSYNC_DB_URL=http://hypersync-db:8000
+ - HYPERSYNC_PLACEMENT_STRATEGY=curvature_aware
+ ports:
+ - "8001:8001"
+ depends_on:
+ - hypersync-db
+ networks:
+ - hypersync-net
+ restart: unless-stopped
+
+ hypersync-agent-runtime:
+ image: hypersync/agent-runtime:latest
+ container_name: hypersync-agents
+ environment:
+ - HYPERSYNC_DB_URL=http://hypersync-db:8000
+ - HYPERSYNC_ORCHESTRATOR_URL=http://hypersync-orchestrator:8001
+ - HYPERSYNC_AUTONOMOUS_QUERIES=true
+ - HYPERSYNC_KNOWLEDGE_SYNC=true
+ ports:
+ - "8002:8002"
+ depends_on:
+ - hypersync-db
+ - hypersync-orchestrator
+ networks:
+ - hypersync-net
+ restart: unless-stopped
+
+ hypersync-federation-node:
+ image: hypersync/database:latest
+ container_name: hypersync-federation-node
+ environment:
+ - HYPERSYNC_MODE=federated
+ - HYPERSYNC_FEDERATION=true
+ - HYPERSYNC_PRIMARY_NODE=http://hypersync-db:7000
+ ports:
+ - "8003:8000"
+ - "7001:7000"
+ volumes:
+ - hypersync-federation-data:/data
+ networks:
+ - hypersync-net
+ restart: unless-stopped
+ depends_on:
+ - hypersync-db
+
+volumes:
+ hypersync-data:
+ hypersync-config:
+ hypersync-federation-data:
+
+networks:
+ hypersync-net:
+ driver: bridge

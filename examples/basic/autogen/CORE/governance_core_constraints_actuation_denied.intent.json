@@ -1,0 +1,8 @@
+{
+  "intent_kind": "ReductionIntent",
+  "params": {
+    "commands": 1
+  },
+  "profile": "CORE",
+  "task": "actuation_guard"
+}

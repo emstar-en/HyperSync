@@ -1,0 +1,80 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "panel": {
+      "properties": {
+        "config": {
+          "type": "object"
+        },
+        "id": {
+          "type": "string"
+        },
+        "position": {
+          "properties": {
+            "col": {
+              "type": "integer"
+            },
+            "height": {
+              "type": "integer"
+            },
+            "row": {
+              "type": "integer"
+            },
+            "width": {
+              "type": "integer"
+            }
+          },
+          "type": "object"
+        },
+        "priority": {
+          "type": "integer"
+        },
+        "type": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "position"
+      ],
+      "type": "object"
+    }
+  },
+  "description": "Complete layout configuration with panels",
+  "properties": {
+    "description": {
+      "description": "Layout description",
+      "type": "string"
+    },
+    "min_tier": {
+      "description": "Minimum terminal tier required",
+      "enum": [
+        "MICRO",
+        "SMALL",
+        "STANDARD",
+        "LARGE",
+        "ULTRA"
+      ],
+      "type": "string"
+    },
+    "name": {
+      "description": "Layout name",
+      "type": "string"
+    },
+    "panels": {
+      "description": "Panel configurations",
+      "items": {
+        "$ref": "#/definitions/panel"
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "name",
+    "min_tier",
+    "panels"
+  ],
+  "title": "Layout Profile",
+  "type": "object"
+}

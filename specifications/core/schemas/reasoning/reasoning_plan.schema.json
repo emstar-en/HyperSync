@@ -1,0 +1,84 @@
+{
+  "$id": "https://example.com/spec-pack/schemas/reasoning/reasoning_plan.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "budget": {
+      "additionalProperties": false,
+      "properties": {
+        "depth": {
+          "maximum": 100000,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "steps": {
+          "maximum": 1000000,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "tokens": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "tool_calls": {
+          "minimum": 0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "depth",
+        "steps"
+      ],
+      "type": "object"
+    },
+    "inputs_hash": {
+      "pattern": "^sha256:[A-Fa-f0-9]{64}$",
+      "type": "string"
+    },
+    "kind": {
+      "const": "ReasoningPlan",
+      "type": "string"
+    },
+    "measure": {
+      "description": "Well-founded measure; scalar or lexicographic rank tuple.",
+      "oneOf": [
+        {
+          "type": "number"
+        },
+        {
+          "items": {
+            "type": "number"
+          },
+          "maxItems": 6,
+          "minItems": 2,
+          "type": "array"
+        }
+      ]
+    },
+    "metadata": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "plan_id": {
+      "pattern": "^[A-Za-z0-9_\\-:.]{3,128}$",
+      "type": "string"
+    },
+    "policy_ref": {
+      "type": "string"
+    },
+    "ruleset_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "kind",
+    "plan_id",
+    "inputs_hash",
+    "ruleset_id",
+    "measure",
+    "budget",
+    "policy_ref"
+  ],
+  "title": "ReasoningPlan",
+  "type": "object"
+}

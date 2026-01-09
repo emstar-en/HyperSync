@@ -1,0 +1,414 @@
+{
+  "meta": {
+    "id": "spec.core.consensus_mechanisms.core",
+    "version": "1.0.0",
+    "description": "Defines available consensus mechanisms, their resource requirements, and tier availability."
+  },
+  "mechanisms": {
+    "gossip": {
+      "name": "Gossip Protocol",
+      "type": "lightweight",
+      "min_tier": "core",
+      "description": "Epidemic broadcast for efficient information dissemination.",
+      "resources": {
+        "memory_mb": 128,
+        "gpu_required": false
+      },
+      "properties": {
+        "consistency": "eventual",
+        "fault_tolerance": "high"
+      }
+    },
+    "vector_clock": {
+      "name": "Vector Clock",
+      "type": "lightweight",
+      "min_tier": "core",
+      "description": "Tracks causality relationships between events.",
+      "resources": {
+        "memory_mb": 64,
+        "gpu_required": false
+      },
+      "properties": {
+        "consistency": "causal",
+        "fault_tolerance": "n/a"
+      }
+    },
+    "crdt": {
+      "name": "CRDT",
+      "type": "lightweight",
+      "min_tier": "core",
+      "description": "Conflict-free Replicated Data Types for automatic merge.",
+      "resources": {
+        "memory_mb": 256,
+        "gpu_required": false
+      },
+      "properties": {
+        "consistency": "strong_eventual",
+        "fault_tolerance": "high"
+      }
+    },
+    "merkle_tree": {
+      "name": "Merkle Tree",
+      "type": "lightweight",
+      "min_tier": "core",
+      "description": "Cryptographic hash tree for efficient verification.",
+      "resources": {
+        "memory_mb": 128,
+        "gpu_required": false
+      },
+      "properties": {
+        "consistency": "strong",
+        "fault_tolerance": "n/a"
+      }
+    },
+    "simple_bft": {
+      "name": "Simple BFT",
+      "type": "light",
+      "min_tier": "core",
+      "description": "Simplified BFT for safety-critical robotics and prototyping.",
+      "resources": {
+        "memory_mb": 512,
+        "gpu_required": false
+      },
+      "properties": {
+        "consistency": "strong",
+        "fault_tolerance": "f < n/3",
+        "safety_critical": true
+      }
+    },
+    "tangent_space_gossip": {
+      "name": "Tangent Space Gossip",
+      "type": "geometric_light",
+      "min_tier": "core",
+      "description": "Projects neighbors to local Tangent Space for linear averaging.",
+      "resources": {
+        "memory_mb": 512,
+        "gpu_required": false
+      },
+      "properties": {
+        "consistency": "geometric_approx",
+        "fault_tolerance": "high",
+        "math_basis": "Lie Algebra / Log-Map"
+      }
+    },
+    "hyperbolic_tree_aggregation": {
+      "name": "Hyperbolic Tree Aggregation",
+      "type": "geometric_moderate",
+      "min_tier": "core",
+      "description": "Embeds consensus tree in Hyperbolic Metric for fast aggregation.",
+      "resources": {
+        "memory_mb": 1024,
+        "gpu_required": false
+      },
+      "properties": {
+        "consistency": "strong",
+        "fault_tolerance": "crash",
+        "math_basis": "Poincar\u00e9 Disk"
+      }
+    },
+    "fractal_dimension": {
+      "name": "Fractal Dimension Consensus",
+      "type": "geometric_fractal",
+      "min_tier": "core",
+      "description": "Scale-invariant consensus using box-counting dimension.",
+      "resources": {
+        "memory_mb": 512,
+        "gpu_required": false
+      },
+      "properties": {
+        "complexity": "O(n log n)",
+        "use_case": "Scale-invariant systems"
+      }
+    },
+    "conformal_geometry": {
+      "name": "Conformal Geometry Consensus",
+      "type": "geometric_conformal",
+      "min_tier": "core",
+      "description": "Angle-preserving consensus for shape-based systems.",
+      "resources": {
+        "memory_mb": 512,
+        "gpu_required": false
+      },
+      "properties": {
+        "complexity": "O(n log n)",
+        "use_case": "Angle-critical systems"
+      }
+    },
+    "flag_manifold": {
+      "name": "Flag Manifold Consensus",
+      "type": "geometric_hierarchical",
+      "min_tier": "core",
+      "description": "Hierarchical consensus on flag manifolds.",
+      "resources": {
+        "memory_mb": 1024,
+        "gpu_required": false
+      },
+      "properties": {
+        "complexity": "O(n log n)",
+        "use_case": "Multi-resolution hierarchies"
+      }
+    },
+    "symplectic_geometry": {
+      "name": "Symplectic Geometry Consensus",
+      "type": "geometric_symplectic",
+      "min_tier": "core",
+      "description": "Consensus preserving symplectic structure for physics-based systems.",
+      "resources": {
+        "memory_mb": 1024,
+        "gpu_required": false
+      },
+      "properties": {
+        "complexity": "O(n log n)",
+        "use_case": "Conservation laws"
+      }
+    },
+    "geometric_median": {
+      "name": "Geometric Median Consensus",
+      "type": "geometric_robust",
+      "min_tier": "core",
+      "description": "Robust aggregation minimizing sum of distances (Weiszfeld algorithm).",
+      "resources": {
+        "memory_mb": 512,
+        "gpu_required": false
+      },
+      "properties": {
+        "complexity": "O(n log n)",
+        "use_case": "Outlier-resistant aggregation"
+      }
+    },
+    "horosphere_bft": {
+      "name": "Horosphere BFT",
+      "type": "hyperbolic_consensus",
+      "min_tier": "core",
+      "description": "Consensus propagates along horospheres; Byzantine faults create horospherical singularities.",
+      "blueprint": {
+        "mathematical_foundation": "Horospheres in H^n (equidistant surfaces from ideal points at infinity)",
+        "bft_mechanism": "Consensus propagates along horospheres, Byzantine faults create 'horospherical singularities'",
+        "fault_detection": "Nodes violating horospherical equidistance are Byzantine",
+        "fault_tolerance": "f < n/3 (hyperbolic triangle inequality constraints)",
+        "complexity_details": "O(n log n) for hyperbolic distance computation, O(n) for horosphere validation"
+      },
+      "resources": {
+        "memory_mb": 512,
+        "gpu_required": false
+      },
+      "properties": {
+        "complexity": "O(n log n)",
+        "use_case": "Tree-structured consensus"
+      }
+    },
+    "ideal_boundary_bft": {
+      "name": "Ideal Boundary BFT",
+      "type": "hyperbolic_asymptotic",
+      "min_tier": "core",
+      "description": "Consensus states live on ideal boundary; geodesic convergence guarantees agreement.",
+      "blueprint": {
+        "mathematical_foundation": "\u2202H^n (boundary at infinity of hyperbolic space)",
+        "bft_mechanism": "Consensus states live on ideal boundary, geodesic convergence guarantees agreement",
+        "fault_detection": "Byzantine nodes create 'non-convergent' geodesics to boundary",
+        "load_profile": "Moderate (projective geometry computations)",
+        "complexity_details": "O(n) for boundary points, O(n log n) for geodesic validation"
+      },
+      "resources": {
+        "memory_mb": 512,
+        "gpu_required": false
+      },
+      "properties": {
+        "complexity": "O(n log n)",
+        "use_case": "Asymptotic consensus"
+      }
+    },
+    "poincare_disk_bft": {
+      "name": "Poincar\u00e9 Disk BFT",
+      "type": "hyperbolic_conformal",
+      "min_tier": "core",
+      "description": "Consensus via M\u00f6bius transformations on the unit disk.",
+      "blueprint": {
+        "mathematical_foundation": "M\u00f6bius transformations preserving the unit disk",
+        "bft_mechanism": "Consensus operations as M\u00f6bius transformations, Byzantine detection via transformation group properties",
+        "fault_detection": "Transformations not preserving the disk indicate Byzantine behavior",
+        "load_profile": "Light to Moderate (complex matrix operations)",
+        "complexity_details": "O(n) for M\u00f6bius operations, O(n log n) for disk preservation"
+      },
+      "resources": {
+        "memory_mb": 512,
+        "gpu_required": false
+      },
+      "properties": {
+        "complexity": "O(n log n)",
+        "use_case": "Conformal consensus"
+      }
+    },
+    "null_geodesic_bft": {
+      "name": "Null Geodesic BFT",
+      "type": "lorentzian_causal",
+      "min_tier": "core",
+      "description": "Consensus propagates along null geodesics; faults create light cone singularities.",
+      "blueprint": {
+        "mathematical_foundation": "Light-like geodesics in spacetime",
+        "bft_mechanism": "Consensus propagates along null geodesics, Byzantine faults create 'light cone singularities'",
+        "fault_detection": "Messages violating null geodesic constraints are Byzantine",
+        "load_profile": "Heavy (general relativity computations)",
+        "complexity_details": "O(n log n) for null geodesic computation, O(n) for constraint validation"
+      },
+      "resources": {
+        "memory_mb": 1024,
+        "gpu_required": false
+      },
+      "properties": {
+        "complexity": "O(n log n)",
+        "use_case": "Relativistic networks"
+      }
+    },
+    "spherical_bft": {
+      "name": "Spherical BFT",
+      "type": "spherical_geodesic",
+      "min_tier": "core",
+      "description": "Consensus paths follow great circles; antipodal states indicate faults.",
+      "blueprint": {
+        "mathematical_foundation": "Great circles as geodesics on S^n",
+        "bft_mechanism": "Consensus paths follow great circles, Byzantine nodes create 'antipodal singularities'",
+        "fault_detection": "Nodes proposing antipodal states (maximally separated) are Byzantine",
+        "load_profile": "Light (spherical trigonometry)",
+        "network_profile": "O(n) for spherical coordinates",
+        "complexity_details": "O(n) for spherical distances, O(n log n) for great circle validation"
+      },
+      "resources": {
+        "memory_mb": 512,
+        "gpu_required": false
+      },
+      "properties": {
+        "complexity": "O(n log n)",
+        "use_case": "Compact consensus spaces"
+      }
+    },
+    "stereographic_bft": {
+      "name": "Stereographic Projection BFT",
+      "type": "spherical_conformal",
+      "min_tier": "core",
+      "description": "Project consensus to plane for computation; validate on sphere.",
+      "blueprint": {
+        "mathematical_foundation": "Conformal mapping between sphere and plane",
+        "bft_mechanism": "Project consensus to plane for computation, validate on sphere",
+        "fault_detection": "Projections creating 'poles' (projection singularities) indicate Byzantine behavior",
+        "load_profile": "Moderate (conformal geometry)",
+        "complexity_details": "O(n) for projection, O(n log n) for conformal validation"
+      },
+      "resources": {
+        "memory_mb": 512,
+        "gpu_required": false
+      },
+      "properties": {
+        "complexity": "O(n log n)",
+        "use_case": "Conformal spherical agreement"
+      }
+    },
+    "building_geometry_bft": {
+      "name": "Building Geometry BFT",
+      "type": "discrete_symmetric",
+      "min_tier": "core",
+      "description": "Consensus in apartment systems of affine buildings.",
+      "blueprint": {
+        "mathematical_foundation": "Affine buildings as discrete analogues of symmetric spaces",
+        "bft_mechanism": "Consensus in apartment systems, Byzantine faults create 'non-convex' chambers",
+        "fault_detection": "Nodes violating building axioms (apartment systems) are Byzantine",
+        "load_profile": "Heavy (combinatorial geometry)",
+        "complexity_details": "O(n log n) for building distance, O(n) for apartment validation"
+      },
+      "resources": {
+        "memory_mb": 1024,
+        "gpu_required": false
+      },
+      "properties": {
+        "complexity": "O(n log n)",
+        "use_case": "Discrete symmetric consensus"
+      }
+    },
+    "randers_metric_bft": {
+      "name": "Randers Metric BFT",
+      "type": "finsler_perturbed",
+      "min_tier": "core",
+      "description": "Consensus with 'wind' effects (beta field); faults create metric singularities.",
+      "blueprint": {
+        "mathematical_foundation": "F(x,v) = \u221a(g_ij v^i v^j) + \u03b2_i v^i where \u03b2 is a 1-form",
+        "bft_mechanism": "Consensus with 'wind' effects (\u03b2 field), Byzantine nodes create metric singularities",
+        "fault_detection": "Nodes creating 'headwind' preventing consensus are Byzantine",
+        "load_profile": "Moderate to Heavy (perturbed geometry)",
+        "complexity_details": "O(n) for Randers metric, O(n log n) for \u03b2-field validation"
+      },
+      "resources": {
+        "memory_mb": 1024,
+        "gpu_required": false
+      },
+      "properties": {
+        "complexity": "O(n log n)",
+        "use_case": "Perturbed consensus"
+      }
+    },
+    "liouville_theorem_bft": {
+      "name": "Liouville's Theorem BFT",
+      "type": "conformal_rigidity",
+      "min_tier": "core",
+      "description": "Consensus via conformal mappings; rigidity theorem provides fault detection.",
+      "blueprint": {
+        "mathematical_foundation": "Conformal maps in dimension \u2265 3 are M\u00f6bius transformations",
+        "bft_mechanism": "Consensus via conformal mappings, rigidity theorem provides Byzantine detection",
+        "fault_detection": "Non-M\u00f6bius conformal transformations indicate Byzantine behavior",
+        "load_profile": "Moderate (conformal geometry)",
+        "complexity_details": "O(n) for conformal factors, O(n log n) for Liouville validation"
+      },
+      "resources": {
+        "memory_mb": 512,
+        "gpu_required": false
+      },
+      "properties": {
+        "complexity": "O(n log n)",
+        "use_case": "Conformal rigidity consensus"
+      }
+    },
+    "hyperbolic_random_graph_bft": {
+      "name": "Hyperbolic Random Graph BFT",
+      "type": "discrete_hyperbolic",
+      "min_tier": "core",
+      "description": "Consensus in tree-like graph structures; faults violate delta-hyperbolicity.",
+      "blueprint": {
+        "mathematical_foundation": "Random graphs with hyperbolic geometry (Gromov hyperbolicity)",
+        "bft_mechanism": "Consensus in tree-like graph structures, Byzantine nodes violate \u03b4-hyperbolicity",
+        "fault_detection": "Nodes creating 'non-hyperbolic' triangles are Byzantine",
+        "load_profile": "Moderate (graph algorithms)",
+        "network_profile": "O(n log n) for hyperbolic embedding",
+        "complexity_details": "O(n log n) for hyperbolicity testing, O(n) for tree approximation"
+      },
+      "resources": {
+        "memory_mb": 512,
+        "gpu_required": false
+      },
+      "properties": {
+        "complexity": "O(n log n)",
+        "use_case": "Hierarchical fault detection"
+      }
+    },
+    "gromov_boundary_bft": {
+      "name": "Gromov Boundary BFT",
+      "type": "asymptotic_boundary",
+      "min_tier": "core",
+      "description": "Consensus converges to boundary points of delta-hyperbolic spaces.",
+      "blueprint": {
+        "mathematical_foundation": "Asymptotic boundary of \u03b4-hyperbolic spaces",
+        "bft_mechanism": "Consensus converges to boundary points, Byzantine nodes prevent convergence",
+        "fault_detection": "Nodes creating 'divergent' sequences are Byzantine",
+        "load_profile": "Heavy (asymptotic geometry)",
+        "network_profile": "O(n log n) for boundary points",
+        "complexity_details": "O(n log n) for boundary convergence, O(n) for asymptotic validation"
+      },
+      "resources": {
+        "memory_mb": 1024,
+        "gpu_required": false
+      },
+      "properties": {
+        "complexity": "O(n log n)",
+        "use_case": "Large-scale geometric agreement"
+      }
+    }
+  }
+}

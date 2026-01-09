@@ -1,0 +1,88 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "migration_policy": "replace-old-techniques",
+  "properties": {
+    "group": {
+      "enum": [
+        "SO(1,4)"
+      ],
+      "migration_policy": "replace-old-techniques",
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "type": "string",
+      "unreleased": true
+    },
+    "migration_policy": "replace-old-techniques",
+    "ops": {
+      "migration_policy": "replace-old-techniques",
+      "properties": {
+        "adjoint": {
+          "enum": [
+            "lie.adjoint.v1"
+          ],
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "string",
+          "unreleased": true
+        },
+        "casimir": {
+          "enum": [
+            "lie.casimir.quadratic.v1"
+          ],
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "string",
+          "unreleased": true
+        },
+        "exp": {
+          "enum": [
+            "lie.exp.matrix_exponential.v1"
+          ],
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "string",
+          "unreleased": true
+        },
+        "killing_form": {
+          "enum": [
+            "lie.killing_form.v1"
+          ],
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "string",
+          "unreleased": true
+        },
+        "log": {
+          "enum": [
+            "lie.log.matrix_logarithm.v1"
+          ],
+          "migration_policy": "replace-old-techniques",
+          "release_status": "pre-alpha",
+          "stability": "experimental",
+          "type": "string",
+          "unreleased": true
+        },
+        "migration_policy": "replace-old-techniques",
+        "release_status": "pre-alpha",
+        "stability": "experimental",
+        "unreleased": true
+      },
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "type": "object",
+      "unreleased": true
+    },
+    "release_status": "pre-alpha",
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "release_status": "pre-alpha",
+  "stability": "experimental",
+  "title": "LieGroupsAPI",
+  "type": "object",
+  "unreleased": true
+}

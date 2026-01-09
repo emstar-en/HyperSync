@@ -1,0 +1,105 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "migration_policy": "replace-old-techniques",
+  "properties": {
+    "connection_1form": {
+      "enum": [
+        "bundle.connection.1form.v1"
+      ],
+      "migration_policy": "replace-old-techniques",
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "type": "string",
+      "unreleased": true
+    },
+    "curvature_2form": {
+      "enum": [
+        "bundle.curvature.2form.v1"
+      ],
+      "migration_policy": "replace-old-techniques",
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "type": "string",
+      "unreleased": true
+    },
+    "d": {
+      "enum": [
+        "forms.exterior_derivative.v1"
+      ],
+      "migration_policy": "replace-old-techniques",
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "type": "string",
+      "unreleased": true
+    },
+    "exp": {
+      "enum": [
+        "lie.exp.matrix_exponential.v1"
+      ],
+      "migration_policy": "replace-old-techniques",
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "type": "string",
+      "unreleased": true
+    },
+    "holonomy": {
+      "enum": [
+        "bundle.holonomy.loop_transport.v1"
+      ],
+      "migration_policy": "replace-old-techniques",
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "type": "string",
+      "unreleased": true
+    },
+    "log": {
+      "enum": [
+        "lie.log.matrix_logarithm.v1"
+      ],
+      "migration_policy": "replace-old-techniques",
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "type": "string",
+      "unreleased": true
+    },
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "stability": "experimental",
+    "star": {
+      "enum": [
+        "forms.hodge_star.riemann.v1"
+      ],
+      "migration_policy": "replace-old-techniques",
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "type": "string",
+      "unreleased": true
+    },
+    "transport": {
+      "enum": [
+        "transport.parallel.riemannian.kappa_scaled.v1"
+      ],
+      "migration_policy": "replace-old-techniques",
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "type": "string",
+      "unreleased": true
+    },
+    "unreleased": true,
+    "wedge": {
+      "enum": [
+        "forms.wedge.v1"
+      ],
+      "migration_policy": "replace-old-techniques",
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "type": "string",
+      "unreleased": true
+    }
+  },
+  "release_status": "pre-alpha",
+  "stability": "experimental",
+  "title": "GeometryAlgorithmIDs",
+  "type": "object",
+  "unreleased": true
+}

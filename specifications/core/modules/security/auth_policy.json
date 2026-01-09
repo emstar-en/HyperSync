@@ -1,0 +1,77 @@
+{
+  "id": "auth_policy",
+  "version": "1.0.0",
+  "description": "Security policy for authentication and authorization within the HyperSync network.",
+  "release_status": "alpha",
+  "stability": "experimental",
+  "authentication": {
+    "mtls_required": true,
+    "device_posture_binding": true,
+    "allowed_auth_methods": [
+      "mTLS",
+      "OIDC",
+      "API_KEY"
+    ],
+    "session_management": {
+      "short_lived_tokens": {
+        "enabled": true,
+        "ttl_seconds": 900,
+        "rotation_policy": "rotate_on_use"
+      },
+      "max_session_duration": 28800
+    }
+  },
+  "authorization": {
+    "model": "RBAC_with_ABAC_overlay",
+    "roles": {
+      "admin": [
+        "*"
+      ],
+      "operator": [
+        "read:*",
+        "write:deployment",
+        "write:config"
+      ],
+      "viewer": [
+        "read:*"
+      ],
+      "agent": [
+        "read:task",
+        "write:result",
+        "write:telemetry"
+      ]
+    },
+    "attributes": {
+      "clearance_level": [
+        "public",
+        "internal",
+        "confidential",
+        "secret"
+      ],
+      "geometry_scope": [
+        "global",
+        "local_manifold",
+        "shard"
+      ]
+    }
+  },
+  "audit": {
+    "append_only_audit": true,
+    "audit_log_retention_days": 90,
+    "events_to_log": [
+      "login",
+      "logout",
+      "permission_denied",
+      "policy_change",
+      "key_rotation"
+    ]
+  },
+  "network": {
+    "audience_restrictions": true,
+    "purpose_binding": true,
+    "ip_allowlist": [
+      "10.0.0.0/8",
+      "192.168.0.0/16"
+    ]
+  }
+}

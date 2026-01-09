@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "id": "capsule.geometry.foundations",
+    "type": "vnes_capsule",
+    "version": "1.0.0",
+    "status": "ALPHA"
+  },
+  "encapsulation": {
+    "target_spec": "specifications/geometry/geometric_foundations.spec.json",
+    "isolation_level": "library",
+    "state_management": "none"
+  },
+  "interfaces": {
+    "ingress": [
+      "vector_operations",
+      "manifold_queries"
+    ],
+    "egress": [
+      "transformed_vectors",
+      "distances"
+    ]
+  },
+  "vnes_config": {
+    "runtime": "python_numpy",
+    "resources": {
+      "cpu": "low",
+      "memory": "low"
+    }
+  }
+}

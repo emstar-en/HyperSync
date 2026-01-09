@@ -1,0 +1,81 @@
+{
+  "$id": "byzantine_consensus.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "Schema for Byzantine fault-tolerant geometric consensus",
+  "properties": {
+    "consensus_method": {
+      "default": "geometric_median",
+      "enum": [
+        "geometric_median",
+        "trimmed_barycenter",
+        "outlier_rejection"
+      ],
+      "type": "string"
+    },
+    "fault_tolerance": {
+      "properties": {
+        "max_byzantine_nodes": {
+          "type": "integer"
+        },
+        "threshold": {
+          "pattern": "^f < n/[0-9]+$",
+          "type": "string"
+        },
+        "total_nodes": {
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
+    "kappa": {
+      "description": "Curvature parameter",
+      "type": "number"
+    },
+    "outlier_detection": {
+      "properties": {
+        "enabled": {
+          "default": true,
+          "type": "boolean"
+        },
+        "method": {
+          "enum": [
+            "distance_based",
+            "density_based",
+            "isolation_forest"
+          ],
+          "type": "string"
+        },
+        "threshold_sigma": {
+          "default": 3.0,
+          "type": "number"
+        }
+      },
+      "type": "object"
+    },
+    "proposals": {
+      "description": "Proposals from nodes",
+      "items": {
+        "properties": {
+          "node_id": {
+            "type": "string"
+          },
+          "signature": {
+            "type": "string"
+          },
+          "value": {
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "proposals",
+    "kappa",
+    "fault_tolerance"
+  ],
+  "title": "Byzantine Consensus Schema",
+  "type": "object"
+}

@@ -1,0 +1,85 @@
+# Hyperbolic Geometry Configuration
+
+# Available geometry modes
+geometries:
+  poincare_disk:
+    name: "Poincaré Disk"
+    description: "Conformal disk model"
+    curvature: negative
+    boundary: circle
+
+  hyperboloid:
+    name: "Hyperboloid"
+    description: "Hyperboloid model in Minkowski space"
+    curvature: negative
+    boundary: asymptotic
+
+  black_hole_lens:
+    name: "Black-Hole Lens"
+    description: "Penrose diagram with gravitational lensing"
+    curvature: mixed
+    boundary: light_cone
+
+  wormhole_throat:
+    name: "Wormhole Throat"
+    description: "Einstein-Rosen bridge geometry"
+    curvature: mixed
+    boundary: throat
+
+  fiber_bundle:
+    name: "Fiber Bundle"
+    description: "Fiber bundle projection"
+    curvature: mixed
+    boundary: none
+
+  klein_disk:
+    name: "Klein Disk"
+    description: "Projective disk model"
+    curvature: negative
+    boundary: circle
+
+  upper_half_plane:
+    name: "Upper Half-Plane"
+    description: "Upper half-plane model"
+    curvature: negative
+    boundary: real_line
+
+  beltrami_klein:
+    name: "Beltrami-Klein"
+    description: "Beltrami-Klein model"
+    curvature: negative
+    boundary: circle
+
+  hemisphere:
+    name: "Hemisphere"
+    description: "Hemisphere projection"
+    curvature: positive
+    boundary: equator
+
+  lorentz:
+    name: "Lorentz"
+    description: "Minkowski spacetime diagram"
+    curvature: zero
+    boundary: light_cone
+
+# Curvature domains
+curvature_domains:
+  positive:
+    name: "Positive (Spherical)"
+    marker: "◉"
+    color: "blue"
+
+  zero:
+    name: "Zero (Flat)"
+    marker: "○"
+    color: "white"
+
+  negative:
+    name: "Negative (Hyperbolic)"
+    marker: "●"
+    color: "red"
+
+  mixed:
+    name: "Mixed (Transition)"
+    marker: "◐"
+    color: "yellow"

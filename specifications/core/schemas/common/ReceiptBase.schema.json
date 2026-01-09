@@ -1,0 +1,24 @@
+{
+  "$id": "schema://spec-pack/schemas/common/ReceiptBase.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true,
+  "properties": {
+    "createdAt": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "domainId": {
+      "description": "Logical domain identifier (URI/UUID)",
+      "type": "string"
+    },
+    "frameId": {
+      "description": "Frame/namespace identifier (URI/IRI)",
+      "type": "string"
+    },
+    "receiptId": {
+      "type": "string"
+    }
+  },
+  "title": "ReceiptBase",
+  "type": "object"
+}

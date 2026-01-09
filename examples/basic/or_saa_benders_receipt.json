@@ -1,0 +1,18 @@
+{
+  "diagnostics": {
+    "gap_final": 7.9e-07,
+    "subproblem_reuse": 0.63
+  },
+  "inputs_commitment": "sha256:base|scenarios_v7|plan",
+  "iters": {
+    "cuts": 214,
+    "master": 78
+  },
+  "output_commitment": "sha256:x_first_stage",
+  "pricing": {
+    "cached_subproblem_discount": 0.4,
+    "unit_price_per_iter": 0.0008
+  },
+  "receipt_kind": "ReductionReceipt",
+  "solver_binding_id": "solver://or/stoch/saa_benders@0.8.2"
+}

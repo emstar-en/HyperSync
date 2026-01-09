@@ -1,0 +1,110 @@
+{
+  "integration_points": {
+    "cicd_pipelines": "Trigger deployment on successful runs",
+    "gold_samples": "Automatic validation against gold sample suites",
+    "model_catalogue": "Checkpoints auto-registered with lineage tracking",
+    "nvm": "Store training data and checkpoints"
+  },
+  "tuning_stable_tools": {
+    "description": "Tools for managing continuous model tuning",
+    "tools": [
+      {
+        "description": "Create a new tuning stable for continuous model tuning",
+        "name": "create_tuning_stable",
+        "parameters": {
+          "base_model_id": "string (required) - Base model ID from catalogue",
+          "description": "string (optional) - Stable description",
+          "epochs": "integer (optional) - Number of epochs",
+          "gold_suite_id": "string (optional) - Gold sample suite for validation",
+          "learning_rate": "number (optional) - Learning rate",
+          "name": "string (required) - Stable name",
+          "pipeline_id": "string (optional) - CI/CD pipeline for deployment",
+          "tags": "array (optional) - Tags for organization",
+          "tuning_method": "string (optional) - lora, qlora, full_finetune, etc."
+        },
+        "returns": "Stable ID and configuration"
+      },
+      {
+        "description": "List available tuning stables",
+        "name": "list_tuning_stables",
+        "parameters": {
+          "limit": "integer (optional) - Maximum results",
+          "status": "string (optional) - Filter by status",
+          "tags": "array (optional) - Filter by tags"
+        },
+        "returns": "List of tuning stables"
+      },
+      {
+        "description": "Get detailed information about a tuning stable",
+        "name": "get_stable_info",
+        "parameters": {
+          "stable_id": "string (required) - Stable ID"
+        },
+        "returns": "Complete stable configuration and status"
+      },
+      {
+        "description": "Start a new tuning run in a stable",
+        "name": "start_tuning_run",
+        "parameters": {
+          "stable_id": "string (required) - Stable ID"
+        },
+        "returns": "Run ID and initial status"
+      },
+      {
+        "description": "List tuning runs",
+        "name": "list_tuning_runs",
+        "parameters": {
+          "limit": "integer (optional) - Maximum results",
+          "stable_id": "string (optional) - Filter by stable",
+          "status": "string (optional) - Filter by status"
+        },
+        "returns": "List of tuning runs with progress"
+      },
+      {
+        "description": "Get current progress of a tuning run",
+        "name": "get_run_progress",
+        "parameters": {
+          "run_id": "string (required) - Run ID"
+        },
+        "returns": "Progress metrics and status"
+      },
+      {
+        "description": "List checkpoints from tuning runs",
+        "name": "list_checkpoints",
+        "parameters": {
+          "best_only": "boolean (optional) - Show only best checkpoints",
+          "run_id": "string (optional) - Filter by run",
+          "stable_id": "string (optional) - Filter by stable"
+        },
+        "returns": "List of checkpoints with metrics"
+      }
+    ]
+  },
+  "usage_guidance": {
+    "best_practices": [
+      "Always use gold samples for validation",
+      "Set appropriate quality gates",
+      "Enable auto-cataloguing for checkpoints",
+      "Use tags for organization",
+      "Start with small experiments",
+      "Monitor for regressions",
+      "Integrate with deployment pipelines"
+    ],
+    "when_to_use": [
+      "Setting up continuous tuning for a base model",
+      "Running fine-tuning experiments with validation",
+      "Tracking model improvements over time",
+      "Integrating tuning with deployment pipelines",
+      "Managing checkpoints and model versions"
+    ],
+    "workflow": [
+      "1. Create a tuning stable with base model and configuration",
+      "2. Optionally configure gold sample validation",
+      "3. Optionally integrate with CI/CD pipeline",
+      "4. Start tuning runs as needed",
+      "5. Monitor progress and metrics",
+      "6. Review checkpoints and select best models",
+      "7. Deploy successful models via CI/CD"
+    ]
+  }
+}

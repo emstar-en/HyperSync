@@ -1,0 +1,107 @@
+{
+  "$id": "https://hypersync.ai/schemas/consensus/mechanism.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "Configuration for consensus mechanisms",
+  "properties": {
+    "created_at": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "mechanism_id": {
+      "type": "string"
+    },
+    "mechanism_type": {
+      "enum": [
+        "bft",
+        "raft",
+        "paxos",
+        "quorum",
+        "voting",
+        "threshold",
+        "unanimous",
+        "transfinite"
+      ],
+      "type": "string"
+    },
+    "metadata": {
+      "type": "object"
+    },
+    "name": {
+      "type": "string"
+    },
+    "parameters": {
+      "properties": {
+        "fault_tolerance": {
+          "type": "integer"
+        },
+        "max_rounds": {
+          "type": "integer"
+        },
+        "quorum_size": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "threshold": {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
+        "timeout_seconds": {
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
+    "performance": {
+      "properties": {
+        "latency_ms": {
+          "type": "number"
+        },
+        "scalability": {
+          "type": "string"
+        },
+        "throughput_tps": {
+          "type": "number"
+        }
+      },
+      "type": "object"
+    },
+    "status": {
+      "enum": [
+        "active",
+        "deprecated",
+        "experimental"
+      ],
+      "type": "string"
+    },
+    "tier_requirements": {
+      "properties": {
+        "min_tier": {
+          "type": "string"
+        },
+        "required_capabilities": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "updated_at": {
+      "format": "date-time",
+      "type": "string"
+    }
+  },
+  "required": [
+    "mechanism_id",
+    "name",
+    "mechanism_type",
+    "created_at"
+  ],
+  "title": "Consensus Mechanism",
+  "type": "object"
+}

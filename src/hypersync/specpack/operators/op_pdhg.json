@@ -1,0 +1,6 @@
+{
+  "deterministic": true,
+  "id": "op://pdhg.0",
+  "kind": "proximal",
+  "notes": "PDHG with pinned parameters"
+}

@@ -1,0 +1,33 @@
+{
+  "content_summary": "Guidance for configurations that favor offline-friendly operation with heavy use of local NVM knowledge packs.",
+  "created_at_utc": "2025-12-14T13:53:02.235962Z",
+  "determinism_tier": "D2_open_world",
+  "embedding": {
+    "dimensions": 768,
+    "space": "conceptual_offline_patterns",
+    "vector_ref": "example:offline_friendly_profile"
+  },
+  "governance": {
+    "clearance_level": "internal",
+    "contains_pii": false,
+    "sensitivity": "internal"
+  },
+  "id": "sdl_shard_offline_friendly_profile",
+  "kind": "policy",
+  "metadata": {
+    "example": true
+  },
+  "semantic_tags": [
+    "network:offline_preferred",
+    "optimization:cache_heavy",
+    "nvm:local_knowledge_packs"
+  ],
+  "source": {
+    "hash_algo": "sha256",
+    "hash_value": "72db4643ef8355b267a6734977e2b76b5b9508c7b87d5dbf11c2ce672507e50b",
+    "media_type": "application/json",
+    "path": "examples/sdl/shard_offline_friendly_profile.json",
+    "size_bytes": 655
+  },
+  "updated_at_utc": "2025-12-14T13:53:02.235979Z"
+}

@@ -1,0 +1,88 @@
+{
+  "meta": {
+    "id": "hypersync.core.agent_topology",
+    "version": "1.0.0",
+    "type": "architecture_spec",
+    "description": "Defines the dynamic topology construction primitives and data inputs for HyperSync Agents."
+  },
+  "policy": {
+    "nature": "dynamic_construction",
+    "description": "Topology is not fixed. It is synthesized by operational models based on task requirements and environmental context.",
+    "user_editable": true,
+    "user_override_priority": "absolute"
+  },
+  "topology_primitives": {
+    "blueprint": {
+      "mathematical_foundation": "Graph Theory (Nodes, Edges, Subgraphs)",
+      "mechanism": "Composition of atomic Nodes into Stacks and Networks.",
+      "fault_detection": "Disconnected components (unless intended) or Cyclic dependencies in DAGs.",
+      "detailed_mechanisms": {
+        "node": {
+          "description": "Atomic unit of compute.",
+          "ref": "hypersync.core.node_lifecycle"
+        },
+        "stack": {
+          "description": "Vertical integration sharing memory.",
+          "use_case": "Deep reasoning."
+        },
+        "network": {
+          "description": "Horizontal distribution.",
+          "use_case": "Distributed processing."
+        }
+      }
+    }
+  },
+  "construction_context": {
+    "blueprint": {
+      "mathematical_foundation": "Constraint Satisfaction Problem (CSP)",
+      "mechanism": "Solver input generation based on registry, latency, and constraints.",
+      "fault_detection": "Unsatisfiable constraints (e.g., required capability not in registry).",
+      "detailed_mechanisms": {
+        "inputs": [
+          {
+            "name": "capability_registry",
+            "description": "Map of available models."
+          },
+          {
+            "name": "latency_matrix",
+            "description": "Ping/bandwidth data."
+          },
+          {
+            "name": "resource_constraints",
+            "description": "Budgets and limits."
+          },
+          {
+            "name": "compliance_boundaries",
+            "description": "Geofencing rules."
+          }
+        ]
+      }
+    }
+  },
+  "standard_patterns": {
+    "blueprint": {
+      "mathematical_foundation": "Network Topology Classification",
+      "mechanism": "Template instantiation for common architectural patterns.",
+      "fault_detection": "Pattern mismatch with task requirements.",
+      "detailed_mechanisms": {
+        "patterns": [
+          {
+            "id": "hierarchical_command",
+            "structure": "Tree",
+            "description": "Root supervisor delegating to workers."
+          },
+          {
+            "id": "peer_mesh",
+            "structure": "Graph",
+            "description": "Direct neighbor communication."
+          },
+          {
+            "id": "sequential_pipeline",
+            "structure": "Linear",
+            "description": "A -> B -> C flow."
+          }
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "capsule_type": "geometry",
+  "name": "hypersync.geometry.curvature.ricci",
+  "version": "1.0.0",
+  "description": "Implementation of Ricci flow for network topology optimization",
+  "logic_ref": "capsules/geometry/curvature/math.md",
+  "parameters": {
+    "flow_rate": 0.1,
+    "iterations": 10
+  }
+}

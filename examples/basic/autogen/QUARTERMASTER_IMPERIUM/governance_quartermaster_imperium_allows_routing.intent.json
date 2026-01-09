@@ -1,0 +1,9 @@
+{
+  "intent_kind": "ReductionIntent",
+  "op_ref": "op://routing/probe",
+  "params": {
+    "probe": true
+  },
+  "profile": "QUARTERMASTER_IMPERIUM",
+  "task": "routing_probe_probe"
+}

@@ -1,0 +1,41 @@
+{
+  "geometric_semantic_constraints": {
+    "meta": {
+      "description": "Strict semantic rules to prevent Euclidean violations in non-Euclidean contexts",
+      "status": "FINAL"
+    },
+    "constraints": {
+      "forbidden_operations": [
+        {
+          "op": "Euclidean Distance",
+          "symbol": "||x - y||_2",
+          "reason": "Meaningless on curved manifolds; violates triangle inequality in curvature.",
+          "replacement": "Geodesic Distance d_M(x, y)"
+        },
+        {
+          "op": "Vector Addition",
+          "symbol": "x + v",
+          "reason": "Points on manifold cannot be added to vectors directly.",
+          "replacement": "Exponential Map Exp_x(v)"
+        },
+        {
+          "op": "Vector Subtraction",
+          "symbol": "x - y",
+          "reason": "Difference vector is not in tangent space.",
+          "replacement": "Logarithmic Map Log_y(x)"
+        },
+        {
+          "op": "Coordinate Averaging",
+          "symbol": "Sum(x_i) / N",
+          "reason": "Result may not lie on the manifold.",
+          "replacement": "Frechet Mean / Karcher Mean"
+        }
+      ],
+      "required_semantics": {
+        "transport": "Parallel Transport must be used when comparing vectors from different tangent spaces.",
+        "derivatives": "Covariant Derivatives (Nabla) must be used instead of partial derivatives.",
+        "integration": "Volume forms (sqrt(det(g)) dx) must be included in all integrals."
+      }
+    }
+  }
+}

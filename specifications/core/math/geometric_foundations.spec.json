@@ -1,0 +1,42 @@
+{
+  "geometric_foundations": {
+    "meta": {
+      "description": "Core manifold definitions, metrics, and optimization algorithms",
+      "status": "DRAFT"
+    },
+    "manifolds": {
+      "hyperbolic_space": {
+        "model": "Poincare Ball Model (D^n)",
+        "metric_tensor": "g_ij = (2 / (1 - ||x||^2))^2 delta_ij",
+        "distance_function": "dist_M(u, v) = arccosh(1 + 2 * ||u-v||^2 / ((1-||u||^2)(1-||v||^2)))"
+      },
+      "spd_manifold": {
+        "description": "Symmetric Positive Definite Matrices",
+        "metric": "Affine-Invariant Riemannian Metric",
+        "distance": "dist_M(A, B) = ||log(A^-1/2 * B * A^-1/2)||_F"
+      }
+    },
+    "optimization": {
+      "riemannian_sgd": {
+        "update_rule": "x_{t+1} = Retraction_x_t(-eta * grad_R f(x_t))",
+        "retraction": {
+          "hyperbolic": "Exponential Map: Exp_x(v) = x + v (approx for small v) or exact formula",
+          "spd": "Exp_A(V) = A^1/2 * exp(A^-1/2 * V * A^-1/2) * A^1/2"
+        },
+        "fault_detection": "If x_{t+1} leaves manifold (e.g., ||x|| >= 1 for Poincare), project back or flag error."
+      }
+    },
+    "determinism_math": {
+      "symplectic_drift": {
+        "hamiltonian": "H(q, p) = 1/2 p^T M(q)^-1 p + V(q)",
+        "check": "Compute H at each step. Drift = |H(t) - H(0)|.",
+        "epsilon_derivation": "epsilon = C * step_size^order * ||H||"
+      },
+      "lyapunov_estimation": {
+        "algorithm": "Benettin's Algorithm (Standard)",
+        "logic": "Evolve orthogonal perturbation vectors. Re-orthonormalize periodically. Sum logs of scaling factors.",
+        "threshold": "Max_Lyapunov > 0.1 implies Chaos/Instability."
+      }
+    }
+  }
+}

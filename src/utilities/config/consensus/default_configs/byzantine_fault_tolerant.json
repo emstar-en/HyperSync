@@ -1,0 +1,13 @@
+{
+  "mechanism_id": "byzantine_fault_tolerant",
+  "parameters": {
+    "checkpoint_interval": 100,
+    "fault_tolerance": "f_less_than_n_div_3",
+    "max_faulty_nodes": 1,
+    "view_change_timeout_ms": 10000
+  },
+  "security": {
+    "require_all_signatures": true,
+    "signature_algorithm": "ed25519"
+  }
+}

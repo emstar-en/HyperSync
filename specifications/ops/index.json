@@ -1,0 +1,23 @@
+{
+  "bounded_kpis.json": {
+    "migration_policy": "none",
+    "release_status": "released",
+    "size_bytes": 4352,
+    "stability": "stable",
+    "unreleased": false
+  },
+  "deployment_docs.spec.json": {
+    "migration_policy": "none",
+    "release_status": "released",
+    "size_bytes": 5684,
+    "stability": "stable",
+    "unreleased": false
+  },
+  "deployment_docs.md": {
+    "migration_policy": "none",
+    "release_status": "released",
+    "size_bytes": 1110,
+    "stability": "stable",
+    "unreleased": false
+  }
+}

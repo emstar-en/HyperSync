@@ -1,0 +1,52 @@
+apiVersion: control.hypersync.io/v1
+kind: ControlManifest
+metadata:
+  name: ml-training-deployment
+  namespace: ml-workloads
+  labels:
+    app: ml-training
+    team: data-science
+    model: resnet50
+spec:
+  intent: deploy
+  target:
+    type: workload
+    name: resnet50-training-v2
+  placement:
+    strategy: hyperbolic
+    constraints:
+      - type: capability
+        operator: in
+        values: [gpu, cuda-11, high-memory]
+      - type: zone
+        operator: in
+        values: [us-west-2a, us-west-2b]
+    preferences:
+      - weight: 80
+        preference:
+          type: node
+          values: [gpu-optimized]
+  resources:
+    requests:
+      cpu: "8"
+      memory: "32Gi"
+      tokens: 2000000
+    limits:
+      cpu: "16"
+      memory: "64Gi"
+      tokens: 5000000
+  policy:
+    governance:
+      require_approval: true
+      approvers:
+        - ml-team-lead
+        - platform-admin
+      timeout: 3600
+    budget:
+      token_limit: 10000000
+      cost_limit: 5000.00
+      enforcement: hard
+  scheduling:
+    priority: 90
+    preemptible: false
+    deadline: "2025-12-31T23:59:59Z"

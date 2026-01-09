@@ -1,0 +1,14 @@
+{
+  "diagnostics": {
+    "E_final": -231.472615,
+    "grad_norm": 9.8e-05
+  },
+  "inputs_commitment": "sha256:benzene|def2-svp|PBE0|scf_tol=1e-8",
+  "iters": {
+    "geoopt": 17,
+    "scf": 28
+  },
+  "output_commitment": "sha256:optimized_xyz|pop_mulliken",
+  "receipt_kind": "ReductionReceipt",
+  "solver_binding_id": "solver://qchem/scf@1.2.2"
+}

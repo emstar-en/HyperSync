@@ -1,0 +1,79 @@
+{
+  "dependencies": [
+    "numpy",
+    "scipy"
+  ],
+  "description": "Geometric transport operations for semantic manifolds",
+  "implementation_id": "geodesic_transport_v1",
+  "language": "python",
+  "numerical_methods": {
+    "adaptive": {
+      "error": "controlled",
+      "order": "variable",
+      "stability": "adaptive"
+    },
+    "euler": {
+      "error": "O(h^2)",
+      "order": 1,
+      "stability": "conditionally_stable"
+    },
+    "runge_kutta_4": {
+      "error": "O(h^5)",
+      "order": 4,
+      "stability": "conditionally_stable"
+    }
+  },
+  "operations": {
+    "compute_geodesic": {
+      "algorithm": "geodesic_equation_integration",
+      "complexity": "O(num_points * dimension)",
+      "description": "Compute geodesic curve between two points",
+      "function": "compute_geodesic_curve"
+    },
+    "exponential_map": {
+      "algorithm": "geodesic_flow_integration",
+      "complexity": "O(steps * dimension)",
+      "convergence": "O(h^4) for RK4",
+      "description": "Flow along geodesic from base point in tangent direction",
+      "function": "exponential_map",
+      "methods": [
+        "runge_kutta_4",
+        "euler",
+        "adaptive_step"
+      ]
+    },
+    "holonomy_validation": {
+      "algorithm": "closed_loop_transport",
+      "checks": [
+        "loop_closure",
+        "vector_preservation",
+        "curvature_consistency"
+      ],
+      "complexity": "O(n * waypoints)",
+      "description": "Validate parallel transport around closed curves",
+      "function": "validate_holonomy"
+    },
+    "logarithm_map": {
+      "algorithm": "inverse_exponential_shooting",
+      "complexity": "O(iterations * dimension^2)",
+      "convergence": "quadratic for Newton-Raphson",
+      "description": "Find tangent vector that flows to target point",
+      "function": "logarithm_map",
+      "methods": [
+        "newton_raphson",
+        "gradient_descent"
+      ]
+    },
+    "parallel_transport": {
+      "algorithm": "levi_civita_connection",
+      "complexity": "O(n * steps)",
+      "description": "Transport vector along geodesic preserving inner products",
+      "function": "parallel_transport_vector",
+      "properties": {
+        "connection_type": "metric_compatible",
+        "preserves_angles": true,
+        "preserves_norm": true
+      }
+    }
+  }
+}

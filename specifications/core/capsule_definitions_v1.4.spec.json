@@ -1,0 +1,139 @@
+{
+  "meta": {
+    "id": "spec.core.capsule_definitions",
+    "version": "1.4.0",
+    "description": "Maps VNES library modules to concrete capsule implementations.",
+    "status": "ALPHA"
+  },
+  "modules": {
+    "hypersync.core.geometry": {
+      "capsule_path": "capsules/core/geometry",
+      "manifest_file": "manifest.json",
+      "description": "Core geometric routing and spatial logic.",
+      "type": "essential"
+    },
+    "hypersync.core.logic": {
+      "capsule_path": "capsules/core/logic",
+      "manifest_file": "manifest.json",
+      "description": "Fundamental logical operators and state management.",
+      "type": "essential"
+    },
+    "hypersync.core.kernel": {
+      "capsule_path": "capsules/core/kernel",
+      "manifest_file": "manifest.json",
+      "description": "VNES kernel interface and system calls.",
+      "type": "essential"
+    },
+    "hypersync.core.io.basic": {
+      "capsule_path": "capsules/core/io/basic",
+      "manifest_file": "manifest.json",
+      "description": "Standard input/output streams.",
+      "type": "essential"
+    },
+    "hypersync.core.factory": {
+      "capsule_path": "capsules/core/factory",
+      "manifest_file": "manifest.json",
+      "description": "Factory for virtualized instance orchestration.",
+      "type": "essential"
+    },
+    "hypersync.core.catalogue": {
+      "capsule_path": "capsules/core/catalogue",
+      "manifest_file": "manifest.json",
+      "description": "The Catalogue capsule for managing models and assets.",
+      "type": "essential"
+    },
+    "hypersync.std.io.extended": {
+      "capsule_path": "capsules/core/io/extended",
+      "manifest_file": "manifest.json",
+      "description": "Extended I/O capabilities.",
+      "type": "standard"
+    },
+    "hypersync.std.data.processing": {
+      "capsule_path": "capsules/core/data/processing",
+      "manifest_file": "manifest.json",
+      "description": "Standard data processing utilities.",
+      "type": "standard"
+    },
+    "hypersync.std.agents.basic": {
+      "capsule_path": "capsules/core/agents/basic",
+      "manifest_file": "manifest.json",
+      "description": "Basic autonomous agents.",
+      "type": "standard"
+    },
+    "hypersync.std.network.http": {
+      "capsule_path": "capsules/core/bridge/http",
+      "manifest_file": "manifest.json",
+      "description": "HTTP networking support.",
+      "type": "standard"
+    },
+    "hypersync.adv.coordination": {
+      "capsule_path": "capsules/core/coordination",
+      "manifest_file": "manifest.json",
+      "description": "Advanced coordination.",
+      "type": "advanced"
+    },
+    "hypersync.adv.ai.reasoning": {
+      "capsule_path": "capsules/core/ai/reasoning",
+      "manifest_file": "manifest.json",
+      "description": "Advanced AI reasoning.",
+      "type": "advanced"
+    },
+    "hypersync.adv.physics.simulation": {
+      "capsule_path": "capsules/core/physics/simulation",
+      "manifest_file": "manifest.json",
+      "description": "Physics simulation.",
+      "type": "advanced"
+    },
+    "hypersync.adv.security.crypto": {
+      "capsule_path": "capsules/core/security/crypto",
+      "manifest_file": "manifest.json",
+      "description": "Advanced crypto.",
+      "type": "advanced"
+    },
+    "hypersync.core.bridge.uplink": {
+      "capsule_path": "capsules/core/bridge/uplink",
+      "manifest_file": "manifest.json",
+      "description": "Host-Guest IPC Uplink.",
+      "type": "essential"
+    },
+    "hypersync.core.node_lifecycle": {
+      "capsule_path": "capsules/core/node_lifecycle",
+      "manifest_file": "manifest.json",
+      "description": "Node lifecycle state machine and interruption policies.",
+      "type": "essential"
+    },
+    "hypersync.core.agent_topology": {
+      "capsule_path": "capsules/core/agent_topology",
+      "manifest_file": "manifest.json",
+      "description": "Dynamic agent topology construction primitives.",
+      "type": "essential"
+    }
+  },
+  "mathematical_foundations": {
+    "capsule_isolation": {
+      "theory": "Sandboxing via Namespace Isolation",
+      "invariant": "Capsule A cannot access memory of Capsule B unless explicitly bridged."
+    }
+  },
+  "fault_detection": {
+    "dependency_cycles": {
+      "detection": "Tarjan's Strongly Connected Components algorithm on import graph",
+      "action": "Reject capsule load."
+    },
+    "missing_manifest": {
+      "check": "Existence of manifest.json in capsule_path",
+      "action": "Mark capsule as 'broken'."
+    }
+  },
+  "detailed_mechanisms": {
+    "loading_process": {
+      "steps": [
+        "Verify Signature",
+        "Mount VFS",
+        "Load Symbols",
+        "Link Dependencies"
+      ],
+      "security": "All code pages mapped as Read-Only/Executable (W^X)."
+    }
+  }
+}

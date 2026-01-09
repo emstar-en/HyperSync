@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "id": "capsule.integration.routing",
+    "type": "vnes_capsule",
+    "version": "1.0.0",
+    "status": "ALPHA"
+  },
+  "encapsulation": {
+    "target_spec": "specifications/integration/routing_algorithms.spec.json",
+    "isolation_level": "process",
+    "state_management": "routing_table_cache"
+  },
+  "interfaces": {
+    "ingress": [
+      "packets",
+      "network_state"
+    ],
+    "egress": [
+      "next_hop",
+      "route_updates"
+    ]
+  },
+  "vnes_config": {
+    "runtime": "go_network_optimized",
+    "resources": {
+      "cpu": "low_latency",
+      "memory": "high_throughput"
+    }
+  }
+}

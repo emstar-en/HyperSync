@@ -1,0 +1,46 @@
+{
+  "$id": "schema://nvm/block.write.receipt.v1.json",
+  "$schema": "ext://fcbd7642ed3f",
+  "properties": {
+    "block_id": {
+      "type": "string"
+    },
+    "input_commitments": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "payload_commitment": {
+      "type": "string"
+    },
+    "policy_hits": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "profile": {
+      "type": "string"
+    },
+    "receipt_kind": {
+      "const": "BlockWriteReceipt"
+    },
+    "timestamp": {
+      "type": "string"
+    },
+    "writer": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "receipt_kind",
+    "block_id",
+    "writer",
+    "input_commitments",
+    "payload_commitment",
+    "profile",
+    "timestamp"
+  ],
+  "type": "object"
+}

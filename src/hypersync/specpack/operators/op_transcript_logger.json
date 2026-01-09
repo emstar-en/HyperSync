@@ -1,0 +1,6 @@
+{
+  "deterministic": true,
+  "id": "op://transcript_logger.0",
+  "kind": "audit",
+  "notes": "Compute transcript checksums with replay"
+}

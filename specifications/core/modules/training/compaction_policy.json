@@ -1,0 +1,33 @@
+{
+  "id": "compaction_policy",
+  "migration_policy": "replace-old-techniques",
+  "reembed": {
+    "distortion_epsilon": 0.01,
+    "holonomy_epsilon": 0.005,
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "stability": "experimental",
+    "strategy": "subset_local_reembed",
+    "unreleased": true
+  },
+  "release_status": "pre-alpha",
+  "scheduling": {
+    "max_concurrent_jobs": 2,
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "stability": "experimental",
+    "unreleased": true,
+    "window_seconds": 900
+  },
+  "stability": "experimental",
+  "triggers": {
+    "drift_score_threshold": 0.05,
+    "hotness_decay_threshold": 0.2,
+    "max_batch_size": 10000,
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "unreleased": true
+}

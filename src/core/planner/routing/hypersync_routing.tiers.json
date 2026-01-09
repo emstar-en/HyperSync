@@ -1,0 +1,352 @@
+{
+  "tiers": {
+    "Advanced": {
+      "attestation": {
+        "level": "axiomatic_operator"
+      },
+      "display_name": "Advanced",
+      "executor": {
+        "capability_vm": {
+          "enabled": true
+        },
+        "device_preferences": {
+          "prefer_gpu": true
+        }
+      },
+      "features": {
+        "geodesic_routing": true,
+        "slip_routing": true
+      },
+      "id": "Advanced",
+      "limits": {
+        "node_cap": null,
+        "sync_hard_cap_dims": null,
+        "sync_max_dims": 32,
+        "sync_soft_max_dims": 64
+      },
+      "name": "Advanced",
+      "policy": {
+        "advisory_contact_installer": true,
+        "advisory_text": "Exceeding soft max (64 dims) is allowed but may impact SLOs/attestation. Consult your installation team for guidance on higher-dimensional configurations.",
+        "budgets": {
+          "gpu_ms": 400,
+          "mem_mb": 2048,
+          "time_ms": 600
+        },
+        "determinism": "StrongDet",
+        "effects_ceiling": "Compute",
+        "partner_contact": "Your Licensed HyperSync Partner",
+        "partner_required_over_sync_soft_max": false
+      },
+      "routing": {
+        "default_mode": "geodesic",
+        "eligible_ops": [
+          "ext://6325e9ed91d6",
+          "ext://98019b6bd848",
+          "ext://10f32e50673b",
+          "ext://cf4da4e06ecd"
+        ],
+        "max_hops": null,
+        "mode": "geodesic-tracking",
+        "risk_ceiling": 0.2
+      },
+      "slo": {
+        "error_budget_pct": 1,
+        "latency_ms_budget": 1500
+      }
+    },
+    "Basic": {
+      "attestation": {
+        "level": "client_banking"
+      },
+      "display_name": "Basic",
+      "executor": {
+        "capability_vm": {
+          "enabled": true
+        },
+        "device_preferences": {
+          "prefer_gpu": true
+        }
+      },
+      "features": {
+        "geodesic_routing": false,
+        "slip_routing": true
+      },
+      "id": "Basic",
+      "limits": {
+        "node_cap": 12,
+        "sync_max_dims": 12
+      },
+      "name": "Basic",
+      "policy": {
+        "budgets": {
+          "gpu_ms": 400,
+          "mem_mb": 2048,
+          "time_ms": 600
+        },
+        "determinism": "StrongDet",
+        "effects_ceiling": "Compute"
+      },
+      "routing": {
+        "default_mode": "geoticketed",
+        "eligible_ops": [
+          "ext://6325e9ed91d6",
+          "ext://98019b6bd848",
+          "ext://10f32e50673b",
+          "ext://cf4da4e06ecd"
+        ],
+        "max_hops": 24,
+        "mode": "geodesic-tracking",
+        "risk_ceiling": 0.2
+      },
+      "slo": {
+        "error_budget_pct": 2,
+        "latency_ms_budget": 2000
+      }
+    },
+    "CORE": {
+      "attestation": {
+        "level": "oss_minimal"
+      },
+      "executor": {
+        "capability_vm": {
+          "enabled": true
+        },
+        "device_preferences": {
+          "prefer_gpu": false
+        }
+      },
+      "id": "CORE",
+      "limits": {
+        "node_cap": 8,
+        "sync_max_dims": 12
+      },
+      "name": "CORE",
+      "policy": {
+        "budgets": {
+          "gpu_ms": 0,
+          "mem_mb": 512,
+          "time_ms": 300
+        },
+        "determinism": "StrongDet",
+        "effects_ceiling": "Write"
+      },
+      "routing": {
+        "default_mode": "geoticketed",
+        "eligible_ops": [
+          "ext://d0b56e71b5a7",
+          "ext://75329a56bff2",
+          "ext://fbccca23557c"
+        ],
+        "max_hops": 8,
+        "mode": "geoticket",
+        "risk_ceiling": 0.3
+      }
+    },
+    "PRO": {
+      "attestation": {
+        "level": "operator_confidence"
+      },
+      "executor": {
+        "capability_vm": {
+          "enabled": true
+        },
+        "device_preferences": {
+          "prefer_gpu": true
+        }
+      },
+      "id": "PRO",
+      "limits": {
+        "node_cap": 24,
+        "sync_max_dims": 32
+      },
+      "name": "PRO",
+      "policy": {
+        "budgets": {
+          "gpu_ms": 400,
+          "mem_mb": 2048,
+          "time_ms": 600
+        },
+        "determinism": "StrongDet",
+        "effects_ceiling": "Compute"
+      },
+      "routing": {
+        "default_mode": "geoticketed",
+        "eligible_ops": [
+          "ext://6325e9ed91d6",
+          "ext://98019b6bd848",
+          "ext://10f32e50673b",
+          "ext://cf4da4e06ecd"
+        ],
+        "max_hops": 72,
+        "mode": "geodesic-tracking",
+        "risk_ceiling": 0.2
+      }
+    },
+    "QM Campaign": {
+      "attestation": {
+        "level": "enterprise_strong"
+      },
+      "display_name": "QM Campaign",
+      "executor": {
+        "capability_vm": {
+          "enabled": true
+        },
+        "device_preferences": {
+          "prefer_gpu": true
+        }
+      },
+      "features": {
+        "geodesic_routing": true,
+        "slip_routing": true
+      },
+      "id": "QM Campaign",
+      "limits": {
+        "node_cap": null,
+        "sync_hard_cap_dims": null,
+        "sync_max_dims": 32,
+        "sync_soft_max_dims": 64
+      },
+      "name": "QM Campaign",
+      "policy": {
+        "advisory_contact_installer": true,
+        "advisory_text": "Exceeding soft max (64 dims) is allowed but may impact SLOs/attestation. Consult your installation team for guidance on higher-dimensional configurations.",
+        "budgets": {
+          "gpu_ms": 600,
+          "mem_mb": 4096,
+          "time_ms": 800
+        },
+        "determinism": "StrongDet",
+        "effects_ceiling": "Compute",
+        "partner_contact": "Your Licensed HyperSync Partner",
+        "partner_required_over_sync_soft_max": false
+      },
+      "routing": {
+        "default_mode": "geodesic",
+        "eligible_ops": [
+          "ext://6325e9ed91d6",
+          "ext://52b79e90f542",
+          "ext://10f32e50673b",
+          "ext://cf4da4e06ecd"
+        ],
+        "max_hops": null,
+        "mode": "geodesic-tracking",
+        "risk_ceiling": 0.15
+      },
+      "slo": {
+        "error_budget_pct": 1,
+        "latency_ms_budget": 1500
+      }
+    },
+    "QM Imperium": {
+      "attestation": {
+        "level": "enterprise_strict"
+      },
+      "display_name": "QM Imperium",
+      "executor": {
+        "capability_vm": {
+          "enabled": true
+        },
+        "device_preferences": {
+          "prefer_gpu": true
+        }
+      },
+      "features": {
+        "geodesic_routing": true,
+        "slip_routing": true
+      },
+      "id": "QM Imperium",
+      "limits": {
+        "node_cap": null,
+        "sync_hard_cap_dims": null,
+        "sync_max_dims": 32,
+        "sync_soft_max_dims": 64
+      },
+      "name": "QM Imperium",
+      "policy": {
+        "advisory_contact_installer": true,
+        "advisory_text": "Exceeding soft max (64 dims) is allowed but may impact SLOs/attestation. Consult your installation team for guidance on higher-dimensional configurations.",
+        "budgets": {
+          "gpu_ms": 400,
+          "mem_mb": 2048,
+          "time_ms": 600
+        },
+        "determinism": "StrongDet",
+        "effects_ceiling": "Compute",
+        "partner_contact": "Your Licensed HyperSync Partner",
+        "partner_required_over_sync_soft_max": false
+      },
+      "routing": {
+        "default_mode": "geodesic",
+        "eligible_ops": [
+          "ext://6325e9ed91d6",
+          "ext://98019b6bd848",
+          "ext://10f32e50673b",
+          "ext://cf4da4e06ecd"
+        ],
+        "max_hops": null,
+        "mode": "geodesic-tracking",
+        "risk_ceiling": 0.2
+      },
+      "slo": {
+        "error_budget_pct": 1,
+        "latency_ms_budget": 1500
+      }
+    },
+    "QM Venture": {
+      "attestation": {
+        "level": "enterprise_enhanced"
+      },
+      "display_name": "QM Venture",
+      "executor": {
+        "capability_vm": {
+          "enabled": true
+        },
+        "device_preferences": {
+          "prefer_gpu": true
+        }
+      },
+      "features": {
+        "geodesic_routing": true,
+        "slip_routing": true
+      },
+      "id": "QM Venture",
+      "limits": {
+        "node_cap": null,
+        "sync_hard_cap_dims": null,
+        "sync_max_dims": 32,
+        "sync_soft_max_dims": 64
+      },
+      "name": "QM Venture",
+      "policy": {
+        "advisory_contact_installer": true,
+        "advisory_text": "Exceeding soft max (64 dims) is allowed but may impact SLOs/attestation. Consult your installation team for guidance on higher-dimensional configurations.",
+        "budgets": {
+          "gpu_ms": 500,
+          "mem_mb": 2048,
+          "time_ms": 700
+        },
+        "determinism": "StrongDet",
+        "effects_ceiling": "Compute",
+        "partner_contact": "Your Licensed HyperSync Partner",
+        "partner_required_over_sync_soft_max": false
+      },
+      "routing": {
+        "default_mode": "geoticketed",
+        "eligible_ops": [
+          "ext://6325e9ed91d6",
+          "ext://c145b76a4841",
+          "ext://98019b6bd848",
+          "ext://cf4da4e06ecd"
+        ],
+        "max_hops": null,
+        "mode": "geodesic-tracking",
+        "risk_ceiling": 0.18
+      },
+      "slo": {
+        "error_budget_pct": 1,
+        "latency_ms_budget": 1500
+      }
+    }
+  }
+}

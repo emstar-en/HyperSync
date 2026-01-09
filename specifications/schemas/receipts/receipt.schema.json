@@ -1,0 +1,58 @@
+{
+  "$schema": "ext://fcbd7642ed3f",
+  "properties": {
+    "attestation": {
+      "type": "object"
+    },
+    "dims": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "id": {
+      "type": "string"
+    },
+    "max_hops": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "mode": {
+      "enum": [
+        "geodesic",
+        "geoticketed"
+      ],
+      "type": "string"
+    },
+    "slo": {
+      "type": "object"
+    },
+    "tier": {
+      "type": "string"
+    },
+    "standard_emission": {
+      "description": "Standard-compliant emission (e.g. W3C VC, JWT)",
+      "type": "object"
+    },
+    "emission_format": {
+      "description": "Format of the standard emission",
+      "enum": [
+        "native",
+        "w3c-vc",
+        "c2pa",
+        "jwt"
+      ],
+      "default": "native",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "mode",
+    "tier"
+  ],
+  "title": "HyperSync Receipt",
+  "type": "object"
+}

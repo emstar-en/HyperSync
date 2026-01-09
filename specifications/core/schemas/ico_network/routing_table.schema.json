@@ -1,0 +1,90 @@
+{
+  "$id": "https://hypersync.ai/schemas/ico/routing_table.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "Routing table for ICO network with LD-aware routing",
+  "properties": {
+    "default_route": {
+      "description": "Default gateway node",
+      "type": "string"
+    },
+    "owner_node": {
+      "pattern": "^node:[a-f0-9]{64}$",
+      "type": "string"
+    },
+    "routes": {
+      "items": {
+        "properties": {
+          "destination": {
+            "description": "Destination node or network",
+            "type": "string"
+          },
+          "destination_ld": {
+            "pattern": "^ld:[a-f0-9]{64}$",
+            "type": "string"
+          },
+          "metric": {
+            "description": "Routing metric (geodesic distance)",
+            "properties": {
+              "bandwidth": {
+                "type": "number"
+              },
+              "distance": {
+                "type": "number"
+              },
+              "latency": {
+                "type": "number"
+              },
+              "reliability": {
+                "maximum": 1,
+                "minimum": 0,
+                "type": "number"
+              }
+            },
+            "type": "object"
+          },
+          "next_hop": {
+            "description": "Next hop node ID",
+            "type": "string"
+          },
+          "path_type": {
+            "default": "geodesic",
+            "enum": [
+              "geodesic",
+              "timelike",
+              "spacelike",
+              "null",
+              "bridge"
+            ],
+            "type": "string"
+          },
+          "via_bridge": {
+            "description": "Bridge ID if crossing LD boundaries",
+            "type": "string"
+          }
+        },
+        "required": [
+          "destination",
+          "next_hop",
+          "metric"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "table_id": {
+      "type": "string"
+    },
+    "updated_at": {
+      "format": "date-time",
+      "type": "string"
+    }
+  },
+  "required": [
+    "table_id",
+    "owner_node",
+    "routes",
+    "updated_at"
+  ],
+  "title": "ICO Routing Table",
+  "type": "object"
+}

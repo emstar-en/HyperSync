@@ -1,0 +1,58 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "properties": {
+    "backend": {
+      "enum": [
+        "cpu",
+        "gpu",
+        "distributed"
+      ]
+    },
+    "engine": {
+      "enum": [
+        "cpu",
+        "gpu",
+        "distributed"
+      ]
+    },
+    "impl_id": {
+      "type": "string"
+    },
+    "libs": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "params": {
+      "type": "object"
+    },
+    "params_schema_ref": {
+      "type": "string"
+    },
+    "precision": {
+      "enum": [
+        "fp32",
+        "fp64",
+        "bf16"
+      ]
+    },
+    "solver": {
+      "enum": [
+        "fast_marching",
+        "jko_prox",
+        "symplectic",
+        "characteristics",
+        "custom"
+      ]
+    }
+  },
+  "required": [
+    "backend",
+    "engine",
+    "impl_id",
+    "solver"
+  ],
+  "title": "SolverBinding",
+  "type": "object"
+}

@@ -1,0 +1,18 @@
+{
+  "capsule": {
+    "name": "stochastic_geometric_algorithms",
+    "type": "consensus",
+    "properties": {
+      "mechanism": "Riemannian Stochastic Gradient Descent (RSGD)",
+      "update_rule": "x_{k+1} = exp_{x_k}(-eta * grad_f(x_k, sample_i))",
+      "variance_reduction": "Riemannian SVRG (Stochastic Variance Reduced Gradient)"
+    },
+    "fault_detection": {
+      "divergence_monitor": {
+        "trigger": "Gradient norm increases over 5 consecutive steps",
+        "action": "Reduce learning rate (eta) by factor of 0.5"
+      }
+    },
+    "vnes_binding": "geometry.consensus.stochastic"
+  }
+}

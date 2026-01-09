@@ -1,0 +1,26 @@
+{
+  "algorithms": [
+    "ALG-212",
+    "ALG-213",
+    "ALG-214"
+  ],
+  "geometry_mode": "native",
+  "id": "omnibus_trainer",
+  "migration_policy": "replace-old-techniques",
+  "name": "Omnibus Trainer",
+  "release_status": "pre-alpha",
+  "stability": "experimental",
+  "supports_domains": [
+    "lorentzian",
+    "hyperbolic",
+    "riemannian",
+    "product"
+  ],
+  "telemetry": [
+    "epoch_time_ms",
+    "loss",
+    "geodesic_error",
+    "curvature_scale_used"
+  ],
+  "unreleased": true
+}

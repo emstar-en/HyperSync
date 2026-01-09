@@ -1,0 +1,75 @@
+{
+  "pct_canonized_workflow_schema": {
+    "fields": {
+      "compilation_geometry_receipt_ids": {
+        "semantics": "Receipts documenting geometry operations used during PCT trailblazer compilation",
+        "type": "array<string>"
+      },
+      "consensus_receipt_ids": {
+        "semantics": "IDs of consensus receipts (e.g., BFTConsensusReceipt) associated with workflow-level consensus events",
+        "type": "array<string>"
+      },
+      "determinism_tier": {
+        "enum": [
+          "D0_geometric_workflow",
+          "D1_bounded_workflow",
+          "D2_exploratory_workflow"
+        ],
+        "semantics": "Determinism tier at which this workflow is intended to run",
+        "type": "string"
+      },
+      "environment_contract_id": {
+        "semantics": "Reference to the environment_contract used when compiling and deploying this workflow",
+        "type": "string"
+      },
+      "geometry_control_profile_ids": {
+        "semantics": "Optional list of geometry profile IDs and/or control ruleset IDs relevant to this workflow's execution",
+        "type": "array<string>"
+      },
+      "metadata": {
+        "semantics": "Additional workflow metadata",
+        "type": "object"
+      },
+      "monitoring_specification_id": {
+        "semantics": "Reference to a monitoring_specification described in enhanced_pct_method_overview_v2 or AGUA integration",
+        "type": "string"
+      },
+      "runtime_binding_spec_id": {
+        "semantics": "Identifier of a runtime binding specification describing concrete tools, agents, and resources for this workflow",
+        "type": "string"
+      },
+      "safety_policy_refs": {
+        "semantics": "References to safety policies (including geometry-based guardrails) that must be enforced at runtime",
+        "type": "array<string>"
+      },
+      "tui_geometry_mode_binding": {
+        "examples": [
+          "poincare_disk",
+          "hyperboloid",
+          "wormhole_throat"
+        ],
+        "semantics": "Optional binding that indicates which TUI geometry mode should be activated when this workflow executes (e.g., hyperbolic vs spherical vs mixed views)",
+        "type": "string"
+      },
+      "validation_geometry_receipt_ids": {
+        "semantics": "Receipts documenting geometry-based validation and guardrail checks",
+        "type": "array<string>"
+      },
+      "workflow_id": {
+        "semantics": "Unique identifier for this canonized workflow",
+        "type": "string"
+      },
+      "workflow_steps": {
+        "semantics": "Ordered sequence of workflow steps",
+        "type": "array<object>"
+      }
+    },
+    "metadata": {
+      "created_by": "HyperSync Geometry/PCT/AGUA Integration Plan",
+      "description": "Schema for production-ready PCT workflows with runtime bindings",
+      "integration_date": "2025-12-06",
+      "title": "Enhanced PCT Canonized Workflow Schema v2"
+    },
+    "schema_type": "pct_canonized_workflow"
+  }
+}

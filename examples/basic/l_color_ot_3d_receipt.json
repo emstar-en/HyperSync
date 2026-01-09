@@ -1,0 +1,11 @@
+{
+  "diagnostics": {
+    "W2": 0.162,
+    "entropy": 0.91,
+    "invertible": true
+  },
+  "inputs_commitment": "sha256:plate|lookref|Lab|eps=0.0025|bins=64",
+  "output_commitment": "sha256:graded_digest",
+  "receipt_kind": "ReductionReceipt",
+  "solver_binding_id": "solver://color/ot_3d_entropic@0.9.7"
+}

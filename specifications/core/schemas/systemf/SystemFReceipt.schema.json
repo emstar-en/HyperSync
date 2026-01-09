@@ -1,0 +1,31 @@
+{
+  "$id": "schema://schemas/systemf/SystemFReceipt.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true,
+  "allOf": [
+    {
+      "$ref": "schema://spec-pack/schemas/common/ReceiptBase.schema.json"
+    },
+    {
+      "properties": {
+        "domainId": {
+          "type": "string"
+        },
+        "frameId": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    }
+  ],
+  "properties": {
+    "domainId": {
+      "type": "string"
+    },
+    "frameId": {
+      "type": "string"
+    }
+  },
+  "title": "SystemF Receipt",
+  "type": "object"
+}

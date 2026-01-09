@@ -1,0 +1,707 @@
+{
+  "$defs": {
+    "receipt": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "properties": {
+        "attestation": {
+          "type": "object"
+        },
+        "dims": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "id": {
+          "type": "string"
+        },
+        "max_hops": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "mode": {
+          "enum": [
+            "geodesic",
+            "geoticketed"
+          ],
+          "type": "string"
+        },
+        "slo": {
+          "type": "object"
+        },
+        "tier": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "mode",
+        "tier"
+      ],
+      "type": "object"
+    }
+  },
+  "description": "Function-call surface for operating HyperSync within active tier caps.",
+  "llm_guidance": {
+    "hvs": {
+      "best_practices": [
+        "Use poincare_ball geometry for hierarchical data",
+        "Set max_vectors to prevent unbounded growth",
+        "Configure sync_dims to sync only necessary dimensions",
+        "Use isolated_namespaces for secure network bridging",
+        "Attach HVS to 'model' for single-model memory, 'stack' for shared memory"
+      ],
+      "overview": "Hyperbolic Vector Storage (HVS) provides persistent, geometry-aware vector storage that can be attached to models, stacks, trunks, or networks.",
+      "use_cases": [
+        "Create non-volatile memory for a single model",
+        "Share embeddings across a model stack",
+        "Synchronize specific dimensions across multiple HVS instances",
+        "Bridge multiple networks through a shared HVS",
+        "Maintain persistent knowledge graphs in hyperbolic space"
+      ],
+      "workflow": [
+        "1. Create HVS with hvs_create, specifying geometry and dimensions",
+        "2. Attach to entity (model/stack/trunk/network) with hvs_attach",
+        "3. Optionally configure sync with hvs_configure_sync for dimension-specific synchronization",
+        "4. For network bridging, use hvs_create_bridge to connect multiple networks",
+        "5. Query and manage with hvs_list, hvs_get, hvs_delete"
+      ]
+    },
+    "temperature_default": 0.2,
+    "tool_use_rules": [
+      "Always set_tier before heavy operations if caps may be exceeded.",
+      "Prefer geodesic for stronger attestation; prefer geoticketed for speed or when SLO is tight.",
+      "Call dimension_audit after set_dims to confirm effective dims and advisories.",
+      "Use route for fast path; use plan_route + execute_plan for complex constraints.",
+      "Inspect receipt.slo and receipt.attestation; adjust mode/dims/tier if needed."
+    ]
+  },
+  "name": "HyperSync Autopilot Contract",
+  "policies": {
+    "caps_source": "Derived from embedded spec at runtime (node caps, hop caps, exact limits). Use dimension_audit to read effective values.",
+    "dimensions": {
+      "advisory_over_soft_max": "Exceeding 64 dims is allowed but may impact SLOs/attestation. Consult your installation team.",
+      "default": 32,
+      "null_means_uncapped": true,
+      "soft_max_enterprise": 64
+    },
+    "routing": {
+      "default_mode_by_tier": {
+        "Advanced": "geodesic",
+        "Basic": "geoticketed",
+        "Core": "geoticketed",
+        "Pro": "geoticketed",
+        "QM Campaign": "geodesic",
+        "QM Imperium": "geodesic",
+        "QM Venture": "geoticketed"
+      },
+      "modes_enabled": [
+        "geodesic",
+        "geoticketed"
+      ]
+    }
+  },
+  "returns": {
+    "dimension_audit": {
+      "properties": {
+        "advisory": {
+          "type": "boolean"
+        },
+        "dims_current": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "dims_default": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "hard_cap": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "notes": {
+          "type": "string"
+        },
+        "soft_max": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "tier": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "tier",
+        "dims_current"
+      ],
+      "type": "object"
+    },
+    "route": {
+      "properties": {
+        "path": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "receipt": {
+          "$ref": "#/$defs/receipt"
+        },
+        "slo": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "path",
+        "receipt"
+      ],
+      "type": "object"
+    }
+  },
+  "tiers": {
+    "enum": [
+      "Core",
+      "Basic",
+      "Pro",
+      "Advanced",
+      "QM Venture",
+      "QM Campaign",
+      "QM Imperium"
+    ]
+  },
+  "tools": [
+    {
+      "function": {
+        "description": "Switch service tier; applies defaults and enforces tier caps.",
+        "name": "set_tier",
+        "parameters": {
+          "additionalProperties": false,
+          "properties": {
+            "tier": {
+              "enum": [
+                "Core",
+                "Basic",
+                "Pro",
+                "Advanced",
+                "QM Venture",
+                "QM Campaign",
+                "QM Imperium"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "tier"
+          ],
+          "type": "object"
+        }
+      },
+      "type": "function"
+    },
+    {
+      "function": {
+        "description": "Set routing mode per policy.",
+        "name": "set_routing_mode",
+        "parameters": {
+          "additionalProperties": false,
+          "properties": {
+            "mode": {
+              "enum": [
+                "geodesic",
+                "geoticketed"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "mode"
+          ],
+          "type": "object"
+        }
+      },
+      "type": "function"
+    },
+    {
+      "function": {
+        "description": "Set manifold dimensionality. Respects soft/hard caps; null = uncapped when allowed.",
+        "name": "set_dims",
+        "parameters": {
+          "additionalProperties": false,
+          "properties": {
+            "dims": {
+              "minimum": 1,
+              "type": [
+                "integer",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "dims"
+          ],
+          "type": "object"
+        }
+      },
+      "type": "function"
+    },
+    {
+      "function": {
+        "description": "Report current dims and caps.",
+        "name": "dimension_audit",
+        "parameters": {
+          "additionalProperties": false,
+          "properties": {},
+          "type": "object"
+        }
+      },
+      "type": "function"
+    },
+    {
+      "function": {
+        "description": "Load a graph into runtime context.",
+        "name": "load_graph",
+        "parameters": {
+          "additionalProperties": true,
+          "properties": {
+            "graph": {
+              "type": "object"
+            },
+            "name": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "name",
+            "graph"
+          ],
+          "type": "object"
+        }
+      },
+      "type": "function"
+    },
+    {
+      "function": {
+        "description": "List available graphs.",
+        "name": "list_graphs",
+        "parameters": {
+          "additionalProperties": false,
+          "properties": {},
+          "type": "object"
+        }
+      },
+      "type": "function"
+    },
+    {
+      "function": {
+        "description": "Route between two nodes using current tier/mode/dims and SLO gate.",
+        "name": "route",
+        "parameters": {
+          "additionalProperties": true,
+          "properties": {
+            "dst": {
+              "type": "string"
+            },
+            "max_hops": {
+              "minimum": 1,
+              "type": [
+                "integer",
+                "null"
+              ]
+            },
+            "mode": {
+              "enum": [
+                "geodesic",
+                "geoticketed",
+                null
+              ],
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "src": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "src",
+            "dst"
+          ],
+          "type": "object"
+        }
+      },
+      "type": "function"
+    },
+    {
+      "function": {
+        "description": "Create a route plan for later execution.",
+        "name": "plan_route",
+        "parameters": {
+          "additionalProperties": true,
+          "properties": {
+            "constraints": {
+              "type": "object"
+            },
+            "dst": {
+              "type": "string"
+            },
+            "src": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "src",
+            "dst"
+          ],
+          "type": "object"
+        }
+      },
+      "type": "function"
+    },
+    {
+      "function": {
+        "description": "Execute a previously created plan.",
+        "name": "execute_plan",
+        "parameters": {
+          "additionalProperties": false,
+          "properties": {
+            "plan_id": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "plan_id"
+          ],
+          "type": "object"
+        }
+      },
+      "type": "function"
+    },
+    {
+      "function": {
+        "description": "Run a conformance vector (health check).",
+        "name": "run_conformance",
+        "parameters": {
+          "additionalProperties": false,
+          "properties": {
+            "vector_id": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "vector_id"
+          ],
+          "type": "object"
+        }
+      },
+      "type": "function"
+    },
+    {
+      "function": {
+        "description": "Create a new Hyperbolic Vector Storage (HVS) instance. Can be attached to models, stacks, trunks, or networks.",
+        "name": "hvs_create",
+        "parameters": {
+          "additionalProperties": true,
+          "properties": {
+            "attach_id": {
+              "description": "ID of the entity to attach to",
+              "type": "string"
+            },
+            "attach_type": {
+              "description": "What to attach the HVS to",
+              "enum": [
+                "model",
+                "stack",
+                "trunk",
+                "network",
+                "bridge"
+              ],
+              "type": "string"
+            },
+            "description": {
+              "description": "Optional description",
+              "type": "string"
+            },
+            "geometry_space": {
+              "default": "poincare_ball",
+              "description": "Geometry space for vectors",
+              "enum": [
+                "euclidean",
+                "spherical",
+                "poincare_ball",
+                "hyperboloid",
+                "spd_logeuclid"
+              ],
+              "type": "string"
+            },
+            "max_vectors": {
+              "description": "Maximum number of vectors (null for unlimited)",
+              "minimum": 1,
+              "type": [
+                "integer",
+                "null"
+              ]
+            },
+            "name": {
+              "description": "Name for the HVS instance",
+              "type": "string"
+            },
+            "vector_dim": {
+              "description": "Vector dimensionality",
+              "minimum": 1,
+              "type": "integer"
+            }
+          },
+          "required": [
+            "name",
+            "vector_dim"
+          ],
+          "type": "object"
+        }
+      },
+      "type": "function"
+    },
+    {
+      "function": {
+        "description": "List HVS instances with optional filtering by attachment or bridge status.",
+        "name": "hvs_list",
+        "parameters": {
+          "additionalProperties": false,
+          "properties": {
+            "attach_id": {
+              "description": "Filter by attachment ID",
+              "type": "string"
+            },
+            "attach_type": {
+              "description": "Filter by attachment type",
+              "type": "string"
+            },
+            "bridges_only": {
+              "default": false,
+              "description": "Show only bridge HVS instances",
+              "type": "boolean"
+            }
+          },
+          "type": "object"
+        }
+      },
+      "type": "function"
+    },
+    {
+      "function": {
+        "description": "Get detailed information about a specific HVS instance.",
+        "name": "hvs_get",
+        "parameters": {
+          "additionalProperties": false,
+          "properties": {
+            "hvs_id": {
+              "description": "HVS instance ID",
+              "type": "string"
+            }
+          },
+          "required": [
+            "hvs_id"
+          ],
+          "type": "object"
+        }
+      },
+      "type": "function"
+    },
+    {
+      "function": {
+        "description": "Attach an HVS instance to a model, stack, trunk, or network.",
+        "name": "hvs_attach",
+        "parameters": {
+          "additionalProperties": false,
+          "properties": {
+            "attachment_id": {
+              "description": "ID of the entity to attach to",
+              "type": "string"
+            },
+            "attachment_name": {
+              "description": "Optional name for the attachment",
+              "type": "string"
+            },
+            "attachment_type": {
+              "description": "Type of entity to attach to",
+              "enum": [
+                "model",
+                "stack",
+                "trunk",
+                "network",
+                "bridge"
+              ],
+              "type": "string"
+            },
+            "hvs_id": {
+              "description": "HVS instance ID",
+              "type": "string"
+            }
+          },
+          "required": [
+            "hvs_id",
+            "attachment_type",
+            "attachment_id"
+          ],
+          "type": "object"
+        }
+      },
+      "type": "function"
+    },
+    {
+      "function": {
+        "description": "Configure dimension-specific synchronization for an HVS instance. Allows syncing specific dimensions across multiple HVS instances.",
+        "name": "hvs_configure_sync",
+        "parameters": {
+          "additionalProperties": false,
+          "properties": {
+            "conflict_resolution": {
+              "default": "last_write_wins",
+              "description": "How to resolve sync conflicts",
+              "enum": [
+                "last_write_wins",
+                "vector_merge",
+                "manual"
+              ],
+              "type": "string"
+            },
+            "enabled": {
+              "default": true,
+              "description": "Enable or disable synchronization",
+              "type": "boolean"
+            },
+            "hvs_id": {
+              "description": "HVS instance ID",
+              "type": "string"
+            },
+            "sync_dims": {
+              "description": "Dimension indices to synchronize (empty = all)",
+              "items": {
+                "minimum": 0,
+                "type": "integer"
+              },
+              "type": "array"
+            },
+            "sync_mode": {
+              "default": "full",
+              "description": "Synchronization mode",
+              "enum": [
+                "full",
+                "partial",
+                "selective"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "hvs_id"
+          ],
+          "type": "object"
+        }
+      },
+      "type": "function"
+    },
+    {
+      "function": {
+        "description": "Configure an HVS as a bridge connecting multiple networks. Enables cross-network communication through shared HVS.",
+        "name": "hvs_create_bridge",
+        "parameters": {
+          "additionalProperties": false,
+          "properties": {
+            "hvs_id": {
+              "description": "HVS instance ID to use as bridge",
+              "type": "string"
+            },
+            "isolation_policy": {
+              "default": "isolated_namespaces",
+              "description": "Data isolation policy for the bridge",
+              "enum": [
+                "full_share",
+                "read_only",
+                "write_through",
+                "isolated_namespaces"
+              ],
+              "type": "string"
+            },
+            "network_ids": {
+              "description": "Network IDs to connect",
+              "items": {
+                "type": "string"
+              },
+              "minItems": 2,
+              "type": "array"
+            },
+            "shared_dims": {
+              "description": "Dimensions to share across networks (empty = all)",
+              "items": {
+                "minimum": 0,
+                "type": "integer"
+              },
+              "type": "array"
+            }
+          },
+          "required": [
+            "hvs_id",
+            "network_ids"
+          ],
+          "type": "object"
+        }
+      },
+      "type": "function"
+    },
+    {
+      "function": {
+        "description": "Find an existing bridge connecting specific networks.",
+        "name": "hvs_find_bridge",
+        "parameters": {
+          "additionalProperties": false,
+          "properties": {
+            "network_ids": {
+              "description": "Network IDs to find bridge for",
+              "items": {
+                "type": "string"
+              },
+              "minItems": 2,
+              "type": "array"
+            }
+          },
+          "required": [
+            "network_ids"
+          ],
+          "type": "object"
+        }
+      },
+      "type": "function"
+    },
+    {
+      "function": {
+        "description": "Delete an HVS instance. This is permanent and cannot be undone.",
+        "name": "hvs_delete",
+        "parameters": {
+          "additionalProperties": false,
+          "properties": {
+            "hvs_id": {
+              "description": "HVS instance ID to delete",
+              "type": "string"
+            }
+          },
+          "required": [
+            "hvs_id"
+          ],
+          "type": "object"
+        }
+      },
+      "type": "function"
+    }
+  ]
+}

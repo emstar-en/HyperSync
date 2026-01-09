@@ -1,0 +1,52 @@
+{
+  "default_patterns": [
+    "*.json",
+    "*.yml",
+    "*.yaml"
+  ],
+  "description": "Filters non-runtime assets (codegen, conformance, tests, examples, py tools) and keeps runtime config.",
+  "dir_patterns": {
+    "diagnostics": [
+      "*.json",
+      "*.yml",
+      "*.yaml"
+    ],
+    "overlays": [
+      "*.json",
+      "*.yml",
+      "*.yaml"
+    ],
+    "tools": [
+      "*.json",
+      "*.yml",
+      "*.yaml"
+    ]
+  },
+  "exclude_prefixes": [
+    "codegen/",
+    "conformance/",
+    "generators/",
+    "validators/",
+    "examples/",
+    "ui/",
+    "ext/",
+    "refs/surreal_systems/",
+    "refs/surreal_capsules/",
+    "refs/lambda_cube_attestation/",
+    "__pycache__/"
+  ],
+  "include_dirs": [
+    "planner",
+    "policies",
+    "schemas",
+    "refs/schemas",
+    "operators",
+    "tools",
+    "caps",
+    "overlays",
+    "schedules",
+    "diagnostics",
+    "hypersync"
+  ],
+  "name": "runtime_only_overlay"
+}

@@ -1,0 +1,10 @@
+{
+  "diagnostics": {
+    "basis_reuse_hits": 3,
+    "bound_gap": 0.0
+  },
+  "inputs_commitment": "sha256:knapsack_1|lp|cuts=none",
+  "output_commitment": "sha256:relax_solution_digest",
+  "receipt_kind": "ReductionReceipt",
+  "solver_binding_id": "solver://fm/discrete_relax/lp_qp@1.0.0"
+}

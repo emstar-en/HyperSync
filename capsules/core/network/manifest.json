@@ -1,0 +1,14 @@
+{
+  "id": "hypersync.core.network",
+  "version": "1.0.0",
+  "type": "capsule",
+  "description": "Core network integration and protocol management.",
+  "capabilities": [
+    "protocol_registry",
+    "service_discovery",
+    "message_routing"
+  ],
+  "dependencies": [
+    "hypersync.core.io"
+  ]
+}

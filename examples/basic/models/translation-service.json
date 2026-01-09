@@ -1,0 +1,29 @@
+{
+  "capabilities": [
+    "translate:text",
+    "detect:language"
+  ],
+  "description": "Multi-language translation service",
+  "entrypoint": {
+    "kind": "noop",
+    "note": "Replace with actual model endpoint"
+  },
+  "metadata": {
+    "output_format": "text",
+    "supported_languages": [
+      "en",
+      "es",
+      "fr",
+      "de",
+      "zh"
+    ]
+  },
+  "name": "translation-service",
+  "tags": [
+    "offline",
+    "demo",
+    "nlp",
+    "translation"
+  ],
+  "type": "model"
+}

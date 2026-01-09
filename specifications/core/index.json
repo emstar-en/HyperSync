@@ -1,0 +1,1085 @@
+{
+  "LEGAL_README.md": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 947,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "MODEL_README.md": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 483,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "README.md": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 1167,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "bundle.jsonl": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 45270,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "bundles/bundle.core.jsonl": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 0,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "bundles/bundle.legal.jsonl": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 0,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "bundles/bundle.paths.txt": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 1502,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "bundles/bundle.security.jsonl": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 45270,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "checksums.txt": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 12578,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "components": [
+    {
+      "description": "Runtime entrypoint and launcher behavior profile",
+      "file": "launcher_profile.v1.json",
+      "id": "hypersync.runtime.launcher_profile.v1"
+    }
+  ],
+  "components/dependency-policy/dependency-policy-001.json": {
+    "id": null,
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 1991,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "components/dispatch-map/dispatch-map-001.json": {
+    "id": null,
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 9642,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "components/hypersync-codegen-spec-json/hypersync-codegen-spec-json.json": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 11029,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "components/implementations-json/implementations-json-001.json": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 577,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "components/packages/packages-001.json": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 33040,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "components/packages/packages-002.json": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 13842,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "components/packages/packages-003.json": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 81502,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "components/packages/packages-004.json": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 114039,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "components/packages/packages-005.json": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 25568,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "components/packages/packages-006.json": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 30683,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "components/packages/packages-007.json": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 18432,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "components/project/project-001.json": {
+    "id": null,
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 508,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "components/style/style-001.json": {
+    "id": null,
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 197,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "index.json": {
+    "id": null,
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 8440,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "legal/agpl_service_use_faq.md": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 705,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "legal/briefing_deck.md": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 774,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "legal/cla/corporate_cla.template.md": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 94,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "legal/cla/individual_cla.template.md": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 95,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "legal/conformance_and_trademark_policy.md": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 672,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "legal/ip_strategy_candidates.md": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 680,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "legal/legal_context_summary.md": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 419,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "legal/licenses/AGPL-3.0-only.SPDX": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 86,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "legal/licenses/Apache-2.0.SPDX": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 83,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "legal/licenses/CC-BY-4.0.SPDX": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 82,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "legal/licensing_layout.json": {
+    "id": null,
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 1231,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "legal/licensing_matrix.json": {
+    "id": null,
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 562,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "migration_policy": "replace-old-techniques",
+  "modules/audit/templates/ci/audit-tap.yml": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 887,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "modules/domain/domain_registry.json": {
+    "id": "domain_registry",
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 439,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "modules/domain/domain_shim.json": {
+    "id": "domain_shim",
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 533,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "modules/factory/make_x_for_y.md": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 464,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "modules/factory/templates/ci/make-x-for-y.yml": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 962,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "modules/factory/templates/policy_baseline.json": {
+    "id": null,
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 181,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "modules/gateway/gateway.json": {
+    "id": "gateway",
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 1524,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "modules/geometry/docs/differential_forms.md": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 16204,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "modules/geometry/docs/fiber_bundles.md": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 24514,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "modules/geometry/docs/gauge_theory.md": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 29711,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "modules/geometry/docs/lie_groups.md": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 20062,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "modules/geometry/docs/riemannian_geometry.md": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 18506,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "modules/geometry/docs/tensor_calculus.md": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 10938,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "modules/geometry/templates/ci/geometry-consistency.yml": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 264,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "modules/geometry/tests/test_geometry_assets.py": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 866,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "modules/memory/persistent_memory.md": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 722,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "modules/memory/templates/ci/persistent-memory.yml": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 491,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "modules/memory/templates/ddl/persistent_memory.cassandra.cql": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 845,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "modules/memory/templates/ddl/persistent_memory.postgres.sql": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 826,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "modules/memory/templates/ddl/persistent_memory.scylla.cql": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 845,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "modules/numeric/intrinsic_kernels.json": {
+    "id": "intrinsic_kernels_registry",
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 916,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "modules/security/anchor_policy.json": {
+    "id": "anchor_policy",
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 346,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "modules/security/auth_policy.json": {
+    "id": "auth_policy",
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 249,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "modules/security/dos_policy.json": {
+    "id": "dos_policy",
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 192,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "modules/security/numeric_policy.json": {
+    "id": "numeric_policy",
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 285,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "modules/security/observability_policy.json": {
+    "id": "observability_policy",
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 175,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "modules/security/security_policies.json": {
+    "id": "ld_security_policies",
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 403,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "modules/security/templates/ci/security-tests.yml": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 369,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "modules/security/tests/test_audit_capsule_multisig.py": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 1378,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "modules/security/tests/test_policy_invariants.py": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 1060,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "modules/security/threat_model_ld.json": {
+    "id": "ld_threat_model",
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 678,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "modules/telemetry/metrics.json": {
+    "id": "telemetry_metrics",
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 780,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "modules/telemetry/receipts_layout.json": {
+    "id": "receipts_layout",
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 557,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "modules/training/compaction_policy.json": {
+    "id": "compaction_policy",
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 373,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "modules/training/grounded_trainer.md": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 542,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "modules/training/omnibus_trainer.json": {
+    "id": "omnibus_trainer",
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 356,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "modules/training/templates/ci/grounded-trainer.yml": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 452,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "originals/hypersync_codegen_spec.json": {
+    "id": null,
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 340914,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "patch_ledger.json": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 2821,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "refs/implementations.json": {
+    "id": null,
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 116569,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "release_status": "pre-alpha",
+  "schemas/attestation.schema.json": {
+    "id": null,
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 551,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "schemas/audit_capsule.schema.json": {
+    "id": null,
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 4194,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "schemas/audit_capture_policy.schema.json": {
+    "id": null,
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 861,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "schemas/clearance_capsule.schema.json": {
+    "id": null,
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 1134,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "schemas/domain_interface_descriptor.schema.json": {
+    "id": null,
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 678,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "schemas/factory_spec.schema.json": {
+    "id": null,
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 4225,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "schemas/geometry/algorithm_ids.schema.json": {
+    "id": null,
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 1138,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "schemas/geometry/differential_forms.schema.json": {
+    "id": null,
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 1191,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "schemas/geometry/fiber_bundles.schema.json": {
+    "id": null,
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 1033,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "schemas/geometry/gauge_theory.schema.json": {
+    "id": null,
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 792,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "schemas/geometry/lie_groups.schema.json": {
+    "id": null,
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 934,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "schemas/geometry/riemannian_geometry.schema.json": {
+    "id": null,
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 1315,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "schemas/geometry/tensor_calculus.schema.json": {
+    "id": null,
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 1459,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "schemas/grounded_trainer_config.schema.json": {
+    "id": null,
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 1506,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "schemas/health_records.schema.json": {
+    "id": null,
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 714,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "schemas/minder_proposal.schema.json": {
+    "id": null,
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 1447,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "schemas/model_profile.schema.json": {
+    "id": null,
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 795,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "schemas/persistent_memory.schema.json": {
+    "id": null,
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 1696,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "schemas/policy_dsl.schema.json": {
+    "id": null,
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 622,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "schemas/predicate_proof.schema.json": {
+    "id": null,
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 702,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "schemas/proof_api.schema.json": {
+    "id": null,
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 2874,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "schemas/rasft_example.schema.json": {
+    "id": null,
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 1233,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "schemas/retention_policy.schema.json": {
+    "id": null,
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 441,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "schemas/test_block.schema.json": {
+    "id": null,
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 65578,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "scripts/merge_spec.py": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 2103,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "spec.index.json": {
+    "id": null,
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 2125,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "specs/compaction_invariants.md": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 338,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "specs/conformance_kpis.json": {
+    "id": "conformance_kpis",
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 2552,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "specs/domain_interface_descriptor.example.json": {
+    "id": null,
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 259,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "specs/intrinsic_kernels.md": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 583,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "specs/numeric_thresholds.md": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 449,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "specs/receipts_canonicalization.md": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 509,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "specs/retrieval_pipeline.md": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 335,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "specs/session_caching.md": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 275,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "specs/storeless_memory.md": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 207,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "stability": "experimental",
+  "tools/attest.py": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 585,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "tools/audit_tap_stub.py": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 3233,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "tools/build_rasft_batch.py": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 2243,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "tools/deploy.py": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 272,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "tools/eval_grounding.py": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 1077,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "tools/geometry_ops_stub.py": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 948,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "tools/memory_compactor.py": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 1355,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "tools/persistent_mem_store.py": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 1248,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "tools/plan_factory.py": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 2489,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "tools/sign.py": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 963,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "tools/validate_pack.py": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 2840,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "tools/validate_proposal.py": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 585,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "tools/verify_citations.py": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 793,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "unreleased": true,
+  "components/ico/ico-core-spec-1.0.md": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "stability": "experimental",
+    "unreleased": true,
+    "size_bytes": 6167
+  },
+  "components/ico-sync/ico-sync-1.0.md": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "stability": "experimental",
+    "unreleased": true,
+    "size_bytes": 733
+  },
+  "components/schema-version/schema-version.json": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "stability": "experimental",
+    "unreleased": true,
+    "size_bytes": 928
+  },
+  "components/ico-connect/ico-connect-1.0.md": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "stability": "experimental",
+    "unreleased": true,
+    "size_bytes": 800
+  },
+  "modules/ico/ico.capabilities.json": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "stability": "experimental",
+    "unreleased": true,
+    "size_bytes": 390
+  },
+  "modules/ico-sync/module.json": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "stability": "experimental",
+    "unreleased": true,
+    "size_bytes": 19127
+  },
+  "modules/ico-connect/module.json": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "stability": "experimental",
+    "unreleased": true,
+    "size_bytes": 160
+  },
+  "service_tiers.spec.json": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 4035,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "vnes_libraries.spec.json": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 1457,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "manifest.json": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 1000,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "consensus_mechanisms.spec.json": {
+    "description": "Defines available consensus mechanisms and their tier availability.",
+    "stability": "stable",
+    "tier": "core"
+  },
+  "tier_definitions/tier_manifest_core.json": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "alpha",
+    "stability": "experimental",
+    "unreleased": true,
+    "size_bytes": 313
+  },
+  "tier_definitions/tier_manifest_basic.json": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "alpha",
+    "stability": "experimental",
+    "unreleased": true,
+    "size_bytes": 312
+  },
+  "tier_definitions/tier_manifest_pro.json": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "alpha",
+    "stability": "experimental",
+    "unreleased": true,
+    "size_bytes": 325
+  },
+  "tier_definitions/tier_manifest_advanced.json": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "alpha",
+    "stability": "experimental",
+    "unreleased": true,
+    "size_bytes": 352
+  },
+  "tier_definitions/tier_manifest_quartermaster.json": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "alpha",
+    "stability": "experimental",
+    "unreleased": true,
+    "size_bytes": 403
+  },
+  "node_lifecycle.spec.json": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 0,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "agent_topology.spec.json": {
+    "migration_policy": "replace-old-techniques",
+    "release_status": "pre-alpha",
+    "size_bytes": 0,
+    "stability": "experimental",
+    "unreleased": true
+  },
+  "specifications/core/consensus_logic.spec.json": {
+    "type": "spec",
+    "status": "active",
+    "tier": "core"
+  },
+  "specifications/geometry/advanced_consensus.spec.json": {
+    "type": "spec",
+    "status": "active",
+    "tier": "geometry"
+  },
+  "specifications/policies/federated_policy_overwatch.json": {
+    "type": "spec",
+    "status": "active",
+    "tier": "policy"
+  },
+  "specifications/policies/fault_detection.spec.json": {
+    "type": "spec",
+    "status": "active",
+    "tier": "policy"
+  },
+  "specifications/policies/evidence_path_policies.json": {
+    "type": "spec",
+    "status": "active",
+    "tier": "policy"
+  },
+  "specifications/core/consensus/consensus_capsules.spec.json": {
+    "type": "spec",
+    "status": "active",
+    "tier": "core"
+  },
+  "specifications/policies/policy_capsules.spec.json": {
+    "type": "spec",
+    "status": "active",
+    "tier": "policy"
+  }
+}

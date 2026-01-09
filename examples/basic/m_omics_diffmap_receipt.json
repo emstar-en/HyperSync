@@ -1,0 +1,23 @@
+{
+  "diagnostics": {
+    "eigvals": [
+      1.0,
+      0.93,
+      0.88
+    ],
+    "spectral_gap": 0.05
+  },
+  "inputs_commitment": "sha256:h5ad|k=30|alpha=0.5|HVG=4000",
+  "output_commitment": "sha256:embedding|pseudotime",
+  "privacy": {
+    "k_anon_graph": 10,
+    "receipt_kind": "PrivacyReceipt"
+  },
+  "receipt_kind": "ReductionReceipt",
+  "solver_binding_id": "solver://omics/diffusion_maps@1.0.0",
+  "trajectory": {
+    "branching": "mst",
+    "root": "cell_0001",
+    "stability": 0.97
+  }
+}

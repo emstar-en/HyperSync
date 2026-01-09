@@ -1,0 +1,40 @@
+{
+  "$schema": "ext://f1fed686329b",
+  "properties": {
+    "engine": {
+      "type": "string"
+    },
+    "histories": {
+      "type": "object"
+    },
+    "particles": {
+      "type": [
+        "integer",
+        "number"
+      ]
+    },
+    "receipt_kind": {
+      "const": "StochasticKernelReceipt"
+    },
+    "rng_seed": {
+      "type": [
+        "integer",
+        "number"
+      ]
+    },
+    "tallies": {
+      "type": "object"
+    },
+    "variance": {
+      "type": "object"
+    }
+  },
+  "required": [
+    "receipt_kind",
+    "engine",
+    "rng_seed",
+    "particles"
+  ],
+  "title": "StochasticKernelReceipt",
+  "type": "object"
+}

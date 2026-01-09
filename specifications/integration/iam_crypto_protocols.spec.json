@@ -1,0 +1,91 @@
+{
+  "iam_crypto_protocols": {
+    "meta": {
+      "description": "Cryptographic protocols defined over geometric trust topologies",
+      "status": "ALPHA"
+    },
+    "protocols": {
+      "node_registration": {
+        "name": "Geometric Handshake",
+        "topology": "Trust Hyperboloid (Root at origin)",
+        "steps": [
+          "1. Node generates keypair (sk, pk) mapped to point P on Trust Manifold",
+          "2. Node proves P is within 'Trusted Radius' R of Root using ZK-Proof",
+          "3. Authority verifies proof without learning exact P (Privacy-preserving)"
+        ],
+        "math": "Verify dist(Root, P) < R using Zero-Knowledge Range Proofs",
+        "failure_modes": {
+          "verification_failure": "If ZK proof invalid: Ban node ID for T seconds (DoS prevention).",
+          "topology_mismatch": "If node claims trusted region but proof fails: Reject connection and log 'Topology Violation' event."
+        },
+        "zk_proof_specs": {
+          "relation": "d_H(P, Root) < R",
+          "constraints": [
+            "Public: Root, R",
+            "Private: P",
+            "Statement: P is on H^n (Hyperboloid) AND arccosh(-<P, Root>_L) < R"
+          ]
+        }
+      },
+      "policy_evaluation": {
+        "logic": "Region Inclusion Test",
+        "math": "Boolean Point-in-Volume check: Is Action_Point inside Permitted_Volume?",
+        "implementation": "Signed Distance Function (SDF) evaluation on Policy Manifold"
+      },
+      "consent_signing": {
+        "structure": "Trajectory Signature",
+        "concept": "User signs the 'Geodesic Path' of the data, not just the data itself.",
+        "verification": "Verify signature covers the entire spacetime curve of the operation."
+      }
+    },
+    "mathematical_foundations": {
+      "zk_range_proofs": {
+        "description": "Zero-Knowledge proofs for range membership on hyperbolic manifolds",
+        "math": "d_H(P, Root) < R"
+      },
+      "trajectory_signatures": {
+        "description": "Signing the geodesic path of an operation",
+        "math": "Verify signature over curve gamma(t)"
+      }
+    },
+    "fault_detection": {
+      "verification_failure": {
+        "logic": "ZK proof invalid",
+        "action": "Ban node ID"
+      },
+      "topology_mismatch": {
+        "logic": "Node claims trusted region but proof fails",
+        "action": "Reject connection"
+      }
+    },
+    "detailed_mechanisms": {
+      "node_registration": {
+        "name": "Geometric Handshake",
+        "topology": "Trust Hyperboloid (Root at origin)",
+        "steps": [
+          "1. Node generates keypair (sk, pk) mapped to point P on Trust Manifold",
+          "2. Node proves P is within 'Trusted Radius' R of Root using ZK-Proof",
+          "3. Authority verifies proof without learning exact P (Privacy-preserving)"
+        ],
+        "math": "Verify dist(Root, P) < R using Zero-Knowledge Range Proofs",
+        "failure_modes": {
+          "verification_failure": "If ZK proof invalid: Ban node ID for T seconds (DoS prevention).",
+          "topology_mismatch": "If node claims trusted region but proof fails: Reject connection and log 'Topology Violation' event."
+        },
+        "zk_proof_specs": {
+          "relation": "d_H(P, Root) < R",
+          "constraints": [
+            "Public: Root, R",
+            "Private: P",
+            "Statement: P is on H^n (Hyperboloid) AND arccosh(-<P, Root>_L) < R"
+          ]
+        }
+      },
+      "policy_evaluation": {
+        "logic": "Region Inclusion Test",
+        "math": "Boolean Point-in-Volume check: Is Action_Point inside Permitted_Volume?",
+        "implementation": "Signed Distance Function (SDF) evaluation on Policy Manifold"
+      }
+    }
+  }
+}

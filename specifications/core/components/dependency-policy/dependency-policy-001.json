@@ -1,0 +1,168 @@
+{
+  "allowed_edges": [
+    {
+      "from": "core",
+      "geometry_mode": "native",
+      "migration_policy": "replace-old-techniques",
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "to": [
+        "core"
+      ],
+      "unreleased": true
+    },
+    {
+      "from": "geometry",
+      "geometry_mode": "native",
+      "migration_policy": "replace-old-techniques",
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "to": [
+        "core",
+        "geometry"
+      ],
+      "unreleased": true
+    },
+    {
+      "from": "ops",
+      "geometry_mode": "native",
+      "migration_policy": "replace-old-techniques",
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "to": [
+        "core",
+        "geometry",
+        "ops",
+        "policy",
+        "security"
+      ],
+      "unreleased": true
+    },
+    {
+      "from": "security",
+      "geometry_mode": "native",
+      "migration_policy": "replace-old-techniques",
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "to": [
+        "core",
+        "geometry",
+        "security"
+      ],
+      "unreleased": true
+    },
+    {
+      "from": "policy",
+      "geometry_mode": "native",
+      "migration_policy": "replace-old-techniques",
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "to": [
+        "core",
+        "geometry",
+        "policy",
+        "security"
+      ],
+      "unreleased": true
+    },
+    {
+      "from": "orchestration",
+      "geometry_mode": "native",
+      "migration_policy": "replace-old-techniques",
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "to": [
+        "core",
+        "geometry",
+        "ops",
+        "security",
+        "policy",
+        "io",
+        "orchestration"
+      ],
+      "unreleased": true
+    },
+    {
+      "from": "io",
+      "geometry_mode": "native",
+      "migration_policy": "replace-old-techniques",
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "to": [
+        "core",
+        "io"
+      ],
+      "unreleased": true
+    },
+    {
+      "from": "testing",
+      "geometry_mode": "native",
+      "migration_policy": "replace-old-techniques",
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "to": [
+        "core",
+        "geometry",
+        "ops",
+        "security",
+        "policy",
+        "orchestration",
+        "io",
+        "testing"
+      ],
+      "unreleased": true
+    },
+    {
+      "from": "domains",
+      "geometry_mode": "native",
+      "migration_policy": "replace-old-techniques",
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "to": [
+        "core",
+        "geometry",
+        "security",
+        "policy",
+        "ops",
+        "domains"
+      ],
+      "unreleased": true
+    },
+    {
+      "from": "training",
+      "geometry_mode": "native",
+      "migration_policy": "replace-old-techniques",
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "to": [
+        "core",
+        "geometry",
+        "ops",
+        "security",
+        "policy",
+        "training"
+      ],
+      "unreleased": true
+    },
+    {
+      "from": "ops",
+      "geometry_mode": "native",
+      "migration_policy": "replace-old-techniques",
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "to": [
+        "training"
+      ],
+      "unreleased": true
+    }
+  ],
+  "forbidden_import_patterns": [
+    "^security\\.privacy.*:.*ops\\.",
+    "^security\\.kill_switch.*:.*ops\\."
+  ],
+  "geometry_mode": "native",
+  "migration_policy": "replace-old-techniques",
+  "release_status": "pre-alpha",
+  "stability": "experimental",
+  "unreleased": true
+}

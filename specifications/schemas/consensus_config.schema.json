@@ -1,0 +1,55 @@
+{
+  "$id": "https://hypersync.io/schemas/consensus_config.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "Schema for validating consensus mechanism configurations",
+  "properties": {
+    "gpu": {
+      "description": "GPU-specific configuration",
+      "properties": {
+        "batch_size": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "precision": {
+          "enum": [
+            "fp16",
+            "fp32",
+            "fp64"
+          ],
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "mechanism_id": {
+      "description": "Consensus mechanism identifier",
+      "type": "string"
+    },
+    "parameters": {
+      "description": "Mechanism-specific parameters",
+      "type": "object"
+    },
+    "safety": {
+      "description": "Safety-related configuration",
+      "type": "object"
+    },
+    "security": {
+      "description": "Security-related configuration",
+      "type": "object"
+    },
+    "tuning": {
+      "description": "Optional tuning parameters",
+      "type": "object"
+    }
+  },
+  "required": [
+    "mechanism_id",
+    "version",
+    "parameters"
+  ],
+  "title": "Consensus Configuration Schema",
+  "type": "object"
+}

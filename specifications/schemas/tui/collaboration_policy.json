@@ -1,0 +1,45 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "Collaboration and sharing policies",
+  "properties": {
+    "auto_handoff_timeout": {
+      "description": "Auto-handoff baton after N seconds of inactivity",
+      "type": "integer"
+    },
+    "baton_required": {
+      "default": false,
+      "description": "Whether baton control is required for actions",
+      "type": "boolean"
+    },
+    "max_operators": {
+      "default": 10,
+      "minimum": 1,
+      "type": "integer"
+    },
+    "redaction_rules": {
+      "description": "Rules for redacting sensitive data",
+      "items": {
+        "properties": {
+          "action": {
+            "enum": [
+              "hide",
+              "mask",
+              "encrypt"
+            ],
+            "type": "string"
+          },
+          "condition": {
+            "type": "string"
+          },
+          "field": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "type": "array"
+    }
+  },
+  "title": "Collaboration Policy",
+  "type": "object"
+}

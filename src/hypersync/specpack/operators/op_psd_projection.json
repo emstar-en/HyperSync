@@ -1,0 +1,6 @@
+{
+  "deterministic": true,
+  "id": "op://psd_projection.0",
+  "kind": "projection",
+  "notes": "Eigenclip with tie-broken eigenvectors"
+}

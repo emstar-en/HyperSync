@@ -1,0 +1,19 @@
+{
+  "chain": {
+    "protocol": "HotStuff",
+    "quorum": "3/5"
+  },
+  "inputs_ref": "artifact://governance/attest_chain_inputs.json",
+  "intent_kind": "ReductionIntent",
+  "postprocess": [
+    {
+      "solver_binding_id": "solver://governance/bft_consensus"
+    },
+    {
+      "m_of_n": "3/5",
+      "solver_binding_id": "solver://governance/attestation_sign"
+    }
+  ],
+  "profile": "QUARTERMASTER_IMPERIUM",
+  "task": "governance_consensus_and_sign"
+}

@@ -1,0 +1,128 @@
+{
+  "$id": "https://hypersync.ai/schemas/security/nld_threat_profile.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "Threat assessment for agents trained in multiple Lorentzian Domains",
+  "properties": {
+    "agent_id": {
+      "description": "Unique agent/model identifier",
+      "type": "string"
+    },
+    "detection_signals": {
+      "description": "Anomaly detection signals",
+      "properties": {
+        "boundary_violations": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "calibration_error": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "holonomy_inconsistency": {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
+        "route_flap_rate": {
+          "minimum": 0,
+          "type": "number"
+        }
+      },
+      "type": "object"
+    },
+    "last_assessed": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "ld_training_history": {
+      "description": "List of LDs this agent was trained in",
+      "items": {
+        "properties": {
+          "curvature": {
+            "type": "number"
+          },
+          "geometry_type": {
+            "enum": [
+              "euclidean",
+              "hyperbolic",
+              "spherical",
+              "mixed"
+            ]
+          },
+          "ld_id": {
+            "type": "string"
+          },
+          "training_epochs": {
+            "type": "integer"
+          },
+          "verified": {
+            "default": false,
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "ld_id",
+          "geometry_type"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "nld_score": {
+      "description": "Number of distinct LDs trained in",
+      "minimum": 1,
+      "type": "integer"
+    },
+    "risk_assessment": {
+      "properties": {
+        "cross_boundary_capability": {
+          "enum": [
+            "none",
+            "limited",
+            "moderate",
+            "high",
+            "extreme"
+          ],
+          "type": "string"
+        },
+        "instability_risk": {
+          "enum": [
+            "stable",
+            "minor",
+            "moderate",
+            "significant",
+            "critical"
+          ],
+          "type": "string"
+        },
+        "recommended_action": {
+          "enum": [
+            "allow",
+            "monitor",
+            "restrict",
+            "block"
+          ]
+        }
+      },
+      "type": "object"
+    },
+    "threat_level": {
+      "description": "Computed threat level based on nLD score",
+      "enum": [
+        "safe",
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ]
+    }
+  },
+  "required": [
+    "agent_id",
+    "ld_training_history",
+    "nld_score",
+    "threat_level"
+  ],
+  "title": "nLDThreatProfile",
+  "type": "object"
+}

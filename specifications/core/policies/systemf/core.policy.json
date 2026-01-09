@@ -1,0 +1,56 @@
+{
+  "category": "core",
+  "description": "Core policy for System F type system integration with HyperSync",
+  "enforcement": "compile-time",
+  "metadata": {
+    "author": "HyperSync Type Theory Team",
+    "created": "2024-12-04",
+    "references": [
+      "Girard, J.-Y. (1972). Interpr\u00e9tation fonctionelle et \u00e9limination des coupures",
+      "Reynolds, J. C. (1974). Towards a theory of type structure"
+    ],
+    "tags": [
+      "type-system",
+      "system-f",
+      "polymorphism"
+    ]
+  },
+  "parameters": {
+    "impredicativity": false,
+    "kind_checking": "enabled",
+    "rank_n_types": 2,
+    "type_inference": "bidirectional"
+  },
+  "policy": "systemf/core",
+  "rules": [
+    {
+      "action": "type_check",
+      "condition": "is_polymorphic_type(operator.signature)",
+      "description": "Enforce parametric polymorphism for operator composition",
+      "id": "parametric-polymorphism",
+      "severity": "critical"
+    },
+    {
+      "action": "verify",
+      "condition": "type_of(transform(value)) == type_of(value)",
+      "description": "Type must be preserved across geodesic transformations",
+      "id": "type-preservation",
+      "severity": "critical"
+    },
+    {
+      "action": "allow",
+      "condition": "is_existential_type(capability)",
+      "description": "Support existential types for capability hiding",
+      "id": "existential-types",
+      "severity": "medium"
+    },
+    {
+      "action": "allow",
+      "condition": "kind(type) > *",
+      "description": "Allow higher-kinded types for operator composition",
+      "id": "higher-kinded-types",
+      "severity": "low"
+    }
+  ],
+  "type": "type-system"
+}

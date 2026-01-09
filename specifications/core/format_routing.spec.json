@@ -1,0 +1,85 @@
+{
+  "system": "Universal Format Routing",
+  "type": "core_subsystem",
+  "role": "data_ingestion_and_normalization",
+  "meta": {
+    "version": "1.1.0",
+    "status": "FINAL",
+    "description": "Core subsystem for routing and normalizing data streams into Universal Intermediate References (U-IR)."
+  },
+  "mathematical_foundations": {
+    "routing_logic": {
+      "formalism": "First-Order Predicate Logic",
+      "description": "Routing rules are expressed as logical predicates over metadata and content."
+    },
+    "pipeline_topology": {
+      "structure": "Directed Acyclic Graphs (DAGs)",
+      "property": "Topological Sort guarantees processing order."
+    },
+    "resource_allocation": {
+      "model": "Min-Cost Max-Flow",
+      "objective": "Minimize latency while respecting bandwidth constraints."
+    }
+  },
+  "architecture": {
+    "decision_engine": {
+      "latency_budget_ms": 5,
+      "logic": "predicate_matching",
+      "algorithm": "Rete Algorithm",
+      "output": "Routing Decision Record (RDR)"
+    },
+    "universal_irs": [
+      "USTAB",
+      "UIMG",
+      "UAUD",
+      "UVID",
+      "UDIR",
+      "UOBJ",
+      "UBIN",
+      "UARC",
+      "UGEO"
+    ],
+    "components": [
+      "FormatDetector",
+      "RoutingTable",
+      "ProcessorRegistry",
+      "StreamProcessor",
+      "FallbackChain"
+    ]
+  },
+  "fault_detection": {
+    "cyclic_routing": {
+      "detection": "DFS with recursion stack tracking",
+      "action": "Drop packet and emit RoutingLoopError"
+    },
+    "unroutable_packets": {
+      "mechanism": "Dead Letter Queue (DLQ)",
+      "policy": "Exponential backoff retry, then archive"
+    },
+    "latency_violation": {
+      "metric": "Processing time > latency_budget_ms",
+      "monitoring": "Sliding window percentiles (P99)"
+    }
+  },
+  "detailed_mechanisms": {
+    "predicate_matching": {
+      "input": "Packet Metadata + Content Sniff (first 512 bytes)",
+      "process": "Evaluate logical predicates (AND, OR, NOT, EXISTS) against the Routing Table.",
+      "conflict_resolution": "Priority-based: Specificity > Priority > CreationTime"
+    },
+    "stream_processing": {
+      "model": "Backpressure-aware reactive streams",
+      "buffer_strategy": "Ring Buffer (Disruptor pattern)",
+      "overflow_policy": "Drop-oldest for telemetry, Block-producer for critical data"
+    },
+    "format_detection": {
+      "method": "Magic Byte signatures + Heuristic content analysis",
+      "fallback": "application/octet-stream"
+    }
+  },
+  "integration": {
+    "input": "Raw Byte Stream",
+    "output": "Standardized U-IR Object",
+    "side_effect": "Telemetry Receipt"
+  }
+}

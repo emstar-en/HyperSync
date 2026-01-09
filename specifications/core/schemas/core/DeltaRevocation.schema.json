@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "properties": {
+    "authority": {
+      "type": "string"
+    },
+    "deltaId": {
+      "type": "string"
+    },
+    "reason": {
+      "type": "string"
+    },
+    "revokedAt": {
+      "type": "string"
+    },
+    "type": {
+      "const": "core.delta.revocation"
+    }
+  },
+  "required": [
+    "type",
+    "deltaId",
+    "reason",
+    "revokedAt"
+  ],
+  "title": "DeltaRevocation",
+  "type": "object"
+}

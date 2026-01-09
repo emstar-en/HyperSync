@@ -1,0 +1,63 @@
+{
+  "id": "telemetry_metrics",
+  "metrics": [
+    {
+      "desc": "Anchor absorption or policy misconfig",
+      "migration_policy": "replace-old-techniques",
+      "name": "black_hole_score",
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "type": "gauge",
+      "unreleased": true
+    },
+    {
+      "desc": "Sybil concentration indicator",
+      "migration_policy": "replace-old-techniques",
+      "name": "sybil_hubness_index",
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "type": "gauge",
+      "unreleased": true
+    },
+    {
+      "desc": "Numeric instability or loop construction",
+      "migration_policy": "replace-old-techniques",
+      "name": "holonomy_inconsistency",
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "type": "gauge",
+      "unreleased": true
+    },
+    {
+      "desc": "Control-plane probing or DoS",
+      "migration_policy": "replace-old-techniques",
+      "name": "route_flap_rate",
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "type": "rate",
+      "unreleased": true
+    },
+    {
+      "desc": "Model calibration drift",
+      "migration_policy": "replace-old-techniques",
+      "name": "avg_calibration_ece",
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "type": "gauge",
+      "unreleased": true
+    },
+    {
+      "desc": "Boundary mapping reconnaissance",
+      "migration_policy": "replace-old-techniques",
+      "name": "near_boundary_denials_rate",
+      "release_status": "pre-alpha",
+      "stability": "experimental",
+      "type": "rate",
+      "unreleased": true
+    }
+  ],
+  "migration_policy": "replace-old-techniques",
+  "release_status": "pre-alpha",
+  "stability": "experimental",
+  "unreleased": true
+}
