@@ -13,13 +13,8 @@ It is designed to be:
 
 ---
 
-## Core Philosophy: The Single Base Program
-
-**"Single Base Program" refers to the Specification itself.**
-
-- **No Patching:** We do not "patch" the spec by appending changelogs or diffs. We modify the source of truth directly.
-- **No Build Artifacts:** This zip contains only the *definitions* (Specs, Schemas, Manifests).
-- **Living Document:** The Spec is the program. If you want to change the system, you change the Spec.
+## Dependancies
+**xterm** would be nice to have.
 
 ---
 
