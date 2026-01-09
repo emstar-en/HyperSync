@@ -1,0 +1,47 @@
+{
+  "last_updated": "2026-01-09T02:56:57.753670Z",
+  "projectstate": {
+    "path": "projectstate",
+    "type": "folder"
+  },
+  "specifications": {
+    "path": "specifications",
+    "type": "folder"
+  },
+  "tests": {
+    "path": "tests",
+    "type": "folder"
+  },
+  "examples": {
+    "path": "examples",
+    "type": "folder"
+  },
+  "src": {
+    "path": "src",
+    "type": "folder"
+  },
+  "docs": {
+    "path": "docs",
+    "type": "folder"
+  },
+  "capsules": {
+    "path": "capsules",
+    "type": "folder"
+  },
+  "AI_STUNIR_BRIDGE.md": {
+    "path": "AI_STUNIR_BRIDGE.md",
+    "type": "file"
+  },
+  "COMMERCIAL_LICENSE.md": {
+    "path": "COMMERCIAL_LICENSE.md",
+    "type": "file"
+  },
+  "LICENSE.md": {
+    "path": "LICENSE.md",
+    "type": "file"
+  },
+  "README.md": {
+    "path": "README.md",
+    "type": "file"
+  }
+}

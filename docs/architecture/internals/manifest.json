@@ -1,0 +1,14 @@
+{
+  "name": "internals",
+  "entries": [
+    "agua",
+    "advanced_geometry",
+    "data_structures.md",
+    "protocols.md",
+    "privacy_geometry.md",
+    "thermodynamic_logic.md",
+    "optimization.md",
+    "sandboxing.md",
+    "algorithms.md"
+  ]
+}

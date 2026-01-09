@@ -1,0 +1,22 @@
+{
+  "path": "/current/docs",
+  "files": [
+    "glossary.md",
+    "manifest.json",
+    "hvs_overview.md",
+    "bibliography.md",
+    "system_overview.md",
+    "machine_guidelines.md",
+    "STUNIR.md",
+    "NON_FUNCTIONAL_REQUIREMENTS.md",
+    "VISION.md",
+    "version.json"
+  ],
+  "folders": [
+    "concepts",
+    "reference",
+    "vnes",
+    "security",
+    "architecture"
+  ]
+}

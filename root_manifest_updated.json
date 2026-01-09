@@ -1,0 +1,19 @@
+{
+  "path": "/current",
+  "files": [
+    "AI_STUNIR_BRIDGE.md",
+    "COMMERCIAL_LICENSE.md",
+    "LICENSE.md",
+    "README.md"
+  ],
+  "folders": [
+    "projectstate",
+    "specifications",
+    "tests",
+    "examples",
+    "src",
+    "docs",
+    "capsules"
+  ],
+  "last_updated": "2026-01-09T02:56:57.753670Z"
+}
