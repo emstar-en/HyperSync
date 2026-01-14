@@ -1,0 +1,1009 @@
+{
+  "specification": {
+    "name": "Spherical Geometry Operations",
+    "version": "1.0.0",
+    "description": "Comprehensive spherical geometry (S³, S⁴, Sⁿ) operations for positive curvature spaces in HVS/AGUA. Complements hyperbolic geometry with closed, bounded spaces for semantic consensus, temporal embeddings, and κ > 0 curvature regimes.",
+    "target_operations": "30+",
+    "actual_operations": 35,
+    "format": "STUNIR",
+    "tier_availability": "Core (Free)",
+    "complexity_target": "O(n) or O(n log n)",
+    "integration": ["HVS", "AGUA", "STUNIR", "Dual-Model System"]
+  },
+  "mathematical_foundations": {
+    "spherical_manifolds": {
+      "s3": {
+        "description": "3-sphere embedded in ℝ⁴, unit quaternions",
+        "metric": "ds² = dθ₁² + sin²(θ₁)dθ₂² + sin²(θ₁)sin²(θ₂)dθ₃²",
+        "curvature": "+1 (constant positive)",
+        "topology": "Simply connected, compact",
+        "diameter": "π",
+        "volume": "2π²"
+      },
+      "s4": {
+        "description": "4-sphere embedded in ℝ⁵",
+        "metric": "ds² = dθ₁² + sin²(θ₁)dθ₂² + sin²(θ₁)sin²(θ₂)dθ₃² + sin²(θ₁)sin²(θ₂)sin²(θ₃)dθ₄²",
+        "curvature": "+1 (constant positive)",
+        "topology": "Simply connected, compact",
+        "diameter": "π",
+        "volume": "8π²/3"
+      },
+      "sn": {
+        "description": "n-sphere Sⁿ = {x ∈ ℝⁿ⁺¹ | ||x|| = 1}",
+        "metric": "ds² = Σᵢdθᵢ² (in spherical coordinates)",
+        "curvature": "+1",
+        "topology": "Compact, boundaryless",
+        "diameter": "π",
+        "volume": "Vₙ(1) = πⁿ/²/Γ(n/2 + 1)"
+      }
+    },
+    "spherical_distance": {
+      "formula": "d(x,y) = arccos(⟨x,y⟩)",
+      "range": "[0, π]",
+      "properties": ["Bounded", "Symmetric", "Triangle inequality"],
+      "relation_to_euclidean": "Chord distance: 2sin(d/2)"
+    },
+    "geodesics": {
+      "description": "Great circles on sphere",
+      "equation": "γ(t) = cos(t)x + sin(t)v",
+      "properties": ["Closed loops (period 2π)", "Return to starting point", "Minimal distance"]
+    },
+    "parallel_transport": {
+      "description": "Transport along great circles preserving angles",
+      "holonomy": "Non-trivial for closed loops",
+      "formula": "P(v) = v - ⟨v,γ'⟩γ' (projected transport)"
+    },
+    "exponential_map": {
+      "description": "exp_x(v) = cos(||v||)x + sin(||v||)(v/||v||)",
+      "domain": "Tangent space T_x Sⁿ",
+      "range": "Sphere Sⁿ",
+      "injectivity_radius": "π"
+    },
+    "logarithmic_map": {
+      "description": "Inverse of exponential map",
+      "formula": "log_x(y) = (arccos(⟨x,y⟩)/||y-⟨y,x⟩x||)(y-⟨y,x⟩x)",
+      "singularity": "Antipodal point x' = -x"
+    }
+  },
+  "operations": [
+    {
+      "id": "spherical_distance",
+      "name": "Spherical Distance",
+      "category": "core_operations",
+      "description": "Compute geodesic distance on Sⁿ using great circle arc",
+      "formula": "d(x,y) = arccos(⟨x,y⟩) for unit vectors",
+      "input": {
+        "x": "Point on Sⁿ (unit vector in ℝⁿ⁺¹)",
+        "y": "Point on Sⁿ (unit vector in ℝⁿ⁺¹)"
+      },
+      "output": {
+        "distance": "Scalar in [0, π]"
+      },
+      "complexity": "O(n)",
+      "precision": "1e-12",
+      "validation": {
+        "constraint": "||x|| = ||y|| = 1",
+        "range": "[0, π]"
+      },
+      "implementation_notes": [
+        "Numerically stable for near-identical points",
+        "Handle antipodal points (⟨x,y⟩ ≈ -1)",
+        "Use atan2 for numerical stability if needed"
+      ]
+    },
+    {
+      "id": "spherical_exp_map",
+      "name": "Spherical Exponential Map",
+      "category": "core_operations",
+      "description": "Map tangent vector to sphere via geodesic",
+      "formula": "exp_x(v) = cos(||v||)x + sin(||v||)(v/||v||)",
+      "input": {
+        "x": "Base point on Sⁿ (unit vector)",
+        "v": "Tangent vector in T_x Sⁿ (orthogonal to x)"
+      },
+      "output": {
+        "y": "Point on Sⁿ"
+      },
+      "complexity": "O(n)",
+      "precision": "1e-12",
+      "validation": {
+        "tangent_constraint": "⟨x,v⟩ = 0",
+        "output_constraint": "||y|| = 1"
+      },
+      "special_cases": {
+        "v_zero": "exp_x(0) = x",
+        "v_pi": "exp_x(πv/||v||) = -x (antipodal point)"
+      }
+    },
+    {
+      "id": "spherical_log_map",
+      "name": "Spherical Logarithmic Map",
+      "category": "core_operations",
+      "description": "Inverse of exponential map, returns tangent vector",
+      "formula": "log_x(y) = (d(x,y)/sin(d(x,y)))(y - ⟨x,y⟩x)",
+      "input": {
+        "x": "Base point on Sⁿ",
+        "y": "Target point on Sⁿ (not antipodal to x)"
+      },
+      "output": {
+        "v": "Tangent vector in T_x Sⁿ"
+      },
+      "complexity": "O(n)",
+      "precision": "1e-12",
+      "validation": {
+        "non_antipodal": "⟨x,y⟩ > -1 + ε",
+        "tangent_output": "⟨x,v⟩ = 0"
+      },
+      "singularity_handling": {
+        "antipodal_point": "Non-unique, return arbitrary tangent of length π"
+      }
+    },
+    {
+      "id": "spherical_parallel_transport",
+      "name": "Spherical Parallel Transport",
+      "category": "core_operations",
+      "description": "Transport tangent vector along geodesic",
+      "formula": "P_{x→y}(v) = v - (⟨v,x⟩/(1+⟨x,y⟩))(x+y)",
+      "input": {
+        "x": "Start point on Sⁿ",
+        "y": "End point on Sⁿ",
+        "v": "Tangent vector at x"
+      },
+      "output": {
+        "w": "Tangent vector at y (parallel transported)"
+      },
+      "complexity": "O(n)",
+      "precision": "1e-12",
+      "validation": {
+        "length_preservation": "||w|| = ||v||",
+        "tangency": "⟨y,w⟩ = 0"
+      },
+      "properties": [
+        "Angle-preserving",
+        "Holonomy for closed loops"
+      ]
+    },
+    {
+      "id": "spherical_geodesic",
+      "name": "Spherical Geodesic",
+      "category": "core_operations",
+      "description": "Compute point along great circle geodesic",
+      "formula": "γ(t) = cos(td)x + sin(td)(v/||v||), where d = ||v||",
+      "input": {
+        "x": "Start point on Sⁿ",
+        "v": "Tangent vector (direction and distance)",
+        "t": "Parameter in [0,1]"
+      },
+      "output": {
+        "y": "Point on geodesic at parameter t"
+      },
+      "complexity": "O(n)",
+      "precision": "1e-12",
+      "properties": [
+        "γ(0) = x",
+        "γ(1) = exp_x(v)",
+        "Periodic: γ(t + 2π/||v||) = γ(t)"
+      ]
+    },
+    {
+      "id": "spherical_projection",
+      "name": "Spherical Projection",
+      "category": "core_operations",
+      "description": "Project point from ℝⁿ⁺¹ onto Sⁿ",
+      "formula": "proj(x) = x/||x||",
+      "input": {
+        "x": "Point in ℝⁿ⁺¹ (non-zero)"
+      },
+      "output": {
+        "y": "Point on Sⁿ"
+      },
+      "complexity": "O(n)",
+      "precision": "1e-12",
+      "validation": {
+        "non_zero": "||x|| > ε"
+      }
+    },
+    {
+      "id": "tangent_projection",
+      "name": "Tangent Space Projection",
+      "category": "core_operations",
+      "description": "Project vector onto tangent space T_x Sⁿ",
+      "formula": "proj_{T_x}(v) = v - ⟨v,x⟩x",
+      "input": {
+        "x": "Point on Sⁿ",
+        "v": "Vector in ℝⁿ⁺¹"
+      },
+      "output": {
+        "v_tan": "Tangent vector in T_x Sⁿ"
+      },
+      "complexity": "O(n)",
+      "validation": {
+        "orthogonality": "⟨x,v_tan⟩ = 0"
+      }
+    },
+    {
+      "id": "spherical_barycenter",
+      "name": "Spherical Barycenter (Fréchet Mean)",
+      "category": "consensus",
+      "description": "Compute Riemannian center of mass on Sⁿ",
+      "algorithm": "Gradient descent: x_{k+1} = proj(x_k + α·Σᵢwᵢlog_{x_k}(xᵢ))",
+      "input": {
+        "points": "List of points on Sⁿ",
+        "weights": "Optional weights (default uniform)"
+      },
+      "output": {
+        "center": "Barycenter on Sⁿ"
+      },
+      "complexity": "O(n·m·k) where m = #points, k = iterations",
+      "typical_complexity": "O(n·m) with k = O(1)",
+      "convergence": "Linear under appropriate conditions",
+      "precision": "1e-9",
+      "applications": [
+        "Consensus on sphere",
+        "Averaging directions",
+        "Clustering on Sⁿ"
+      ]
+    },
+    {
+      "id": "spherical_geodesic_midpoint",
+      "name": "Spherical Geodesic Midpoint",
+      "category": "consensus",
+      "description": "Fast midpoint computation for two points",
+      "formula": "mid(x,y) = (x+y)/||x+y||",
+      "input": {
+        "x": "Point on Sⁿ",
+        "y": "Point on Sⁿ (not antipodal)"
+      },
+      "output": {
+        "m": "Midpoint on geodesic"
+      },
+      "complexity": "O(n)",
+      "precision": "1e-12",
+      "validation": {
+        "non_antipodal": "⟨x,y⟩ > -1 + ε",
+        "equal_distance": "d(x,m) = d(m,y) = d(x,y)/2"
+      }
+    },
+    {
+      "id": "spherical_curvature",
+      "name": "Spherical Curvature",
+      "category": "curvature",
+      "description": "Compute sectional curvature (constant +1 for Sⁿ)",
+      "formula": "K = +1 (for unit sphere)",
+      "input": {
+        "x": "Point on Sⁿ",
+        "plane": "2-plane in T_x Sⁿ"
+      },
+      "output": {
+        "curvature": "K = +1"
+      },
+      "complexity": "O(1)",
+      "properties": [
+        "Constant positive curvature",
+        "All sectional curvatures equal +1"
+      ]
+    },
+    {
+      "id": "spherical_ricci_curvature",
+      "name": "Spherical Ricci Curvature",
+      "category": "curvature",
+      "description": "Ricci curvature tensor on Sⁿ",
+      "formula": "Ric = (n-1)g (Einstein manifold)",
+      "input": {
+        "x": "Point on Sⁿ",
+        "dimension": "n"
+      },
+      "output": {
+        "ricci_scalar": "R = n(n-1)"
+      },
+      "complexity": "O(1)",
+      "applications": [
+        "Ricci flow (stationary solution)",
+        "Einstein metrics"
+      ]
+    },
+    {
+      "id": "spherical_volume_element",
+      "name": "Spherical Volume Element",
+      "category": "measure",
+      "description": "Compute volume of spherical region",
+      "formula": "Vol(Sⁿ) = 2πⁿ⁺¹/²/Γ((n+1)/2)",
+      "input": {
+        "dimension": "n",
+        "radius": "r (default 1 for unit sphere)"
+      },
+      "output": {
+        "volume": "Total volume of Sⁿ(r)"
+      },
+      "complexity": "O(1)",
+      "scaling": "Vol(Sⁿ(r)) = rⁿ·Vol(Sⁿ(1))"
+    },
+    {
+      "id": "spherical_cap_volume",
+      "name": "Spherical Cap Volume",
+      "category": "measure",
+      "description": "Volume of spherical cap (region within distance d from point)",
+      "formula": "VolCap(d) = ∫₀ᵈ sinⁿ⁻¹(t)dt · Area(Sⁿ⁻¹)",
+      "input": {
+        "x": "Center point on Sⁿ",
+        "radius": "d (geodesic radius)",
+        "dimension": "n"
+      },
+      "output": {
+        "volume": "Volume of cap"
+      },
+      "complexity": "O(1)",
+      "applications": [
+        "Probability distributions on sphere",
+        "Nearest neighbor search"
+      ]
+    },
+    {
+      "id": "stereographic_projection",
+      "name": "Stereographic Projection",
+      "category": "coordinate_systems",
+      "description": "Project Sⁿ to ℝⁿ via stereographic projection",
+      "formula": "σ(x) = (x₁,...,xₙ)/(1-xₙ₊₁)",
+      "input": {
+        "x": "Point on Sⁿ (not south pole)"
+      },
+      "output": {
+        "y": "Point in ℝⁿ"
+      },
+      "complexity": "O(n)",
+      "inverse": "σ⁻¹(y) = (2y/(1+||y||²), (||y||²-1)/(1+||y||²))",
+      "singularity": "South pole xₙ₊₁ = -1",
+      "properties": [
+        "Conformal (angle-preserving)",
+        "Maps circles to circles/lines"
+      ]
+    },
+    {
+      "id": "inverse_stereographic",
+      "name": "Inverse Stereographic Projection",
+      "category": "coordinate_systems",
+      "description": "Lift point from ℝⁿ to Sⁿ",
+      "formula": "σ⁻¹(y) = (2y, ||y||²-1)/(1+||y||²)",
+      "input": {
+        "y": "Point in ℝⁿ"
+      },
+      "output": {
+        "x": "Point on Sⁿ"
+      },
+      "complexity": "O(n)",
+      "validation": {
+        "output_constraint": "||x|| = 1"
+      }
+    },
+    {
+      "id": "spherical_coordinates",
+      "name": "Spherical Coordinates",
+      "category": "coordinate_systems",
+      "description": "Convert Cartesian to spherical coordinates",
+      "formula": "θᵢ = arctan2(...) for i=1,...,n",
+      "input": {
+        "x": "Point on Sⁿ (Cartesian)"
+      },
+      "output": {
+        "angles": "(θ₁,...,θₙ) spherical coordinates"
+      },
+      "complexity": "O(n)",
+      "range": {
+        "theta_i": "[0,π] for i<n, [0,2π) for i=n"
+      }
+    },
+    {
+      "id": "cartesian_from_spherical",
+      "name": "Cartesian from Spherical",
+      "category": "coordinate_systems",
+      "description": "Convert spherical to Cartesian coordinates",
+      "input": {
+        "angles": "(θ₁,...,θₙ) spherical coordinates"
+      },
+      "output": {
+        "x": "Point on Sⁿ (Cartesian)"
+      },
+      "complexity": "O(n)"
+    },
+    {
+      "id": "hopf_fibration_s3",
+      "name": "Hopf Fibration (S³ → S²)",
+      "category": "topology",
+      "description": "Hopf map from S³ to S² with S¹ fibers",
+      "formula": "h(z,w) = (2zw̄, |z|²-|w|²) for (z,w) ∈ S³ ⊂ ℂ²",
+      "input": {
+        "point_s3": "Point on S³ (4D unit vector or quaternion)"
+      },
+      "output": {
+        "point_s2": "Point on S² (base space)"
+      },
+      "complexity": "O(1)",
+      "properties": [
+        "Fiber bundle S¹ → S³ → S²",
+        "Non-trivial topology",
+        "Applications in quantum mechanics"
+      ]
+    },
+    {
+      "id": "hopf_fiber_s3",
+      "name": "Hopf Fiber (S³)",
+      "category": "topology",
+      "description": "Compute fiber S¹ over point in S²",
+      "input": {
+        "point_s2": "Point on S² (base)",
+        "phase": "Angle θ ∈ [0,2π)"
+      },
+      "output": {
+        "point_s3": "Point on S³ in fiber"
+      },
+      "complexity": "O(1)",
+      "applications": [
+        "Quantum entanglement",
+        "Parallel transport visualization"
+      ]
+    },
+    {
+      "id": "spherical_inversion",
+      "name": "Spherical Inversion",
+      "category": "transformations",
+      "description": "Inversion through sphere",
+      "formula": "I(x) = x/||x||² (for ℝⁿ \\ {0})",
+      "input": {
+        "x": "Point in ℝⁿ (non-zero)",
+        "center": "Center of inversion (default origin)",
+        "radius": "Radius of inversion sphere"
+      },
+      "output": {
+        "y": "Inverted point"
+      },
+      "complexity": "O(n)",
+      "properties": [
+        "Conformal",
+        "Maps spheres to spheres/planes",
+        "I(I(x)) = x"
+      ]
+    },
+    {
+      "id": "spherical_reflection",
+      "name": "Spherical Reflection",
+      "category": "transformations",
+      "description": "Reflect point through great sphere",
+      "formula": "R_H(x) = x - 2⟨x,n⟩n for hyperplane normal n",
+      "input": {
+        "x": "Point on Sⁿ",
+        "hyperplane_normal": "Unit normal n"
+      },
+      "output": {
+        "y": "Reflected point on Sⁿ"
+      },
+      "complexity": "O(n)",
+      "validation": {
+        "preserves_distance": "d(x,p) = d(R(x),R(p))"
+      }
+    },
+    {
+      "id": "spherical_rotation",
+      "name": "Spherical Rotation",
+      "category": "transformations",
+      "description": "Rotate on Sⁿ via SO(n+1) matrix",
+      "input": {
+        "x": "Point on Sⁿ",
+        "rotation_matrix": "Orthogonal matrix R ∈ SO(n+1)"
+      },
+      "output": {
+        "y": "Rotated point Rx on Sⁿ"
+      },
+      "complexity": "O(n²)",
+      "validation": {
+        "orthogonality": "RᵀR = I",
+        "determinant": "det(R) = 1"
+      }
+    },
+    {
+      "id": "spherical_nearest_neighbor",
+      "name": "Spherical Nearest Neighbor",
+      "category": "search",
+      "description": "Find k nearest neighbors on Sⁿ",
+      "algorithm": "Use spherical distance + kd-tree or ball tree",
+      "input": {
+        "query": "Point on Sⁿ",
+        "database": "Set of points on Sⁿ",
+        "k": "Number of neighbors"
+      },
+      "output": {
+        "neighbors": "k nearest points",
+        "distances": "Geodesic distances"
+      },
+      "complexity": "O(k·log(m)) average, O(k·m) worst case",
+      "data_structure": "Ball tree optimized for spherical distance"
+    },
+    {
+      "id": "spherical_interpolation",
+      "name": "Spherical Linear Interpolation (Slerp)",
+      "category": "interpolation",
+      "description": "Interpolate along great circle",
+      "formula": "slerp(x,y,t) = sin((1-t)θ)/sin(θ)·x + sin(tθ)/sin(θ)·y",
+      "input": {
+        "x": "Start point on Sⁿ",
+        "y": "End point on Sⁿ",
+        "t": "Parameter in [0,1]"
+      },
+      "output": {
+        "z": "Interpolated point on geodesic"
+      },
+      "complexity": "O(n)",
+      "properties": [
+        "Constant speed parameterization",
+        "Geodesic path"
+      ],
+      "applications": [
+        "Animation",
+        "Smooth transitions on sphere"
+      ]
+    },
+    {
+      "id": "spherical_sectional_curvature",
+      "name": "Spherical Sectional Curvature",
+      "category": "curvature",
+      "description": "Compute sectional curvature for plane in tangent space",
+      "formula": "K(X,Y) = +1 for Sⁿ",
+      "input": {
+        "x": "Point on Sⁿ",
+        "X": "First tangent vector",
+        "Y": "Second tangent vector (linearly independent)"
+      },
+      "output": {
+        "curvature": "K = +1"
+      },
+      "complexity": "O(1)",
+      "properties": [
+        "Constant for all 2-planes"
+      ]
+    },
+    {
+      "id": "spherical_christoffel_symbols",
+      "name": "Spherical Christoffel Symbols",
+      "category": "differential_geometry",
+      "description": "Compute Christoffel symbols in spherical coordinates",
+      "formula": "Γⁱⱼₖ = ½gⁱˡ(∂ⱼgₗₖ + ∂ₖgⱼₗ - ∂ₗgⱼₖ)",
+      "input": {
+        "point": "Point on Sⁿ (spherical coordinates)",
+        "dimension": "n"
+      },
+      "output": {
+        "christoffel": "Array of Christoffel symbols"
+      },
+      "complexity": "O(n³)",
+      "applications": [
+        "Geodesic equations",
+        "Parallel transport",
+        "Covariant derivatives"
+      ]
+    },
+    {
+      "id": "spherical_gradient",
+      "name": "Spherical Gradient",
+      "category": "optimization",
+      "description": "Compute gradient of function on Sⁿ",
+      "formula": "grad_Sⁿ f = proj_{T_x Sⁿ}(∇f)",
+      "input": {
+        "function": "Scalar function f: Sⁿ → ℝ",
+        "point": "Point x on Sⁿ"
+      },
+      "output": {
+        "gradient": "Tangent vector in T_x Sⁿ"
+      },
+      "complexity": "O(n)",
+      "applications": [
+        "Optimization on sphere",
+        "Principal component analysis"
+      ]
+    },
+    {
+      "id": "spherical_retraction",
+      "name": "Spherical Retraction",
+      "category": "optimization",
+      "description": "Fast approximate exponential map for optimization",
+      "formula": "R_x(v) = (x+v)/||x+v||",
+      "input": {
+        "x": "Point on Sⁿ",
+        "v": "Tangent vector (small)"
+      },
+      "output": {
+        "y": "Point on Sⁿ"
+      },
+      "complexity": "O(n)",
+      "properties": [
+        "Faster than exp_map",
+        "First-order approximation",
+        "Suitable for optimization"
+      ],
+      "applications": [
+        "Riemannian optimization",
+        "Gradient descent on Sⁿ"
+      ]
+    },
+    {
+      "id": "spherical_pca",
+      "name": "Spherical Principal Component Analysis",
+      "category": "machine_learning",
+      "description": "PCA adapted for data on sphere",
+      "algorithm": "Compute principal geodesic submanifolds",
+      "input": {
+        "data": "Points on Sⁿ",
+        "num_components": "k principal components"
+      },
+      "output": {
+        "components": "Principal tangent vectors at mean",
+        "explained_variance": "Variance along each component"
+      },
+      "complexity": "O(n²·m) where m = #points",
+      "applications": [
+        "Dimensionality reduction on sphere",
+        "Data analysis for directional data"
+      ]
+    },
+    {
+      "id": "spherical_von_mises_fisher",
+      "name": "Von Mises-Fisher Distribution",
+      "category": "probability",
+      "description": "Probability distribution on Sⁿ",
+      "formula": "f(x|μ,κ) = C_n(κ)exp(κμᵀx)",
+      "input": {
+        "mean_direction": "μ on Sⁿ",
+        "concentration": "κ ≥ 0"
+      },
+      "output": {
+        "density": "Probability density function",
+        "samples": "Random samples from distribution"
+      },
+      "complexity": "O(n) per sample",
+      "applications": [
+        "Directional statistics",
+        "Clustering on sphere",
+        "Bayesian inference"
+      ]
+    },
+    {
+      "id": "spherical_hausdorff_distance",
+      "name": "Spherical Hausdorff Distance",
+      "category": "search",
+      "description": "Hausdorff distance between sets on Sⁿ",
+      "formula": "d_H(A,B) = max{sup_{a∈A}inf_{b∈B}d(a,b), sup_{b∈B}inf_{a∈A}d(a,b)}",
+      "input": {
+        "set_A": "Points on Sⁿ",
+        "set_B": "Points on Sⁿ"
+      },
+      "output": {
+        "distance": "Hausdorff distance"
+      },
+      "complexity": "O(|A|·|B|·n) naive, O((|A|+|B|)log(|A|+|B|)·n) with spatial indexing",
+      "applications": [
+        "Shape matching on sphere",
+        "Set comparison"
+      ]
+    },
+    {
+      "id": "spherical_voronoi_diagram",
+      "name": "Spherical Voronoi Diagram",
+      "category": "computational_geometry",
+      "description": "Partition Sⁿ into Voronoi cells",
+      "input": {
+        "sites": "Points on Sⁿ"
+      },
+      "output": {
+        "cells": "Voronoi cells (spherical polygons)",
+        "adjacency": "Adjacency graph"
+      },
+      "complexity": "O(m²) for m sites (S²), higher for Sⁿ",
+      "applications": [
+        "Spatial partitioning on sphere",
+        "Clustering",
+        "Nearest neighbor structure"
+      ]
+    },
+    {
+      "id": "spherical_delaunay_triangulation",
+      "name": "Spherical Delaunay Triangulation",
+      "category": "computational_geometry",
+      "description": "Dual of spherical Voronoi diagram",
+      "input": {
+        "points": "Points on Sⁿ"
+      },
+      "output": {
+        "triangulation": "Simplicial complex on Sⁿ"
+      },
+      "complexity": "O(m²) for m points",
+      "properties": [
+        "Empty circumcircle property",
+        "Maximizes minimum angle"
+      ]
+    },
+    {
+      "id": "spherical_convex_hull",
+      "name": "Spherical Convex Hull",
+      "category": "computational_geometry",
+      "description": "Smallest spherical convex set containing points",
+      "algorithm": "Incremental algorithm or gift wrapping",
+      "input": {
+        "points": "Points on Sⁿ"
+      },
+      "output": {
+        "hull": "Spherical convex hull (spherical polytope)"
+      },
+      "complexity": "O(m·log(m)·n) for m points",
+      "applications": [
+        "Bounding regions on sphere",
+        "Visibility problems"
+      ]
+    },
+    {
+      "id": "spherical_kernel_density",
+      "name": "Spherical Kernel Density Estimation",
+      "category": "machine_learning",
+      "description": "Estimate probability density on Sⁿ",
+      "formula": "f(x) = (1/m)Σᵢ K_h(d(x,xᵢ))",
+      "input": {
+        "data": "Points on Sⁿ",
+        "bandwidth": "h > 0",
+        "kernel": "Spherical kernel function"
+      },
+      "output": {
+        "density": "Estimated density function"
+      },
+      "complexity": "O(m·n) per query point",
+      "applications": [
+        "Density estimation",
+        "Anomaly detection on sphere"
+      ]
+    },
+    {
+      "id": "spherical_to_hyperbolic",
+      "name": "Spherical to Hyperbolic Conversion",
+      "category": "conversion",
+      "description": "Map between spherical (κ>0) and hyperbolic (κ<0) via continuation",
+      "formula": "Analytic continuation through κ=0 (flat space)",
+      "input": {
+        "point_spherical": "Point on Sⁿ",
+        "target_kappa": "Target curvature κ < 0"
+      },
+      "output": {
+        "point_hyperbolic": "Corresponding point in hyperbolic space"
+      },
+      "complexity": "O(n)",
+      "method": "Via stereographic projection and scaling",
+      "applications": [
+        "AGUA κ-channel transitions",
+        "Curvature regime switching"
+      ]
+    },
+    {
+      "id": "spherical_consensus_o_n",
+      "name": "Fast Spherical Consensus (O(n))",
+      "category": "consensus",
+      "description": "O(n) approximation of Fréchet mean using pairwise midpoints",
+      "algorithm": "Hierarchical pairwise averaging",
+      "input": {
+        "points": "m points on Sⁿ",
+        "weights": "Optional weights"
+      },
+      "output": {
+        "consensus": "Approximate barycenter"
+      },
+      "complexity": "O(n·m)",
+      "accuracy": "Within ε of true Fréchet mean",
+      "tier": "Core (Free)",
+      "applications": [
+        "Fast consensus for BFT",
+        "Real-time averaging"
+      ]
+    }
+  ],
+  "agua_integration": {
+    "kappa_regimes": {
+      "kappa_positive": {
+        "range": "κ > 0",
+        "geometry": "Spherical Sⁿ",
+        "properties": [
+          "Bounded space (diameter π)",
+          "Closed geodesics",
+          "Temporal loops possible",
+          "Positive curvature"
+        ],
+        "use_cases": [
+          "Consensus in bounded semantic spaces",
+          "Temporal reasoning with loops",
+          "Closed semantic worlds"
+        ],
+        "operations": [
+          "spherical_distance",
+          "spherical_barycenter",
+          "spherical_consensus_o_n"
+        ]
+      }
+    },
+    "transition_protocols": {
+      "flat_to_spherical": {
+        "method": "spherical_projection",
+        "complexity": "O(n)"
+      },
+      "spherical_to_hyperbolic": {
+        "method": "spherical_to_hyperbolic",
+        "complexity": "O(n)",
+        "via": "Analytic continuation"
+      }
+    }
+  },
+  "hvs_integration": {
+    "dual_model_support": {
+      "precision_model": "Sⁿ in ℝⁿ⁺¹ (explicit embedding)",
+      "speed_model": "Stereographic projection to ℝⁿ",
+      "conversion_accuracy": "<1e-9"
+    },
+    "applications": [
+      "Bounded semantic embeddings",
+      "Directional data (document vectors)",
+      "Quaternion-based rotations (S³)",
+      "Temporal loop detection"
+    ]
+  },
+  "performance_characteristics": {
+    "core_operations": {
+      "distance": "O(n) with 1e-12 precision",
+      "exp_map": "O(n) with 1e-12 precision",
+      "log_map": "O(n) with 1e-12 precision",
+      "parallel_transport": "O(n) with 1e-12 precision"
+    },
+    "consensus": {
+      "barycenter_iterative": "O(n·m·k) typical k=10",
+      "barycenter_fast": "O(n·m) hierarchical method",
+      "pairwise_average": "O(n) per pair"
+    },
+    "search": {
+      "nearest_neighbor": "O(k·log(m)) with ball tree",
+      "range_query": "O(log(m) + r) with spatial index"
+    }
+  },
+  "tier_packaging": {
+    "core_free": {
+      "operations": [
+        "spherical_distance",
+        "spherical_exp_map",
+        "spherical_log_map",
+        "spherical_parallel_transport",
+        "spherical_geodesic",
+        "spherical_projection",
+        "tangent_projection",
+        "spherical_geodesic_midpoint",
+        "spherical_consensus_o_n",
+        "spherical_interpolation",
+        "spherical_retraction",
+        "stereographic_projection",
+        "inverse_stereographic",
+        "spherical_to_hyperbolic"
+      ],
+      "total": 14,
+      "complexity": "All O(n) or O(n log n)"
+    },
+    "basic": {
+      "additional_operations": [
+        "spherical_barycenter",
+        "spherical_curvature",
+        "spherical_ricci_curvature",
+        "spherical_volume_element",
+        "spherical_coordinates",
+        "cartesian_from_spherical",
+        "spherical_gradient",
+        "spherical_nearest_neighbor"
+      ],
+      "total": 22
+    },
+    "pro": {
+      "additional_operations": [
+        "hopf_fibration_s3",
+        "hopf_fiber_s3",
+        "spherical_inversion",
+        "spherical_reflection",
+        "spherical_rotation",
+        "spherical_pca",
+        "spherical_von_mises_fisher",
+        "spherical_kernel_density"
+      ],
+      "total": 30
+    },
+    "advanced": {
+      "additional_operations": [
+        "spherical_cap_volume",
+        "spherical_christoffel_symbols",
+        "spherical_voronoi_diagram",
+        "spherical_delaunay_triangulation",
+        "spherical_convex_hull"
+      ],
+      "total": 35
+    }
+  },
+  "validation": {
+    "test_cases": [
+      {
+        "name": "S² unit sphere distance",
+        "input": {
+          "x": "[1, 0, 0]",
+          "y": "[0, 1, 0]"
+        },
+        "expected_distance": 1.5707963267948966,
+        "tolerance": 1e-12
+      },
+      {
+        "name": "S³ Hopf fibration",
+        "input": {
+          "s3_point": "[0.5, 0.5, 0.5, 0.5]"
+        },
+        "expected_s2": "Valid point on S²",
+        "validation": "||point|| = 1"
+      },
+      {
+        "name": "Spherical barycenter two points",
+        "input": {
+          "points": ["[1,0,0]", "[0,1,0]"]
+        },
+        "expected": "[√2/2, √2/2, 0]",
+        "tolerance": 1e-9
+      }
+    ],
+    "performance_tests": [
+      {
+        "operation": "spherical_distance",
+        "dimension": 128,
+        "expected_time": "<10μs"
+      },
+      {
+        "operation": "spherical_consensus_o_n",
+        "num_points": 100,
+        "dimension": 64,
+        "expected_time": "<1ms"
+      }
+    ]
+  },
+  "implementation_notes": {
+    "numerical_stability": [
+      "Use atan2 for angle computation",
+      "Handle antipodal points gracefully",
+      "Normalize after each operation",
+      "Use extended precision for small angles"
+    ],
+    "optimization": [
+      "Vectorize operations for batches",
+      "Cache trigonometric computations",
+      "Use SIMD for inner products",
+      "Pre-compute normalization factors"
+    ],
+    "edge_cases": [
+      "Antipodal points (log_map undefined)",
+      "Zero tangent vectors",
+      "Points near poles in spherical coordinates",
+      "Numerical overflow for high dimensions"
+    ]
+  },
+  "references": [
+    {
+      "title": "Riemannian Geometry and Geometric Analysis",
+      "author": "Jürgen Jost",
+      "relevance": "Foundational differential geometry on spheres"
+    },
+    {
+      "title": "Directional Statistics",
+      "author": "Kanti V. Mardia, Peter E. Jupp",
+      "relevance": "Statistical analysis on spheres"
+    },
+    {
+      "title": "Optimization on Manifolds",
+      "author": "Absil, Mahony, Sepulchre",
+      "relevance": "Optimization algorithms on Sⁿ"
+    },
+    {
+      "title": "Spherical Geometry and Its Applications",
+      "author": "Marshall",
+      "relevance": "Computational spherical geometry"
+    }
+  ]
+}
