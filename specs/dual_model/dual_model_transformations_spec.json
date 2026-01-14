@@ -1,0 +1,397 @@
+{
+  "specification": {
+    "name": "Dual Model System - Geometric Transformations",
+    "version": "1.0.0",
+    "description": "Coordinate transformations, basis changes, isometries, and conformal mappings for the dual model system",
+    "total_operations": 17,
+    "format": "STUNIR",
+    "tier_availability": "Core (Free)",
+    "complexity_target": "O(n) to O(n\u00b3)",
+    "integration": [
+      "HVS",
+      "AGUA",
+      "STUNIR",
+      "Dual-Model System"
+    ],
+    "dependencies": [
+      "lorentz_advanced_spec.json",
+      "poincare_advanced_spec.json"
+    ]
+  },
+  "operations": [
+    {
+      "id": "dual_lorentz_to_poincare",
+      "name": "Enhanced Lorentz to Poincar\u00e9 Conversion",
+      "category": "coordinate_transformations",
+      "description": "High-precision conversion from Lorentz to Poincar\u00e9 with numerical stability",
+      "complexity": {
+        "time": "O(n)",
+        "space": "O(n)"
+      },
+      "test_cases": [
+        {
+          "name": "roundtrip",
+          "expected": "identity"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "boundary_points",
+          "handling": "high precision"
+        }
+      ]
+    },
+    {
+      "id": "dual_poincare_to_lorentz",
+      "name": "Enhanced Poincar\u00e9 to Lorentz Conversion",
+      "category": "coordinate_transformations",
+      "description": "High-precision conversion from Poincar\u00e9 to Lorentz",
+      "complexity": {
+        "time": "O(n)",
+        "space": "O(n)"
+      },
+      "test_cases": [
+        {
+          "name": "roundtrip",
+          "expected": "identity"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "near_boundary",
+          "handling": "asymptotic expansion"
+        }
+      ]
+    },
+    {
+      "id": "dual_tangent_vector_transport",
+      "name": "Tangent Vector Coordinate Transformation",
+      "category": "coordinate_transformations",
+      "description": "Transform tangent vectors between models preserving geometric meaning",
+      "complexity": {
+        "time": "O(n)",
+        "space": "O(n)"
+      },
+      "test_cases": [
+        {
+          "name": "norm_preservation",
+          "expected": "verified"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "basis_mismatch",
+          "handling": "pushforward map"
+        }
+      ]
+    },
+    {
+      "id": "dual_metric_tensor_transform",
+      "name": "Metric Tensor Transformation",
+      "category": "coordinate_transformations",
+      "description": "Transform metric tensor between coordinate systems",
+      "complexity": {
+        "time": "O(n\u00b2)",
+        "space": "O(n\u00b2)"
+      },
+      "test_cases": [
+        {
+          "name": "pullback",
+          "expected": "correct metric"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "singular_points",
+          "handling": "regularization"
+        }
+      ]
+    },
+    {
+      "id": "dual_change_of_basis",
+      "name": "Change of Basis in Tangent Space",
+      "category": "basis_changes",
+      "description": "Transform tangent vectors and tensors under basis change",
+      "complexity": {
+        "time": "O(n\u00b2)",
+        "space": "O(n\u00b2)"
+      },
+      "test_cases": [
+        {
+          "name": "orthonormal_basis",
+          "expected": "correct transformation"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "non_orthogonal",
+          "handling": "Gram-Schmidt"
+        }
+      ]
+    },
+    {
+      "id": "dual_orthonormal_frame",
+      "name": "Construct Orthonormal Frame",
+      "category": "basis_changes",
+      "description": "Construct orthonormal frame field in tangent bundle",
+      "complexity": {
+        "time": "O(n\u00b2)",
+        "space": "O(n\u00b2)"
+      },
+      "test_cases": [
+        {
+          "name": "frame_orthonormality",
+          "expected": "verified"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "parallel_transport_frame",
+          "handling": "transport along curve"
+        }
+      ]
+    },
+    {
+      "id": "dual_geodesic_coordinates",
+      "name": "Geodesic Normal Coordinates",
+      "category": "basis_changes",
+      "description": "Establish geodesic normal coordinates around a point",
+      "complexity": {
+        "time": "O(n\u00b2)",
+        "space": "O(n\u00b2)"
+      },
+      "test_cases": [
+        {
+          "name": "coordinate_system",
+          "expected": "valid coordinates"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "coordinate_singularities",
+          "handling": "detect and warn"
+        }
+      ]
+    },
+    {
+      "id": "dual_reflection",
+      "name": "Hyperbolic Reflection",
+      "category": "isometries",
+      "description": "Reflection across hyperbolic hyperplane (geodesic)",
+      "complexity": {
+        "time": "O(n)",
+        "space": "O(n)"
+      },
+      "test_cases": [
+        {
+          "name": "involution",
+          "expected": "R\u00b2 = identity"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "point_on_mirror",
+          "handling": "fixed point"
+        }
+      ]
+    },
+    {
+      "id": "dual_rotation",
+      "name": "Hyperbolic Rotation",
+      "category": "isometries",
+      "description": "Rotation in hyperbolic space (isometry)",
+      "complexity": {
+        "time": "O(n\u00b2)",
+        "space": "O(n\u00b2)"
+      },
+      "test_cases": [
+        {
+          "name": "distance_preservation",
+          "expected": "verified"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "axis_of_rotation",
+          "handling": "fixed geodesic"
+        }
+      ]
+    },
+    {
+      "id": "dual_translation",
+      "name": "Hyperbolic Translation",
+      "category": "isometries",
+      "description": "Translation along geodesic (M\u00f6bius transformation)",
+      "complexity": {
+        "time": "O(n)",
+        "space": "O(n)"
+      },
+      "test_cases": [
+        {
+          "name": "geodesic_motion",
+          "expected": "constant speed"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "boundary_limit",
+          "handling": "horosphere approach"
+        }
+      ]
+    },
+    {
+      "id": "dual_isometry_composition",
+      "name": "Compose Hyperbolic Isometries",
+      "category": "isometries",
+      "description": "Compose multiple isometries efficiently",
+      "complexity": {
+        "time": "O(k * n\u00b2)",
+        "space": "O(n\u00b2)"
+      },
+      "test_cases": [
+        {
+          "name": "group_properties",
+          "expected": "verified"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "numerical_accumulation",
+          "handling": "periodic renormalization"
+        }
+      ]
+    },
+    {
+      "id": "dual_isometry_inverse",
+      "name": "Compute Isometry Inverse",
+      "category": "isometries",
+      "description": "Compute inverse of hyperbolic isometry",
+      "complexity": {
+        "time": "O(n\u00b2)",
+        "space": "O(n\u00b2)"
+      },
+      "test_cases": [
+        {
+          "name": "left_inverse",
+          "expected": "I\u207b\u00b9 \u2218 I = id"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "degenerate_isometry",
+          "handling": "detect and error"
+        }
+      ]
+    },
+    {
+      "id": "dual_conformal_map",
+      "name": "Conformal Mapping",
+      "category": "conformal_mappings",
+      "description": "Apply conformal (angle-preserving) transformations",
+      "complexity": {
+        "time": "O(n)",
+        "space": "O(n)"
+      },
+      "test_cases": [
+        {
+          "name": "angle_preservation",
+          "expected": "verified"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "critical_points",
+          "handling": "identify singularities"
+        }
+      ]
+    },
+    {
+      "id": "dual_stereographic_projection",
+      "name": "Stereographic Projection Variants",
+      "category": "conformal_mappings",
+      "description": "Various stereographic projections between models",
+      "complexity": {
+        "time": "O(n)",
+        "space": "O(n)"
+      },
+      "test_cases": [
+        {
+          "name": "conformal_property",
+          "expected": "verified"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "projection_point",
+          "handling": "singularity at point"
+        }
+      ]
+    },
+    {
+      "id": "dual_mobius_transformation",
+      "name": "M\u00f6bius Transformation",
+      "category": "conformal_mappings",
+      "description": "General M\u00f6bius transformations on Poincar\u00e9 ball",
+      "complexity": {
+        "time": "O(n)",
+        "space": "O(n)"
+      },
+      "test_cases": [
+        {
+          "name": "cross_ratio",
+          "expected": "preserved"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "fixed_points",
+          "handling": "classify transformation type"
+        }
+      ]
+    },
+    {
+      "id": "dual_inversion",
+      "name": "Hyperbolic Inversion",
+      "category": "conformal_mappings",
+      "description": "Inversion through hyperbolic sphere",
+      "complexity": {
+        "time": "O(n)",
+        "space": "O(n)"
+      },
+      "test_cases": [
+        {
+          "name": "involution",
+          "expected": "I\u00b2 = identity"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "center_of_inversion",
+          "handling": "singularity"
+        }
+      ]
+    },
+    {
+      "id": "dual_horosphere_projection",
+      "name": "Horosphere Projection",
+      "category": "conformal_mappings",
+      "description": "Project to horosphere (limiting case at infinity)",
+      "complexity": {
+        "time": "O(n)",
+        "space": "O(n)"
+      },
+      "test_cases": [
+        {
+          "name": "boundary_approach",
+          "expected": "asymptotic behavior"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "ideal_point",
+          "handling": "limiting computation"
+        }
+      ]
+    }
+  ]
+}

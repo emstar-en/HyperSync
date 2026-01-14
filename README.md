@@ -5,18 +5,56 @@
 [![Status](https://img.shields.io/badge/Status-Alpha-yellow)](https://github.com/emstar-en/HyperSync)
 
 > **[WARNING: AI] [ALPHA] [Patent Pending] [CORE]**  
-> Geometry-aware operations for distributed systems with **43 Core tier operations** - all O(n) or O(n log n).
+> Geometry-aware operations for distributed systems with **217 Core tier operations** (Phase 2 Complete) - all O(n) or O(n²).
 
 ## 🚀 Overview
 
-HyperSync Core is an open-source library providing **43 high-performance geometric operations** for distributed systems, consensus mechanisms, security, and machine learning. Built on rigorous non-Euclidean geometry (hyperbolic and spherical spaces), HyperSync Core enables:
+HyperSync Core is an open-source library providing **217 high-performance geometric operations** for distributed systems, consensus mechanisms, security, and machine learning. Built on rigorous non-Euclidean geometry (hyperbolic and spherical spaces), HyperSync Core enables:
 
 - **1000x faster Byzantine consensus** (Spherical BFT)
 - **Geometric encryption** using hyperbolic distance
 - **10,000x speedup** for Ricci flow approximations
 - **Native geometric operations** with O(n) or O(n log n) complexity
 
-## ✨ Core Tier Features (43 Operations)
+## ✨ Core Tier Progress
+
+### Phase 2 Complete: Dual Model System (167/167 operations) ✅
+
+The **Dual Model System** provides seamless integration between Lorentz (hyperboloid) and Poincaré (ball) models of hyperbolic geometry, with automatic model selection for optimal numerical stability and computational efficiency.
+
+**Phase 1 (40 operations):**
+- Basic Lorentz operations (15)
+- Basic Poincaré operations (15)
+- Model conversion & selection (10)
+
+**Phase 2 (127 operations):**
+- Advanced Lorentz operations (30): Higher-order derivatives, batch processing, optimization, numerical stability
+- Advanced Poincaré operations (30): Higher-order derivatives, batch processing, optimization, numerical stability
+- Model benchmarking (20): Performance comparison, accuracy validation, complexity analysis, profiling
+- Dual model optimization (15): Gradient descent, quasi-Newton, trust region, distributed optimization
+- Dual model interpolation (15): Geodesic interpolation, Bézier curves, splines, MCMC sampling
+- Dual model transformations (17): Coordinate changes, basis transformations, isometries, conformal mappings
+
+**Core Tier Status: 217/357 operations (61% complete)**
+
+## ✨ Core Tier Features (217 Operations)
+
+### 🔄 Dual Model System (167 operations) ✅ **NEW**
+
+Complete integration of Lorentz and Poincaré hyperbolic models with automatic model selection:
+
+- **Basic Operations (40)**: Distance, exp/log maps, parallel transport, geodesics, conversions
+- **Advanced Operations (60)**: Christoffel symbols, Ricci tensor, Hessian, Jacobians, condition numbers
+- **Batch Processing (20)**: Vectorized distance, exp/log, parallel transport with GPU support
+- **Optimization (15)**: Riemannian gradient descent, Adam, L-BFGS, Newton, conjugate gradient
+- **Interpolation & Sampling (15)**: Bézier curves, splines, MCMC, Brownian motion, quasi-Monte Carlo
+- **Transformations (17)**: Coordinate changes, isometries, conformal mappings, Möbius transformations
+
+Key features:
+- Automatic model selection based on numerical stability
+- Seamless conversion between models
+- Comprehensive benchmarking and profiling tools
+- Production-ready numerical stability enhancements
 
 ### 🌐 Geometry Operations (28 total)
 

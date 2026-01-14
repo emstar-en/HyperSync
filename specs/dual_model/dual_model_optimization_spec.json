@@ -1,0 +1,354 @@
+{
+  "specification": {
+    "name": "Dual Model System - Dual Model Optimization",
+    "version": "1.0.0",
+    "description": "Optimization algorithms that operate seamlessly across both Lorentz and Poincar\u00e9 models with automatic model switching",
+    "total_operations": 15,
+    "format": "STUNIR",
+    "tier_availability": "Core (Free)",
+    "complexity_target": "O(n) to O(n\u00b3)",
+    "integration": [
+      "HVS",
+      "AGUA",
+      "STUNIR",
+      "Dual-Model System"
+    ],
+    "dependencies": [
+      "lorentz_advanced_spec.json",
+      "poincare_advanced_spec.json",
+      "model_benchmarking_spec.json"
+    ]
+  },
+  "operations": [
+    {
+      "id": "dual_rsgd",
+      "name": "Dual Model Riemannian Stochastic Gradient Descent",
+      "category": "gradient_based",
+      "description": "RSGD with automatic model selection per iteration",
+      "complexity": {
+        "time": "O(n * T * k)",
+        "space": "O(n)"
+      },
+      "test_cases": [
+        {
+          "name": "convex_objective",
+          "expected": "convergence"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "model_switching",
+          "handling": "smooth transitions"
+        }
+      ]
+    },
+    {
+      "id": "dual_adam",
+      "name": "Dual Model Riemannian Adam",
+      "category": "gradient_based",
+      "description": "Adam optimizer adapted for dual model system with momentum transport",
+      "complexity": {
+        "time": "O(n * T)",
+        "space": "O(n)"
+      },
+      "test_cases": [
+        {
+          "name": "adaptive_rates",
+          "expected": "faster convergence"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "momentum_transport",
+          "handling": "parallel transport"
+        }
+      ]
+    },
+    {
+      "id": "dual_lbfgs",
+      "name": "Dual Model Limited-Memory BFGS",
+      "category": "quasi_newton",
+      "description": "L-BFGS on hyperbolic manifold with dual model support",
+      "complexity": {
+        "time": "O(n * m * T)",
+        "space": "O(n * m)"
+      },
+      "test_cases": [
+        {
+          "name": "quadratic_function",
+          "expected": "fast convergence"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "curvature_updates",
+          "handling": "transport Hessian approximation"
+        }
+      ]
+    },
+    {
+      "id": "dual_newton",
+      "name": "Dual Model Riemannian Newton",
+      "category": "second_order",
+      "description": "Newton's method with automatic Hessian computation in optimal model",
+      "complexity": {
+        "time": "O(n\u00b3 * T)",
+        "space": "O(n\u00b2)"
+      },
+      "test_cases": [
+        {
+          "name": "quadratic_convergence",
+          "expected": "verified"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "hessian_singular",
+          "handling": "regularization"
+        }
+      ]
+    },
+    {
+      "id": "dual_conjugate_gradient",
+      "name": "Dual Model Conjugate Gradient",
+      "category": "gradient_based",
+      "description": "Conjugate gradient with model-aware conjugate direction transport",
+      "complexity": {
+        "time": "O(n * T)",
+        "space": "O(n)"
+      },
+      "test_cases": [
+        {
+          "name": "quadratic_objective",
+          "expected": "n iterations"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "model_switch",
+          "handling": "reset direction"
+        }
+      ]
+    },
+    {
+      "id": "dual_trust_region",
+      "name": "Dual Model Trust Region",
+      "category": "trust_region_methods",
+      "description": "Trust region method with dual model subproblem solving",
+      "complexity": {
+        "time": "O(n\u00b3 * T)",
+        "space": "O(n\u00b2)"
+      },
+      "test_cases": [
+        {
+          "name": "non_convex",
+          "expected": "escape saddles"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "radius_adaptation",
+          "handling": "model-aware bounds"
+        }
+      ]
+    },
+    {
+      "id": "dual_proximal_point",
+      "name": "Dual Model Proximal Point",
+      "category": "proximal_methods",
+      "description": "Proximal point algorithm on hyperbolic space with dual models",
+      "complexity": {
+        "time": "O(n * T * k)",
+        "space": "O(n)"
+      },
+      "test_cases": [
+        {
+          "name": "non_smooth",
+          "expected": "convergence"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "proximal_operator",
+          "handling": "model-specific implementation"
+        }
+      ]
+    },
+    {
+      "id": "dual_line_search",
+      "name": "Dual Model Adaptive Line Search",
+      "category": "line_search",
+      "description": "Line search that switches models for better numerical stability",
+      "complexity": {
+        "time": "O(n * log(1/\u03b1))",
+        "space": "O(n)"
+      },
+      "test_cases": [
+        {
+          "name": "armijo_condition",
+          "expected": "satisfied"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "boundary_proximity",
+          "handling": "switch to stable model"
+        }
+      ]
+    },
+    {
+      "id": "dual_gradient_free",
+      "name": "Dual Model Gradient-Free Optimization",
+      "category": "derivative_free",
+      "description": "Gradient-free optimization using finite differences across models",
+      "complexity": {
+        "time": "O(n\u00b2 * T)",
+        "space": "O(n)"
+      },
+      "test_cases": [
+        {
+          "name": "black_box_function",
+          "expected": "convergence"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "noisy_evaluations",
+          "handling": "smoothing"
+        }
+      ]
+    },
+    {
+      "id": "dual_constrained_optimization",
+      "name": "Dual Model Constrained Optimization",
+      "category": "constrained",
+      "description": "Optimization with hyperbolic constraints using dual models",
+      "complexity": {
+        "time": "O(n * T * c)",
+        "space": "O(n * c)"
+      },
+      "test_cases": [
+        {
+          "name": "equality_constraints",
+          "expected": "feasible solution"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "constraint_violation",
+          "handling": "projection"
+        }
+      ]
+    },
+    {
+      "id": "dual_stochastic_optimization",
+      "name": "Dual Model Stochastic Optimization",
+      "category": "stochastic",
+      "description": "Stochastic optimization with mini-batches and dual models",
+      "complexity": {
+        "time": "O(b * n * T)",
+        "space": "O(n)"
+      },
+      "test_cases": [
+        {
+          "name": "large_dataset",
+          "expected": "mini-batch convergence"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "variance_reduction",
+          "handling": "SVRG adaptation"
+        }
+      ]
+    },
+    {
+      "id": "dual_parallel_optimization",
+      "name": "Dual Model Parallel Optimization",
+      "category": "distributed",
+      "description": "Distributed optimization across multiple workers with model consensus",
+      "complexity": {
+        "time": "O(n * T / p)",
+        "space": "O(n * p)"
+      },
+      "test_cases": [
+        {
+          "name": "distributed_dataset",
+          "expected": "parallel speedup"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "synchronization",
+          "handling": "Fr\u00e9chet mean consensus"
+        }
+      ]
+    },
+    {
+      "id": "dual_multi_objective",
+      "name": "Dual Model Multi-Objective Optimization",
+      "category": "multi_objective",
+      "description": "Pareto-optimal solutions on hyperbolic space",
+      "complexity": {
+        "time": "O(m * n * T)",
+        "space": "O(m * n)"
+      },
+      "test_cases": [
+        {
+          "name": "two_objectives",
+          "expected": "Pareto front"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "conflicting_objectives",
+          "handling": "scalarization"
+        }
+      ]
+    },
+    {
+      "id": "dual_bilevel_optimization",
+      "name": "Dual Model Bilevel Optimization",
+      "category": "bilevel",
+      "description": "Nested optimization problems on hyperbolic space",
+      "complexity": {
+        "time": "O(n * T\u2081 * T\u2082)",
+        "space": "O(n)"
+      },
+      "test_cases": [
+        {
+          "name": "meta_learning",
+          "expected": "convergence"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "inner_problem_failure",
+          "handling": "approximate solution"
+        }
+      ]
+    },
+    {
+      "id": "dual_global_optimization",
+      "name": "Dual Model Global Optimization",
+      "category": "global",
+      "description": "Global optimization using basin hopping and multi-start",
+      "complexity": {
+        "time": "O(k * n * T)",
+        "space": "O(n * k)"
+      },
+      "test_cases": [
+        {
+          "name": "multi_modal",
+          "expected": "find global minimum"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "local_minima",
+          "handling": "perturbation strategy"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,463 @@
+{
+  "specification": {
+    "name": "Dual Model System - Model Benchmarking & Comparison",
+    "version": "1.0.0",
+    "description": "Comprehensive benchmarking suite for comparing Lorentz and Poincar\u00e9 models across performance, accuracy, numerical stability, and computational efficiency metrics",
+    "total_operations": 20,
+    "format": "STUNIR",
+    "tier_availability": "Core (Free)",
+    "complexity_target": "O(n) to O(n\u00b2)",
+    "integration": [
+      "HVS",
+      "AGUA",
+      "STUNIR",
+      "Dual-Model System"
+    ],
+    "dependencies": [
+      "lorentz_advanced_spec.json",
+      "poincare_advanced_spec.json"
+    ]
+  },
+  "operations": [
+    {
+      "id": "benchmark_distance_computation",
+      "name": "Benchmark Distance Computation",
+      "category": "performance_comparison",
+      "description": "Compare distance computation performance between Lorentz and Poincar\u00e9 models",
+      "complexity": {
+        "time": "O(n * k)",
+        "space": "O(k)"
+      },
+      "test_cases": [
+        {
+          "name": "batch_1000",
+          "expected": "performance ratio"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "high_dimension",
+          "handling": "scale appropriately"
+        }
+      ]
+    },
+    {
+      "id": "benchmark_exp_map",
+      "name": "Benchmark Exponential Map",
+      "category": "performance_comparison",
+      "description": "Compare exp_map performance and accuracy across models",
+      "complexity": {
+        "time": "O(n * k)",
+        "space": "O(k)"
+      },
+      "test_cases": [
+        {
+          "name": "varied_magnitudes",
+          "expected": "timing comparison"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "extreme_values",
+          "handling": "monitor stability"
+        }
+      ]
+    },
+    {
+      "id": "benchmark_log_map",
+      "name": "Benchmark Logarithmic Map",
+      "category": "performance_comparison",
+      "description": "Compare log_map performance and numerical stability",
+      "complexity": {
+        "time": "O(n * k)",
+        "space": "O(k)"
+      },
+      "test_cases": [
+        {
+          "name": "varied_distances",
+          "expected": "performance metrics"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "boundary_cases",
+          "handling": "track errors"
+        }
+      ]
+    },
+    {
+      "id": "benchmark_parallel_transport",
+      "name": "Benchmark Parallel Transport",
+      "category": "performance_comparison",
+      "description": "Compare parallel transport efficiency and accuracy",
+      "complexity": {
+        "time": "O(n * k)",
+        "space": "O(k)"
+      },
+      "test_cases": [
+        {
+          "name": "long_geodesics",
+          "expected": "timing data"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "numerical_drift",
+          "handling": "measure error"
+        }
+      ]
+    },
+    {
+      "id": "benchmark_frechet_mean",
+      "name": "Benchmark Fr\u00e9chet Mean",
+      "category": "performance_comparison",
+      "description": "Compare Fr\u00e9chet mean computation performance",
+      "complexity": {
+        "time": "O(n * m * k)",
+        "space": "O(n * m)"
+      },
+      "test_cases": [
+        {
+          "name": "large_point_sets",
+          "expected": "convergence comparison"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "scattered_points",
+          "handling": "track iterations"
+        }
+      ]
+    },
+    {
+      "id": "validate_distance_accuracy",
+      "name": "Validate Distance Accuracy",
+      "category": "accuracy_validation",
+      "description": "Validate distance computation accuracy across models using known test cases",
+      "complexity": {
+        "time": "O(k)",
+        "space": "O(k)"
+      },
+      "test_cases": [
+        {
+          "name": "analytical_solutions",
+          "expected": "error < 1e-10"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "extreme_distances",
+          "handling": "high precision check"
+        }
+      ]
+    },
+    {
+      "id": "validate_geodesic_accuracy",
+      "name": "Validate Geodesic Accuracy",
+      "category": "accuracy_validation",
+      "description": "Validate geodesic computation using constant speed and energy minimization",
+      "complexity": {
+        "time": "O(n * k)",
+        "space": "O(k)"
+      },
+      "test_cases": [
+        {
+          "name": "constant_speed",
+          "expected": "verified"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "near_boundary",
+          "handling": "measure deviation"
+        }
+      ]
+    },
+    {
+      "id": "validate_isometry",
+      "name": "Validate Isometry Properties",
+      "category": "accuracy_validation",
+      "description": "Verify that conversions preserve geometric properties (isometry)",
+      "complexity": {
+        "time": "O(n * k)",
+        "space": "O(k)"
+      },
+      "test_cases": [
+        {
+          "name": "distance_preservation",
+          "expected": "error < 1e-9"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "multiple_conversions",
+          "handling": "track error accumulation"
+        }
+      ]
+    },
+    {
+      "id": "validate_parallel_transport",
+      "name": "Validate Parallel Transport Properties",
+      "category": "accuracy_validation",
+      "description": "Verify parallel transport preserves norm and angle",
+      "complexity": {
+        "time": "O(n * k)",
+        "space": "O(k)"
+      },
+      "test_cases": [
+        {
+          "name": "norm_preservation",
+          "expected": "error < 1e-10"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "closed_loops",
+          "handling": "check holonomy"
+        }
+      ]
+    },
+    {
+      "id": "analyze_time_complexity",
+      "name": "Analyze Time Complexity",
+      "category": "complexity_analysis",
+      "description": "Empirical time complexity analysis for all operations",
+      "complexity": {
+        "time": "O(k * log k)",
+        "space": "O(k)"
+      },
+      "test_cases": [
+        {
+          "name": "scaling_tests",
+          "expected": "verify O(n) claims"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "cache_effects",
+          "handling": "multiple runs"
+        }
+      ]
+    },
+    {
+      "id": "analyze_space_complexity",
+      "name": "Analyze Space Complexity",
+      "category": "complexity_analysis",
+      "description": "Memory usage analysis and peak memory tracking",
+      "complexity": {
+        "time": "O(k)",
+        "space": "O(k)"
+      },
+      "test_cases": [
+        {
+          "name": "memory_profiling",
+          "expected": "verify claims"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "large_dimensions",
+          "handling": "monitor carefully"
+        }
+      ]
+    },
+    {
+      "id": "analyze_numerical_stability",
+      "name": "Analyze Numerical Stability",
+      "category": "complexity_analysis",
+      "description": "Analyze numerical stability across different input ranges",
+      "complexity": {
+        "time": "O(k * m)",
+        "space": "O(k)"
+      },
+      "test_cases": [
+        {
+          "name": "perturbation_analysis",
+          "expected": "stability metrics"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "ill_conditioned",
+          "handling": "identify problem cases"
+        }
+      ]
+    },
+    {
+      "id": "analyze_convergence_rates",
+      "name": "Analyze Convergence Rates",
+      "category": "complexity_analysis",
+      "description": "Analyze convergence rates for iterative operations",
+      "complexity": {
+        "time": "O(k * T)",
+        "space": "O(T)"
+      },
+      "test_cases": [
+        {
+          "name": "gradient_descent",
+          "expected": "convergence order"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "non_convex",
+          "handling": "multiple starts"
+        }
+      ]
+    },
+    {
+      "id": "select_model_by_distance",
+      "name": "Select Model by Distance Range",
+      "category": "model_selection",
+      "description": "Recommend model based on expected distance range",
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      },
+      "test_cases": [
+        {
+          "name": "short_distances",
+          "expected": "recommend Poincar\u00e9"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "unknown_range",
+          "handling": "provide heuristic"
+        }
+      ]
+    },
+    {
+      "id": "select_model_by_dimension",
+      "name": "Select Model by Dimension",
+      "category": "model_selection",
+      "description": "Recommend model based on dimensionality",
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      },
+      "test_cases": [
+        {
+          "name": "high_dimension",
+          "expected": "recommend Lorentz"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "moderate_dimension",
+          "handling": "consider other factors"
+        }
+      ]
+    },
+    {
+      "id": "select_model_by_operation",
+      "name": "Select Model by Operation Type",
+      "category": "model_selection",
+      "description": "Recommend model based on dominant operation types",
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      },
+      "test_cases": [
+        {
+          "name": "distance_heavy",
+          "expected": "model recommendation"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "mixed_operations",
+          "handling": "weighted decision"
+        }
+      ]
+    },
+    {
+      "id": "adaptive_model_selection",
+      "name": "Adaptive Model Selection",
+      "category": "model_selection",
+      "description": "Dynamically select model based on runtime performance",
+      "complexity": {
+        "time": "O(k)",
+        "space": "O(k)"
+      },
+      "test_cases": [
+        {
+          "name": "adaptive_switching",
+          "expected": "improved performance"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "switching_overhead",
+          "handling": "amortize cost"
+        }
+      ]
+    },
+    {
+      "id": "profile_operation_breakdown",
+      "name": "Profile Operation Breakdown",
+      "category": "profiling",
+      "description": "Detailed profiling of time spent in each sub-operation",
+      "complexity": {
+        "time": "O(k * m)",
+        "space": "O(m)"
+      },
+      "test_cases": [
+        {
+          "name": "identify_bottlenecks",
+          "expected": "profiling report"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "profiling_overhead",
+          "handling": "measure separately"
+        }
+      ]
+    },
+    {
+      "id": "profile_memory_usage",
+      "name": "Profile Memory Usage",
+      "category": "profiling",
+      "description": "Track memory allocation patterns and peak usage",
+      "complexity": {
+        "time": "O(k)",
+        "space": "O(k)"
+      },
+      "test_cases": [
+        {
+          "name": "memory_leaks",
+          "expected": "clean allocation"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "fragmentation",
+          "handling": "track over time"
+        }
+      ]
+    },
+    {
+      "id": "generate_performance_report",
+      "name": "Generate Performance Report",
+      "category": "profiling",
+      "description": "Generate comprehensive performance comparison report",
+      "complexity": {
+        "time": "O(k)",
+        "space": "O(k)"
+      },
+      "test_cases": [
+        {
+          "name": "full_report",
+          "expected": "detailed comparison"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "missing_data",
+          "handling": "partial report"
+        }
+      ]
+    }
+  ]
+}
