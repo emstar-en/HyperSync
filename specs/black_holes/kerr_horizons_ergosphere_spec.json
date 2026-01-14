@@ -1,0 +1,529 @@
+{
+  "specification": {
+    "name": "Kerr Horizons and Ergosphere Operations",
+    "version": "1.0.0",
+    "description": "Operations for event horizons, ergosphere, and thermodynamic properties of Kerr rotating black holes in HyperSync Core tier.",
+    "language_agnostic": true,
+    "format": "STUNIR",
+    "tier_availability": "Core (Free)",
+    "total_operations": 5,
+    "complexity_target": "O(1)"
+  },
+  "mathematical_foundations": {
+    "outer_horizon": "r_+ = M + √(M² - a²) (event horizon)",
+    "inner_horizon": "r_- = M - √(M² - a²) (Cauchy horizon)",
+    "ergosphere_boundary": "r_ergo(θ) = M + √(M² - a²cos²θ)",
+    "horizon_area": "A_H = 4π(r_+² + a²) = 8πM(M + √(M² - a²))",
+    "hawking_temperature": "T_H = (r_+ - r_-)/(4π(r_+² + a²)) = √(M² - a²)/(4πM(M + √(M² - a²)))",
+    "bekenstein_hawking_entropy": "S_BH = A_H/(4G) = πM(M + √(M² - a²))/G",
+    "irreducible_mass": "M_irr = √((M² + √(M⁴ - J²))/(2)) where J = aM",
+    "horizon_angular_velocity": "Ω_H = a/(2Mr_+) = a/(2M(M + √(M² - a²)))"
+  },
+  "operations": [
+    {
+      "id": "kerr_004",
+      "name": "check_ergosphere_region",
+      "description": "Determine if a given point is inside the ergosphere (between event horizon and ergosphere boundary). In the ergosphere, no observer can remain stationary.",
+      "category": "ergosphere_operations",
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      },
+      "parameters": {
+        "r": {
+          "type": "float",
+          "description": "Boyer-Lindquist radial coordinate",
+          "constraints": "r > 0"
+        },
+        "theta": {
+          "type": "float",
+          "description": "Boyer-Lindquist polar angle",
+          "constraints": "0 <= theta <= pi"
+        },
+        "M": {
+          "type": "float",
+          "description": "Black hole mass",
+          "constraints": "M > 0"
+        },
+        "a": {
+          "type": "float",
+          "description": "Spin parameter (0 ≤ a ≤ M)",
+          "constraints": "0 <= a <= M"
+        }
+      },
+      "returns": {
+        "in_ergosphere": {
+          "type": "bool",
+          "description": "True if point is in ergosphere"
+        },
+        "r_plus": {
+          "type": "float",
+          "description": "Outer event horizon radius r_+"
+        },
+        "r_ergo": {
+          "type": "float",
+          "description": "Ergosphere boundary at this θ"
+        },
+        "static_limit_crossed": {
+          "type": "bool",
+          "description": "True if beyond static limit (r > r_ergo)"
+        }
+      },
+      "mathematical_formula": "in_ergosphere = (r_+ < r < r_ergo(θ)) where r_ergo(θ) = M + √(M² - a²cos²θ)",
+      "implementation_notes": [
+        "Ergosphere exists only when a > 0 (rotating black hole)",
+        "Ergosphere is oblate: thickest at equator, vanishes at poles",
+        "In ergosphere, g_tt > 0 (timelike Killing vector becomes spacelike)",
+        "Energy extraction possible only in ergosphere (Penrose process)",
+        "For Schwarzschild (a=0), ergosphere does not exist"
+      ],
+      "test_cases": [
+        {
+          "input": {"r": 1.8, "theta": 1.5708, "M": 1.0, "a": 0.8},
+          "output": {"in_ergosphere": true, "r_plus": 1.6, "r_ergo": 1.8, "static_limit_crossed": false},
+          "description": "Inside ergosphere at equator"
+        },
+        {
+          "input": {"r": 2.5, "theta": 1.5708, "M": 1.0, "a": 0.8},
+          "output": {"in_ergosphere": false, "r_plus": 1.6, "r_ergo": 1.8, "static_limit_crossed": true},
+          "description": "Outside ergosphere at equator"
+        },
+        {
+          "input": {"r": 1.65, "theta": 0.0, "M": 1.0, "a": 0.8},
+          "output": {"in_ergosphere": false, "r_plus": 1.6, "r_ergo": 1.6, "static_limit_crossed": true},
+          "description": "At pole (ergosphere vanishes: r_ergo = r_+)"
+        },
+        {
+          "input": {"r": 2.0, "theta": 0.7854, "M": 1.0, "a": 0.9},
+          "output": {"in_ergosphere": "verify_45deg", "r_plus": 1.436, "r_ergo": "~1.73", "static_limit_crossed": "verify"},
+          "description": "Intermediate angle θ = 45°"
+        },
+        {
+          "input": {"r": 2.0, "theta": 1.5708, "M": 1.0, "a": 0.0},
+          "output": {"in_ergosphere": false, "r_plus": 1.0, "r_ergo": 1.0, "static_limit_crossed": true},
+          "description": "Schwarzschild (a=0): no ergosphere"
+        }
+      ],
+      "edge_cases": [
+        {
+          "input": {"r": 1.0, "theta": 1.5708, "M": 1.0, "a": 1.0},
+          "output": {"in_ergosphere": false, "r_plus": 1.0, "r_ergo": 2.0, "static_limit_crossed": false},
+          "description": "Extremal Kerr at horizon: r = r_+ but below r_ergo, technically in ergosphere but at horizon"
+        },
+        {
+          "input": {"r": 1.5, "theta": 1.5708, "M": 1.0, "a": 1.0},
+          "output": {"in_ergosphere": true, "r_plus": 1.0, "r_ergo": 2.0, "static_limit_crossed": false},
+          "description": "Extremal Kerr: maximum ergosphere thickness (r_+ = M, r_ergo = 2M at equator)"
+        },
+        {
+          "input": {"r": 1.6, "theta": 1.5708, "M": 1.0, "a": 0.8},
+          "output": {"in_ergosphere": false, "r_plus": 1.6, "r_ergo": 1.8, "static_limit_crossed": false},
+          "description": "Exactly at event horizon r = r_+ (boundary case)"
+        }
+      ]
+    },
+    {
+      "id": "kerr_021",
+      "name": "compute_horizon_area_kerr",
+      "description": "Compute event horizon surface area and Bekenstein-Hawking entropy for Kerr black hole. Horizon area is related to irreducible mass.",
+      "category": "thermodynamics",
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      },
+      "parameters": {
+        "M": {
+          "type": "float",
+          "description": "Black hole mass",
+          "constraints": "M > 0"
+        },
+        "a": {
+          "type": "float",
+          "description": "Spin parameter",
+          "constraints": "0 <= a <= M"
+        },
+        "G": {
+          "type": "float",
+          "description": "Gravitational constant (default: 1 in geometric units)",
+          "default": 1.0
+        },
+        "c": {
+          "type": "float",
+          "description": "Speed of light (default: 1 in geometric units)",
+          "default": 1.0
+        },
+        "hbar": {
+          "type": "float",
+          "description": "Reduced Planck constant (default: 1 in geometric units)",
+          "default": 1.0
+        }
+      },
+      "returns": {
+        "A_H": {
+          "type": "float",
+          "description": "Event horizon area A_H = 4π(r_+² + a²)"
+        },
+        "S_BH": {
+          "type": "float",
+          "description": "Bekenstein-Hawking entropy S_BH = A_H/(4G) (in units of k_B)"
+        },
+        "r_plus": {
+          "type": "float",
+          "description": "Outer horizon radius r_+ = M + √(M² - a²)"
+        },
+        "specific_entropy": {
+          "type": "float",
+          "description": "Entropy per unit mass S_BH/M"
+        }
+      },
+      "mathematical_formula": "A_H = 4π(r_+² + a²) = 8πM(M + √(M² - a²)), S_BH = A_H/(4G)",
+      "implementation_notes": [
+        "Horizon area never decreases (Hawking's area theorem)",
+        "Maximum entropy for fixed mass: S_max = 4πM² (Schwarzschild, a=0)",
+        "Minimum entropy for fixed mass: S_min = 4πM² (extremal, a=M)",
+        "Entropy measures number of microstates (holographic principle)",
+        "Area quantization in loop quantum gravity: A = 8πγℓ_P² ∑_i √(j_i(j_i+1))"
+      ],
+      "test_cases": [
+        {
+          "input": {"M": 1.0, "a": 0.0, "G": 1.0, "c": 1.0, "hbar": 1.0},
+          "output": {"A_H": 50.265, "S_BH": 12.566, "r_plus": 1.0, "specific_entropy": 12.566},
+          "description": "Schwarzschild limit: A_H = 16πM²"
+        },
+        {
+          "input": {"M": 1.0, "a": 0.8, "G": 1.0, "c": 1.0, "hbar": 1.0},
+          "output": {"A_H": "~40.21", "S_BH": "~10.05", "r_plus": 1.6, "specific_entropy": "~10.05"},
+          "description": "Fast rotating Kerr (a = 0.8M)"
+        },
+        {
+          "input": {"M": 1.0, "a": 0.5, "G": 1.0, "c": 1.0, "hbar": 1.0},
+          "output": {"A_H": "~44.40", "S_BH": "~11.10", "r_plus": "~1.866", "specific_entropy": "~11.10"},
+          "description": "Moderate spin (a = 0.5M)"
+        },
+        {
+          "input": {"M": 2.0, "a": 1.0, "G": 1.0, "c": 1.0, "hbar": 1.0},
+          "output": {"A_H": "compute_exact", "S_BH": "compute_exact", "r_plus": "~2.866", "specific_entropy": "verify"},
+          "description": "Different mass scale (M = 2, a = 0.5M)"
+        },
+        {
+          "input": {"M": 1.0, "a": 0.99, "G": 1.0, "c": 1.0, "hbar": 1.0},
+          "output": {"A_H": "~37.77", "S_BH": "~9.44", "r_plus": "~1.141", "specific_entropy": "~9.44"},
+          "description": "Near-extremal Kerr (a ≈ M)"
+        }
+      ],
+      "edge_cases": [
+        {
+          "input": {"M": 1.0, "a": 1.0, "G": 1.0, "c": 1.0, "hbar": 1.0},
+          "output": {"A_H": "37.699", "S_BH": "9.425", "r_plus": 1.0, "specific_entropy": 9.425},
+          "description": "Extremal Kerr (a = M): A_H = 8πM² (minimum area for given M)"
+        },
+        {
+          "input": {"M": 1e10, "a": 0.0, "G": 1.0, "c": 1.0, "hbar": 1.0},
+          "output": {"A_H": "~5.027e21", "S_BH": "~1.257e21", "r_plus": 1e10, "specific_entropy": "~1.257e11"},
+          "description": "Supermassive black hole (M ~ 10^10 solar masses)"
+        },
+        {
+          "input": {"M": 1.0, "a": 0.0, "G": 6.674e-11, "c": 2.998e8, "hbar": 1.055e-34},
+          "output": {"A_H": "verify_SI_units", "S_BH": "verify_SI_units", "r_plus": "verify", "specific_entropy": "verify"},
+          "description": "SI units (non-geometric)"
+        }
+      ]
+    },
+    {
+      "id": "kerr_022",
+      "name": "compute_hawking_temperature_kerr",
+      "description": "Compute Hawking temperature of Kerr black hole. Rotating black holes radiate with temperature inversely proportional to mass and spin.",
+      "category": "thermodynamics",
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      },
+      "parameters": {
+        "M": {
+          "type": "float",
+          "description": "Black hole mass",
+          "constraints": "M > 0"
+        },
+        "a": {
+          "type": "float",
+          "description": "Spin parameter",
+          "constraints": "0 <= a <= M"
+        },
+        "G": {
+          "type": "float",
+          "description": "Gravitational constant (default: 1)",
+          "default": 1.0
+        },
+        "c": {
+          "type": "float",
+          "description": "Speed of light (default: 1)",
+          "default": 1.0
+        },
+        "hbar": {
+          "type": "float",
+          "description": "Reduced Planck constant (default: 1)",
+          "default": 1.0
+        },
+        "k_B": {
+          "type": "float",
+          "description": "Boltzmann constant (default: 1)",
+          "default": 1.0
+        }
+      },
+      "returns": {
+        "T_H": {
+          "type": "float",
+          "description": "Hawking temperature"
+        },
+        "surface_gravity": {
+          "type": "float",
+          "description": "Surface gravity κ at event horizon"
+        },
+        "evaporation_time": {
+          "type": "float",
+          "description": "Estimated evaporation time (assuming Schwarzschild approximation)"
+        },
+        "power_radiated": {
+          "type": "float",
+          "description": "Stefan-Boltzmann power P ∝ A_H·T_H⁴"
+        }
+      },
+      "mathematical_formula": "T_H = (ℏc³/(8πGMk_B)) · √(M² - a²)/(M + √(M² - a²)) = κ/(2π) where κ = √(M² - a²)/(2M(M + √(M² - a²)))",
+      "implementation_notes": [
+        "Temperature decreases with increasing spin (for fixed M)",
+        "Extremal Kerr (a=M) has T_H = 0 (no Hawking radiation)",
+        "Schwarzschild: T_H = ℏc³/(8πGMk_B)",
+        "Evaporation time: τ ≈ (5120πG²M³)/(ℏc⁴) (Schwarzschild approximation)",
+        "Surface gravity: κ = (r_+ - r_-)/(2(r_+² + a²))"
+      ],
+      "test_cases": [
+        {
+          "input": {"M": 1.0, "a": 0.0, "G": 1.0, "c": 1.0, "hbar": 1.0, "k_B": 1.0},
+          "output": {"T_H": 0.03979, "surface_gravity": 0.25, "evaporation_time": "~2.03e4", "power_radiated": "verify"},
+          "description": "Schwarzschild: T_H = 1/(8πM)"
+        },
+        {
+          "input": {"M": 1.0, "a": 0.8, "G": 1.0, "c": 1.0, "hbar": 1.0, "k_B": 1.0},
+          "output": {"T_H": "~0.0186", "surface_gravity": "~0.117", "evaporation_time": ">2e4", "power_radiated": "verify"},
+          "description": "Fast rotating Kerr (a=0.8M): temperature reduced"
+        },
+        {
+          "input": {"M": 1.0, "a": 0.5, "G": 1.0, "c": 1.0, "hbar": 1.0, "k_B": 1.0},
+          "output": {"T_H": "~0.0329", "surface_gravity": "~0.207", "evaporation_time": "verify", "power_radiated": "verify"},
+          "description": "Moderate spin (a=0.5M)"
+        },
+        {
+          "input": {"M": 1e10, "a": 0.0, "G": 1.0, "c": 1.0, "hbar": 1.0, "k_B": 1.0},
+          "output": {"T_H": "~3.979e-12", "surface_gravity": "~2.5e-11", "evaporation_time": "~2.03e34", "power_radiated": "verify"},
+          "description": "Supermassive black hole (very cold)"
+        },
+        {
+          "input": {"M": 1.0, "a": 0.99, "G": 1.0, "c": 1.0, "hbar": 1.0, "k_B": 1.0},
+          "output": {"T_H": "~0.00315", "surface_gravity": "~0.0198", "evaporation_time": ">>2e4", "power_radiated": "verify"},
+          "description": "Near-extremal Kerr (very low temperature)"
+        }
+      ],
+      "edge_cases": [
+        {
+          "input": {"M": 1.0, "a": 1.0, "G": 1.0, "c": 1.0, "hbar": 1.0, "k_B": 1.0},
+          "output": {"T_H": 0.0, "surface_gravity": 0.0, "evaporation_time": "infinity", "power_radiated": 0.0},
+          "description": "Extremal Kerr (a=M): zero temperature, no evaporation"
+        },
+        {
+          "input": {"M": 1e-8, "a": 0.0, "G": 1.0, "c": 1.0, "hbar": 1.0, "k_B": 1.0},
+          "output": {"T_H": "~3.979e6", "surface_gravity": "~2.5e7", "evaporation_time": "~2.03e-16", "power_radiated": "verify"},
+          "description": "Micro black hole (very hot, rapid evaporation)"
+        },
+        {
+          "input": {"M": 1.0, "a": 0.0, "G": 6.674e-11, "c": 2.998e8, "hbar": 1.055e-34, "k_B": 1.381e-23},
+          "output": {"T_H": "verify_SI", "surface_gravity": "verify_SI", "evaporation_time": "verify_SI", "power_radiated": "verify_SI"},
+          "description": "SI units (non-geometric)"
+        }
+      ]
+    },
+    {
+      "id": "kerr_023",
+      "name": "compute_irreducible_mass",
+      "description": "Compute irreducible mass M_irr of Kerr black hole. This is the minimum mass that remains after extracting maximum rotational energy via Penrose process.",
+      "category": "thermodynamics",
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      },
+      "parameters": {
+        "M": {
+          "type": "float",
+          "description": "Black hole mass",
+          "constraints": "M > 0"
+        },
+        "a": {
+          "type": "float",
+          "description": "Spin parameter",
+          "constraints": "0 <= a <= M"
+        }
+      },
+      "returns": {
+        "M_irr": {
+          "type": "float",
+          "description": "Irreducible mass M_irr = √((M² + √(M⁴ - J²))/2) where J = aM"
+        },
+        "extractable_energy": {
+          "type": "float",
+          "description": "Maximum extractable energy E_max = M - M_irr"
+        },
+        "extraction_efficiency": {
+          "type": "float",
+          "description": "Efficiency η = (M - M_irr)/M (fraction of mass convertible to energy)"
+        },
+        "J": {
+          "type": "float",
+          "description": "Angular momentum J = aM"
+        }
+      },
+      "mathematical_formula": "M_irr = √(A_H/(16π)) = √((r_+² + a²)/2) where r_+ = M + √(M² - a²)",
+      "implementation_notes": [
+        "M_irr is related to horizon area: A_H = 16πM_irr²",
+        "M_irr never decreases (consequence of area theorem)",
+        "Maximum extraction: η_max = 1 - 1/√2 ≈ 29.3% (extremal Kerr)",
+        "Schwarzschild: M_irr = M (no extractable rotational energy)",
+        "After maximum extraction, black hole becomes Schwarzschild with mass M_irr"
+      ],
+      "test_cases": [
+        {
+          "input": {"M": 1.0, "a": 0.0},
+          "output": {"M_irr": 1.0, "extractable_energy": 0.0, "extraction_efficiency": 0.0, "J": 0.0},
+          "description": "Schwarzschild: no rotational energy"
+        },
+        {
+          "input": {"M": 1.0, "a": 0.8},
+          "output": {"M_irr": "~0.8", "extractable_energy": "~0.2", "extraction_efficiency": "~0.2", "J": 0.8},
+          "description": "Fast rotating Kerr (a=0.8M): 20% extractable"
+        },
+        {
+          "input": {"M": 1.0, "a": 0.5},
+          "output": {"M_irr": "~0.933", "extractable_energy": "~0.067", "extraction_efficiency": "~0.067", "J": 0.5},
+          "description": "Moderate spin (a=0.5M): 6.7% extractable"
+        },
+        {
+          "input": {"M": 10.0, "a": 5.0},
+          "output": {"M_irr": "~9.33", "extractable_energy": "~0.67", "extraction_efficiency": "~0.067", "J": 50.0},
+          "description": "Scaled up mass (M=10, a=0.5M)"
+        },
+        {
+          "input": {"M": 1.0, "a": 0.99},
+          "output": {"M_irr": "~0.717", "extractable_energy": "~0.283", "extraction_efficiency": "~0.283", "J": 0.99},
+          "description": "Near-extremal: approaching 29% efficiency"
+        }
+      ],
+      "edge_cases": [
+        {
+          "input": {"M": 1.0, "a": 1.0},
+          "output": {"M_irr": 0.707, "extractable_energy": 0.293, "extraction_efficiency": 0.293, "J": 1.0},
+          "description": "Extremal Kerr: maximum efficiency η = 1 - 1/√2 ≈ 29.3%"
+        },
+        {
+          "input": {"M": 1e10, "a": 1e10},
+          "output": {"M_irr": "~7.071e9", "extractable_energy": "~2.929e9", "extraction_efficiency": "~0.293", "J": "1e20"},
+          "description": "Extremal supermassive black hole"
+        },
+        {
+          "input": {"M": 1.0, "a": 1e-10},
+          "output": {"M_irr": "~1.0", "extractable_energy": "~0", "extraction_efficiency": "~0", "J": "1e-10"},
+          "description": "Nearly Schwarzschild (a ≈ 0)"
+        }
+      ]
+    },
+    {
+      "id": "kerr_024",
+      "name": "compute_horizon_angular_velocity",
+      "description": "Compute angular velocity Ω_H of the event horizon. The horizon rotates with constant angular velocity, dragging spacetime around it.",
+      "category": "thermodynamics",
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      },
+      "parameters": {
+        "M": {
+          "type": "float",
+          "description": "Black hole mass",
+          "constraints": "M > 0"
+        },
+        "a": {
+          "type": "float",
+          "description": "Spin parameter",
+          "constraints": "0 <= a <= M"
+        }
+      },
+      "returns": {
+        "Omega_H": {
+          "type": "float",
+          "description": "Horizon angular velocity Ω_H = a/(2Mr_+)"
+        },
+        "rotation_period": {
+          "type": "float",
+          "description": "Horizon rotation period T = 2π/Ω_H (if Ω_H > 0)"
+        },
+        "r_plus": {
+          "type": "float",
+          "description": "Outer horizon radius r_+"
+        },
+        "linear_velocity_equator": {
+          "type": "float",
+          "description": "Linear velocity at horizon equator v = Ω_H·r_+"
+        }
+      },
+      "mathematical_formula": "Ω_H = a/(2Mr_+) = a/(2M(M + √(M² - a²))), horizon Killing vector: ξ = ∂_t + Ω_H ∂_φ",
+      "implementation_notes": [
+        "Ω_H = 0 for Schwarzschild (non-rotating)",
+        "Ω_H increases with spin parameter a",
+        "Maximum: Ω_H = 1/(4M) for extremal Kerr (a=M)",
+        "Horizon is Killing horizon: (∂_t + Ω_H ∂_φ) is null at r_+",
+        "Frame dragging forces all observers near horizon to co-rotate"
+      ],
+      "test_cases": [
+        {
+          "input": {"M": 1.0, "a": 0.0},
+          "output": {"Omega_H": 0.0, "rotation_period": "infinity", "r_plus": 1.0, "linear_velocity_equator": 0.0},
+          "description": "Schwarzschild: no rotation"
+        },
+        {
+          "input": {"M": 1.0, "a": 0.8},
+          "output": {"Omega_H": "~0.25", "rotation_period": "~25.13", "r_plus": 1.6, "linear_velocity_equator": "~0.4"},
+          "description": "Fast rotating Kerr (a=0.8M)"
+        },
+        {
+          "input": {"M": 1.0, "a": 0.5},
+          "output": {"Omega_H": "~0.134", "rotation_period": "~46.88", "r_plus": "~1.866", "linear_velocity_equator": "~0.25"},
+          "description": "Moderate spin (a=0.5M)"
+        },
+        {
+          "input": {"M": 10.0, "a": 5.0},
+          "output": {"Omega_H": "~0.0134", "rotation_period": "~468.8", "r_plus": "~18.66", "linear_velocity_equator": "~0.25"},
+          "description": "Scaled mass (same a/M ratio)"
+        },
+        {
+          "input": {"M": 1.0, "a": 0.99},
+          "output": {"Omega_H": "~0.217", "rotation_period": "~28.95", "r_plus": "~1.141", "linear_velocity_equator": "~0.248"},
+          "description": "Near-extremal Kerr"
+        }
+      ],
+      "edge_cases": [
+        {
+          "input": {"M": 1.0, "a": 1.0},
+          "output": {"Omega_H": 0.5, "rotation_period": 12.566, "r_plus": 1.0, "linear_velocity_equator": 0.5},
+          "description": "Extremal Kerr: Ω_H = 1/(4M), fastest possible rotation"
+        },
+        {
+          "input": {"M": 1e10, "a": 0.0},
+          "output": {"Omega_H": 0.0, "rotation_period": "infinity", "r_plus": 1e10, "linear_velocity_equator": 0.0},
+          "description": "Supermassive Schwarzschild"
+        },
+        {
+          "input": {"M": 1e-8, "a": 1e-8},
+          "output": {"Omega_H": 5e7, "rotation_period": "~1.257e-7", "r_plus": 1e-8, "linear_velocity_equator": 0.5},
+          "description": "Extremal micro black hole (rapid rotation)"
+        }
+      ]
+    }
+  ]
+}

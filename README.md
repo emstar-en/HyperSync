@@ -5,11 +5,11 @@
 [![Status](https://img.shields.io/badge/Status-Alpha-yellow)](https://github.com/emstar-en/HyperSync)
 
 > **[WARNING: AI] [ALPHA] [Patent Pending] [CORE]**  
-> Geometry-aware operations for distributed systems with **255 Core tier operations** (Phase 5A Complete) - all O(n) or O(n²).
+> Geometry-aware operations for distributed systems with **281 Core tier operations** (Phase 5B Complete) - all O(n) or O(n²).
 
 ## 🚀 Overview
 
-HyperSync Core is an open-source library providing **255 high-performance geometric operations** for distributed systems, consensus mechanisms, security, and machine learning. Built on rigorous non-Euclidean geometry (hyperbolic and spherical spaces), HyperSync Core enables:
+HyperSync Core is an open-source library providing **281 high-performance geometric operations** for distributed systems, consensus mechanisms, security, and machine learning. Built on rigorous non-Euclidean geometry (hyperbolic and spherical spaces) and general relativity, HyperSync Core enables:
 
 - **1000x faster Byzantine consensus** (Spherical BFT)
 - **Geometric encryption** using hyperbolic distance
@@ -35,7 +35,7 @@ The **Dual Model System** provides seamless integration between Lorentz (hyperbo
 - Dual model interpolation (15): Geodesic interpolation, Bézier curves, splines, MCMC sampling
 - Dual model transformations (17): Coordinate changes, basis transformations, isometries, conformal mappings
 
-**Core Tier Status: 255/357 operations (71% complete)**
+**Core Tier Status: 281/357 operations (79% complete)**
 
 ### Phase 3 Complete: Edge Case Handling (18/18 operations) ✅
 
@@ -139,7 +139,71 @@ Key features:
 - Astrophysical applications: accretion disks, gravitational lensing, tidal disruption events
 - Comprehensive test cases with known analytical solutions (ISCO, photon sphere, etc.)
 
-## ✨ Core Tier Features (255 Operations)
+### Phase 5B Complete: Kerr Black Hole Geometries (26/26 operations) ✅ **NEW**
+
+The **Kerr Black Hole Geometries** component completes all 33 Kerr operations (7 from Phase 1 + 26 new), providing comprehensive support for rotating black hole physics with spin parameter a (angular momentum per unit mass). Kerr black holes include frame dragging, ergosphere, and energy extraction mechanisms.
+
+**New Operations (26):**
+1. **Advanced Metrics (6 operations)**: Coordinate systems and curvature tensors
+   - `boyer_lindquist_to_kerr_schild`: Transform to Kerr-Schild coordinates (regular at horizon) (O(1))
+   - `kerr_schild_to_boyer_lindquist`: Inverse transformation to Boyer-Lindquist (O(1))
+   - `compute_riemann_tensor`: Full Riemann curvature tensor for Kerr (20 independent components) (O(1))
+   - `compute_kretschmann_scalar_kerr`: Kretschmann invariant K = R_μνρσ R^μνρσ (O(1))
+   - `compute_distance_kerr`: Spacetime interval between events (O(1))
+   - `compute_geodesic_distance_kerr`: Geodesic distance along path (O(n))
+
+2. **Horizons & Ergosphere (5 operations)**: Event horizons and ergosphere properties
+   - `check_ergosphere_region`: Determine if point is in ergosphere (O(1))
+   - `compute_horizon_area_kerr`: Event horizon area and Bekenstein-Hawking entropy (O(1))
+   - `compute_hawking_temperature_kerr`: Hawking temperature (decreases with spin) (O(1))
+   - `compute_irreducible_mass`: Minimum mass after maximum energy extraction (O(1))
+   - `compute_horizon_angular_velocity`: Horizon angular velocity Ω_H = a/(2Mr_+) (O(1))
+
+3. **Advanced Geodesics (5 operations)**: Orbital mechanics and perturbations
+   - `compute_carter_constant`: Fourth constant of motion Q (separates geodesic equations) (O(1))
+   - `compute_equatorial_circular_orbit`: Properties of circular orbits in equatorial plane (O(1))
+   - `compute_isco_radius`: Innermost stable circular orbit (ranges from M to 9M) (O(1))
+   - `compute_principal_null_geodesics`: Horizon generators (null Killing vector) (O(n))
+   - `compute_quasi_normal_modes`: Ringdown frequencies for black hole perturbations (O(1))
+
+4. **Frame Dragging & Physical Effects (4 operations)**: Lense-Thirring precession and relativistic phenomena
+   - `compute_zamo_properties`: Zero Angular Momentum Observer frame (co-rotates with spacetime) (O(1))
+   - `compute_lense_thirring_precession`: Gyroscope precession due to frame dragging (O(1))
+   - `compute_gravitational_redshift_kerr`: Redshift including frame dragging effects (O(1))
+   - `compute_tidal_force_kerr`: Tidal forces with rotational corrections (O(1))
+
+5. **Energy Extraction (3 operations)**: Penrose process and electromagnetic mechanisms
+   - `compute_penrose_process_energy`: Energy extraction from ergosphere (up to 29.3%) (O(1))
+   - `compute_blandford_znajek_power`: Electromagnetic power from rotating BH (AGN jets) (O(1))
+   - `compute_superradiance_amplification`: Wave amplification when ω < mΩ_H (O(1))
+
+6. **Gravitational Lensing (3 operations)**: Light deflection and black hole shadow
+   - `compute_light_deflection_kerr`: Gravitational deflection with rotation corrections (O(n))
+   - `compute_shadow_boundary`: Black hole shadow shape (D-shaped for edge-on) (O(n))
+   - `compute_photon_ring_properties`: Photon ring structure (Event Horizon Telescope) (O(n))
+
+**Kerr Suite Now Complete (33/33 operations):**
+- Phase 1 (7 operations): Basic Kerr metric, horizons, ergosphere, frame dragging, Christoffel symbols, geodesics, photon sphere
+- Phase 5B (26 operations): Advanced metrics, horizons, geodesics, frame dragging, energy extraction, gravitational lensing
+
+**Black Hole Geometries Now 100% Complete (65/65 operations):**
+- Schwarzschild (non-rotating): 32 operations
+- Kerr (rotating): 33 operations
+- Total black hole operations: 65/65 ✅
+
+Key features:
+- Complete rotating black hole physics (Kerr solution to Einstein equations)
+- Frame dragging: spacetime rotation around spinning black hole (Lense-Thirring effect)
+- Ergosphere: region where no observer can remain stationary (frame dragging mandatory)
+- Energy extraction: Penrose process (29.3% efficiency for extremal Kerr), Blandford-Znajek mechanism (AGN jets)
+- Superradiance: wave amplification extracting rotational energy (black hole bomb)
+- Black hole shadow: Event Horizon Telescope observations (M87*, Sgr A*)
+- Carter constant: fourth integral of motion enabling geodesic separation
+- Multiple coordinate systems: Boyer-Lindquist (standard), Kerr-Schild (horizon-regular)
+- Extremal Kerr: a=M (maximum spin), ISCO at horizon, zero Hawking temperature
+- Astrophysical applications: quasar jets, X-ray binaries, gravitational waves, galactic centers
+
+## ✨ Core Tier Features (281 Operations)
 
 ### 🔄 Dual Model System (167 operations) ✅ **NEW**
 
@@ -436,7 +500,8 @@ HyperSync/
   - **Security**: [adversarial_sinks_spec.json](specs/security/adversarial_sinks_spec.json)
   - **Geometry**: [cosmological_spaces_spec.json](specs/geometry/cosmological_spaces_spec.json)
   - **Consensus**: [geometric_bft_advanced_spec.json](specs/consensus/geometric_bft_advanced_spec.json)
-  - **Black Holes**: [schwarzschild_horizons_geodesics_spec.json](specs/black_holes/schwarzschild_horizons_geodesics_spec.json), [schwarzschild_physical_effects_spec.json](specs/black_holes/schwarzschild_physical_effects_spec.json), [schwarzschild_coordinate_transforms_spec.json](specs/black_holes/schwarzschild_coordinate_transforms_spec.json), [schwarzschild_orbital_mechanics_spec.json](specs/black_holes/schwarzschild_orbital_mechanics_spec.json), [schwarzschild_lensing_spec.json](specs/black_holes/schwarzschild_lensing_spec.json), [schwarzschild_thermodynamics_spec.json](specs/black_holes/schwarzschild_thermodynamics_spec.json)
+  - **Black Holes - Schwarzschild**: [schwarzschild_horizons_geodesics_spec.json](specs/black_holes/schwarzschild_horizons_geodesics_spec.json), [schwarzschild_physical_effects_spec.json](specs/black_holes/schwarzschild_physical_effects_spec.json), [schwarzschild_coordinate_transforms_spec.json](specs/black_holes/schwarzschild_coordinate_transforms_spec.json), [schwarzschild_orbital_mechanics_spec.json](specs/black_holes/schwarzschild_orbital_mechanics_spec.json), [schwarzschild_lensing_spec.json](specs/black_holes/schwarzschild_lensing_spec.json), [schwarzschild_thermodynamics_spec.json](specs/black_holes/schwarzschild_thermodynamics_spec.json)
+  - **Black Holes - Kerr**: [kerr_metrics_advanced_spec.json](specs/black_holes/kerr_metrics_advanced_spec.json), [kerr_horizons_ergosphere_spec.json](specs/black_holes/kerr_horizons_ergosphere_spec.json), [kerr_geodesics_advanced_spec.json](specs/black_holes/kerr_geodesics_advanced_spec.json), [kerr_frame_dragging_spec.json](specs/black_holes/kerr_frame_dragging_spec.json), [kerr_energy_extraction_spec.json](specs/black_holes/kerr_energy_extraction_spec.json), [kerr_gravitational_lensing_spec.json](specs/black_holes/kerr_gravitational_lensing_spec.json)
 
 ## 🧪 Testing
 
