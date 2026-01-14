@@ -1,0 +1,606 @@
+{
+  "specification": {
+    "name": "Cosmological Spaces - De Sitter and Anti-de Sitter Geometries",
+    "version": "1.0.0",
+    "description": "Geodesic distance computations in cosmological spacetimes with non-zero cosmological constant: de Sitter (dS) space with positive curvature and Anti-de Sitter (AdS) space with negative curvature. Essential for holographic duality, quantum gravity, and cosmological applications.",
+    "component": "cosmological",
+    "tier": "CORE",
+    "total_operations": 2,
+    "format": "STUNIR",
+    "created": "2026-01-14",
+    "category": "Geometry"
+  },
+  "overview": {
+    "purpose": "Provide geometric operations for cosmological spacetimes with cosmological constant Λ",
+    "key_concepts": [
+      "De Sitter space: maximally symmetric spacetime with positive Λ (expanding universe)",
+      "Anti-de Sitter space: maximally symmetric spacetime with negative Λ (hyperbolic time)",
+      "Both are solutions to Einstein field equations with cosmological constant",
+      "AdS/CFT correspondence: AdS_n+1 ↔ CFT_n (holographic principle)",
+      "FLRW metric: general cosmological spacetime including dS and AdS as special cases"
+    ],
+    "mathematical_foundation": {
+      "einstein_equations_with_lambda": "R_μν - (1/2)R·g_μν + Λ·g_μν = 8πG·T_μν",
+      "de_sitter_metric": "ds² = -(1 - r²/L²)dt² + (1 - r²/L²)⁻¹dr² + r²dΩ² where L = √(3/Λ)",
+      "ads_metric_poincare": "ds² = (L²/z²)(−dt² + dx² + dz²) (Poincaré coordinates)",
+      "ads_metric_global": "ds² = −(1 + r²/L²)dt² + (1 + r²/L²)⁻¹dr² + r²dΩ²",
+      "cosmological_horizon": "r_c = L (de Sitter), infinite (AdS)"
+    }
+  },
+  "operations": [
+    {
+      "id": "ads_distance",
+      "name": "ads_distance",
+      "description": "Compute geodesic distance between two points in Anti-de Sitter (AdS) space using embedding coordinates or intrinsic geometry. AdS space is a Lorentzian manifold with constant negative curvature, crucial for AdS/CFT holography.",
+      "category": "Distance Operations",
+      "parameters": {
+        "point1": {
+          "type": "Point",
+          "description": "First point in AdS_n space (can be given in global, Poincaré, or embedding coordinates)",
+          "constraints": ["Must be a valid point in AdS_n manifold"]
+        },
+        "point2": {
+          "type": "Point",
+          "description": "Second point in AdS_n space",
+          "constraints": ["Must be a valid point in AdS_n manifold", "Same coordinate system as point1"]
+        },
+        "ads_radius": {
+          "type": "float",
+          "description": "AdS radius L = √(−n(n−1)/(2Λ)) characterizing curvature scale",
+          "constraints": ["L > 0"],
+          "default": 1.0
+        },
+        "dimension": {
+          "type": "int",
+          "description": "Dimension n of AdS space (AdS_n)",
+          "constraints": ["n ≥ 2"],
+          "default": 3
+        },
+        "coordinate_system": {
+          "type": "string",
+          "description": "Coordinate system used for input points",
+          "constraints": ["Must be 'global', 'poincare', or 'embedding'"],
+          "default": "global"
+        }
+      },
+      "returns": {
+        "distance": {
+          "type": "float",
+          "description": "Geodesic distance d(p₁, p₂) in AdS space",
+          "properties": {
+            "value": "float ≥ 0",
+            "units": "Same as L (typically natural units)"
+          }
+        },
+        "geodesic_info": {
+          "type": "dict",
+          "description": "Additional information about the geodesic",
+          "properties": {
+            "spacelike": "bool (true if geodesic is spacelike)",
+            "timelike": "bool (true if geodesic is timelike)",
+            "lightlike": "bool (true if geodesic is null/lightlike)",
+            "causal": "bool (true if timelike or lightlike)",
+            "coordinate_distance": "float (distance in embedding coordinates if applicable)"
+          }
+        }
+      },
+      "complexity": {
+        "time": "O(n)",
+        "space": "O(n)",
+        "explanation": "Linear in dimension for computing inner products and coordinate transformations in embedding space R^{n,2}"
+      },
+      "mathematical_formula": {
+        "ads_embedding": "AdS_n embeds in R^{n,2} with pseudo-inner product: −X₀² − X_{n+1}² + X₁² + ... + X_n² = −L²",
+        "geodesic_distance_embedding": "cosh(d/L) = −⟨X, Y⟩_L/L² where ⟨X,Y⟩_L = −X₀Y₀ − X_{n+1}Y_{n+1} + ∑X_iY_i",
+        "global_coordinates": "ds² = −(1 + r²/L²)dt² + (1 + r²/L²)⁻¹dr² + r²dΩ²_{n−2}",
+        "poincare_coordinates": "ds² = (L²/z²)(−dt² + dz² + ∑dx_i²)",
+        "distance_formula_global": "d = L·acosh(−⟨X,Y⟩_L/L²) for spacelike geodesics",
+        "distance_formula_timelike": "d = L·arccosh(−⟨X,Y⟩_L/L²) with imaginary part for timelike",
+        "chordal_distance": "D_chord = √(−⟨X−Y, X−Y⟩_L) (useful for approximations)"
+      },
+      "implementation_notes": [
+        "Prefer embedding coordinates for maximum symmetry and simplicity",
+        "Convert input coordinates to embedding coordinates if given in global or Poincaré",
+        "Compute Lorentzian inner product: ⟨X,Y⟩_L = −X₀Y₀ − X_{n+1}Y_{n+1} + ∑_{i=1}^{n−1} X_iY_i",
+        "Check sign of ⟨X,Y⟩_L to determine causal type: < −L² (spacelike), > −L² (timelike), = −L² (lightlike)",
+        "For spacelike geodesics: d = L·acosh(−⟨X,Y⟩_L/L²)",
+        "For timelike geodesics: d is imaginary or use proper time τ",
+        "For lightlike geodesics: d = ∞ or use affine parameter",
+        "Handle numerical precision: acosh argument must be ≥ 1",
+        "Coordinate conversions: Global ↔ Embedding uses hyperboloid parameterization",
+        "Poincaré coordinates cover only half of global AdS (Poincaré patch)",
+        "For AdS/CFT: boundary is at r → ∞ (global) or z → 0 (Poincaré)",
+        "Use stable numerics for large coordinates or near-boundary points"
+      ],
+      "test_cases": [
+        {
+          "name": "Distance Between Origin and Point in Global Coordinates",
+          "input": {
+            "point1": "[0.0, 0.0, 0.0, ...]",
+            "point2": "[0.0, 1.0, 0.0, ...]",
+            "ads_radius": 1.0,
+            "dimension": 3,
+            "coordinate_system": "global"
+          },
+          "expected_output": {
+            "distance": "≈ 0.881 (L·acosh(√2))",
+            "geodesic_info": {
+              "spacelike": true,
+              "timelike": false,
+              "lightlike": false
+            }
+          },
+          "validation": [
+            "Convert to embedding coordinates",
+            "Compute Lorentzian inner product",
+            "Verify d = L·acosh(−⟨X,Y⟩/L²)"
+          ]
+        },
+        {
+          "name": "Antipodal Points in AdS (Maximum Distance)",
+          "input": {
+            "point1": "[0.0, L, 0.0]",
+            "point2": "[0.0, −L, 0.0]",
+            "ads_radius": 1.0,
+            "dimension": 3,
+            "coordinate_system": "embedding"
+          },
+          "expected_output": {
+            "distance": "≈ 2.634 (large value approaching πL/2)",
+            "geodesic_info": {
+              "spacelike": true
+            }
+          },
+          "validation": [
+            "Antipodal points have maximum separation",
+            "Inner product approaches minimum value",
+            "d = L·acosh(large value)"
+          ]
+        },
+        {
+          "name": "Timelike Separated Points",
+          "input": {
+            "point1": "[0.0, 0.0, 0.0]",
+            "point2": "[1.0, 0.0, 0.0]",
+            "ads_radius": 1.0,
+            "dimension": 3,
+            "coordinate_system": "global"
+          },
+          "expected_output": {
+            "distance": "imaginary or proper time τ",
+            "geodesic_info": {
+              "spacelike": false,
+              "timelike": true,
+              "causal": true
+            }
+          },
+          "validation": [
+            "Points separated in time direction",
+            "⟨X,Y⟩ > −L² indicates timelike",
+            "Return proper time instead of spacelike distance"
+          ]
+        },
+        {
+          "name": "Lightlike Separated Points",
+          "input": {
+            "point1": "[0.0, 0.0, 0.0]",
+            "point2": "[t, t, 0.0, ...]",
+            "ads_radius": 1.0,
+            "dimension": 3,
+            "coordinate_system": "poincare"
+          },
+          "expected_output": {
+            "distance": "infinite or null",
+            "geodesic_info": {
+              "lightlike": true,
+              "causal": true
+            }
+          },
+          "validation": [
+            "Null geodesic has zero interval",
+            "⟨X,Y⟩ = −L² exactly",
+            "Physical separation via affine parameter"
+          ]
+        },
+        {
+          "name": "Nearby Points in Poincaré Patch",
+          "input": {
+            "point1": "[0.0, 1.0, 0.5]",
+            "point2": "[0.0, 1.0, 0.6]",
+            "ads_radius": 1.0,
+            "dimension": 3,
+            "coordinate_system": "poincare"
+          },
+          "expected_output": {
+            "distance": "small positive value",
+            "geodesic_info": {
+              "spacelike": true
+            }
+          },
+          "validation": [
+            "Convert Poincaré to embedding",
+            "Small spatial separation at constant z",
+            "d ≈ Δx·(L/z) for small Δx"
+          ]
+        },
+        {
+          "name": "High-Dimensional AdS (AdS₅ for AdS/CFT)",
+          "input": {
+            "point1": "[0, 0, 0, 0, 0]",
+            "point2": "[0, 0.5, 0.5, 0.5, 0.5]",
+            "ads_radius": 1.0,
+            "dimension": 5,
+            "coordinate_system": "embedding"
+          },
+          "expected_output": {
+            "distance": "positive float",
+            "geodesic_info": {
+              "spacelike": true
+            }
+          },
+          "validation": [
+            "Embedding in R^{5,2}",
+            "Standard distance formula applies",
+            "Verify ⟨X,X⟩ = ⟨Y,Y⟩ = −L²"
+          ]
+        },
+        {
+          "name": "Boundary Approach (z → 0 in Poincaré)",
+          "input": {
+            "point1": "[0.0, 1.0, 0.01]",
+            "point2": "[0.0, 2.0, 0.01]",
+            "ads_radius": 1.0,
+            "dimension": 3,
+            "coordinate_system": "poincare"
+          },
+          "expected_output": {
+            "distance": "large value (∝ log(1/z))",
+            "geodesic_info": {
+              "spacelike": true
+            }
+          },
+          "validation": [
+            "Near-boundary points have large proper distance",
+            "Diverges as z → 0 (approaching conformal boundary)",
+            "Important for AdS/CFT correspondence"
+          ]
+        }
+      ],
+      "edge_cases": [
+        {
+          "case": "Points on conformal boundary (z = 0 or r → ∞)",
+          "handling": "Return infinite distance or error; boundary points not in manifold"
+        },
+        {
+          "case": "Negative AdS radius L < 0",
+          "handling": "Reject with error; L must be positive"
+        },
+        {
+          "case": "Points not satisfying embedding constraint",
+          "handling": "Project to hyperboloid or return error"
+        },
+        {
+          "case": "Very large coordinates (overflow risk)",
+          "handling": "Use logarithmic scaling or arbitrary precision arithmetic"
+        },
+        {
+          "case": "Degenerate points (p₁ = p₂)",
+          "handling": "Return d = 0"
+        }
+      ],
+      "applications": {
+        "ads_cft_correspondence": "Relate bulk geodesics to CFT correlators",
+        "quantum_gravity": "Study holographic entanglement entropy",
+        "black_holes_in_ads": "Compute distances near AdS-Schwarzschild horizons",
+        "cosmology": "Model spacetimes with negative cosmological constant"
+      }
+    },
+    {
+      "id": "ds_distance",
+      "name": "ds_distance",
+      "description": "Compute geodesic distance between two points in de Sitter (dS) space, a maximally symmetric spacetime with positive cosmological constant Λ. Models expanding universes and inflationary cosmology.",
+      "category": "Distance Operations",
+      "parameters": {
+        "point1": {
+          "type": "Point",
+          "description": "First point in dS_n space (can be given in global, planar, or embedding coordinates)",
+          "constraints": ["Must be a valid point in dS_n manifold"]
+        },
+        "point2": {
+          "type": "Point",
+          "description": "Second point in dS_n space",
+          "constraints": ["Must be a valid point in dS_n manifold", "Same coordinate system as point1"]
+        },
+        "ds_radius": {
+          "type": "float",
+          "description": "de Sitter radius L = √(n(n−1)/(2Λ)) characterizing curvature scale",
+          "constraints": ["L > 0"],
+          "default": 1.0
+        },
+        "dimension": {
+          "type": "int",
+          "description": "Dimension n of dS space (dS_n)",
+          "constraints": ["n ≥ 2"],
+          "default": 3
+        },
+        "coordinate_system": {
+          "type": "string",
+          "description": "Coordinate system used for input points",
+          "constraints": ["Must be 'global', 'planar', or 'embedding'"],
+          "default": "global"
+        }
+      },
+      "returns": {
+        "distance": {
+          "type": "float",
+          "description": "Geodesic distance d(p₁, p₂) in dS space",
+          "properties": {
+            "value": "float (can be spacelike, timelike, or null)",
+            "units": "Same as L (typically natural units)"
+          }
+        },
+        "geodesic_info": {
+          "type": "dict",
+          "description": "Additional information about the geodesic",
+          "properties": {
+            "spacelike": "bool",
+            "timelike": "bool",
+            "lightlike": "bool",
+            "causal": "bool",
+            "cosmological_horizon": "bool (true if points separated by horizon)",
+            "coordinate_distance": "float"
+          }
+        }
+      },
+      "complexity": {
+        "time": "O(n)",
+        "space": "O(n)",
+        "explanation": "Linear in dimension for embedding coordinate computations and inner products"
+      },
+      "mathematical_formula": {
+        "ds_embedding": "dS_n embeds in R^{n+1,1} (Minkowski with +−−...− signature): −X₀² + X₁² + ... + X_{n+1}² = L²",
+        "geodesic_distance_embedding": "cos(d/L) = ⟨X, Y⟩_L/L² where ⟨X,Y⟩_L = −X₀Y₀ + X₁Y₁ + ... + X_{n+1}Y_{n+1}",
+        "global_coordinates": "ds² = −dt² + L²cosh²(t/L)·dΩ²_{n−1}",
+        "planar_coordinates": "ds² = −(1 − r²/L²)dt² + (1 − r²/L²)⁻¹dr² + r²dΩ²_{n−2} (static patch)",
+        "distance_formula_spacelike": "d = L·arccos(⟨X,Y⟩/L²) for ⟨X,Y⟩ > 0",
+        "distance_formula_timelike": "proper time τ = L·arccosh(|⟨X,Y⟩|/L²) for ⟨X,Y⟩ < 0",
+        "cosmological_horizon": "d_H = πL/2 (maximum causal distance)"
+      },
+      "implementation_notes": [
+        "Use embedding in R^{n+1,1} with mostly-minus Minkowski signature",
+        "Compute Minkowski inner product: ⟨X,Y⟩ = −X₀Y₀ + ∑_{i=1}^{n} X_iY_i",
+        "Check sign of ⟨X,Y⟩: > 0 (spacelike), < 0 (timelike), = 0 (lightlike)",
+        "For spacelike geodesics: d = L·arccos(⟨X,Y⟩/L²)",
+        "For timelike geodesics: use proper time τ = L·arccosh(−⟨X,Y⟩/L²)",
+        "Cosmological horizon at d = πL/2 (points cannot causally communicate beyond this)",
+        "Handle numerical issues: arccos argument must be in [−1, 1]",
+        "Global coordinates cover entire dS; planar coordinates cover only static patch",
+        "Planar coordinates become singular at cosmological horizon r = L",
+        "de Sitter space has constant positive scalar curvature R = n(n−1)/L²",
+        "For inflationary cosmology: dS models exponential expansion phase",
+        "Geodesic completeness: all geodesics are complete (no singularities)"
+      ],
+      "test_cases": [
+        {
+          "name": "Distance Between Origin and Point in Static Patch",
+          "input": {
+            "point1": "[0.0, 0.0, 0.0]",
+            "point2": "[0.0, 0.5, 0.0]",
+            "ds_radius": 1.0,
+            "dimension": 3,
+            "coordinate_system": "planar"
+          },
+          "expected_output": {
+            "distance": "positive float < πL/2",
+            "geodesic_info": {
+              "spacelike": true,
+              "timelike": false,
+              "cosmological_horizon": false
+            }
+          },
+          "validation": [
+            "Convert to embedding coordinates",
+            "Compute ⟨X,Y⟩ > 0 (spacelike)",
+            "d = L·arccos(⟨X,Y⟩/L²) < πL/2"
+          ]
+        },
+        {
+          "name": "Points Separated by Cosmological Horizon",
+          "input": {
+            "point1": "[0.0, 0.0, 0.0]",
+            "point2": "[0.0, L, 0.0]",
+            "ds_radius": 1.0,
+            "dimension": 3,
+            "coordinate_system": "planar"
+          },
+          "expected_output": {
+            "distance": "πL/2 ≈ 1.571",
+            "geodesic_info": {
+              "spacelike": true,
+              "cosmological_horizon": true
+            }
+          },
+          "validation": [
+            "r = L is cosmological horizon",
+            "Maximum causal distance d = πL/2",
+            "Points cannot communicate causally"
+          ]
+        },
+        {
+          "name": "Timelike Separated Points (Same Spatial Location)",
+          "input": {
+            "point1": "[0.0, 0.5, 0.0]",
+            "point2": "[1.0, 0.5, 0.0]",
+            "ds_radius": 1.0,
+            "dimension": 3,
+            "coordinate_system": "planar"
+          },
+          "expected_output": {
+            "distance": "proper time τ > 0",
+            "geodesic_info": {
+              "timelike": true,
+              "spacelike": false,
+              "causal": true
+            }
+          },
+          "validation": [
+            "Points differ only in time coordinate",
+            "⟨X,Y⟩ < 0 (timelike separation)",
+            "τ = L·arccosh(−⟨X,Y⟩/L²)"
+          ]
+        },
+        {
+          "name": "Null Geodesic (Lightlike Separation)",
+          "input": {
+            "point1": "[0.0, 0.0, 0.0]",
+            "point2": "[t, r, 0.0] with t² = r²/(1−r²/L²)",
+            "ds_radius": 1.0,
+            "dimension": 3,
+            "coordinate_system": "planar"
+          },
+          "expected_output": {
+            "distance": "null or affine parameter",
+            "geodesic_info": {
+              "lightlike": true,
+              "causal": true
+            }
+          },
+          "validation": [
+            "⟨X,Y⟩ = 0 (null separation)",
+            "Light ray trajectory",
+            "ds² = 0 along geodesic"
+          ]
+        },
+        {
+          "name": "Antipodal Points in Global dS",
+          "input": {
+            "point1": "[t, θ=0, φ]",
+            "point2": "[t, θ=π, φ]",
+            "ds_radius": 1.0,
+            "dimension": 3,
+            "coordinate_system": "global"
+          },
+          "expected_output": {
+            "distance": "πL (maximum spacelike distance)",
+            "geodesic_info": {
+              "spacelike": true
+            }
+          },
+          "validation": [
+            "Opposite poles on spatial sphere",
+            "d = L·arccos(−1) = πL",
+            "Maximum geodesic distance"
+          ]
+        },
+        {
+          "name": "Same Point (Zero Distance)",
+          "input": {
+            "point1": "[0.0, 0.5, 0.5]",
+            "point2": "[0.0, 0.5, 0.5]",
+            "ds_radius": 1.0,
+            "dimension": 3,
+            "coordinate_system": "planar"
+          },
+          "expected_output": {
+            "distance": 0.0,
+            "geodesic_info": {
+              "spacelike": false,
+              "timelike": false,
+              "lightlike": false
+            }
+          },
+          "validation": [
+            "p₁ = p₂ implies d = 0",
+            "⟨X,X⟩ = L²",
+            "Trivial geodesic"
+          ]
+        },
+        {
+          "name": "High-Dimensional dS (dS₄ for Cosmology)",
+          "input": {
+            "point1": "[0, 0, 0, 0]",
+            "point2": "[0, 0.5, 0.5, 0.5]",
+            "ds_radius": 1.0,
+            "dimension": 4,
+            "coordinate_system": "embedding"
+          },
+          "expected_output": {
+            "distance": "positive float",
+            "geodesic_info": {
+              "spacelike": true
+            }
+          },
+          "validation": [
+            "Embedding in R^{4,1}",
+            "Standard distance formula",
+            "Verify ⟨X,X⟩ = ⟨Y,Y⟩ = L²"
+          ]
+        }
+      ],
+      "edge_cases": [
+        {
+          "case": "Points beyond cosmological horizon (d > πL/2)",
+          "handling": "Return d = πL/2 and flag as horizon-separated; no causal connection"
+        },
+        {
+          "case": "Negative dS radius L < 0",
+          "handling": "Reject with error; L must be positive"
+        },
+        {
+          "case": "Points not on hyperboloid (⟨X,X⟩ ≠ L²)",
+          "handling": "Project to hyperboloid or return error"
+        },
+        {
+          "case": "Numerical instability in arccos (argument slightly > 1)",
+          "handling": "Clamp to [−1, 1] before computing arccos"
+        },
+        {
+          "case": "Planar coordinates outside static patch (r ≥ L)",
+          "handling": "Return error or convert to global coordinates"
+        }
+      ],
+      "applications": {
+        "inflationary_cosmology": "Model early universe exponential expansion",
+        "dark_energy": "Asymptotic future of accelerating universe",
+        "quantum_field_theory": "Vacuum state in curved spacetime (Bunch-Davies)",
+        "holography": "dS/CFT correspondence (conjectured)",
+        "particle_horizons": "Compute observable universe size"
+      }
+    }
+  ],
+  "comparison_ads_vs_ds": {
+    "ads_space": {
+      "curvature": "Negative (hyperbolic time)",
+      "cosmological_constant": "Λ < 0",
+      "embedding": "R^{n,2} (two timelike dimensions)",
+      "boundary": "Timelike conformal boundary at infinity",
+      "applications": "AdS/CFT, quantum gravity, black holes",
+      "stability": "Stable (attractive gravity)"
+    },
+    "ds_space": {
+      "curvature": "Positive (spherical spatial sections)",
+      "cosmological_constant": "Λ > 0",
+      "embedding": "R^{n+1,1} (one timelike dimension)",
+      "boundary": "Spacelike conformal boundary (future/past infinity)",
+      "applications": "Inflation, dark energy, cosmological horizons",
+      "stability": "Unstable (repulsive gravity, expansion)"
+    }
+  },
+  "integration_with_hypersync": {
+    "use_cases": [
+      "Model expanding or contracting network topologies",
+      "Cosmological horizon as natural partition boundary",
+      "AdS for hierarchical data (holographic principle)",
+      "dS for temporal evolution with exponential growth"
+    ],
+    "performance": "Both operations O(n) linear in dimension",
+    "coordinate_transformations": "Support global, planar (dS)/Poincaré (AdS), and embedding coordinates"
+  },
+  "references": [
+    "de Sitter, W. (1917). On the relativity of inertia. Remarks concerning Einstein's latest hypothesis. Proceedings of the Royal Netherlands Academy of Arts and Sciences, 19, 1217-1225.",
+    "Maldacena, J. (1998). The large N limit of superconformal field theories and supergravity. Advances in Theoretical and Mathematical Physics, 2(2), 231-252.",
+    "Gibbons, G. W., & Hawking, S. W. (1977). Cosmological event horizons, thermodynamics, and particle creation. Physical Review D, 15(10), 2738.",
+    "Strominger, A. (2001). The dS/CFT correspondence. Journal of High Energy Physics, 2001(10), 034.",
+    "Afshordi, N., Corianò, C., Delle Rose, L., Gould, E., & Skenderis, K. (2017). From Planck data to Planck era: Observational tests of holographic cosmology. Physical Review Letters, 118(4), 041301."
+  ]
+}

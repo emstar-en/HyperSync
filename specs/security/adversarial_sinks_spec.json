@@ -1,0 +1,553 @@
+{
+  "specification": {
+    "name": "Adversarial Sinks - Black Hole-Based Security",
+    "version": "1.0.0",
+    "description": "Adversarial detection and isolation using black hole geometry (Schwarzschild and Kerr metrics). Adversarial nodes are geometrically isolated into sink regions where their influence diminishes over time via quantum evaporation effects.",
+    "component": "adversarial_sinks",
+    "tier": "CORE",
+    "total_operations": 2,
+    "format": "STUNIR",
+    "created": "2026-01-14",
+    "category": "Security"
+  },
+  "overview": {
+    "purpose": "Leverage black hole geometry for adversarial detection and containment",
+    "key_concepts": [
+      "Adversarial nodes create geometric distortions detectable via curvature",
+      "Black hole event horizons provide natural isolation boundaries",
+      "Hawking radiation enables temporal decay of adversarial influence",
+      "Schwarzschild geometry for static sinks, Kerr for rotating sinks",
+      "Information-theoretic security via event horizon properties"
+    ],
+    "mathematical_foundation": {
+      "schwarzschild_metric": "ds² = -(1 - r_s/r)dt² + (1 - r_s/r)⁻¹dr² + r²dΩ²",
+      "kerr_metric": "Uses Boyer-Lindquist coordinates with angular momentum parameter a",
+      "hawking_temperature": "T_H = ℏc³/(8πGMk_B)",
+      "evaporation_time": "t_evap ∝ M³"
+    }
+  },
+  "operations": [
+    {
+      "id": "create_adversarial_sink",
+      "name": "create_adversarial_sink",
+      "description": "Create an adversarial sink region using Schwarzschild or Kerr black hole geometry centered at a specified location in hyperbolic space. The sink acts as a geometric attractor that isolates adversarial nodes while allowing honest nodes to escape via sufficient tangential velocity.",
+      "category": "Initialization",
+      "parameters": {
+        "center": {
+          "type": "Point",
+          "description": "Center point of the sink in hyperbolic space H^n",
+          "constraints": ["Must be a valid point on the hyperboloid"]
+        },
+        "mass": {
+          "type": "float",
+          "description": "Mass parameter M determining sink strength (Schwarzschild radius r_s = 2GM/c²)",
+          "constraints": ["M > 0", "r_s < radius of hyperbolic space region"],
+          "default": 1.0
+        },
+        "angular_momentum": {
+          "type": "float",
+          "description": "Angular momentum parameter a for Kerr geometry (a = 0 gives Schwarzschild)",
+          "constraints": ["0 ≤ a ≤ M", "a = 0 for static sink, a > 0 for rotating sink"],
+          "default": 0.0
+        },
+        "dimension": {
+          "type": "int",
+          "description": "Dimension n of the hyperbolic space H^n",
+          "constraints": ["n ≥ 2"],
+          "default": 3
+        },
+        "sink_type": {
+          "type": "string",
+          "description": "Type of black hole geometry to use",
+          "constraints": ["Must be 'schwarzschild' or 'kerr'"],
+          "default": "schwarzschild"
+        }
+      },
+      "returns": {
+        "sink": {
+          "type": "AdversarialSink",
+          "description": "Sink object with geometric properties",
+          "properties": {
+            "center": "Point",
+            "mass": "float",
+            "angular_momentum": "float",
+            "schwarzschild_radius": "float (r_s = 2GM/c²)",
+            "event_horizon_radius": "float",
+            "ergosphere_radius": "float (for Kerr only)",
+            "hawking_temperature": "float",
+            "initial_entropy": "float (S = A/(4ℓ_P²))",
+            "creation_time": "float"
+          }
+        }
+      },
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(n_dims)",
+        "explanation": "Constant time computation of black hole parameters; space linear in dimension for storing center point and metric components"
+      },
+      "mathematical_formula": {
+        "schwarzschild_radius": "r_s = 2GM/c²",
+        "event_horizon": "r_+ = M + √(M² - a²) (Kerr), r_s (Schwarzschild)",
+        "ergosphere_boundary": "r_ergo(θ) = M + √(M² - a²cos²θ) (Kerr only)",
+        "hawking_temperature": "T_H = ℏc³/(8πGMk_B) for Schwarzschild; T_H = ℏc/(4πGM·(r_+ + √(r_+² - a²))) for Kerr",
+        "bekenstein_hawking_entropy": "S = kc³A/(4Gℏ) where A = 4πr_+²",
+        "metric_tensor_schwarzschild": "g_μν = diag(-(1-r_s/r), (1-r_s/r)⁻¹, r², r²sin²θ)",
+        "effective_potential": "V_eff(r) = -GM/r + L²/(2r²) - GML²/r³ (includes relativistic correction)"
+      },
+      "implementation_notes": [
+        "For Schwarzschild sinks (a=0), event horizon is at r = r_s = 2GM/c²",
+        "For Kerr sinks (a>0), compute inner (r_-) and outer (r_+) horizons",
+        "Ergosphere exists only for Kerr sinks: region between r_+ and r_ergo",
+        "Store metric tensor components for distance calculations",
+        "Initialize Hawking temperature for evaporation modeling",
+        "Event horizon acts as point of no return for adversarial nodes",
+        "Honest nodes can escape if their tangential velocity exceeds local escape velocity",
+        "Use numerical stability: avoid singularity at r=0 by setting minimum radius r_min = 0.01·r_s",
+        "For hyperbolic space embedding, use Poincaré disk or hyperboloid model",
+        "Coordinate transformation: map hyperbolic center to Schwarzschild origin"
+      ],
+      "test_cases": [
+        {
+          "name": "Basic Schwarzschild Sink Creation",
+          "input": {
+            "center": "[0.0, 0.0, 0.0]",
+            "mass": 1.0,
+            "angular_momentum": 0.0,
+            "dimension": 3,
+            "sink_type": "schwarzschild"
+          },
+          "expected_output": {
+            "schwarzschild_radius": 2.0,
+            "event_horizon_radius": 2.0,
+            "ergosphere_radius": null,
+            "hawking_temperature": "finite positive value",
+            "initial_entropy": "proportional to 4π·r_s²"
+          },
+          "validation": [
+            "r_s = 2GM/c² = 2.0 (assuming G=c=1)",
+            "Event horizon at r_+ = r_s",
+            "No ergosphere for a=0",
+            "T_H > 0",
+            "S > 0"
+          ]
+        },
+        {
+          "name": "Kerr Sink with Moderate Rotation",
+          "input": {
+            "center": "[1.0, 2.0, 3.0]",
+            "mass": 2.0,
+            "angular_momentum": 1.0,
+            "dimension": 3,
+            "sink_type": "kerr"
+          },
+          "expected_output": {
+            "schwarzschild_radius": 4.0,
+            "event_horizon_radius": "~3.73 (r_+ = M + √(M² - a²))",
+            "ergosphere_radius": "> r_+",
+            "hawking_temperature": "< T_H(Schwarzschild) with same M",
+            "initial_entropy": "< S(Schwarzschild) with same M"
+          },
+          "validation": [
+            "r_+ = 2 + √(4-1) = 2 + √3 ≈ 3.732",
+            "r_- = 2 - √3 ≈ 0.268",
+            "r_ergo(θ=π/2) = 2 + √4 = 4",
+            "Ergosphere exists between r_+ and r_ergo",
+            "Rotation reduces temperature and entropy"
+          ]
+        },
+        {
+          "name": "Maximal Kerr Sink (Extremal)",
+          "input": {
+            "center": "[0.0, 0.0, 0.0]",
+            "mass": 1.0,
+            "angular_momentum": 1.0,
+            "dimension": 3,
+            "sink_type": "kerr"
+          },
+          "expected_output": {
+            "event_horizon_radius": 1.0,
+            "ergosphere_radius": 2.0,
+            "hawking_temperature": 0.0,
+            "initial_entropy": "finite but minimal"
+          },
+          "validation": [
+            "a = M gives extremal black hole",
+            "r_+ = r_- = M = 1.0 (degenerate horizon)",
+            "T_H = 0 (extremal black holes don't evaporate classically)",
+            "Largest ergosphere for given mass"
+          ]
+        },
+        {
+          "name": "High-Dimensional Schwarzschild Sink",
+          "input": {
+            "center": "[0.0, 0.0, 0.0, 0.0, 0.0]",
+            "mass": 1.5,
+            "angular_momentum": 0.0,
+            "dimension": 5,
+            "sink_type": "schwarzschild"
+          },
+          "expected_output": {
+            "schwarzschild_radius": 3.0,
+            "event_horizon_radius": 3.0,
+            "dimension": 5
+          },
+          "validation": [
+            "r_s = 2·1.5 = 3.0",
+            "Metric components scale with dimension",
+            "Event horizon is (n-1)-sphere in n dimensions"
+          ]
+        },
+        {
+          "name": "Invalid Angular Momentum (a > M)",
+          "input": {
+            "center": "[0.0, 0.0, 0.0]",
+            "mass": 1.0,
+            "angular_momentum": 1.5,
+            "dimension": 3,
+            "sink_type": "kerr"
+          },
+          "expected_output": "Error: Naked singularity (a > M violates cosmic censorship)",
+          "validation": [
+            "Should raise error or clamp a to M",
+            "a > M creates naked singularity (unphysical)",
+            "Cosmic censorship hypothesis forbids this"
+          ]
+        },
+        {
+          "name": "Zero Mass Sink (Degenerate Case)",
+          "input": {
+            "center": "[0.0, 0.0, 0.0]",
+            "mass": 0.0,
+            "angular_momentum": 0.0,
+            "dimension": 3,
+            "sink_type": "schwarzschild"
+          },
+          "expected_output": "Error or flat space (no sink)",
+          "validation": [
+            "M = 0 gives Minkowski (flat) space",
+            "No event horizon, no curvature",
+            "Should return error or identity geometry"
+          ]
+        }
+      ],
+      "edge_cases": [
+        {
+          "case": "Sink at hyperbolic infinity",
+          "handling": "Map hyperbolic infinity to large finite radius; sink effect negligible beyond ~10·r_s"
+        },
+        {
+          "case": "Multiple overlapping sinks",
+          "handling": "Superpose metric perturbations; use effective potential sum for combined geometry"
+        },
+        {
+          "case": "Negative mass (exotic matter)",
+          "handling": "Reject or use for wormhole-like structures (advanced feature)"
+        },
+        {
+          "case": "Ultra-relativistic angular momentum",
+          "handling": "Clamp a ≤ M to maintain cosmic censorship; warn if a close to M"
+        },
+        {
+          "case": "Dimension n = 2",
+          "handling": "Special case: 2D black holes have logarithmic potential; use dilaton gravity"
+        }
+      ],
+      "security_properties": {
+        "isolation": "Event horizon provides hard geometric boundary",
+        "information_hiding": "Information cannot escape from within r_+",
+        "temporal_decay": "Sink influence decreases via Hawking evaporation",
+        "detection": "Adversarial nodes exhibit geodesic deviation toward sink"
+      }
+    },
+    {
+      "id": "model_sink_evaporation",
+      "name": "model_sink_evaporation",
+      "description": "Model sink evaporation via Hawking radiation. Sinks lose mass over time, reducing influence. Useful for adaptive security where adversarial threats diminish automatically without manual intervention.",
+      "category": "Temporal Dynamics",
+      "parameters": {
+        "sink": {
+          "type": "AdversarialSink",
+          "description": "The adversarial sink object to evolve",
+          "constraints": ["Must be a valid sink created by create_adversarial_sink"]
+        },
+        "time_elapsed": {
+          "type": "float",
+          "description": "Time duration Δt over which to model evaporation",
+          "constraints": ["Δt > 0", "Δt should be much smaller than t_evap for accuracy"],
+          "units": "Planck times or arbitrary time units"
+        },
+        "environment_temperature": {
+          "type": "float",
+          "description": "Temperature T_env of surrounding space (affects evaporation rate)",
+          "constraints": ["T_env ≥ 0", "If T_env > T_H, sink grows instead of evaporating"],
+          "default": 0.0
+        }
+      },
+      "returns": {
+        "updated_sink": {
+          "type": "AdversarialSink",
+          "description": "Sink with updated mass, temperature, and derived properties",
+          "properties": {
+            "mass": "float (reduced by evaporation)",
+            "schwarzschild_radius": "float (reduced)",
+            "hawking_temperature": "float (increased as M decreases)",
+            "entropy": "float (decreased)",
+            "evaporation_rate": "float (dM/dt)",
+            "time_to_evaporation": "float (estimated remaining lifetime)"
+          }
+        },
+        "evaporated": {
+          "type": "bool",
+          "description": "True if sink has completely evaporated (M ≤ M_Planck or M ≤ 0)"
+        }
+      },
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)",
+        "explanation": "Constant time update of mass and derived quantities; no iteration or recursion"
+      },
+      "mathematical_formula": {
+        "hawking_temperature": "T_H = ℏc³/(8πGMk_B)",
+        "evaporation_rate": "dM/dt = -k·(T_H⁴ - T_env⁴) where k = (σ·A)/(ℏc²) ≈ -ℏc⁴/(15360πG²M²)",
+        "mass_evolution": "M(t) = M(0) · (1 - t/t_evap)^(1/3) for T_env = 0",
+        "evaporation_time": "t_evap = (5120πG²M₀³)/(ℏc⁴) ∝ M³",
+        "entropy_evolution": "S(t) = S₀·(M(t)/M₀)² (entropy decreases as M²)",
+        "luminosity": "L = σ·A·T_H⁴ (Stefan-Boltzmann law for black body)"
+      },
+      "implementation_notes": [
+        "Use numerical integration for mass evolution: M(t+Δt) = M(t) + (dM/dt)·Δt",
+        "Check if T_env > T_H: if so, sink absorbs energy and grows (dM/dt > 0)",
+        "For Kerr sinks, angular momentum also decreases: a(t) = a₀·(M(t)/M₀)²",
+        "Small mass sinks evaporate rapidly: dM/dt ∝ -1/M²",
+        "Use Planck mass M_P = √(ℏc/G) ≈ 2.18×10⁻⁸ kg as minimum; quantum gravity takes over below this",
+        "Final evaporation phase is explosive: last second releases massive energy",
+        "Update all derived properties: r_s, T_H, S, event horizon radius, ergosphere (if Kerr)",
+        "Track cumulative evaporated mass for energy accounting",
+        "Implement safeguards: if M → 0, set evaporated = True and remove sink from geometry",
+        "For adaptive security: monitor T_H; high T_H means sink is weak and nearly evaporated"
+      ],
+      "test_cases": [
+        {
+          "name": "Basic Schwarzschild Evaporation (Cold Environment)",
+          "input": {
+            "sink": {
+              "mass": 1.0,
+              "angular_momentum": 0.0,
+              "sink_type": "schwarzschild"
+            },
+            "time_elapsed": 0.1,
+            "environment_temperature": 0.0
+          },
+          "expected_output": {
+            "mass": "< 1.0 (decreased)",
+            "hawking_temperature": "> T_H(M=1.0)",
+            "entropy": "< S(M=1.0)",
+            "evaporated": false,
+            "evaporation_rate": "< 0"
+          },
+          "validation": [
+            "M decreases since T_env = 0 < T_H",
+            "T_H increases as M decreases (T_H ∝ 1/M)",
+            "S decreases as M decreases (S ∝ M²)",
+            "dM/dt < 0",
+            "Sink still exists after small time step"
+          ]
+        },
+        {
+          "name": "Rapid Evaporation Near Planck Mass",
+          "input": {
+            "sink": {
+              "mass": 0.001,
+              "angular_momentum": 0.0,
+              "sink_type": "schwarzschild"
+            },
+            "time_elapsed": 1.0,
+            "environment_temperature": 0.0
+          },
+          "expected_output": {
+            "mass": "≈ 0 or very small",
+            "hawking_temperature": "very large",
+            "evaporated": "likely True",
+            "evaporation_rate": "large negative value"
+          },
+          "validation": [
+            "Small mass evaporates quickly (dM/dt ∝ -1/M²)",
+            "T_H becomes extremely large for small M",
+            "Sink may completely evaporate in this time step",
+            "Check M < M_Planck for quantum gravity regime"
+          ]
+        },
+        {
+          "name": "Kerr Sink Evaporation with Angular Momentum Decay",
+          "input": {
+            "sink": {
+              "mass": 2.0,
+              "angular_momentum": 1.0,
+              "sink_type": "kerr"
+            },
+            "time_elapsed": 0.2,
+            "environment_temperature": 0.0
+          },
+          "expected_output": {
+            "mass": "< 2.0",
+            "angular_momentum": "< 1.0 (decreases as a ∝ M²)",
+            "hawking_temperature": "slightly increased",
+            "evaporated": false
+          },
+          "validation": [
+            "Both M and a decrease during evaporation",
+            "a decreases faster than M: a ∝ M²",
+            "Kerr sink becomes more Schwarzschild-like over time",
+            "T_H increases but slower than Schwarzschild due to rotation"
+          ]
+        },
+        {
+          "name": "Sink in Hot Environment (Growth Instead of Evaporation)",
+          "input": {
+            "sink": {
+              "mass": 1.0,
+              "angular_momentum": 0.0,
+              "sink_type": "schwarzschild"
+            },
+            "time_elapsed": 0.1,
+            "environment_temperature": 10.0
+          },
+          "expected_output": {
+            "mass": "> 1.0 (increased)",
+            "hawking_temperature": "< T_H(M=1.0)",
+            "entropy": "> S(M=1.0)",
+            "evaporated": false,
+            "evaporation_rate": "> 0"
+          },
+          "validation": [
+            "If T_env >> T_H, sink absorbs thermal radiation",
+            "M increases (accretion dominates over evaporation)",
+            "T_H decreases as M increases",
+            "S increases as M² increases",
+            "dM/dt > 0"
+          ]
+        },
+        {
+          "name": "Complete Evaporation",
+          "input": {
+            "sink": {
+              "mass": 0.0001,
+              "angular_momentum": 0.0,
+              "sink_type": "schwarzschild"
+            },
+            "time_elapsed": 100.0,
+            "environment_temperature": 0.0
+          },
+          "expected_output": {
+            "mass": 0.0,
+            "evaporated": true,
+            "hawking_temperature": "undefined or infinity",
+            "entropy": 0.0
+          },
+          "validation": [
+            "Very small initial mass evaporates completely",
+            "Final explosion releases remaining energy",
+            "Sink should be removed from geometry",
+            "Set evaporated flag to True"
+          ]
+        },
+        {
+          "name": "Zero Time Evolution",
+          "input": {
+            "sink": {
+              "mass": 1.0,
+              "angular_momentum": 0.0,
+              "sink_type": "schwarzschild"
+            },
+            "time_elapsed": 0.0,
+            "environment_temperature": 0.0
+          },
+          "expected_output": {
+            "mass": 1.0,
+            "hawking_temperature": "unchanged",
+            "entropy": "unchanged",
+            "evaporated": false,
+            "evaporation_rate": "< 0 (potential rate, but no change yet)"
+          },
+          "validation": [
+            "Δt = 0 means no evolution",
+            "All properties remain unchanged",
+            "Evaporation rate computed but not applied"
+          ]
+        },
+        {
+          "name": "Long-Term Evaporation (M ∝ (1 - t/t_evap)^(1/3))",
+          "input": {
+            "sink": {
+              "mass": 8.0,
+              "angular_momentum": 0.0,
+              "sink_type": "schwarzschild"
+            },
+            "time_elapsed": "0.5 * t_evap(M=8.0)",
+            "environment_temperature": 0.0
+          },
+          "expected_output": {
+            "mass": "≈ 8.0 · (0.5)^(1/3) ≈ 6.35",
+            "hawking_temperature": "≈ T_H(8.0) · (8.0/6.35) ≈ 1.26·T_H(8.0)",
+            "evaporated": false
+          },
+          "validation": [
+            "M(t) follows cubic root decay law",
+            "At t = 0.5·t_evap, M ≈ 0.794·M₀",
+            "T_H increases as 1/M",
+            "Evaporation accelerates over time"
+          ]
+        }
+      ],
+      "edge_cases": [
+        {
+          "case": "Negative time_elapsed",
+          "handling": "Reject with error; time flows forward only"
+        },
+        {
+          "case": "T_env = T_H (thermal equilibrium)",
+          "handling": "No net evaporation or growth; dM/dt = 0; sink in equilibrium"
+        },
+        {
+          "case": "Extremal Kerr (a = M) evaporation",
+          "handling": "T_H = 0 classically; use quantum corrections or superradiance for slow decay"
+        },
+        {
+          "case": "Mass becomes negative",
+          "handling": "Clamp to M = 0 and set evaporated = True; no negative mass allowed"
+        },
+        {
+          "case": "Ultra-long time steps (Δt >> t_evap)",
+          "handling": "Subdivide into smaller steps for accuracy; warn user about numerical errors"
+        }
+      ],
+      "security_applications": {
+        "adaptive_isolation": "Adversarial sinks automatically weaken over time, reducing false positive lockouts",
+        "temporal_forgiveness": "Isolated nodes can re-enter network after sink evaporates",
+        "energy_efficient_security": "No active maintenance required; evaporation is passive",
+        "byzantine_containment": "Captured Byzantine nodes lose influence as sink strength decays"
+      }
+    }
+  ],
+  "integration_with_hypersync": {
+    "workflow": [
+      "1. Detect adversarial behavior via geometric anomaly detection (high curvature, outlier distance)",
+      "2. Create adversarial sink at anomaly location using create_adversarial_sink",
+      "3. Adversarial nodes naturally fall toward sink due to geodesic flow",
+      "4. Honest nodes maintain sufficient tangential velocity to escape sink capture",
+      "5. Model sink evaporation over time using model_sink_evaporation",
+      "6. Monitor sink temperature T_H; high T_H indicates weak, nearly evaporated sink",
+      "7. Remove sink from geometry when evaporated = True"
+    ],
+    "geometric_integration": "Sinks modify local metric tensor; use superposed metrics for multiple sinks",
+    "consensus_interaction": "Sinks can protect consensus mechanisms by isolating Byzantine nodes",
+    "performance": "O(1) sink operations; O(n) geometric distance computations for node-sink interactions"
+  },
+  "references": [
+    "Hawking, S. W. (1974). Black hole explosions? Nature, 248(5443), 30-31.",
+    "Kerr, R. P. (1963). Gravitational field of a spinning mass as an example of algebraically special metrics. Physical Review Letters, 11(5), 237.",
+    "Schwarzschild, K. (1916). Über das Gravitationsfeld eines Massenpunktes nach der Einsteinschen Theorie. Sitzungsberichte der Königlich Preussischen Akademie der Wissenschaften, 189-196.",
+    "Page, D. N. (1976). Particle emission rates from a black hole: Massless particles from an uncharged, nonrotating hole. Physical Review D, 13(2), 198.",
+    "Boyer, R. H., & Lindquist, R. W. (1967). Maximal analytic extension of the Kerr metric. Journal of Mathematical Physics, 8(2), 265-281."
+  ]
+}
