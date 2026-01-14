@@ -378,3 +378,15 @@ Built on decades of research in:
 
 **Made with ❤️ by the HyperSync Team**  
 *Bringing geometric intelligence to distributed systems*
+
+
+## License
+
+HyperSync Core tier is dual-licensed:
+
+- **AGPLv3** for open-source use - See [LICENSE](LICENSE)
+- **Commercial License** for proprietary use - See [LICENSING.md](LICENSING.md)
+
+[![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
+
+For commercial licensing inquiries, please see [LICENSING.md](LICENSING.md).

@@ -1,0 +1,65 @@
+{
+  "specification": {
+    "name": "Lambda Calculus Operations",
+    "version": "1.0.0",
+    "description": "Lambda calculus operations for edge case handling and proof-based computation.",
+    "language_agnostic": true,
+    "format": "STUNIR",
+    "tier_availability": "Core (Free)",
+    "total_operations": 5,
+    "complexity_target": "O(n) to O(n\u00b7log n)"
+  },
+  "mathematical_foundations": {
+    "lambda_calculus": "Formal system for expressing computation via function abstraction and application",
+    "beta_reduction": "(\u03bbx. M) N \u2192 M[x:=N]",
+    "eta_conversion": "\u03bbx. M x \u2192 M (if x not free in M)",
+    "alpha_renaming": "\u03bbx. M \u2192 \u03bby. M[x:=y]"
+  },
+  "operations": [
+    {
+      "id": "lambda_beta_reduce",
+      "name": "Beta Reduction",
+      "formula": "(\u03bbx. M) N \u2192 M[x:=N]",
+      "complexity": {
+        "time": "O(|M|)",
+        "space": "O(|M|)"
+      }
+    },
+    {
+      "id": "lambda_eta_convert",
+      "name": "Eta Conversion",
+      "formula": "\u03bbx. M x \u2194 M",
+      "complexity": {
+        "time": "O(|M|)",
+        "space": "O(|M|)"
+      }
+    },
+    {
+      "id": "lambda_alpha_rename",
+      "name": "Alpha Renaming",
+      "description": "Rename bound variables to avoid capture",
+      "complexity": {
+        "time": "O(|M|)",
+        "space": "O(|M|)"
+      }
+    },
+    {
+      "id": "lambda_normalize",
+      "name": "Lambda Term Normalization",
+      "description": "Reduce to normal form (\u03b2-normal, \u03b7-long)",
+      "complexity": {
+        "time": "O(|M|\u00b7log|M|)",
+        "space": "O(|M|)"
+      }
+    },
+    {
+      "id": "lambda_evaluate",
+      "name": "Lambda Term Evaluation",
+      "description": "Evaluate lambda term to value (with timeout)",
+      "complexity": {
+        "time": "O(n) bounded",
+        "space": "O(n)"
+      }
+    }
+  ]
+}

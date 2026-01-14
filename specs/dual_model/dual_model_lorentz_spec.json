@@ -1,0 +1,470 @@
+{
+  "specification": {
+    "name": "Dual Model System - Lorentz Model Operations",
+    "version": "1.0.0",
+    "description": "Lorentz hyperboloid model operations for hyperbolic geometry. Part of the dual-model system (Lorentz + Poincaré) that automatically selects optimal representation based on numerical stability and computational efficiency.",
+    "total_operations": 15,
+    "format": "STUNIR",
+    "tier_availability": "Core (Free)",
+    "complexity_target": "O(n) or O(n log n)",
+    "integration": ["HVS", "AGUA", "STUNIR", "Dual-Model System"],
+    "model_type": "Lorentz Hyperboloid",
+    "coordinate_system": "Minkowski embedding"
+  },
+  "mathematical_foundations": {
+    "lorentz_model": {
+      "description": "Hyperboloid model H^n = {x ∈ ℝ^(n+1) | ⟨x,x⟩_L = -1, x₀ > 0}",
+      "metric": "Minkowski inner product ⟨x,y⟩_L = -x₀y₀ + x₁y₁ + ... + xₙyₙ",
+      "curvature": "-1 (constant negative)",
+      "advantages": [
+        "Numerically stable for large distances",
+        "Natural for parallel transport",
+        "Symmetric representation",
+        "Better for high-dimensional spaces"
+      ],
+      "disadvantages": [
+        "Extra dimension overhead",
+        "Less intuitive visualization",
+        "Constraint maintenance required"
+      ]
+    },
+    "minkowski_inner_product": {
+      "formula": "⟨x,y⟩_L = -x₀y₀ + Σᵢ₌₁ⁿ xᵢyᵢ",
+      "signature": "(-,+,+,...,+)",
+      "constraint": "⟨x,x⟩_L = -1 for points on hyperboloid"
+    },
+    "lorentz_distance": {
+      "formula": "d(x,y) = arccosh(-⟨x,y⟩_L)",
+      "range": "[0, ∞)",
+      "properties": ["Unbounded", "Symmetric", "Triangle inequality"]
+    }
+  },
+  "operations": [
+    {
+      "id": "lorentz_distance",
+      "name": "Lorentz Distance",
+      "category": "core_operations",
+      "description": "Compute hyperbolic distance in Lorentz model using Minkowski inner product",
+      "formula": "d(x,y) = arccosh(-⟨x,y⟩_L) where ⟨x,y⟩_L = -x₀y₀ + Σᵢ₌₁ⁿ xᵢyᵢ",
+      "input": {
+        "x": "Point on hyperboloid H^n (satisfies ⟨x,x⟩_L = -1, x₀ > 0)",
+        "y": "Point on hyperboloid H^n (satisfies ⟨y,y⟩_L = -1, y₀ > 0)"
+      },
+      "output": {
+        "distance": "Scalar in [0, ∞)"
+      },
+      "complexity": "O(n)",
+      "precision": "1e-12",
+      "validation": {
+        "constraint": "⟨x,x⟩_L = ⟨y,y⟩_L = -1, x₀ > 0, y₀ > 0",
+        "range": "[0, ∞)"
+      },
+      "implementation_notes": [
+        "Numerically stable for large distances",
+        "Handle near-identical points with Taylor expansion",
+        "Clamp inner product to [-1-ε, -1] to avoid domain errors"
+      ],
+      "test_cases": [
+        {
+          "name": "origin_distance",
+          "x": "[1, 0, 0, ..., 0]",
+          "y": "[cosh(d), sinh(d), 0, ..., 0]",
+          "expected": "d"
+        },
+        {
+          "name": "identical_points",
+          "x": "[1, 0, 0, ..., 0]",
+          "y": "[1, 0, 0, ..., 0]",
+          "expected": "0.0"
+        }
+      ],
+      "edge_cases": [
+        "Near-identical points (distance < 1e-10)",
+        "Very large distances (> 100)",
+        "Numerical precision at boundaries"
+      ]
+    },
+    {
+      "id": "lorentz_inner_product",
+      "name": "Lorentz Inner Product",
+      "category": "core_operations",
+      "description": "Compute Minkowski inner product for Lorentz model",
+      "formula": "⟨x,y⟩_L = -x₀y₀ + Σᵢ₌₁ⁿ xᵢyᵢ",
+      "input": {
+        "x": "Vector in ℝ^(n+1)",
+        "y": "Vector in ℝ^(n+1)"
+      },
+      "output": {
+        "inner_product": "Scalar (can be negative, zero, or positive)"
+      },
+      "complexity": "O(n)",
+      "precision": "1e-15",
+      "implementation_notes": [
+        "First component has negative sign",
+        "Used for distance, angles, and projections",
+        "Fundamental to all Lorentz operations"
+      ],
+      "test_cases": [
+        {
+          "name": "hyperboloid_constraint",
+          "x": "[1, 0, 0, ..., 0]",
+          "expected": "-1.0"
+        }
+      ]
+    },
+    {
+      "id": "lorentz_norm",
+      "name": "Lorentz Norm",
+      "category": "core_operations",
+      "description": "Compute Lorentz norm (Minkowski norm) of a vector",
+      "formula": "||x||_L = √|⟨x,x⟩_L|",
+      "input": {
+        "x": "Vector in ℝ^(n+1)"
+      },
+      "output": {
+        "norm": "Non-negative scalar"
+      },
+      "complexity": "O(n)",
+      "precision": "1e-15",
+      "implementation_notes": [
+        "Take absolute value before square root",
+        "For points on hyperboloid, ||x||_L = 1",
+        "For tangent vectors, can be any value"
+      ]
+    },
+    {
+      "id": "lorentz_exp_map",
+      "name": "Lorentz Exponential Map",
+      "category": "core_operations",
+      "description": "Map tangent vector to hyperboloid via geodesic in Lorentz model",
+      "formula": "exp_x(v) = cosh(||v||_L)x + sinh(||v||_L)(v/||v||_L)",
+      "input": {
+        "x": "Base point on hyperboloid H^n",
+        "v": "Tangent vector at x (satisfies ⟨x,v⟩_L = 0)"
+      },
+      "output": {
+        "point": "Point on hyperboloid H^n"
+      },
+      "complexity": "O(n)",
+      "precision": "1e-12",
+      "validation": {
+        "tangent_constraint": "⟨x,v⟩_L = 0",
+        "output_constraint": "⟨exp_x(v), exp_x(v)⟩_L = -1"
+      },
+      "implementation_notes": [
+        "Handle zero tangent vector (return x)",
+        "Numerically stable for small ||v||",
+        "Verify output satisfies hyperboloid constraint"
+      ],
+      "test_cases": [
+        {
+          "name": "zero_tangent",
+          "x": "[1, 0, 0, ..., 0]",
+          "v": "[0, 0, 0, ..., 0]",
+          "expected": "[1, 0, 0, ..., 0]"
+        }
+      ]
+    },
+    {
+      "id": "lorentz_log_map",
+      "name": "Lorentz Logarithmic Map",
+      "category": "core_operations",
+      "description": "Inverse of exponential map: compute tangent vector from point to point",
+      "formula": "log_x(y) = d(x,y) · (y + ⟨x,y⟩_L·x) / ||y + ⟨x,y⟩_L·x||",
+      "input": {
+        "x": "Base point on hyperboloid H^n",
+        "y": "Target point on hyperboloid H^n"
+      },
+      "output": {
+        "tangent_vector": "Tangent vector at x pointing toward y"
+      },
+      "complexity": "O(n)",
+      "precision": "1e-12",
+      "validation": {
+        "output_constraint": "⟨x, log_x(y)⟩_L = 0",
+        "magnitude": "||log_x(y)||_L = d(x,y)"
+      },
+      "implementation_notes": [
+        "Handle identical points (return zero vector)",
+        "Numerically stable for nearby points",
+        "Verify tangent constraint"
+      ]
+    },
+    {
+      "id": "lorentz_parallel_transport",
+      "name": "Lorentz Parallel Transport",
+      "category": "core_operations",
+      "description": "Parallel transport tangent vector along geodesic in Lorentz model",
+      "formula": "P_{x→y}(v) = v - (⟨y,v⟩_L/(1-⟨x,y⟩_L))(x+y)",
+      "input": {
+        "v": "Tangent vector at x",
+        "x": "Start point on hyperboloid",
+        "y": "End point on hyperboloid"
+      },
+      "output": {
+        "transported_vector": "Tangent vector at y"
+      },
+      "complexity": "O(n)",
+      "precision": "1e-12",
+      "validation": {
+        "tangent_constraint": "⟨y, P_{x→y}(v)⟩_L = 0",
+        "norm_preservation": "||P_{x→y}(v)||_L = ||v||_L"
+      },
+      "implementation_notes": [
+        "Numerically stable formulation",
+        "Preserves Lorentz norm",
+        "Handle identical points (return v)"
+      ]
+    },
+    {
+      "id": "lorentz_geodesic",
+      "name": "Lorentz Geodesic",
+      "category": "core_operations",
+      "description": "Compute point along geodesic between two points in Lorentz model",
+      "formula": "γ(t) = (sinh((1-t)d)/sinh(d))x + (sinh(td)/sinh(d))y where d = d(x,y)",
+      "input": {
+        "x": "Start point on hyperboloid",
+        "y": "End point on hyperboloid",
+        "t": "Parameter in [0,1]"
+      },
+      "output": {
+        "point": "Point on hyperboloid at parameter t"
+      },
+      "complexity": "O(n)",
+      "precision": "1e-12",
+      "validation": {
+        "output_constraint": "⟨γ(t), γ(t)⟩_L = -1",
+        "boundary": "γ(0) = x, γ(1) = y"
+      },
+      "implementation_notes": [
+        "Handle identical points",
+        "Numerically stable for small distances",
+        "Verify hyperboloid constraint"
+      ]
+    },
+    {
+      "id": "lorentz_projection",
+      "name": "Lorentz Projection",
+      "category": "core_operations",
+      "description": "Project arbitrary point in ℝ^(n+1) to hyperboloid",
+      "formula": "proj(x) = x / √(-⟨x,x⟩_L) if x₀ > 0",
+      "input": {
+        "x": "Vector in ℝ^(n+1) with x₀ > 0"
+      },
+      "output": {
+        "point": "Point on hyperboloid H^n"
+      },
+      "complexity": "O(n)",
+      "precision": "1e-12",
+      "validation": {
+        "output_constraint": "⟨proj(x), proj(x)⟩_L = -1",
+        "sign": "proj(x)₀ > 0"
+      },
+      "implementation_notes": [
+        "Ensure x₀ > 0 before projection",
+        "Handle near-zero Lorentz norm",
+        "Verify output constraint"
+      ]
+    },
+    {
+      "id": "lorentz_tangent_projection",
+      "name": "Lorentz Tangent Projection",
+      "category": "core_operations",
+      "description": "Project vector to tangent space at point on hyperboloid",
+      "formula": "proj_T(v,x) = v + ⟨v,x⟩_L·x",
+      "input": {
+        "v": "Vector in ℝ^(n+1)",
+        "x": "Point on hyperboloid"
+      },
+      "output": {
+        "tangent_vector": "Vector in tangent space T_x H^n"
+      },
+      "complexity": "O(n)",
+      "precision": "1e-12",
+      "validation": {
+        "tangent_constraint": "⟨proj_T(v,x), x⟩_L = 0"
+      },
+      "implementation_notes": [
+        "Removes component normal to hyperboloid",
+        "Preserves tangential components",
+        "Verify tangent constraint"
+      ]
+    },
+    {
+      "id": "lorentz_mean",
+      "name": "Lorentz Fréchet Mean",
+      "category": "statistical_operations",
+      "description": "Compute Fréchet mean of points on hyperboloid using gradient descent",
+      "formula": "argmin_μ Σᵢ d²(μ, xᵢ)",
+      "input": {
+        "points": "Array of points on hyperboloid H^n",
+        "weights": "Optional weights (default: uniform)",
+        "max_iterations": "Maximum iterations (default: 100)",
+        "tolerance": "Convergence tolerance (default: 1e-8)"
+      },
+      "output": {
+        "mean": "Point on hyperboloid H^n",
+        "converged": "Boolean indicating convergence"
+      },
+      "complexity": "O(k·m·n) where k=iterations, m=num_points",
+      "precision": "1e-8",
+      "implementation_notes": [
+        "Initialize at first point or weighted average",
+        "Use gradient descent with exp/log maps",
+        "Check convergence via gradient norm"
+      ],
+      "test_cases": [
+        {
+          "name": "single_point",
+          "points": "[[1,0,0,...,0]]",
+          "expected": "[1,0,0,...,0]"
+        }
+      ]
+    },
+    {
+      "id": "lorentz_variance",
+      "name": "Lorentz Variance",
+      "category": "statistical_operations",
+      "description": "Compute variance of points on hyperboloid relative to mean",
+      "formula": "σ² = (1/n)Σᵢ d²(μ, xᵢ)",
+      "input": {
+        "points": "Array of points on hyperboloid",
+        "mean": "Optional precomputed mean (computed if not provided)",
+        "weights": "Optional weights"
+      },
+      "output": {
+        "variance": "Non-negative scalar"
+      },
+      "complexity": "O(m·n) where m=num_points",
+      "precision": "1e-12",
+      "implementation_notes": [
+        "Compute mean if not provided",
+        "Use squared distances",
+        "Apply weights if provided"
+      ]
+    },
+    {
+      "id": "lorentz_curvature",
+      "name": "Lorentz Sectional Curvature",
+      "category": "geometric_properties",
+      "description": "Compute sectional curvature (constant -1 for hyperbolic space)",
+      "formula": "K = -1",
+      "input": {
+        "x": "Point on hyperboloid (unused, for API consistency)",
+        "v1": "First tangent vector (unused)",
+        "v2": "Second tangent vector (unused)"
+      },
+      "output": {
+        "curvature": "-1.0"
+      },
+      "complexity": "O(1)",
+      "precision": "exact",
+      "implementation_notes": [
+        "Always returns -1 (constant curvature)",
+        "Included for API consistency with variable curvature spaces"
+      ]
+    },
+    {
+      "id": "lorentz_volume",
+      "name": "Lorentz Hyperbolic Volume",
+      "category": "geometric_properties",
+      "description": "Compute volume of hyperbolic ball in Lorentz model",
+      "formula": "V(r) = ωₙ ∫₀ʳ sinhⁿ⁻¹(t) dt where ωₙ is surface area of unit (n-1)-sphere",
+      "input": {
+        "radius": "Radius of ball",
+        "dimension": "Dimension n"
+      },
+      "output": {
+        "volume": "Volume of ball"
+      },
+      "complexity": "O(1)",
+      "precision": "1e-12",
+      "implementation_notes": [
+        "Use closed-form formulas for low dimensions",
+        "Numerical integration for high dimensions",
+        "Volume grows exponentially with radius"
+      ],
+      "test_cases": [
+        {
+          "name": "dimension_2",
+          "radius": "1.0",
+          "dimension": "2",
+          "expected": "2π(cosh(1)-1)"
+        }
+      ]
+    },
+    {
+      "id": "lorentz_area",
+      "name": "Lorentz Hyperbolic Surface Area",
+      "category": "geometric_properties",
+      "description": "Compute surface area of hyperbolic sphere in Lorentz model",
+      "formula": "A(r) = ωₙ sinhⁿ⁻¹(r) where ωₙ = 2πⁿ/²/Γ(n/2)",
+      "input": {
+        "radius": "Radius of sphere",
+        "dimension": "Dimension n"
+      },
+      "output": {
+        "area": "Surface area"
+      },
+      "complexity": "O(1)",
+      "precision": "1e-12",
+      "implementation_notes": [
+        "Use closed-form formulas",
+        "Area grows exponentially with radius",
+        "Related to volume by differentiation"
+      ]
+    },
+    {
+      "id": "lorentz_to_poincare",
+      "name": "Lorentz to Poincaré Conversion",
+      "category": "model_conversion",
+      "description": "Convert point from Lorentz hyperboloid model to Poincaré ball model",
+      "formula": "P(x) = (x₁, x₂, ..., xₙ) / (1 + x₀)",
+      "input": {
+        "x": "Point on hyperboloid H^n"
+      },
+      "output": {
+        "point": "Point in Poincaré ball B^n (||point|| < 1)"
+      },
+      "complexity": "O(n)",
+      "precision": "1e-12",
+      "validation": {
+        "input_constraint": "⟨x,x⟩_L = -1, x₀ > 0",
+        "output_constraint": "||point|| < 1"
+      },
+      "implementation_notes": [
+        "Stereographic projection from hyperboloid",
+        "Handle points near boundary (x₀ ≈ 0)",
+        "Inverse of poincare_to_lorentz"
+      ],
+      "test_cases": [
+        {
+          "name": "origin",
+          "x": "[1, 0, 0, ..., 0]",
+          "expected": "[0, 0, ..., 0]"
+        }
+      ],
+      "edge_cases": [
+        "Points near boundary (x₀ → 0)",
+        "High-dimensional spaces"
+      ]
+    }
+  ],
+  "usage_guidelines": {
+    "when_to_use_lorentz": [
+      "Large distances (d > 5)",
+      "High-dimensional spaces (n > 10)",
+      "Parallel transport operations",
+      "Statistical computations (mean, variance)",
+      "When numerical stability is critical"
+    ],
+    "when_to_use_poincare": [
+      "Small distances (d < 5)",
+      "Low-dimensional spaces (n ≤ 10)",
+      "Visualization and intuition",
+      "Boundary analysis",
+      "When computational efficiency is critical"
+    ],
+    "automatic_selection": "Use dual_model_distance and related operations for automatic model selection"
+  }
+}
