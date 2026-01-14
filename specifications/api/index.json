@@ -1,9 +1,0 @@
-{
-  "openapi.yaml": {
-    "migration_policy": "none",
-    "release_status": "released",
-    "size_bytes": 3020,
-    "stability": "stable",
-    "unreleased": false
-  }
-}

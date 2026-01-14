@@ -1,6 +1,0 @@
-{
-  "domainId": "urn:domain:default",
-  "frameId": "urn:frame:euclidean:default",
-  "payloadRef": "schema://spec-pack/schemas/geometry/EncodedPoint.schema.json",
-  "transportType": "geometry"
-}
