@@ -1,0 +1,709 @@
+{
+  "component": "black_hole_geometries",
+  "subcomponent": "schwarzschild_thermodynamics_distances",
+  "description": "Black hole thermodynamics (Hawking radiation, Bekenstein-Hawking entropy) and distance computations in Schwarzschild spacetime. Combines quantum effects with classical geometry, plus spacetime interval and geodesic distance calculations.",
+  "operations": [
+    {
+      "id": "sch_029",
+      "name": "compute_hawking_radiation",
+      "category": "quantum_effects",
+      "description": "Compute Hawking temperature and evaporation rate for Schwarzschild black hole. Quantum field theory in curved spacetime predicts black holes emit thermal radiation with temperature T_H = ℏc³/(8πGMk_B). Black holes evaporate over time, losing mass via Hawking radiation.",
+      "parameters": {
+        "mass": {
+          "type": "float",
+          "description": "Black hole mass M",
+          "constraints": "M > 0"
+        },
+        "units": {
+          "type": "string",
+          "description": "Unit system: 'geometric' (ℏ=c=G=k_B=1), 'SI', or 'planck'",
+          "default": "geometric"
+        }
+      },
+      "returns": {
+        "hawking_temperature": {
+          "type": "float",
+          "description": "Hawking temperature T_H = ℏc³/(8πGMk_B)"
+        },
+        "hawking_temperature_kelvin": {
+          "type": "float",
+          "description": "Temperature in Kelvin (if SI units)"
+        },
+        "evaporation_rate": {
+          "type": "float",
+          "description": "Mass loss rate dM/dt = -ℏc⁴/(15360πG²M²)"
+        },
+        "evaporation_time": {
+          "type": "float",
+          "description": "Total evaporation time τ = 5120πG²M³/(ℏc⁴)"
+        },
+        "luminosity": {
+          "type": "float",
+          "description": "Hawking luminosity L = ℏc⁶/(15360πG²M²)"
+        },
+        "peak_wavelength": {
+          "type": "float",
+          "description": "Peak emission wavelength λ_max = 2.898×10⁻³/T_H (Wien's law)"
+        }
+      },
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      },
+      "mathematical_formula": "Hawking temperature: T_H = ℏc³/(8πGMk_B) ≈ 6.17×10⁻⁸ K × (M_☉/M). Evaporation time: τ = 5120πG²M³/(ℏc⁴) ≈ 2.1×10⁶⁷ (M/M_☉)³ years. Luminosity: L = ℏc⁶/(15360πG²M²) (Stefan-Boltzmann for black body).",
+      "implementation_notes": [
+        "Hawking temperature: T_H = ℏ/(8πMk_B) in geometric units (c=G=1)",
+        "Surface gravity: κ = 1/(4M) → T_H = ℏκ/(2πk_B) (Unruh temperature)",
+        "Evaporation rate: dM/dt ∝ -1/M² (smaller BHs evaporate faster)",
+        "Evaporation time: τ ∝ M³ (stellar-mass BH: τ ~ 10⁶⁷ years >> age of universe)",
+        "Primordial BHs (M ~ 10¹⁵ g): evaporating now (τ ~ 13.8 Gyr)",
+        "Hawking radiation: thermal spectrum (black body at T_H)",
+        "Information paradox: unitarity vs. thermal radiation",
+        "Observable: primordial BH evaporation (gamma-ray bursts?)"
+      ],
+      "test_cases": [
+        {
+          "name": "Solar mass black hole",
+          "input": {
+            "mass": 1.989e30,
+            "units": "SI"
+          },
+          "expected": {
+            "hawking_temperature": 6.17e-8,
+            "hawking_temperature_kelvin": 6.17e-8,
+            "evaporation_rate": -9.0e-29,
+            "evaporation_time": 2.1e67,
+            "luminosity": 9.0e-29,
+            "peak_wavelength": 4.7e4
+          },
+          "note": "T_H ≈ 62 nK, τ ≈ 10⁶⁷ years (far exceeds age of universe)"
+        },
+        {
+          "name": "Supermassive black hole (M=10⁹ M_☉)",
+          "input": {
+            "mass": 1.989e39,
+            "units": "SI"
+          },
+          "expected": {
+            "hawking_temperature": 6.17e-17,
+            "hawking_temperature_kelvin": 6.17e-17,
+            "evaporation_rate": -9.0e-47,
+            "evaporation_time": 2.1e94,
+            "luminosity": 9.0e-47,
+            "peak_wavelength": 4.7e13
+          },
+          "note": "T_H ≈ 0.06 pK, extremely cold, negligible evaporation"
+        },
+        {
+          "name": "Primordial black hole (M=10¹⁵ g, evaporating now)",
+          "input": {
+            "mass": 1e12,
+            "units": "SI"
+          },
+          "expected": {
+            "hawking_temperature": 1.23e11,
+            "hawking_temperature_kelvin": 1.23e11,
+            "evaporation_rate": -1.8e8,
+            "evaporation_time": 4.35e17,
+            "luminosity": 1.8e25,
+            "peak_wavelength": 2.36e-14
+          },
+          "note": "T_H ≈ 123 GeV, τ ≈ 13.8 Gyr (age of universe), explosive final evaporation"
+        },
+        {
+          "name": "Micro black hole (M=1 kg, LHC scale)",
+          "input": {
+            "mass": 1.0,
+            "units": "SI"
+          },
+          "expected": {
+            "hawking_temperature": 1.23e23,
+            "hawking_temperature_kelvin": 1.23e23,
+            "evaporation_rate": -3.6e26,
+            "evaporation_time": 8.4e-27,
+            "luminosity": 3.6e43,
+            "peak_wavelength": 2.36e-26
+          },
+          "note": "T_H ≈ 10²³ K, evaporates in 10⁻²⁶ seconds (Planck time scale)"
+        },
+        {
+          "name": "Geometric units (M=1)",
+          "input": {
+            "mass": 1.0,
+            "units": "geometric"
+          },
+          "expected": {
+            "hawking_temperature": 0.0398,
+            "hawking_temperature_kelvin": null,
+            "evaporation_rate": -3.26e-5,
+            "evaporation_time": 10240,
+            "luminosity": 3.26e-5,
+            "peak_wavelength": null
+          },
+          "note": "T_H = 1/(8π) ≈ 0.0398 in geometric units"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "Planck mass black hole (M=M_P ≈ 2.18×10⁻⁸ kg)",
+          "input": {
+            "mass": 2.18e-8,
+            "units": "SI"
+          },
+          "expected_behavior": "T_H ≈ T_Planck ≈ 1.42×10³² K. Quantum gravity regime: semiclassical approximation breaks down. Evaporation time: τ ≈ t_Planck ≈ 5.4×10⁻⁴⁴ s."
+        },
+        {
+          "name": "Zero mass (degenerate)",
+          "input": {
+            "mass": 0.0,
+            "units": "SI"
+          },
+          "expected_behavior": "Error: T_H → ∞, evaporation rate diverges. No black hole (naked singularity or Minkowski space)."
+        },
+        {
+          "name": "Negative mass (unphysical)",
+          "input": {
+            "mass": -1.0,
+            "units": "SI"
+          },
+          "expected_behavior": "Error: negative mass unphysical. Schwarzschild solution requires M > 0."
+        }
+      ]
+    },
+    {
+      "id": "sch_030",
+      "name": "compute_bekenstein_hawking_entropy",
+      "category": "quantum_effects",
+      "description": "Compute Bekenstein-Hawking entropy of Schwarzschild black hole. Black hole entropy proportional to horizon area: S = k_B A/(4ℓ_P²) = k_B c³ A/(4Gℏ) where A = 16πM² is horizon area. Fundamental connection between gravity, thermodynamics, and quantum mechanics.",
+      "parameters": {
+        "mass": {
+          "type": "float",
+          "description": "Black hole mass M",
+          "constraints": "M > 0"
+        },
+        "units": {
+          "type": "string",
+          "description": "Unit system: 'geometric' (ℏ=c=G=k_B=1), 'SI', or 'planck'",
+          "default": "geometric"
+        }
+      },
+      "returns": {
+        "entropy": {
+          "type": "float",
+          "description": "Bekenstein-Hawking entropy S = k_B A/(4ℓ_P²)"
+        },
+        "entropy_bits": {
+          "type": "float",
+          "description": "Entropy in bits: S/ln(2)"
+        },
+        "horizon_area": {
+          "type": "float",
+          "description": "Event horizon area A = 16πM²"
+        },
+        "horizon_radius": {
+          "type": "float",
+          "description": "Schwarzschild radius r_s = 2M"
+        },
+        "information_capacity": {
+          "type": "float",
+          "description": "Maximum information (bits): A/(4ℓ_P² ln(2))"
+        },
+        "entropy_per_baryon": {
+          "type": "float",
+          "description": "Entropy per baryon (if applicable)"
+        }
+      },
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      },
+      "mathematical_formula": "Bekenstein-Hawking entropy: S = k_B c³ A/(4Gℏ) where A = 4πr_s² = 16πM² (horizon area). In geometric units: S = A/4 = 4πM². Holographic principle: S ∝ A (not volume). Information capacity: N_bits = A/(4ℓ_P² ln(2)).",
+      "implementation_notes": [
+        "Entropy: S = A/4 in geometric units (ℏ=c=G=k_B=1)",
+        "Horizon area: A = 4π(2M)² = 16πM²",
+        "Planck length: ℓ_P = √(Gℏ/c³) ≈ 1.616×10⁻³⁵ m",
+        "Planck area: A_P = ℓ_P² ≈ 2.61×10⁻⁷⁰ m²",
+        "Entropy per Planck area: S/A = k_B/(4ℓ_P²) ≈ 1 bit per Planck area",
+        "Holographic principle: maximum entropy scales with area, not volume",
+        "Information paradox: S increases during collapse, but Hawking radiation thermal",
+        "Black hole thermodynamics: dM = (κ/8π)dA + Ω_H dJ (first law)"
+      ],
+      "test_cases": [
+        {
+          "name": "Solar mass black hole",
+          "input": {
+            "mass": 1.989e30,
+            "units": "SI"
+          },
+          "expected": {
+            "entropy": 1.04e54,
+            "entropy_bits": 1.50e54,
+            "horizon_area": 2.73e14,
+            "horizon_radius": 2953,
+            "information_capacity": 1.50e54,
+            "entropy_per_baryon": 8.7e26
+          },
+          "note": "S ≈ 10⁵⁴ k_B, N_bits ≈ 10⁵⁴ bits (enormous information capacity)"
+        },
+        {
+          "name": "Supermassive black hole (M=10⁹ M_☉)",
+          "input": {
+            "mass": 1.989e39,
+            "units": "SI"
+          },
+          "expected": {
+            "entropy": 1.04e72,
+            "entropy_bits": 1.50e72,
+            "horizon_area": 2.73e32,
+            "horizon_radius": 2.953e12,
+            "information_capacity": 1.50e72,
+            "entropy_per_baryon": 8.7e44
+          },
+          "note": "S ∝ M²: entropy scales quadratically with mass"
+        },
+        {
+          "name": "Primordial black hole (M=10¹⁵ g)",
+          "input": {
+            "mass": 1e12,
+            "units": "SI"
+          },
+          "expected": {
+            "entropy": 2.63e26,
+            "entropy_bits": 3.79e26,
+            "horizon_area": 6.89e-24,
+            "horizon_radius": 1.48e-15,
+            "information_capacity": 3.79e26,
+            "entropy_per_baryon": 2.63e-1
+          },
+          "note": "Small BH: S ≈ 10²⁶ k_B, still enormous"
+        },
+        {
+          "name": "Planck mass black hole (M=M_P)",
+          "input": {
+            "mass": 2.18e-8,
+            "units": "SI"
+          },
+          "expected": {
+            "entropy": 1.38e-23,
+            "entropy_bits": 1.99e-23,
+            "horizon_area": 2.61e-70,
+            "horizon_radius": 3.23e-35,
+            "information_capacity": 1.0,
+            "entropy_per_baryon": 1.38e-50
+          },
+          "note": "S ≈ k_B (one bit of information), minimum entropy BH"
+        },
+        {
+          "name": "Geometric units (M=1)",
+          "input": {
+            "mass": 1.0,
+            "units": "geometric"
+          },
+          "expected": {
+            "entropy": 12.566,
+            "entropy_bits": 18.13,
+            "horizon_area": 50.265,
+            "horizon_radius": 2.0,
+            "information_capacity": 18.13,
+            "entropy_per_baryon": null
+          },
+          "note": "S = 4πM² = 4π ≈ 12.57 in geometric units"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "Planck mass black hole (quantum gravity regime)",
+          "input": {
+            "mass": 2.18e-8,
+            "units": "SI"
+          },
+          "expected_behavior": "S ≈ k_B (one bit). Quantum gravity corrections important. Semiclassical formula breaks down. Horizon area ≈ Planck area."
+        },
+        {
+          "name": "Zero mass (degenerate)",
+          "input": {
+            "mass": 0.0,
+            "units": "SI"
+          },
+          "expected_behavior": "Error: S = 0, A = 0. No black hole, no entropy. Minkowski spacetime."
+        },
+        {
+          "name": "Comparison with ordinary matter",
+          "input": {
+            "mass": 1.989e30,
+            "units": "SI"
+          },
+          "expected_behavior": "BH entropy (S ≈ 10⁵⁴ k_B) >> ordinary matter entropy (S ≈ 10⁵⁷ k_B for Sun). Black holes are maximum entropy objects for given mass."
+        }
+      ]
+    },
+    {
+      "id": "sch_031",
+      "name": "compute_distance_schwarzschild",
+      "category": "distance_operations",
+      "description": "Compute spacetime interval (invariant distance) between two events in Schwarzschild spacetime. Uses metric: ds² = -(1-2M/r)dt² + (1-2M/r)⁻¹dr² + r²dΩ². Returns timelike (ds²<0), spacelike (ds²>0), or null (ds²=0) classification.",
+      "parameters": {
+        "mass": {
+          "type": "float",
+          "description": "Black hole mass M",
+          "constraints": "M > 0"
+        },
+        "event1": {
+          "type": "array",
+          "description": "First event coordinates [t₁, r₁, θ₁, φ₁]",
+          "shape": "[4]"
+        },
+        "event2": {
+          "type": "array",
+          "description": "Second event coordinates [t₂, r₂, θ₂, φ₂]",
+          "shape": "[4]"
+        }
+      },
+      "returns": {
+        "spacetime_interval": {
+          "type": "float",
+          "description": "Spacetime interval ds² (invariant)"
+        },
+        "proper_distance": {
+          "type": "float",
+          "description": "Proper distance √(ds²) if spacelike, or proper time √(-ds²) if timelike"
+        },
+        "interval_type": {
+          "type": "string",
+          "description": "Classification: 'timelike' (ds²<0), 'spacelike' (ds²>0), 'null' (ds²=0)"
+        },
+        "coordinate_separation": {
+          "type": "object",
+          "description": "Coordinate differences: Δt, Δr, Δθ, Δφ"
+        },
+        "is_causally_connected": {
+          "type": "bool",
+          "description": "True if timelike or null (causal connection possible)"
+        }
+      },
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      },
+      "mathematical_formula": "Schwarzschild metric: ds² = -(1-2M/r)dt² + (1-2M/r)⁻¹dr² + r²(dθ² + sin²θ dφ²). For infinitesimal separation: ds² = g_μν dx^μ dx^ν. Timelike: ds²<0 (massive particles), Spacelike: ds²>0 (no causal connection), Null: ds²=0 (light rays).",
+      "implementation_notes": [
+        "Metric components: g_tt = -(1-2M/r), g_rr = (1-2M/r)⁻¹, g_θθ = r², g_φφ = r²sin²θ",
+        "Spacetime interval: ds² = g_μν Δx^μ Δx^ν (for small separations)",
+        "Timelike (ds²<0): proper time τ = √(-ds²), causal connection",
+        "Spacelike (ds²>0): proper distance σ = √(ds²), no causal connection",
+        "Null (ds²=0): light-like separation, photon path",
+        "Invariant: all observers agree on ds² (coordinate-independent)",
+        "For large separations: integrate along geodesic"
+      ],
+      "test_cases": [
+        {
+          "name": "Timelike separation (same location, different times)",
+          "input": {
+            "mass": 1.0,
+            "event1": [0, 10, 1.57, 0],
+            "event2": [10, 10, 1.57, 0]
+          },
+          "expected": {
+            "spacetime_interval": -80.0,
+            "proper_distance": 8.944,
+            "interval_type": "timelike",
+            "coordinate_separation": {"dt": 10, "dr": 0, "dtheta": 0, "dphi": 0},
+            "is_causally_connected": true
+          },
+          "note": "ds² = -(1-0.2)×100 = -80, τ = √80 ≈ 8.94"
+        },
+        {
+          "name": "Spacelike separation (same time, different locations)",
+          "input": {
+            "mass": 1.0,
+            "event1": [0, 10, 1.57, 0],
+            "event2": [0, 20, 1.57, 0]
+          },
+          "expected": {
+            "spacetime_interval": 12.5,
+            "proper_distance": 3.536,
+            "interval_type": "spacelike",
+            "coordinate_separation": {"dt": 0, "dr": 10, "dtheta": 0, "dphi": 0},
+            "is_causally_connected": false
+          },
+          "note": "ds² = (1-0.2)⁻¹×100 = 125, σ = √125 ≈ 11.18 (approximate for large Δr)"
+        },
+        {
+          "name": "Null separation (light ray)",
+          "input": {
+            "mass": 1.0,
+            "event1": [0, 10, 1.57, 0],
+            "event2": [8.944, 10, 1.57, 0]
+          },
+          "expected": {
+            "spacetime_interval": 0.0,
+            "proper_distance": 0.0,
+            "interval_type": "null",
+            "coordinate_separation": {"dt": 8.944, "dr": 0, "dtheta": 0, "dphi": 0},
+            "is_causally_connected": true
+          },
+          "note": "ds² = 0 for photon: -(1-0.2)×80 + 0 = 0 (approximately)"
+        },
+        {
+          "name": "Angular separation (same r, t, different θ)",
+          "input": {
+            "mass": 1.0,
+            "event1": [0, 10, 0, 0],
+            "event2": [0, 10, 1.57, 0]
+          },
+          "expected": {
+            "spacetime_interval": 246.74,
+            "proper_distance": 15.71,
+            "interval_type": "spacelike",
+            "coordinate_separation": {"dt": 0, "dr": 0, "dtheta": 1.57, "dphi": 0},
+            "is_causally_connected": false
+          },
+          "note": "ds² = r²(Δθ)² = 100×1.57² ≈ 246.74"
+        },
+        {
+          "name": "Near horizon (r=2.1M)",
+          "input": {
+            "mass": 1.0,
+            "event1": [0, 2.1, 1.57, 0],
+            "event2": [10, 2.1, 1.57, 0]
+          },
+          "expected": {
+            "spacetime_interval": -4.76,
+            "proper_distance": 2.18,
+            "interval_type": "timelike",
+            "coordinate_separation": {"dt": 10, "dr": 0, "dtheta": 0, "dphi": 0},
+            "is_causally_connected": true
+          },
+          "note": "ds² = -(1-2/2.1)×100 ≈ -4.76, extreme time dilation"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "At event horizon (r=2M)",
+          "input": {
+            "mass": 1.0,
+            "event1": [0, 2, 1.57, 0],
+            "event2": [10, 2, 1.57, 0]
+          },
+          "expected_behavior": "ds² = 0 (null). Coordinate singularity: g_tt = 0 at horizon. Schwarzschild time becomes null coordinate. Use Eddington-Finkelstein coordinates."
+        },
+        {
+          "name": "Inside horizon (r<2M)",
+          "input": {
+            "mass": 1.0,
+            "event1": [0, 1.5, 1.57, 0],
+            "event2": [10, 1.5, 1.57, 0]
+          },
+          "expected_behavior": "ds² > 0 (spacelike). Inside horizon: t becomes spacelike, r becomes timelike. Schwarzschild coordinates pathological."
+        },
+        {
+          "name": "Large separation (geodesic integration needed)",
+          "input": {
+            "mass": 1.0,
+            "event1": [0, 10, 1.57, 0],
+            "event2": [0, 100, 1.57, 0]
+          },
+          "expected_behavior": "Linear approximation invalid for Δr >> r. Integrate ds along geodesic: s = ∫√(g_rr) dr. Use sch_032 for accurate geodesic distance."
+        }
+      ]
+    },
+    {
+      "id": "sch_032",
+      "name": "compute_geodesic_distance",
+      "category": "distance_operations",
+      "description": "Compute geodesic distance (proper length or proper time) along a spacelike or timelike path in Schwarzschild spacetime. Integrates metric along path: s = ∫√|g_μν dx^μ dx^ν|. More accurate than linear approximation for extended paths.",
+      "parameters": {
+        "mass": {
+          "type": "float",
+          "description": "Black hole mass M",
+          "constraints": "M > 0"
+        },
+        "path": {
+          "type": "array",
+          "description": "Path as array of spacetime points [[t₁,r₁,θ₁,φ₁], [t₂,r₂,θ₂,φ₂], ...]",
+          "shape": "[N, 4]"
+        },
+        "path_type": {
+          "type": "string",
+          "description": "Path type: 'timelike', 'spacelike', or 'null'",
+          "default": "auto-detect"
+        },
+        "integration_method": {
+          "type": "string",
+          "description": "Integration method: 'trapezoidal', 'simpson', 'adaptive'",
+          "default": "adaptive"
+        }
+      },
+      "returns": {
+        "geodesic_distance": {
+          "type": "float",
+          "description": "Total geodesic distance (proper time for timelike, proper length for spacelike)"
+        },
+        "coordinate_length": {
+          "type": "float",
+          "description": "Coordinate distance (Euclidean-like)"
+        },
+        "path_classification": {
+          "type": "string",
+          "description": "Path type: 'timelike', 'spacelike', 'null', or 'mixed'"
+        },
+        "segment_distances": {
+          "type": "array",
+          "description": "Geodesic distance for each segment",
+          "shape": "[N-1]"
+        },
+        "is_geodesic": {
+          "type": "bool",
+          "description": "True if path is a geodesic (extremal length)"
+        }
+      },
+      "complexity": {
+        "time": "O(N)",
+        "space": "O(N)"
+      },
+      "mathematical_formula": "Geodesic distance: s = ∫√|ds²| = ∫√|g_μν dx^μ dx^ν|. For timelike: τ = ∫√(-ds²) (proper time). For spacelike: σ = ∫√(ds²) (proper length). Integrate along path using numerical methods (trapezoidal, Simpson, adaptive quadrature).",
+      "implementation_notes": [
+        "Integrate metric along path: s = ∫√|g_μν (dx^μ/dλ)(dx^ν/dλ)| dλ",
+        "Parameterize path by affine parameter λ ∈ [0,1]",
+        "For timelike: proper time τ = ∫√(-g_μν u^μ u^ν) dλ",
+        "For spacelike: proper length σ = ∫√(g_μν dx^μ dx^ν) dλ",
+        "Adaptive integration: higher accuracy for curved regions",
+        "Check geodesic condition: D²x^μ/Dλ² = 0 (parallel transport of tangent)",
+        "For geodesics: use geodesic equations (sch_011, sch_013)"
+      ],
+      "test_cases": [
+        {
+          "name": "Radial path (r=10M to r=20M, t=const)",
+          "input": {
+            "mass": 1.0,
+            "path": [[0, 10, 1.57, 0], [0, 15, 1.57, 0], [0, 20, 1.57, 0]],
+            "path_type": "spacelike",
+            "integration_method": "adaptive"
+          },
+          "expected": {
+            "geodesic_distance": 11.18,
+            "coordinate_length": 10.0,
+            "path_classification": "spacelike",
+            "segment_distances": [5.59, 5.59],
+            "is_geodesic": false
+          },
+          "note": "σ = ∫√(g_rr) dr ≈ 11.18 (curved space longer than coordinate distance)"
+        },
+        {
+          "name": "Temporal path (t=0 to t=10, r=10M)",
+          "input": {
+            "mass": 1.0,
+            "path": [[0, 10, 1.57, 0], [5, 10, 1.57, 0], [10, 10, 1.57, 0]],
+            "path_type": "timelike",
+            "integration_method": "adaptive"
+          },
+          "expected": {
+            "geodesic_distance": 8.944,
+            "coordinate_length": 10.0,
+            "path_classification": "timelike",
+            "segment_distances": [4.472, 4.472],
+            "is_geodesic": true
+          },
+          "note": "τ = ∫√(-g_tt) dt = √(1-0.2)×10 ≈ 8.94 (time dilation)"
+        },
+        {
+          "name": "Circular path (r=10M, θ=π/2, φ=0 to 2π)",
+          "input": {
+            "mass": 1.0,
+            "path": [[0, 10, 1.57, 0], [0, 10, 1.57, 1.57], [0, 10, 1.57, 3.14], [0, 10, 1.57, 4.71], [0, 10, 1.57, 6.28]],
+            "path_type": "spacelike",
+            "integration_method": "simpson"
+          },
+          "expected": {
+            "geodesic_distance": 62.83,
+            "coordinate_length": 62.83,
+            "path_classification": "spacelike",
+            "segment_distances": [15.71, 15.71, 15.71, 15.71],
+            "is_geodesic": false
+          },
+          "note": "Circumference: C = 2πr = 62.83 (flat at constant r)"
+        },
+        {
+          "name": "Geodesic (free fall from r=10M to r=5M)",
+          "input": {
+            "mass": 1.0,
+            "path": [[0, 10, 1.57, 0], [5, 8, 1.57, 0], [10, 6, 1.57, 0], [15, 5, 1.57, 0]],
+            "path_type": "timelike",
+            "integration_method": "adaptive"
+          },
+          "expected": {
+            "geodesic_distance": 12.5,
+            "coordinate_length": 15.0,
+            "path_classification": "timelike",
+            "segment_distances": [4.2, 4.1, 4.2],
+            "is_geodesic": true
+          },
+          "note": "Free fall geodesic: proper time from sch_011"
+        },
+        {
+          "name": "Near horizon path (r=2.5M to r=2.1M)",
+          "input": {
+            "mass": 1.0,
+            "path": [[0, 2.5, 1.57, 0], [0, 2.3, 1.57, 0], [0, 2.1, 1.57, 0]],
+            "path_type": "spacelike",
+            "integration_method": "adaptive"
+          },
+          "expected": {
+            "geodesic_distance": 1.2,
+            "coordinate_length": 0.4,
+            "path_classification": "spacelike",
+            "segment_distances": [0.6, 0.6],
+            "is_geodesic": false
+          },
+          "note": "Near horizon: geodesic distance >> coordinate distance (extreme curvature)"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "Path crossing horizon",
+          "input": {
+            "mass": 1.0,
+            "path": [[0, 3, 1.57, 0], [10, 2, 1.57, 0], [20, 1.5, 1.57, 0]],
+            "path_type": "timelike",
+            "integration_method": "adaptive"
+          },
+          "expected_behavior": "Mixed path: timelike outside, coordinate singularity at r=2M. Use Eddington-Finkelstein coordinates for smooth crossing. Schwarzschild coordinates break down."
+        },
+        {
+          "name": "Null geodesic (photon path)",
+          "input": {
+            "mass": 1.0,
+            "path": [[0, 10, 1.57, 0], [8.944, 10, 1.57, 0.1], [17.888, 10, 1.57, 0.2]],
+            "path_type": "null",
+            "integration_method": "adaptive"
+          },
+          "expected_behavior": "Geodesic distance = 0 (ds²=0 for photons). Use affine parameter λ instead of proper time. Integrate: ∫dλ."
+        },
+        {
+          "name": "Non-geodesic path (accelerated)",
+          "input": {
+            "mass": 1.0,
+            "path": [[0, 10, 1.57, 0], [10, 10, 1.57, 0], [20, 10, 1.57, 0]],
+            "path_type": "timelike",
+            "integration_method": "adaptive"
+          },
+          "expected_behavior": "Static observer (hovering): non-geodesic (requires thrust). Proper time τ < geodesic proper time (free fall). is_geodesic=false."
+        }
+      ]
+    }
+  ],
+  "dependencies": [
+    "schwarzschild_metric_basic (Phase 1)",
+    "numerical_integration (trapezoidal, Simpson, adaptive quadrature)",
+    "geodesic_computation (sch_011, sch_013)",
+    "quantum_field_theory_curved_spacetime (Hawking radiation derivation)"
+  ],
+  "references": [
+    "Hawking - Black Hole Explosions? (1974)",
+    "Bekenstein - Black Holes and Entropy (1973)",
+    "Misner, Thorne, Wheeler - Gravitation (1973), Chapter 33",
+    "Wald - General Relativity (1984), Chapter 7",
+    "Susskind - The Black Hole War (2008) - Holographic principle",
+    "Page - Particle Emission Rates from a Black Hole (1976)"
+  ]
+}

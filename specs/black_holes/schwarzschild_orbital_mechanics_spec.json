@@ -1,0 +1,583 @@
+{
+  "component": "black_hole_geometries",
+  "subcomponent": "schwarzschild_orbital_mechanics",
+  "description": "Advanced orbital mechanics in Schwarzschild spacetime including effective potential analysis, orbit classification, and relativistic perihelion precession. These operations characterize bound and unbound orbits, stability, and post-Newtonian corrections.",
+  "operations": [
+    {
+      "id": "sch_023",
+      "name": "compute_effective_potential",
+      "category": "orbital_mechanics",
+      "description": "Compute effective potential V_eff(r) for radial motion in Schwarzschild spacetime. The effective potential determines orbital dynamics: turning points, circular orbits, and stability. Includes relativistic corrections beyond Newtonian 1/r potential.",
+      "parameters": {
+        "mass": {
+          "type": "float",
+          "description": "Black hole mass M",
+          "constraints": "M > 0"
+        },
+        "specific_angular_momentum": {
+          "type": "float",
+          "description": "Specific angular momentum L (angular momentum per unit mass)",
+          "constraints": "L ≥ 0"
+        },
+        "radial_range": {
+          "type": "array",
+          "description": "Radial range [r_min, r_max] for potential evaluation",
+          "shape": "[2]",
+          "default": "[0.1, 100]"
+        },
+        "num_points": {
+          "type": "int",
+          "description": "Number of points for potential curve",
+          "default": 1000
+        }
+      },
+      "returns": {
+        "effective_potential": {
+          "type": "array",
+          "description": "Effective potential values V_eff(r) at each radius",
+          "shape": "[num_points]"
+        },
+        "radii": {
+          "type": "array",
+          "description": "Radial coordinates r",
+          "shape": "[num_points]"
+        },
+        "circular_orbit_radius": {
+          "type": "float",
+          "description": "Radius of circular orbit (dV_eff/dr = 0), if exists"
+        },
+        "isco_radius": {
+          "type": "float",
+          "description": "Innermost stable circular orbit radius (6M for Schwarzschild)"
+        },
+        "potential_maximum": {
+          "type": "float",
+          "description": "Maximum of effective potential (energy barrier)"
+        },
+        "potential_minimum": {
+          "type": "float",
+          "description": "Minimum of effective potential (stable circular orbit)"
+        }
+      },
+      "complexity": {
+        "time": "O(N)",
+        "space": "O(N)"
+      },
+      "mathematical_formula": "Effective potential: V_eff(r) = -M/r + L²/(2r²) - ML²/r³. Derived from energy equation: E² = (1-2M/r)(1 + L²/r² + (dr/dτ)²). Circular orbits at dV_eff/dr = 0. Stability: d²V_eff/dr² > 0 (stable), < 0 (unstable). ISCO at r=6M where d²V_eff/dr² = 0.",
+      "implementation_notes": [
+        "Effective potential from radial geodesic equation",
+        "Three terms: Newtonian (-M/r), centrifugal (L²/2r²), relativistic (-ML²/r³)",
+        "Circular orbits: dV_eff/dr = 0 → r³ - L²r + 3ML² = 0",
+        "ISCO condition: d²V_eff/dr² = 0 → L² = 12M² (r_ISCO = 6M)",
+        "For L < 2√3 M: no stable circular orbits (plunge)",
+        "For L = 2√3 M: marginally stable orbit at r=6M",
+        "For L > 2√3 M: stable circular orbit at r > 6M",
+        "Potential barrier for L > 4M: prevents plunge from infinity"
+      ],
+      "test_cases": [
+        {
+          "name": "ISCO angular momentum (L=2√3 M)",
+          "input": {
+            "mass": 1.0,
+            "specific_angular_momentum": 3.464,
+            "radial_range": [2, 20],
+            "num_points": 1000
+          },
+          "expected": {
+            "circular_orbit_radius": 6.0,
+            "isco_radius": 6.0,
+            "potential_maximum": -0.0286,
+            "potential_minimum": -0.0286
+          },
+          "note": "Marginally stable: V_max = V_min at r=6M"
+        },
+        {
+          "name": "Stable circular orbit (L=4M)",
+          "input": {
+            "mass": 1.0,
+            "specific_angular_momentum": 4.0,
+            "radial_range": [2, 20],
+            "num_points": 1000
+          },
+          "expected": {
+            "circular_orbit_radius": 8.0,
+            "isco_radius": 6.0,
+            "potential_maximum": -0.0234,
+            "potential_minimum": -0.0313
+          },
+          "note": "Stable orbit at r=8M, potential well"
+        },
+        {
+          "name": "High angular momentum (L=10M)",
+          "input": {
+            "mass": 1.0,
+            "specific_angular_momentum": 10.0,
+            "radial_range": [2, 50],
+            "num_points": 1000
+          },
+          "expected": {
+            "circular_orbit_radius": 50.0,
+            "isco_radius": 6.0,
+            "potential_maximum": -0.0019,
+            "potential_minimum": -0.0100
+          },
+          "note": "Large orbit, nearly Newtonian"
+        },
+        {
+          "name": "Low angular momentum (L=3M, no stable orbit)",
+          "input": {
+            "mass": 1.0,
+            "specific_angular_momentum": 3.0,
+            "radial_range": [2, 20],
+            "num_points": 1000
+          },
+          "expected": {
+            "circular_orbit_radius": null,
+            "isco_radius": 6.0,
+            "potential_maximum": null,
+            "potential_minimum": null
+          },
+          "note": "L < 2√3 M: no circular orbits, direct plunge"
+        },
+        {
+          "name": "Radial infall (L=0)",
+          "input": {
+            "mass": 1.0,
+            "specific_angular_momentum": 0.0,
+            "radial_range": [0.1, 20],
+            "num_points": 1000
+          },
+          "expected": {
+            "circular_orbit_radius": null,
+            "isco_radius": 6.0,
+            "potential_maximum": 0.0,
+            "potential_minimum": -Infinity
+          },
+          "note": "No angular momentum: V_eff = -M/r (Newtonian)"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "Photon effective potential (massless, E/L finite)",
+          "input": {
+            "mass": 1.0,
+            "specific_angular_momentum": 5.196,
+            "radial_range": [2, 20],
+            "num_points": 1000
+          },
+          "expected_behavior": "Photon sphere at r=3M. Effective potential: V_eff = L²/r² (1-2M/r). Unstable circular orbit for photons."
+        },
+        {
+          "name": "Near singularity (r→0)",
+          "input": {
+            "mass": 1.0,
+            "specific_angular_momentum": 4.0,
+            "radial_range": [0.01, 10],
+            "num_points": 1000
+          },
+          "expected_behavior": "V_eff → -∞ as r→0. Relativistic term -ML²/r³ dominates, attractive singularity."
+        },
+        {
+          "name": "Asymptotic limit (r→∞)",
+          "input": {
+            "mass": 1.0,
+            "specific_angular_momentum": 10.0,
+            "radial_range": [10, 1000],
+            "num_points": 1000
+          },
+          "expected_behavior": "V_eff → 0 as r→∞. Approaches Newtonian: V_eff ≈ -M/r + L²/(2r²)."
+        }
+      ]
+    },
+    {
+      "id": "sch_024",
+      "name": "classify_orbit_type",
+      "category": "orbital_mechanics",
+      "description": "Classify orbit type based on energy E and angular momentum L. Determines whether orbit is bound (elliptical/circular), unbound (hyperbolic/parabolic), plunging, or scattered. Uses effective potential analysis.",
+      "parameters": {
+        "mass": {
+          "type": "float",
+          "description": "Black hole mass M",
+          "constraints": "M > 0"
+        },
+        "specific_energy": {
+          "type": "float",
+          "description": "Specific energy E (energy per unit mass)",
+          "constraints": "E > 0"
+        },
+        "specific_angular_momentum": {
+          "type": "float",
+          "description": "Specific angular momentum L",
+          "constraints": "L ≥ 0"
+        },
+        "initial_radius": {
+          "type": "float",
+          "description": "Initial radial position r₀",
+          "constraints": "r₀ > 0"
+        }
+      },
+      "returns": {
+        "orbit_type": {
+          "type": "string",
+          "description": "Orbit classification: 'circular', 'elliptical', 'parabolic', 'hyperbolic', 'plunge', 'scattered'"
+        },
+        "is_bound": {
+          "type": "bool",
+          "description": "True if orbit is bound (E < 1 in geometric units)"
+        },
+        "is_stable": {
+          "type": "bool",
+          "description": "True if orbit is stable (circular orbit outside ISCO)"
+        },
+        "perihelion": {
+          "type": "float",
+          "description": "Perihelion distance r_min (closest approach)"
+        },
+        "aphelion": {
+          "type": "float",
+          "description": "Aphelion distance r_max (farthest distance, if bound)"
+        },
+        "eccentricity": {
+          "type": "float",
+          "description": "Orbital eccentricity e (0=circular, 0<e<1=elliptical, e=1=parabolic, e>1=hyperbolic)"
+        }
+      },
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      },
+      "mathematical_formula": "Orbit classification from E and L: Circular if E = V_eff(r_circ) and dr/dτ = 0. Bound if E < 1 (geometric units). Turning points: E = V_eff(r) → r_min, r_max. Plunge if E > V_max (no turning point). Eccentricity: e = √(1 + 2EL²/M² - 2L²/M²) (Newtonian approximation).",
+      "implementation_notes": [
+        "Compute effective potential V_eff(r) for given L",
+        "Find turning points: E = V_eff(r) → r_min (perihelion), r_max (aphelion)",
+        "Circular: E = V_eff(r_circ) and dV_eff/dr = 0",
+        "Elliptical: E < V_max, two turning points (r_min, r_max)",
+        "Parabolic: E = 1 (escape energy), one turning point",
+        "Hyperbolic: E > 1, one turning point (scattering)",
+        "Plunge: E > V_max, no turning point (direct capture)",
+        "Stability: circular orbit stable if r > 6M (outside ISCO)"
+      ],
+      "test_cases": [
+        {
+          "name": "Circular orbit at r=10M",
+          "input": {
+            "mass": 1.0,
+            "specific_energy": 0.9701,
+            "specific_angular_momentum": 3.162,
+            "initial_radius": 10.0
+          },
+          "expected": {
+            "orbit_type": "circular",
+            "is_bound": true,
+            "is_stable": true,
+            "perihelion": 10.0,
+            "aphelion": 10.0,
+            "eccentricity": 0.0
+          },
+          "note": "E = √(1-3M/r) = 0.9701, L = √(Mr) = 3.162"
+        },
+        {
+          "name": "Elliptical orbit (E=0.95, L=4M)",
+          "input": {
+            "mass": 1.0,
+            "specific_energy": 0.95,
+            "specific_angular_momentum": 4.0,
+            "initial_radius": 10.0
+          },
+          "expected": {
+            "orbit_type": "elliptical",
+            "is_bound": true,
+            "is_stable": true,
+            "perihelion": 7.5,
+            "aphelion": 15.0,
+            "eccentricity": 0.33
+          },
+          "note": "Bound orbit with two turning points"
+        },
+        {
+          "name": "Parabolic orbit (E=1, L=5M)",
+          "input": {
+            "mass": 1.0,
+            "specific_energy": 1.0,
+            "specific_angular_momentum": 5.0,
+            "initial_radius": 20.0
+          },
+          "expected": {
+            "orbit_type": "parabolic",
+            "is_bound": false,
+            "is_stable": false,
+            "perihelion": 12.5,
+            "aphelion": Infinity,
+            "eccentricity": 1.0
+          },
+          "note": "Escape energy: particle reaches infinity with v=0"
+        },
+        {
+          "name": "Hyperbolic orbit (E=1.1, L=6M)",
+          "input": {
+            "mass": 1.0,
+            "specific_energy": 1.1,
+            "specific_angular_momentum": 6.0,
+            "initial_radius": 30.0
+          },
+          "expected": {
+            "orbit_type": "hyperbolic",
+            "is_bound": false,
+            "is_stable": false,
+            "perihelion": 15.0,
+            "aphelion": Infinity,
+            "eccentricity": 1.2
+          },
+          "note": "Unbound: particle escapes to infinity with v>0"
+        },
+        {
+          "name": "Plunging orbit (E=1.0, L=3M)",
+          "input": {
+            "mass": 1.0,
+            "specific_energy": 1.0,
+            "specific_angular_momentum": 3.0,
+            "initial_radius": 10.0
+          },
+          "expected": {
+            "orbit_type": "plunge",
+            "is_bound": false,
+            "is_stable": false,
+            "perihelion": 0.0,
+            "aphelion": null,
+            "eccentricity": null
+          },
+          "note": "L < 2√3 M: no barrier, direct plunge to singularity"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "Marginally stable orbit (ISCO, r=6M)",
+          "input": {
+            "mass": 1.0,
+            "specific_energy": 0.9428,
+            "specific_angular_momentum": 3.464,
+            "initial_radius": 6.0
+          },
+          "expected_behavior": "Circular orbit at ISCO. Marginally stable: small perturbations cause plunge. e=0, r_min=r_max=6M."
+        },
+        {
+          "name": "Unstable circular orbit (r=5M)",
+          "input": {
+            "mass": 1.0,
+            "specific_energy": 0.9258,
+            "specific_angular_momentum": 2.236,
+            "initial_radius": 5.0
+          },
+          "expected_behavior": "Circular but unstable (r < 6M). Perturbations cause rapid plunge. Not physically realizable."
+        },
+        {
+          "name": "Radial infall (L=0)",
+          "input": {
+            "mass": 1.0,
+            "specific_energy": 1.0,
+            "specific_angular_momentum": 0.0,
+            "initial_radius": 10.0
+          },
+          "expected_behavior": "Radial plunge: no angular momentum, direct infall. orbit_type='plunge', e undefined."
+        }
+      ]
+    },
+    {
+      "id": "sch_025",
+      "name": "compute_perihelion_precession",
+      "category": "orbital_mechanics",
+      "description": "Compute relativistic perihelion precession per orbit in Schwarzschild spacetime. General relativity predicts additional precession beyond Newtonian mechanics: Δφ = 6πM/p where p is semi-latus rectum. Famous test: Mercury's orbit precesses 43 arcsec/century.",
+      "parameters": {
+        "mass": {
+          "type": "float",
+          "description": "Black hole (or central body) mass M",
+          "constraints": "M > 0"
+        },
+        "semi_major_axis": {
+          "type": "float",
+          "description": "Semi-major axis a of elliptical orbit",
+          "constraints": "a > 0"
+        },
+        "eccentricity": {
+          "type": "float",
+          "description": "Orbital eccentricity e",
+          "constraints": "0 ≤ e < 1"
+        },
+        "units": {
+          "type": "string",
+          "description": "Unit system: 'geometric' or 'SI'",
+          "default": "geometric"
+        }
+      },
+      "returns": {
+        "precession_per_orbit": {
+          "type": "float",
+          "description": "Perihelion precession per orbit Δφ (radians)"
+        },
+        "precession_per_orbit_arcsec": {
+          "type": "float",
+          "description": "Precession per orbit in arcseconds"
+        },
+        "precession_per_century": {
+          "type": "float",
+          "description": "Precession per century (arcseconds), if orbital period provided"
+        },
+        "semi_latus_rectum": {
+          "type": "float",
+          "description": "Semi-latus rectum p = a(1-e²)"
+        },
+        "orbital_period": {
+          "type": "float",
+          "description": "Orbital period T (geometric units or seconds)"
+        }
+      },
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      },
+      "mathematical_formula": "Perihelion precession: Δφ = 6πM/p where p = a(1-e²) is semi-latus rectum. In SI units: Δφ = 6πGM/(c²p). For Mercury: Δφ ≈ 5.0×10⁻⁷ rad/orbit ≈ 43 arcsec/century. Post-Newtonian correction to Newtonian orbits.",
+      "implementation_notes": [
+        "Semi-latus rectum: p = a(1-e²) (geometric parameter of ellipse)",
+        "Precession formula: Δφ = 6πM/p (exact in Schwarzschild, first-order in M/p)",
+        "Precession rate: dφ/dt = 6πM/(p T) where T is orbital period",
+        "Newtonian orbits: closed ellipses (Δφ = 0)",
+        "GR orbits: rosette pattern (perihelion advances)",
+        "Observable for Mercury: 43 arcsec/century (Einstein's 1915 triumph)",
+        "For circular orbits (e=0): Δφ = 6πM/a",
+        "Weak field approximation: valid for p >> M"
+      ],
+      "test_cases": [
+        {
+          "name": "Mercury's orbit (a=0.387 AU, e=0.206)",
+          "input": {
+            "mass": 1.0,
+            "semi_major_axis": 5.79e10,
+            "eccentricity": 0.206,
+            "units": "SI"
+          },
+          "expected": {
+            "precession_per_orbit": 5.03e-7,
+            "precession_per_orbit_arcsec": 0.104,
+            "precession_per_century": 43.0,
+            "semi_latus_rectum": 5.54e10,
+            "orbital_period": 7.6e6
+          },
+          "note": "Mercury: 43 arcsec/century precession (GR prediction)"
+        },
+        {
+          "name": "Circular orbit at r=10M",
+          "input": {
+            "mass": 1.0,
+            "semi_major_axis": 10.0,
+            "eccentricity": 0.0,
+            "units": "geometric"
+          },
+          "expected": {
+            "precession_per_orbit": 1.885,
+            "precession_per_orbit_arcsec": 108000,
+            "precession_per_century": null,
+            "semi_latus_rectum": 10.0,
+            "orbital_period": 198.94
+          },
+          "note": "Δφ = 6π/10 ≈ 1.88 rad ≈ 108° per orbit"
+        },
+        {
+          "name": "Elliptical orbit (a=20M, e=0.5)",
+          "input": {
+            "mass": 1.0,
+            "semi_major_axis": 20.0,
+            "eccentricity": 0.5,
+            "units": "geometric"
+          },
+          "expected": {
+            "precession_per_orbit": 1.257,
+            "precession_per_orbit_arcsec": 72000,
+            "precession_per_century": null,
+            "semi_latus_rectum": 15.0,
+            "orbital_period": 1777.1
+          },
+          "note": "p = 20(1-0.25) = 15, Δφ = 6π/15 ≈ 1.26 rad"
+        },
+        {
+          "name": "Near ISCO orbit (a=7M, e=0.1)",
+          "input": {
+            "mass": 1.0,
+            "semi_major_axis": 7.0,
+            "eccentricity": 0.1,
+            "units": "geometric"
+          },
+          "expected": {
+            "precession_per_orbit": 2.712,
+            "precession_per_orbit_arcsec": 155400,
+            "precession_per_century": null,
+            "semi_latus_rectum": 6.93,
+            "orbital_period": 116.8
+          },
+          "note": "Large precession near ISCO: Δφ ≈ 155° per orbit"
+        },
+        {
+          "name": "Distant orbit (a=1000M, e=0.01)",
+          "input": {
+            "mass": 1.0,
+            "semi_major_axis": 1000.0,
+            "eccentricity": 0.01,
+            "units": "geometric"
+          },
+          "expected": {
+            "precession_per_orbit": 0.0189,
+            "precession_per_orbit_arcsec": 1080,
+            "precession_per_century": null,
+            "semi_latus_rectum": 999.9,
+            "orbital_period": 62831.9
+          },
+          "note": "Weak field: small precession, nearly Newtonian"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "Parabolic orbit (e=1)",
+          "input": {
+            "mass": 1.0,
+            "semi_major_axis": 10.0,
+            "eccentricity": 1.0,
+            "units": "geometric"
+          },
+          "expected_behavior": "Error: parabolic orbits (e=1) are unbound, no perihelion precession. Formula applies only to elliptical orbits (e<1)."
+        },
+        {
+          "name": "Orbit at ISCO (a=6M, e=0)",
+          "input": {
+            "mass": 1.0,
+            "semi_major_axis": 6.0,
+            "eccentricity": 0.0,
+            "units": "geometric"
+          },
+          "expected_behavior": "Δφ = 6π/6 = π rad ≈ 180° per orbit. Marginally stable: precession formula breaks down (orbit unstable to perturbations)."
+        },
+        {
+          "name": "Highly eccentric orbit (e=0.99)",
+          "input": {
+            "mass": 1.0,
+            "semi_major_axis": 100.0,
+            "eccentricity": 0.99,
+            "units": "geometric"
+          },
+          "expected_behavior": "p = 100(1-0.9801) = 1.99, Δφ = 6π/1.99 ≈ 9.45 rad ≈ 541° per orbit. Large precession for highly eccentric orbits."
+        }
+      ]
+    }
+  ],
+  "dependencies": [
+    "schwarzschild_metric_basic (Phase 1)",
+    "effective_potential_computation",
+    "numerical_root_finding (for turning points)",
+    "orbital_period_calculation"
+  ],
+  "references": [
+    "Misner, Thorne, Wheeler - Gravitation (1973), Chapter 25",
+    "Weinberg - Gravitation and Cosmology (1972), Chapter 8",
+    "Einstein - Explanation of the Perihelion Motion of Mercury (1915)",
+    "Clemence - The Relativity Effect in Planetary Motions (1947)",
+    "Will - Theory and Experiment in Gravitational Physics (1993)"
+  ]
+}

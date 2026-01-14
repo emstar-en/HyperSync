@@ -5,11 +5,11 @@
 [![Status](https://img.shields.io/badge/Status-Alpha-yellow)](https://github.com/emstar-en/HyperSync)
 
 > **[WARNING: AI] [ALPHA] [Patent Pending] [CORE]**  
-> Geometry-aware operations for distributed systems with **231 Core tier operations** (Phase 4 Complete) - all O(n) or O(n²).
+> Geometry-aware operations for distributed systems with **255 Core tier operations** (Phase 5A Complete) - all O(n) or O(n²).
 
 ## 🚀 Overview
 
-HyperSync Core is an open-source library providing **231 high-performance geometric operations** for distributed systems, consensus mechanisms, security, and machine learning. Built on rigorous non-Euclidean geometry (hyperbolic and spherical spaces), HyperSync Core enables:
+HyperSync Core is an open-source library providing **255 high-performance geometric operations** for distributed systems, consensus mechanisms, security, and machine learning. Built on rigorous non-Euclidean geometry (hyperbolic and spherical spaces), HyperSync Core enables:
 
 - **1000x faster Byzantine consensus** (Spherical BFT)
 - **Geometric encryption** using hyperbolic distance
@@ -35,7 +35,7 @@ The **Dual Model System** provides seamless integration between Lorentz (hyperbo
 - Dual model interpolation (15): Geodesic interpolation, Bézier curves, splines, MCMC sampling
 - Dual model transformations (17): Coordinate changes, basis transformations, isometries, conformal mappings
 
-**Core Tier Status: 231/357 operations (65% complete)**
+**Core Tier Status: 255/357 operations (71% complete)**
 
 ### Phase 3 Complete: Edge Case Handling (18/18 operations) ✅
 
@@ -86,7 +86,60 @@ Key features:
 - Complete geometric BFT with rigorous mathematical foundation
 - 6 small components now 100% complete
 
-## ✨ Core Tier Features (231 Operations)
+### Phase 5A Complete: Schwarzschild Black Hole Geometries (24/24 operations) ✅ **NEW**
+
+The **Schwarzschild Black Hole Geometries** component completes all 32 Schwarzschild operations (8 from Phase 1 + 24 new), providing comprehensive support for non-rotating black hole physics and general relativity.
+
+**New Operations (24):**
+1. **Horizons & Geodesics (5 operations)**: Event horizon analysis and particle trajectories
+   - `check_horizon_crossing`: Determine if point is inside/outside/on event horizon (O(1))
+   - `compute_proper_time`: Proper time along timelike worldline (O(1))
+   - `compute_radial_geodesic`: Radial free-fall trajectories (O(N))
+   - `compute_circular_orbit`: Circular orbit properties (velocity, period, stability) (O(1))
+   - `compute_photon_geodesic`: Null geodesic (light ray) trajectories (O(N))
+
+2. **Physical Effects (4 operations)**: Observable relativistic phenomena
+   - `compute_gravitational_redshift`: Gravitational redshift between two radii (O(1))
+   - `compute_time_dilation`: Gravitational time dilation factor (O(1))
+   - `compute_escape_velocity`: Escape velocity from given radius (O(1))
+   - `compute_tidal_force`: Tidal forces and spaghettification (O(1))
+
+3. **Coordinate Transformations (5 operations)**: Alternative coordinate systems
+   - `schwarzschild_to_eddington_finkelstein`: Transform to EF coordinates (regular at horizon) (O(1))
+   - `eddington_finkelstein_to_schwarzschild`: Inverse EF transformation (O(1))
+   - `schwarzschild_to_kruskal_szekeres`: Maximal analytic extension (O(1))
+   - `kruskal_szekeres_to_schwarzschild`: Inverse KS transformation (O(1))
+   - `compute_penrose_diagram_coords`: Conformal compactification (O(1))
+
+4. **Orbital Mechanics (3 operations)**: Advanced orbit analysis
+   - `compute_effective_potential`: Effective potential for radial motion (O(N))
+   - `classify_orbit_type`: Classify orbits (circular, elliptical, hyperbolic, plunge) (O(1))
+   - `compute_perihelion_precession`: Relativistic perihelion precession (Mercury: 43"/century) (O(1))
+
+5. **Gravitational Lensing (3 operations)**: Light deflection and lensing effects
+   - `compute_light_deflection`: Gravitational light deflection angle (O(1))
+   - `compute_shapiro_time_delay`: Shapiro gravitational time delay (O(1))
+   - `compute_einstein_ring`: Einstein ring angular radius (O(1))
+
+6. **Thermodynamics & Distances (4 operations)**: Quantum effects and spacetime intervals
+   - `compute_hawking_radiation`: Hawking temperature and evaporation rate (O(1))
+   - `compute_bekenstein_hawking_entropy`: Black hole entropy (O(1))
+   - `compute_distance_schwarzschild`: Spacetime interval between events (O(1))
+   - `compute_geodesic_distance`: Geodesic distance along path (O(N))
+
+**Schwarzschild Suite Now Complete (32/32 operations):**
+- Phase 1 (8 operations): Basic metric, Christoffel symbols, curvature tensors, horizon properties
+- Phase 5A (24 operations): Advanced geodesics, physical effects, coordinate systems, orbital mechanics, lensing, thermodynamics
+
+Key features:
+- Complete Schwarzschild black hole physics (non-rotating)
+- General relativity tests: light deflection (1919 eclipse), perihelion precession (Mercury), Shapiro delay (Viking)
+- Multiple coordinate systems: Schwarzschild, Eddington-Finkelstein, Kruskal-Szekeres, Penrose diagrams
+- Quantum effects: Hawking radiation, Bekenstein-Hawking entropy
+- Astrophysical applications: accretion disks, gravitational lensing, tidal disruption events
+- Comprehensive test cases with known analytical solutions (ISCO, photon sphere, etc.)
+
+## ✨ Core Tier Features (255 Operations)
 
 ### 🔄 Dual Model System (167 operations) ✅ **NEW**
 
@@ -383,6 +436,7 @@ HyperSync/
   - **Security**: [adversarial_sinks_spec.json](specs/security/adversarial_sinks_spec.json)
   - **Geometry**: [cosmological_spaces_spec.json](specs/geometry/cosmological_spaces_spec.json)
   - **Consensus**: [geometric_bft_advanced_spec.json](specs/consensus/geometric_bft_advanced_spec.json)
+  - **Black Holes**: [schwarzschild_horizons_geodesics_spec.json](specs/black_holes/schwarzschild_horizons_geodesics_spec.json), [schwarzschild_physical_effects_spec.json](specs/black_holes/schwarzschild_physical_effects_spec.json), [schwarzschild_coordinate_transforms_spec.json](specs/black_holes/schwarzschild_coordinate_transforms_spec.json), [schwarzschild_orbital_mechanics_spec.json](specs/black_holes/schwarzschild_orbital_mechanics_spec.json), [schwarzschild_lensing_spec.json](specs/black_holes/schwarzschild_lensing_spec.json), [schwarzschild_thermodynamics_spec.json](specs/black_holes/schwarzschild_thermodynamics_spec.json)
 
 ## 🧪 Testing
 

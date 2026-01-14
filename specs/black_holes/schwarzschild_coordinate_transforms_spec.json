@@ -1,0 +1,766 @@
+{
+  "component": "black_hole_geometries",
+  "subcomponent": "schwarzschild_coordinate_transformations",
+  "description": "Coordinate transformations for Schwarzschild black holes. Standard Schwarzschild coordinates are singular at the event horizon. Alternative coordinate systems (Eddington-Finkelstein, Kruskal-Szekeres, Painlevé-Gullstrand, Penrose diagrams) provide non-singular descriptions and reveal global causal structure.",
+  "operations": [
+    {
+      "id": "sch_018",
+      "name": "schwarzschild_to_eddington_finkelstein",
+      "category": "coordinate_transformations",
+      "description": "Transform from Schwarzschild coordinates (t, r, θ, φ) to ingoing Eddington-Finkelstein coordinates (v, r, θ, φ). EF coordinates are regular at the event horizon, allowing smooth description of infalling trajectories.",
+      "parameters": {
+        "mass": {
+          "type": "float",
+          "description": "Black hole mass M",
+          "constraints": "M > 0"
+        },
+        "schwarzschild_coords": {
+          "type": "array",
+          "description": "Schwarzschild coordinates [t, r, θ, φ]",
+          "shape": "[4]"
+        },
+        "variant": {
+          "type": "string",
+          "description": "EF variant: 'ingoing' (v = t + r*) or 'outgoing' (u = t - r*)",
+          "default": "ingoing"
+        }
+      },
+      "returns": {
+        "eddington_finkelstein_coords": {
+          "type": "array",
+          "description": "EF coordinates [v, r, θ, φ] or [u, r, θ, φ]",
+          "shape": "[4]"
+        },
+        "tortoise_coordinate": {
+          "type": "float",
+          "description": "Tortoise coordinate r* = r + 2M ln|r/2M - 1|"
+        },
+        "metric_determinant": {
+          "type": "float",
+          "description": "Metric determinant √(-g) in EF coordinates"
+        }
+      },
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      },
+      "mathematical_formula": "Ingoing EF: v = t + r* where r* = r + 2M ln|r/(2M) - 1| (tortoise coordinate). Metric: ds² = -(1-2M/r)dv² + 2dvdr + r²dΩ². Regular at horizon (r=2M). Outgoing EF: u = t - r*.",
+      "implementation_notes": [
+        "Tortoise coordinate: r* = r + 2M ln|r/(2M) - 1|",
+        "r* → -∞ as r → 2M (horizon), r* → r as r → ∞",
+        "Ingoing EF: v = t + r* (null coordinate along ingoing light rays)",
+        "Outgoing EF: u = t - r* (null coordinate along outgoing light rays)",
+        "EF metric regular at horizon: no coordinate singularity",
+        "Covers exterior and interior regions (r > 0)",
+        "Useful for studying black hole formation, infalling matter"
+      ],
+      "test_cases": [
+        {
+          "name": "Transform point at r=10M",
+          "input": {
+            "mass": 1.0,
+            "schwarzschild_coords": [100, 10, 1.57, 0],
+            "variant": "ingoing"
+          },
+          "expected": {
+            "eddington_finkelstein_coords": [118.05, 10, 1.57, 0],
+            "tortoise_coordinate": 18.05,
+            "metric_determinant": 314.16
+          },
+          "note": "r* = 10 + 2 ln(4) ≈ 12.77, v = 100 + 12.77 = 112.77"
+        },
+        {
+          "name": "Transform point at horizon (r=2M)",
+          "input": {
+            "mass": 1.0,
+            "schwarzschild_coords": [100, 2, 1.57, 0],
+            "variant": "ingoing"
+          },
+          "expected": {
+            "eddington_finkelstein_coords": [-Infinity, 2, 1.57, 0],
+            "tortoise_coordinate": -Infinity,
+            "metric_determinant": 12.566
+          },
+          "note": "r* → -∞ at horizon, but EF coordinates still regular"
+        },
+        {
+          "name": "Transform point at r=3M",
+          "input": {
+            "mass": 1.0,
+            "schwarzschild_coords": [50, 3, 1.57, 0],
+            "variant": "ingoing"
+          },
+          "expected": {
+            "eddington_finkelstein_coords": [54.39, 3, 1.57, 0],
+            "tortoise_coordinate": 4.39,
+            "metric_determinant": 28.27
+          },
+          "note": "r* = 3 + 2 ln(0.5) ≈ 1.61, v = 50 + 1.61 = 51.61"
+        },
+        {
+          "name": "Outgoing EF at r=10M",
+          "input": {
+            "mass": 1.0,
+            "schwarzschild_coords": [100, 10, 1.57, 0],
+            "variant": "outgoing"
+          },
+          "expected": {
+            "eddington_finkelstein_coords": [81.95, 10, 1.57, 0],
+            "tortoise_coordinate": 18.05,
+            "metric_determinant": 314.16
+          },
+          "note": "u = t - r* = 100 - 18.05 = 81.95"
+        },
+        {
+          "name": "Far from black hole (r=1000M)",
+          "input": {
+            "mass": 1.0,
+            "schwarzschild_coords": [500, 1000, 1.57, 0],
+            "variant": "ingoing"
+          },
+          "expected": {
+            "eddington_finkelstein_coords": [1512.43, 1000, 1.57, 0],
+            "tortoise_coordinate": 1012.43,
+            "metric_determinant": 3.14e6
+          },
+          "note": "r* ≈ r + 2 ln(r/2M) for r >> 2M"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "Inside horizon (r=1.5M)",
+          "input": {
+            "mass": 1.0,
+            "schwarzschild_coords": [100, 1.5, 1.57, 0],
+            "variant": "ingoing"
+          },
+          "expected_behavior": "r* = 1.5 + 2 ln(-0.25) (complex). EF coordinates still valid inside horizon, but Schwarzschild time t becomes spacelike."
+        },
+        {
+          "name": "At singularity (r=0)",
+          "input": {
+            "mass": 1.0,
+            "schwarzschild_coords": [100, 0, 1.57, 0],
+            "variant": "ingoing"
+          },
+          "expected_behavior": "Singularity at r=0 in all coordinate systems. EF coordinates cannot remove physical singularity."
+        },
+        {
+          "name": "Asymptotic limit (r→∞)",
+          "input": {
+            "mass": 1.0,
+            "schwarzschild_coords": [100, 1e10, 1.57, 0],
+            "variant": "ingoing"
+          },
+          "expected_behavior": "r* ≈ r, v ≈ t + r. EF coordinates approach Minkowski null coordinates."
+        }
+      ]
+    },
+    {
+      "id": "sch_019",
+      "name": "eddington_finkelstein_to_schwarzschild",
+      "category": "coordinate_transformations",
+      "description": "Transform from Eddington-Finkelstein coordinates (v, r, θ, φ) back to Schwarzschild coordinates (t, r, θ, φ). Inverse of sch_018.",
+      "parameters": {
+        "mass": {
+          "type": "float",
+          "description": "Black hole mass M",
+          "constraints": "M > 0"
+        },
+        "eddington_finkelstein_coords": {
+          "type": "array",
+          "description": "EF coordinates [v, r, θ, φ] or [u, r, θ, φ]",
+          "shape": "[4]"
+        },
+        "variant": {
+          "type": "string",
+          "description": "EF variant: 'ingoing' or 'outgoing'",
+          "default": "ingoing"
+        }
+      },
+      "returns": {
+        "schwarzschild_coords": {
+          "type": "array",
+          "description": "Schwarzschild coordinates [t, r, θ, φ]",
+          "shape": "[4]"
+        },
+        "is_valid": {
+          "type": "bool",
+          "description": "True if transformation valid (r > 2M for exterior)"
+        },
+        "region": {
+          "type": "string",
+          "description": "Spacetime region: 'exterior', 'horizon', 'interior'"
+        }
+      },
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      },
+      "mathematical_formula": "Inverse transformation: t = v - r* where r* = r + 2M ln|r/(2M) - 1|. For ingoing EF: t = v - r - 2M ln|r/(2M) - 1|. For outgoing EF: t = u + r*.",
+      "implementation_notes": [
+        "Inverse: t = v - r* (ingoing) or t = u + r* (outgoing)",
+        "Schwarzschild time t undefined at horizon (r=2M): coordinate singularity",
+        "Inside horizon (r<2M): t becomes spacelike, r becomes timelike",
+        "Transformation valid for all r > 0, but Schwarzschild coords singular at r=2M",
+        "Use with caution near horizon: numerical instability in t"
+      ],
+      "test_cases": [
+        {
+          "name": "Inverse transform at r=10M",
+          "input": {
+            "mass": 1.0,
+            "eddington_finkelstein_coords": [118.05, 10, 1.57, 0],
+            "variant": "ingoing"
+          },
+          "expected": {
+            "schwarzschild_coords": [100, 10, 1.57, 0],
+            "is_valid": true,
+            "region": "exterior"
+          },
+          "note": "t = v - r* = 118.05 - 18.05 = 100"
+        },
+        {
+          "name": "Inverse transform at r=3M",
+          "input": {
+            "mass": 1.0,
+            "eddington_finkelstein_coords": [54.39, 3, 1.57, 0],
+            "variant": "ingoing"
+          },
+          "expected": {
+            "schwarzschild_coords": [50, 3, 1.57, 0],
+            "is_valid": true,
+            "region": "exterior"
+          }
+        },
+        {
+          "name": "At horizon (r=2M)",
+          "input": {
+            "mass": 1.0,
+            "eddington_finkelstein_coords": [100, 2, 1.57, 0],
+            "variant": "ingoing"
+          },
+          "expected": {
+            "schwarzschild_coords": [Infinity, 2, 1.57, 0],
+            "is_valid": false,
+            "region": "horizon"
+          },
+          "note": "t → ∞ at horizon (coordinate singularity)"
+        },
+        {
+          "name": "Outgoing EF inverse at r=10M",
+          "input": {
+            "mass": 1.0,
+            "eddington_finkelstein_coords": [81.95, 10, 1.57, 0],
+            "variant": "outgoing"
+          },
+          "expected": {
+            "schwarzschild_coords": [100, 10, 1.57, 0],
+            "is_valid": true,
+            "region": "exterior"
+          },
+          "note": "t = u + r* = 81.95 + 18.05 = 100"
+        },
+        {
+          "name": "Far from black hole (r=1000M)",
+          "input": {
+            "mass": 1.0,
+            "eddington_finkelstein_coords": [1512.43, 1000, 1.57, 0],
+            "variant": "ingoing"
+          },
+          "expected": {
+            "schwarzschild_coords": [500, 1000, 1.57, 0],
+            "is_valid": true,
+            "region": "exterior"
+          }
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "Inside horizon (r=1.5M)",
+          "input": {
+            "mass": 1.0,
+            "eddington_finkelstein_coords": [100, 1.5, 1.57, 0],
+            "variant": "ingoing"
+          },
+          "expected_behavior": "Schwarzschild time t computed but physically meaningless (spacelike coordinate inside horizon). is_valid=false, region='interior'."
+        },
+        {
+          "name": "At singularity (r=0)",
+          "input": {
+            "mass": 1.0,
+            "eddington_finkelstein_coords": [100, 0, 1.57, 0],
+            "variant": "ingoing"
+          },
+          "expected_behavior": "Physical singularity: transformation undefined. Both coordinate systems break down."
+        },
+        {
+          "name": "Negative r (unphysical)",
+          "input": {
+            "mass": 1.0,
+            "eddington_finkelstein_coords": [100, -5, 1.57, 0],
+            "variant": "ingoing"
+          },
+          "expected_behavior": "Error: r < 0 unphysical in Schwarzschild geometry."
+        }
+      ]
+    },
+    {
+      "id": "sch_020",
+      "name": "schwarzschild_to_kruskal_szekeres",
+      "category": "coordinate_transformations",
+      "description": "Transform from Schwarzschild coordinates (t, r, θ, φ) to Kruskal-Szekeres coordinates (T, X, θ, φ). KS coordinates provide maximal analytic extension of Schwarzschild spacetime, revealing white hole, two exterior regions, and Einstein-Rosen bridge.",
+      "parameters": {
+        "mass": {
+          "type": "float",
+          "description": "Black hole mass M",
+          "constraints": "M > 0"
+        },
+        "schwarzschild_coords": {
+          "type": "array",
+          "description": "Schwarzschild coordinates [t, r, θ, φ]",
+          "shape": "[4]"
+        }
+      },
+      "returns": {
+        "kruskal_szekeres_coords": {
+          "type": "array",
+          "description": "KS coordinates [T, X, θ, φ]",
+          "shape": "[4]"
+        },
+        "region": {
+          "type": "string",
+          "description": "Spacetime region: 'I' (exterior), 'II' (black hole interior), 'III' (parallel exterior), 'IV' (white hole interior)"
+        },
+        "null_coordinates": {
+          "type": "array",
+          "description": "Null coordinates [U, V] where T = (V+U)/2, X = (V-U)/2",
+          "shape": "[2]"
+        }
+      },
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      },
+      "mathematical_formula": "KS transformation: T = √(r/(2M) - 1) e^(r/(4M)) sinh(t/(4M)) for r>2M, X = √(r/(2M) - 1) e^(r/(4M)) cosh(t/(4M)) for r>2M. Inside horizon (r<2M): T = √(1 - r/(2M)) e^(r/(4M)) cosh(t/(4M)), X = √(1 - r/(2M)) e^(r/(4M)) sinh(t/(4M)). Metric: ds² = (32M³/r) e^(-r/(2M)) (-dT² + dX²) + r²dΩ².",
+      "implementation_notes": [
+        "KS coordinates cover entire maximal extension (4 regions)",
+        "Region I (exterior): X > |T|, r > 2M (our universe)",
+        "Region II (black hole): T > |X|, r < 2M (future singularity)",
+        "Region III (parallel exterior): X < -|T|, r > 2M (parallel universe)",
+        "Region IV (white hole): T < -|X|, r < 2M (past singularity)",
+        "Metric regular everywhere except r=0 (true singularity)",
+        "Light cones at 45° in KS diagram (conformal to Minkowski)",
+        "Null coordinates: U = T - X (ingoing), V = T + X (outgoing)"
+      ],
+      "test_cases": [
+        {
+          "name": "Exterior point at r=10M, t=0",
+          "input": {
+            "mass": 1.0,
+            "schwarzschild_coords": [0, 10, 1.57, 0]
+          },
+          "expected": {
+            "kruskal_szekeres_coords": [0, 4.472, 1.57, 0],
+            "region": "I",
+            "null_coordinates": [-4.472, 4.472]
+          },
+          "note": "T=0 (t=0), X = √(4) e^2.5 ≈ 24.47"
+        },
+        {
+          "name": "Exterior point at r=3M, t=10",
+          "input": {
+            "mass": 1.0,
+            "schwarzschild_coords": [10, 3, 1.57, 0]
+          },
+          "expected": {
+            "kruskal_szekeres_coords": [1.732, 3.464, 1.57, 0],
+            "region": "I",
+            "null_coordinates": [-1.732, 5.196]
+          },
+          "note": "√(0.5) e^0.75 ≈ 1.5, sinh(2.5) ≈ 6.05, cosh(2.5) ≈ 6.13"
+        },
+        {
+          "name": "At horizon (r=2M, t=0)",
+          "input": {
+            "mass": 1.0,
+            "schwarzschild_coords": [0, 2, 1.57, 0]
+          },
+          "expected": {
+            "kruskal_szekeres_coords": [0, 0, 1.57, 0],
+            "region": "horizon",
+            "null_coordinates": [0, 0]
+          },
+          "note": "Horizon at origin of KS diagram: T=X=0"
+        },
+        {
+          "name": "Inside horizon (r=1.5M, t=0)",
+          "input": {
+            "mass": 1.0,
+            "schwarzschild_coords": [0, 1.5, 1.57, 0]
+          },
+          "expected": {
+            "kruskal_szekeres_coords": [1.414, 0, 1.57, 0],
+            "region": "II",
+            "null_coordinates": [-1.414, 1.414]
+          },
+          "note": "Inside: T > |X|, approaching singularity"
+        },
+        {
+          "name": "Far from black hole (r=100M, t=0)",
+          "input": {
+            "mass": 1.0,
+            "schwarzschild_coords": [0, 100, 1.57, 0]
+          },
+          "expected": {
+            "kruskal_szekeres_coords": [0, 7.0, 1.57, 0],
+            "region": "I",
+            "null_coordinates": [-7.0, 7.0]
+          },
+          "note": "Asymptotic region: KS ≈ Minkowski"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "At singularity (r=0)",
+          "input": {
+            "mass": 1.0,
+            "schwarzschild_coords": [0, 0, 1.57, 0]
+          },
+          "expected_behavior": "Singularity at T² - X² = 1 (hyperbola in KS diagram). Physical singularity, curvature diverges."
+        },
+        {
+          "name": "White hole region (t → -∞, r=3M)",
+          "input": {
+            "mass": 1.0,
+            "schwarzschild_coords": [-1000, 3, 1.57, 0]
+          },
+          "expected_behavior": "Region IV (white hole): T < -|X|. Past singularity, matter emerges from white hole (time-reversed black hole)."
+        },
+        {
+          "name": "Parallel universe (t → ±∞, r=10M)",
+          "input": {
+            "mass": 1.0,
+            "schwarzschild_coords": [1000, 10, 1.57, 0]
+          },
+          "expected_behavior": "Region III (parallel exterior): X < -|T|. Causally disconnected from Region I (our universe)."
+        }
+      ]
+    },
+    {
+      "id": "sch_021",
+      "name": "kruskal_szekeres_to_schwarzschild",
+      "category": "coordinate_transformations",
+      "description": "Transform from Kruskal-Szekeres coordinates (T, X, θ, φ) back to Schwarzschild coordinates (t, r, θ, φ). Inverse of sch_020. Multiple Schwarzschild patches cover different KS regions.",
+      "parameters": {
+        "mass": {
+          "type": "float",
+          "description": "Black hole mass M",
+          "constraints": "M > 0"
+        },
+        "kruskal_szekeres_coords": {
+          "type": "array",
+          "description": "KS coordinates [T, X, θ, φ]",
+          "shape": "[4]"
+        }
+      },
+      "returns": {
+        "schwarzschild_coords": {
+          "type": "array",
+          "description": "Schwarzschild coordinates [t, r, θ, φ]",
+          "shape": "[4]"
+        },
+        "region": {
+          "type": "string",
+          "description": "Spacetime region: 'I', 'II', 'III', 'IV'"
+        },
+        "is_valid": {
+          "type": "bool",
+          "description": "True if Schwarzschild coordinates well-defined"
+        }
+      },
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      },
+      "mathematical_formula": "Inverse: r/(2M) - 1 = (X² - T²) e^(-r/(2M)) (implicit equation for r). t/(4M) = arctanh(T/X) for r>2M (Region I), t/(4M) = arctanh(X/T) for r<2M (Region II). Solve transcendental equation numerically.",
+      "implementation_notes": [
+        "Radial coordinate r from implicit equation: (r/(2M) - 1) e^(r/(2M)) = X² - T²",
+        "Solve numerically (Newton-Raphson or bisection)",
+        "Time coordinate: t = 4M arctanh(T/X) for exterior, t = 4M arctanh(X/T) for interior",
+        "Schwarzschild coordinates singular at horizon (T² = X²)",
+        "Region I: X > |T| → exterior (r > 2M)",
+        "Region II: T > |X| → interior (r < 2M)",
+        "Regions III, IV: require different Schwarzschild patches"
+      ],
+      "test_cases": [
+        {
+          "name": "Exterior point (Region I)",
+          "input": {
+            "mass": 1.0,
+            "kruskal_szekeres_coords": [0, 4.472, 1.57, 0]
+          },
+          "expected": {
+            "schwarzschild_coords": [0, 10, 1.57, 0],
+            "region": "I",
+            "is_valid": true
+          },
+          "note": "X² - T² = 20, solve for r ≈ 10M"
+        },
+        {
+          "name": "Interior point (Region II)",
+          "input": {
+            "mass": 1.0,
+            "kruskal_szekeres_coords": [1.414, 0, 1.57, 0]
+          },
+          "expected": {
+            "schwarzschild_coords": [0, 1.5, 1.57, 0],
+            "region": "II",
+            "is_valid": true
+          },
+          "note": "T² - X² = 2, solve for r ≈ 1.5M (inside horizon)"
+        },
+        {
+          "name": "At horizon (T=X=0)",
+          "input": {
+            "mass": 1.0,
+            "kruskal_szekeres_coords": [0, 0, 1.57, 0]
+          },
+          "expected": {
+            "schwarzschild_coords": [Infinity, 2, 1.57, 0],
+            "region": "horizon",
+            "is_valid": false
+          },
+          "note": "Schwarzschild time undefined at horizon"
+        },
+        {
+          "name": "Exterior with t≠0",
+          "input": {
+            "mass": 1.0,
+            "kruskal_szekeres_coords": [1.732, 3.464, 1.57, 0]
+          },
+          "expected": {
+            "schwarzschild_coords": [10, 3, 1.57, 0],
+            "region": "I",
+            "is_valid": true
+          },
+          "note": "t = 4M arctanh(T/X) = 4 arctanh(0.5) ≈ 2.19"
+        },
+        {
+          "name": "Far from black hole",
+          "input": {
+            "mass": 1.0,
+            "kruskal_szekeres_coords": [0, 7.0, 1.57, 0]
+          },
+          "expected": {
+            "schwarzschild_coords": [0, 100, 1.57, 0],
+            "region": "I",
+            "is_valid": true
+          }
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "On singularity (T²-X²=1)",
+          "input": {
+            "mass": 1.0,
+            "kruskal_szekeres_coords": [1, 0, 1.57, 0]
+          },
+          "expected_behavior": "r=0 (singularity). Schwarzschild coordinates undefined. Physical singularity."
+        },
+        {
+          "name": "White hole region (Region IV)",
+          "input": {
+            "mass": 1.0,
+            "kruskal_szekeres_coords": [-2, 0, 1.57, 0]
+          },
+          "expected_behavior": "Region IV: T < -|X|. Schwarzschild coordinates require different patch (time-reversed)."
+        },
+        {
+          "name": "Parallel universe (Region III)",
+          "input": {
+            "mass": 1.0,
+            "kruskal_szekeres_coords": [0, -5, 1.57, 0]
+          },
+          "expected_behavior": "Region III: X < -|T|. Schwarzschild coordinates for parallel exterior region (causally disconnected)."
+        }
+      ]
+    },
+    {
+      "id": "sch_022",
+      "name": "compute_penrose_diagram_coords",
+      "category": "coordinate_transformations",
+      "description": "Compute Penrose diagram coordinates (conformal compactification) from Schwarzschild or Kruskal-Szekeres coordinates. Penrose diagrams map entire spacetime (including infinity) to finite region, clearly showing causal structure.",
+      "parameters": {
+        "mass": {
+          "type": "float",
+          "description": "Black hole mass M",
+          "constraints": "M > 0"
+        },
+        "input_coords": {
+          "type": "array",
+          "description": "Input coordinates (Schwarzschild or KS)",
+          "shape": "[4]"
+        },
+        "input_type": {
+          "type": "string",
+          "description": "Input coordinate type: 'schwarzschild' or 'kruskal_szekeres'",
+          "default": "schwarzschild"
+        }
+      },
+      "returns": {
+        "penrose_coords": {
+          "type": "array",
+          "description": "Penrose diagram coordinates [p, q, θ, φ] where p, q ∈ [-π/2, π/2]",
+          "shape": "[4]"
+        },
+        "null_coordinates": {
+          "type": "array",
+          "description": "Null coordinates [u, v] before compactification",
+          "shape": "[2]"
+        },
+        "region": {
+          "type": "string",
+          "description": "Spacetime region in Penrose diagram"
+        },
+        "boundary_type": {
+          "type": "string",
+          "description": "Boundary classification: 'interior', 'i+' (future timelike infinity), 'i-' (past timelike infinity), 'I+' (future null infinity), 'I-' (past null infinity), 'i0' (spatial infinity)"
+        }
+      },
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      },
+      "mathematical_formula": "Penrose compactification: p = arctan(u), q = arctan(v) where u, v are null coordinates. For Schwarzschild: u = t - r*, v = t + r*. Entire spacetime mapped to square: -π/2 ≤ p, q ≤ π/2. Light rays at 45° (null geodesics: p±q = const).",
+      "implementation_notes": [
+        "Conformal transformation: maps infinite spacetime to finite diagram",
+        "Null coordinates: u = t - r*, v = t + r* (tortoise coordinate)",
+        "Penrose coords: p = arctan(u), q = arctan(v)",
+        "Boundaries: i+ (p+q=π), i- (p+q=-π), I+ (p-q=π), I- (q-p=π), i0 (p=q=0 at r=∞)",
+        "Singularities: r=0 at p-q = ±π (spacelike)",
+        "Horizon: p+q = 0 (null surface)",
+        "Light cones always at 45° (conformal diagram)",
+        "Useful for visualizing global causal structure"
+      ],
+      "test_cases": [
+        {
+          "name": "Exterior point at r=10M, t=0",
+          "input": {
+            "mass": 1.0,
+            "input_coords": [0, 10, 1.57, 0],
+            "input_type": "schwarzschild"
+          },
+          "expected": {
+            "penrose_coords": [-0.785, 0.785, 1.57, 0],
+            "null_coordinates": [-18.05, 18.05],
+            "region": "I",
+            "boundary_type": "interior"
+          },
+          "note": "r* ≈ 18.05, u = -18.05, v = 18.05, p = arctan(-18.05), q = arctan(18.05)"
+        },
+        {
+          "name": "At horizon (r=2M, t=0)",
+          "input": {
+            "mass": 1.0,
+            "input_coords": [0, 2, 1.57, 0],
+            "input_type": "schwarzschild"
+          },
+          "expected": {
+            "penrose_coords": [-1.571, 1.571, 1.57, 0],
+            "null_coordinates": [-Infinity, Infinity],
+            "region": "horizon",
+            "boundary_type": "horizon"
+          },
+          "note": "Horizon at p+q=0, but p→-π/2, q→π/2"
+        },
+        {
+          "name": "Future timelike infinity (t→∞, r=const)",
+          "input": {
+            "mass": 1.0,
+            "input_coords": [1e10, 10, 1.57, 0],
+            "input_type": "schwarzschild"
+          },
+          "expected": {
+            "penrose_coords": [1.571, 1.571, 1.57, 0],
+            "null_coordinates": [1e10, 1e10],
+            "region": "I",
+            "boundary_type": "i+"
+          },
+          "note": "i+ at p+q=π (future timelike infinity)"
+        },
+        {
+          "name": "Spatial infinity (t=0, r→∞)",
+          "input": {
+            "mass": 1.0,
+            "input_coords": [0, 1e10, 1.57, 0],
+            "input_type": "schwarzschild"
+          },
+          "expected": {
+            "penrose_coords": [-1.571, 1.571, 1.57, 0],
+            "null_coordinates": [-1e10, 1e10],
+            "region": "I",
+            "boundary_type": "i0"
+          },
+          "note": "i0 at p=-q=π/2 (spatial infinity)"
+        },
+        {
+          "name": "Inside horizon (r=1.5M, t=0)",
+          "input": {
+            "mass": 1.0,
+            "input_coords": [0, 1.5, 1.57, 0],
+            "input_type": "schwarzschild"
+          },
+          "expected": {
+            "penrose_coords": [0.785, 0.785, 1.57, 0],
+            "null_coordinates": [5.0, 5.0],
+            "region": "II",
+            "boundary_type": "interior"
+          },
+          "note": "Inside horizon: approaching singularity"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "At singularity (r=0)",
+          "input": {
+            "mass": 1.0,
+            "input_coords": [10, 0, 1.57, 0],
+            "input_type": "schwarzschild"
+          },
+          "expected_behavior": "Singularity at p-q = π (future) or p-q = -π (past). Spacelike boundary in Penrose diagram."
+        },
+        {
+          "name": "Future null infinity (I+)",
+          "input": {
+            "mass": 1.0,
+            "input_coords": [1e10, 1e10, 1.57, 0],
+            "input_type": "schwarzschild"
+          },
+          "expected_behavior": "I+ at p-q = π (future null infinity). Endpoint of outgoing null geodesics."
+        },
+        {
+          "name": "Past null infinity (I-)",
+          "input": {
+            "mass": 1.0,
+            "input_coords": [-1e10, 1e10, 1.57, 0],
+            "input_type": "schwarzschild"
+          },
+          "expected_behavior": "I- at q-p = π (past null infinity). Starting point of ingoing null geodesics."
+        }
+      ]
+    }
+  ],
+  "dependencies": [
+    "schwarzschild_metric_basic (Phase 1)",
+    "numerical_solvers (Newton-Raphson for implicit equations)",
+    "transcendental_functions (arctanh, logarithm)"
+  ],
+  "references": [
+    "Misner, Thorne, Wheeler - Gravitation (1973), Chapters 31-33",
+    "Wald - General Relativity (1984), Chapter 6",
+    "Hawking & Ellis - The Large Scale Structure of Space-Time (1973)",
+    "Penrose - Conformal Treatment of Infinity (1964)",
+    "Kruskal - Maximal Extension of Schwarzschild Metric (1960)"
+  ]
+}

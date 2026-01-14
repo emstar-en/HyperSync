@@ -1,0 +1,846 @@
+{
+  "component": "black_hole_geometries",
+  "subcomponent": "schwarzschild_horizons_geodesics",
+  "description": "Schwarzschild black hole horizon analysis and geodesic computations. Includes horizon crossing detection, proper time calculations, radial and circular geodesics, and photon trajectories in Schwarzschild spacetime.",
+  "operations": [
+    {
+      "id": "sch_009",
+      "name": "check_horizon_crossing",
+      "category": "horizon_operations",
+      "description": "Determine if a spacetime point (t, r, θ, φ) is inside, outside, or on the event horizon at r_s = 2GM/c². Returns classification: 'inside' (r < r_s), 'on_horizon' (r = r_s), or 'outside' (r > r_s).",
+      "parameters": {
+        "mass": {
+          "type": "float",
+          "description": "Black hole mass M in solar masses or kg",
+          "constraints": "M > 0"
+        },
+        "position": {
+          "type": "array",
+          "description": "Spacetime coordinates [t, r, θ, φ] in Schwarzschild coordinates",
+          "shape": "[4]"
+        },
+        "units": {
+          "type": "string",
+          "description": "Unit system: 'SI', 'geometric' (G=c=1), or 'solar_masses'",
+          "default": "geometric"
+        }
+      },
+      "returns": {
+        "region": {
+          "type": "string",
+          "description": "Region classification: 'inside', 'on_horizon', 'outside'"
+        },
+        "r_schwarzschild": {
+          "type": "float",
+          "description": "Schwarzschild radius r_s = 2GM/c²"
+        },
+        "distance_to_horizon": {
+          "type": "float",
+          "description": "Signed distance: r - r_s (negative inside, zero on horizon, positive outside)"
+        }
+      },
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      },
+      "mathematical_formula": "r_s = 2GM/c² in SI units, or r_s = 2M in geometric units (G=c=1). Classification: r < r_s (inside), r = r_s (on horizon), r > r_s (outside).",
+      "implementation_notes": [
+        "Use tolerance ε ≈ 10⁻¹⁰ for horizon detection: |r - r_s| < ε",
+        "In geometric units (G=c=1): r_s = 2M",
+        "In SI units: r_s = 2GM/c² ≈ 2.95 km × (M/M_☉)",
+        "Handle numerical precision near horizon carefully",
+        "Schwarzschild coordinates singular at r = r_s (coordinate singularity, not physical)"
+      ],
+      "test_cases": [
+        {
+          "name": "Solar mass black hole - outside horizon",
+          "input": {
+            "mass": 1.0,
+            "position": [0, 10.0, 1.57, 0],
+            "units": "geometric"
+          },
+          "expected": {
+            "region": "outside",
+            "r_schwarzschild": 2.0,
+            "distance_to_horizon": 8.0
+          }
+        },
+        {
+          "name": "On event horizon",
+          "input": {
+            "mass": 1.0,
+            "position": [0, 2.0, 1.57, 0],
+            "units": "geometric"
+          },
+          "expected": {
+            "region": "on_horizon",
+            "r_schwarzschild": 2.0,
+            "distance_to_horizon": 0.0
+          }
+        },
+        {
+          "name": "Inside event horizon",
+          "input": {
+            "mass": 1.0,
+            "position": [0, 1.5, 1.57, 0],
+            "units": "geometric"
+          },
+          "expected": {
+            "region": "inside",
+            "r_schwarzschild": 2.0,
+            "distance_to_horizon": -0.5
+          }
+        },
+        {
+          "name": "Supermassive black hole (4M Sgr A*)",
+          "input": {
+            "mass": 4.0e6,
+            "position": [0, 1.0e7, 1.57, 0],
+            "units": "geometric"
+          },
+          "expected": {
+            "region": "outside",
+            "r_schwarzschild": 8.0e6,
+            "distance_to_horizon": 2.0e6
+          }
+        },
+        {
+          "name": "Near horizon (numerical precision test)",
+          "input": {
+            "mass": 1.0,
+            "position": [0, 2.0000000001, 1.57, 0],
+            "units": "geometric"
+          },
+          "expected": {
+            "region": "outside",
+            "r_schwarzschild": 2.0,
+            "distance_to_horizon": 1e-10
+          }
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "At singularity (r=0)",
+          "input": {
+            "mass": 1.0,
+            "position": [0, 0.0, 1.57, 0],
+            "units": "geometric"
+          },
+          "expected_behavior": "Return 'inside' with distance_to_horizon = -2M. Note: physical singularity, curvature diverges."
+        },
+        {
+          "name": "Very large radius (asymptotic flat space)",
+          "input": {
+            "mass": 1.0,
+            "position": [0, 1e10, 1.57, 0],
+            "units": "geometric"
+          },
+          "expected_behavior": "Return 'outside' with large positive distance. Spacetime approximately Minkowski."
+        },
+        {
+          "name": "Zero mass (degenerate case)",
+          "input": {
+            "mass": 0.0,
+            "position": [0, 10.0, 1.57, 0],
+            "units": "geometric"
+          },
+          "expected_behavior": "Error or return r_s=0, all points 'outside'. Minkowski spacetime."
+        }
+      ]
+    },
+    {
+      "id": "sch_010",
+      "name": "compute_proper_time",
+      "category": "geodesic_operations",
+      "description": "Compute proper time dτ along a timelike worldline segment in Schwarzschild spacetime using the metric: dτ² = -(1-r_s/r)dt² + (1-r_s/r)⁻¹dr² + r²dΩ².",
+      "parameters": {
+        "mass": {
+          "type": "float",
+          "description": "Black hole mass M",
+          "constraints": "M > 0"
+        },
+        "worldline_segment": {
+          "type": "array",
+          "description": "Two spacetime points [[t₁,r₁,θ₁,φ₁], [t₂,r₂,θ₂,φ₂]]",
+          "shape": "[2, 4]"
+        },
+        "four_velocity": {
+          "type": "array",
+          "description": "Four-velocity components [u^t, u^r, u^θ, u^φ] at starting point",
+          "shape": "[4]",
+          "constraints": "g_μν u^μ u^ν = -1 (timelike normalization)"
+        }
+      },
+      "returns": {
+        "proper_time": {
+          "type": "float",
+          "description": "Proper time Δτ along worldline segment"
+        },
+        "coordinate_time": {
+          "type": "float",
+          "description": "Coordinate time difference Δt"
+        },
+        "time_dilation_factor": {
+          "type": "float",
+          "description": "Ratio Δt/Δτ (gravitational time dilation)"
+        }
+      },
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      },
+      "mathematical_formula": "dτ² = -g_μν dx^μ dx^ν where g_μν is Schwarzschild metric. For infinitesimal segment: dτ = √[-(1-r_s/r)(dt)² + (1-r_s/r)⁻¹(dr)² + r²(dθ² + sin²θ dφ²)]. Integrate along worldline for finite segments.",
+      "implementation_notes": [
+        "For small segments, use linear approximation: Δτ ≈ √(-g_μν Δx^μ Δx^ν)",
+        "For extended worldlines, integrate: τ = ∫√(-g_μν u^μ u^ν) dλ where λ is affine parameter",
+        "Verify timelike condition: g_μν u^μ u^ν < 0",
+        "Near horizon, proper time finite even as coordinate time diverges",
+        "Use adaptive integration for accurate results across varying curvature"
+      ],
+      "test_cases": [
+        {
+          "name": "Static observer at r=10M",
+          "input": {
+            "mass": 1.0,
+            "worldline_segment": [[0, 10, 1.57, 0], [100, 10, 1.57, 0]],
+            "four_velocity": [1.118, 0, 0, 0]
+          },
+          "expected": {
+            "proper_time": 89.44,
+            "coordinate_time": 100.0,
+            "time_dilation_factor": 1.118
+          },
+          "note": "u^t = 1/√(1-r_s/r) for static observer"
+        },
+        {
+          "name": "Radial free fall from rest at infinity",
+          "input": {
+            "mass": 1.0,
+            "worldline_segment": [[0, 10, 1.57, 0], [10, 8, 1.57, 0]],
+            "four_velocity": [1.0, -0.447, 0, 0]
+          },
+          "expected": {
+            "proper_time": 8.94,
+            "coordinate_time": 10.0,
+            "time_dilation_factor": 1.118
+          }
+        },
+        {
+          "name": "Circular orbit at r=6M",
+          "input": {
+            "mass": 1.0,
+            "worldline_segment": [[0, 6, 1.57, 0], [50, 6, 1.57, 0.5]],
+            "four_velocity": [1.225, 0, 0, 0.204]
+          },
+          "expected": {
+            "proper_time": 40.82,
+            "coordinate_time": 50.0,
+            "time_dilation_factor": 1.225
+          }
+        },
+        {
+          "name": "Near horizon observer at r=2.1M",
+          "input": {
+            "mass": 1.0,
+            "worldline_segment": [[0, 2.1, 1.57, 0], [100, 2.1, 1.57, 0]],
+            "four_velocity": [3.162, 0, 0, 0]
+          },
+          "expected": {
+            "proper_time": 31.62,
+            "coordinate_time": 100.0,
+            "time_dilation_factor": 3.162
+          },
+          "note": "Extreme time dilation near horizon"
+        },
+        {
+          "name": "Asymptotic observer at r=1000M",
+          "input": {
+            "mass": 1.0,
+            "worldline_segment": [[0, 1000, 1.57, 0], [100, 1000, 1.57, 0]],
+            "four_velocity": [1.001, 0, 0, 0]
+          },
+          "expected": {
+            "proper_time": 99.9,
+            "coordinate_time": 100.0,
+            "time_dilation_factor": 1.001
+          },
+          "note": "Minimal time dilation far from black hole"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "Crossing event horizon",
+          "input": {
+            "mass": 1.0,
+            "worldline_segment": [[0, 3, 1.57, 0], [1000, 1.5, 1.57, 0]],
+            "four_velocity": [1.0, -0.577, 0, 0]
+          },
+          "expected_behavior": "Proper time remains finite (~5M) even as coordinate time diverges. Use Eddington-Finkelstein coordinates for smooth crossing."
+        },
+        {
+          "name": "Spacelike interval",
+          "input": {
+            "mass": 1.0,
+            "worldline_segment": [[0, 10, 1.57, 0], [0, 20, 1.57, 0]],
+            "four_velocity": [0, 1, 0, 0]
+          },
+          "expected_behavior": "Error: interval is spacelike (g_μν Δx^μ Δx^ν > 0), not a valid timelike worldline."
+        },
+        {
+          "name": "Null geodesic (photon)",
+          "input": {
+            "mass": 1.0,
+            "worldline_segment": [[0, 10, 1.57, 0], [10, 9, 1.57, 0]],
+            "four_velocity": [1, -0.894, 0, 0]
+          },
+          "expected_behavior": "Proper time = 0 (photons experience no proper time). Use affine parameter instead."
+        }
+      ]
+    },
+    {
+      "id": "sch_011",
+      "name": "compute_radial_geodesic",
+      "category": "geodesic_operations",
+      "description": "Compute radial geodesic trajectory for a massive particle in free fall from rest at infinity. Solves geodesic equations: d²x^μ/dτ² + Γ^μ_νσ (dx^ν/dτ)(dx^σ/dτ) = 0 for purely radial motion (L=0).",
+      "parameters": {
+        "mass": {
+          "type": "float",
+          "description": "Black hole mass M",
+          "constraints": "M > 0"
+        },
+        "initial_radius": {
+          "type": "float",
+          "description": "Starting radial coordinate r₀",
+          "constraints": "r₀ > r_s"
+        },
+        "initial_velocity": {
+          "type": "float",
+          "description": "Initial radial velocity dr/dτ at r₀",
+          "default": "computed from E=1 (rest at infinity)"
+        },
+        "integration_steps": {
+          "type": "int",
+          "description": "Number of integration steps",
+          "default": 1000
+        },
+        "final_radius": {
+          "type": "float",
+          "description": "Target final radius (or singularity r=0)",
+          "default": 0.01
+        }
+      },
+      "returns": {
+        "trajectory": {
+          "type": "array",
+          "description": "Array of [τ, t, r] values along geodesic",
+          "shape": "[N, 3]"
+        },
+        "proper_time_to_singularity": {
+          "type": "float",
+          "description": "Proper time from r₀ to r=0"
+        },
+        "coordinate_time_to_horizon": {
+          "type": "float",
+          "description": "Coordinate time to reach horizon (diverges)"
+        },
+        "velocity_profile": {
+          "type": "array",
+          "description": "Radial velocity dr/dτ at each point",
+          "shape": "[N]"
+        }
+      },
+      "complexity": {
+        "time": "O(N)",
+        "space": "O(N)"
+      },
+      "mathematical_formula": "For radial geodesic from rest at infinity (E=1, L=0): (dr/dτ)² = 1 - (1-r_s/r) = r_s/r. Proper time to singularity: τ_fall = (2/3)(r₀^(3/2)/√(r_s)). Coordinate time to horizon: t → ∞.",
+      "implementation_notes": [
+        "Use energy conservation: E = (1-r_s/r)(dt/dτ) = 1 for rest at infinity",
+        "Radial velocity: dr/dτ = -√(r_s/r) (negative for infall)",
+        "Integrate using RK4 or adaptive method (e.g., Dormand-Prince)",
+        "Coordinate time diverges at horizon: t ~ r_s ln(r-r_s) as r→r_s",
+        "Proper time finite: τ_fall ≈ (2/3)(r₀^(3/2)/√(2M)) for r₀ >> r_s",
+        "Switch to Eddington-Finkelstein coordinates for smooth horizon crossing"
+      ],
+      "test_cases": [
+        {
+          "name": "Free fall from r=10M",
+          "input": {
+            "mass": 1.0,
+            "initial_radius": 10.0,
+            "initial_velocity": -0.447,
+            "integration_steps": 1000,
+            "final_radius": 0.1
+          },
+          "expected": {
+            "proper_time_to_singularity": 21.08,
+            "coordinate_time_to_horizon": "diverges",
+            "final_velocity_at_horizon": -0.707
+          },
+          "note": "τ_fall = (2/3)(10^1.5/√2) ≈ 21.08M"
+        },
+        {
+          "name": "Free fall from r=100M",
+          "input": {
+            "mass": 1.0,
+            "initial_radius": 100.0,
+            "initial_velocity": -0.141,
+            "integration_steps": 2000,
+            "final_radius": 0.1
+          },
+          "expected": {
+            "proper_time_to_singularity": 666.67,
+            "coordinate_time_to_horizon": "diverges",
+            "final_velocity_at_horizon": -0.707
+          }
+        },
+        {
+          "name": "Free fall from r=3M (just outside horizon)",
+          "input": {
+            "mass": 1.0,
+            "initial_radius": 3.0,
+            "initial_velocity": -0.577,
+            "integration_steps": 500,
+            "final_radius": 0.1
+          },
+          "expected": {
+            "proper_time_to_singularity": 3.46,
+            "coordinate_time_to_horizon": "diverges",
+            "final_velocity_at_horizon": -0.707
+          }
+        },
+        {
+          "name": "Outward radial geodesic (escaping particle)",
+          "input": {
+            "mass": 1.0,
+            "initial_radius": 5.0,
+            "initial_velocity": 0.632,
+            "integration_steps": 1000,
+            "final_radius": 100.0
+          },
+          "expected": {
+            "proper_time_to_r100": 95.0,
+            "asymptotic_velocity": 0.0
+          },
+          "note": "Particle with E>1 escapes to infinity"
+        },
+        {
+          "name": "Radial geodesic with E=0.9 (bound)",
+          "input": {
+            "mass": 1.0,
+            "initial_radius": 10.0,
+            "initial_velocity": -0.424,
+            "integration_steps": 1000,
+            "final_radius": 0.1
+          },
+          "expected": {
+            "proper_time_to_singularity": 22.36,
+            "turning_point": "none (falls to singularity)"
+          }
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "Starting exactly at horizon",
+          "input": {
+            "mass": 1.0,
+            "initial_radius": 2.0,
+            "initial_velocity": -0.707,
+            "integration_steps": 500,
+            "final_radius": 0.1
+          },
+          "expected_behavior": "Proper time to singularity: τ ≈ 2.67M. Coordinate time already infinite. Use Eddington-Finkelstein coordinates."
+        },
+        {
+          "name": "Starting inside horizon",
+          "input": {
+            "mass": 1.0,
+            "initial_radius": 1.5,
+            "initial_velocity": -0.816,
+            "integration_steps": 500,
+            "final_radius": 0.1
+          },
+          "expected_behavior": "All geodesics inside horizon lead to singularity. Proper time to r=0: τ ≈ 1.73M."
+        },
+        {
+          "name": "Numerical precision near singularity",
+          "input": {
+            "mass": 1.0,
+            "initial_radius": 10.0,
+            "initial_velocity": -0.447,
+            "integration_steps": 10000,
+            "final_radius": 0.001
+          },
+          "expected_behavior": "Curvature diverges as r→0. Use regularization or stop integration at r_min ≈ 0.01M to avoid numerical instability."
+        }
+      ]
+    },
+    {
+      "id": "sch_012",
+      "name": "compute_circular_orbit",
+      "category": "geodesic_operations",
+      "description": "Compute properties of circular orbits in Schwarzschild spacetime. Circular orbits exist for r ≥ 3r_s (ISCO at r=6M). Returns orbital velocity, period, energy, angular momentum, and stability.",
+      "parameters": {
+        "mass": {
+          "type": "float",
+          "description": "Black hole mass M",
+          "constraints": "M > 0"
+        },
+        "orbital_radius": {
+          "type": "float",
+          "description": "Radius of circular orbit r",
+          "constraints": "r ≥ 3M for stable orbits"
+        }
+      },
+      "returns": {
+        "orbital_velocity": {
+          "type": "float",
+          "description": "Orbital velocity v = √(M/r) in geometric units"
+        },
+        "orbital_period": {
+          "type": "float",
+          "description": "Orbital period T = 2πr^(3/2)/√M"
+        },
+        "specific_energy": {
+          "type": "float",
+          "description": "Energy per unit mass E = √(1-3M/r)"
+        },
+        "specific_angular_momentum": {
+          "type": "float",
+          "description": "Angular momentum per unit mass L = √(Mr)"
+        },
+        "is_stable": {
+          "type": "bool",
+          "description": "True if r > 6M (outside ISCO), False if 3M ≤ r ≤ 6M (unstable)"
+        },
+        "isco_distance": {
+          "type": "float",
+          "description": "Distance to ISCO: |r - 6M|"
+        }
+      },
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      },
+      "mathematical_formula": "Circular orbit conditions: d²r/dτ² = 0 and dr/dτ = 0. Orbital velocity: v = √(M/r). Energy: E = (1-2M/r)/√(1-3M/r). Angular momentum: L = √(Mr/(1-3M/r)). ISCO at r_ISCO = 6M (innermost stable circular orbit).",
+      "implementation_notes": [
+        "Circular orbits require balance: gravitational attraction = centrifugal force",
+        "ISCO at r=6M: orbits with r<6M are unstable (perturbations cause plunge)",
+        "Photon sphere at r=3M: unstable circular orbits for photons",
+        "Orbital velocity: v = √(M/r) → v=1/√3 ≈ 0.577c at ISCO",
+        "Binding energy: E_bind = 1 - E ≈ 0.057 (5.7% mass-energy at ISCO)",
+        "Use effective potential analysis for stability: V_eff = -M/r + L²/(2r²) - ML²/r³"
+      ],
+      "test_cases": [
+        {
+          "name": "ISCO (innermost stable circular orbit)",
+          "input": {
+            "mass": 1.0,
+            "orbital_radius": 6.0
+          },
+          "expected": {
+            "orbital_velocity": 0.408,
+            "orbital_period": 92.38,
+            "specific_energy": 0.9428,
+            "specific_angular_momentum": 2.449,
+            "is_stable": true,
+            "isco_distance": 0.0
+          },
+          "note": "Marginally stable orbit, maximum binding energy"
+        },
+        {
+          "name": "Unstable circular orbit at r=5M",
+          "input": {
+            "mass": 1.0,
+            "orbital_radius": 5.0
+          },
+          "expected": {
+            "orbital_velocity": 0.447,
+            "orbital_period": 70.25,
+            "specific_energy": 0.9258,
+            "specific_angular_momentum": 2.236,
+            "is_stable": false,
+            "isco_distance": 1.0
+          },
+          "note": "Unstable: small perturbations cause plunge"
+        },
+        {
+          "name": "Stable orbit at r=10M",
+          "input": {
+            "mass": 1.0,
+            "orbital_radius": 10.0
+          },
+          "expected": {
+            "orbital_velocity": 0.316,
+            "orbital_period": 198.94,
+            "specific_energy": 0.9701,
+            "specific_angular_momentum": 3.162,
+            "is_stable": true,
+            "isco_distance": 4.0
+          }
+        },
+        {
+          "name": "Distant orbit at r=100M (Newtonian limit)",
+          "input": {
+            "mass": 1.0,
+            "orbital_radius": 100.0
+          },
+          "expected": {
+            "orbital_velocity": 0.1,
+            "orbital_period": 6283.19,
+            "specific_energy": 0.9970,
+            "specific_angular_momentum": 10.0,
+            "is_stable": true,
+            "isco_distance": 94.0
+          },
+          "note": "Approaches Newtonian: v ≈ √(GM/r), T ≈ 2π√(r³/GM)"
+        },
+        {
+          "name": "Photon sphere (r=3M)",
+          "input": {
+            "mass": 1.0,
+            "orbital_radius": 3.0
+          },
+          "expected": {
+            "orbital_velocity": 0.577,
+            "orbital_period": 32.67,
+            "specific_energy": 0.0,
+            "specific_angular_momentum": 1.732,
+            "is_stable": false,
+            "isco_distance": 3.0
+          },
+          "note": "Photon circular orbit (null geodesic), highly unstable"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "Below photon sphere (r<3M)",
+          "input": {
+            "mass": 1.0,
+            "orbital_radius": 2.5
+          },
+          "expected_behavior": "Error: no circular orbits exist for r < 3M. All particles plunge to singularity."
+        },
+        {
+          "name": "At event horizon (r=2M)",
+          "input": {
+            "mass": 1.0,
+            "orbital_radius": 2.0
+          },
+          "expected_behavior": "Error: no circular orbits at horizon. Coordinate singularity, infinite orbital velocity required."
+        },
+        {
+          "name": "Asymptotic orbit (r→∞)",
+          "input": {
+            "mass": 1.0,
+            "orbital_radius": 1e10
+          },
+          "expected_behavior": "Newtonian limit: v→0, E→1, L→√(Mr). Spacetime approximately flat."
+        }
+      ]
+    },
+    {
+      "id": "sch_013",
+      "name": "compute_photon_geodesic",
+      "category": "geodesic_operations",
+      "description": "Compute null geodesic (light ray trajectory) in Schwarzschild spacetime with given impact parameter b. Solves null geodesic equations: ds²=0, determining photon path, deflection angle, and capture conditions.",
+      "parameters": {
+        "mass": {
+          "type": "float",
+          "description": "Black hole mass M",
+          "constraints": "M > 0"
+        },
+        "impact_parameter": {
+          "type": "float",
+          "description": "Impact parameter b = L/E (angular momentum per energy)",
+          "constraints": "b ≥ 0"
+        },
+        "initial_position": {
+          "type": "array",
+          "description": "Initial spacetime coordinates [t, r, θ, φ]",
+          "shape": "[4]"
+        },
+        "initial_direction": {
+          "type": "array",
+          "description": "Initial photon direction (tangent vector)",
+          "shape": "[4]"
+        },
+        "integration_steps": {
+          "type": "int",
+          "description": "Number of integration steps",
+          "default": 1000
+        }
+      },
+      "returns": {
+        "trajectory": {
+          "type": "array",
+          "description": "Photon trajectory [λ, t, r, θ, φ] where λ is affine parameter",
+          "shape": "[N, 5]"
+        },
+        "deflection_angle": {
+          "type": "float",
+          "description": "Total deflection angle Δφ (radians)"
+        },
+        "closest_approach": {
+          "type": "float",
+          "description": "Minimum radial distance r_min"
+        },
+        "is_captured": {
+          "type": "bool",
+          "description": "True if photon captured (b < b_crit = 3√3 M)"
+        },
+        "orbit_type": {
+          "type": "string",
+          "description": "Classification: 'escape', 'capture', 'circular' (photon sphere)"
+        }
+      },
+      "complexity": {
+        "time": "O(N)",
+        "space": "O(N)"
+      },
+      "mathematical_formula": "Null geodesic: ds²=0. Effective potential: V_eff = (1-r_s/r)(1+L²/r²). Critical impact parameter: b_crit = 3√3 M ≈ 5.196M (photon sphere). Deflection angle (weak field): Δφ ≈ 4M/b. Exact: Δφ = 2∫[b/r² √(1-r_s/r)/(1-b²(1-r_s/r)/r²)] dr.",
+      "implementation_notes": [
+        "Photon sphere at r=3M: unstable circular orbit with b=3√3 M",
+        "Capture condition: b < 3√3 M (photon spirals into black hole)",
+        "Deflection angle: Δφ = 2∫[dr/(r²√(1/b² - (1-r_s/r)/r²))] from r_min to ∞",
+        "Weak field approximation: Δφ ≈ 4M/b (valid for b >> M)",
+        "Strong field: multiple orbits possible, complex deflection",
+        "Use affine parameter λ for integration (proper time undefined for photons)",
+        "Conserved quantities: E (energy), L (angular momentum), E/L = 1/b"
+      ],
+      "test_cases": [
+        {
+          "name": "Photon at photon sphere (b=3√3 M)",
+          "input": {
+            "mass": 1.0,
+            "impact_parameter": 5.196,
+            "initial_position": [0, 3.0, 1.57, 0],
+            "initial_direction": [1, 0, 0, 0.577],
+            "integration_steps": 1000
+          },
+          "expected": {
+            "deflection_angle": 6.283,
+            "closest_approach": 3.0,
+            "is_captured": false,
+            "orbit_type": "circular"
+          },
+          "note": "Unstable circular orbit, Δφ = 2π per orbit"
+        },
+        {
+          "name": "Weak deflection (b=20M)",
+          "input": {
+            "mass": 1.0,
+            "impact_parameter": 20.0,
+            "initial_position": [0, 100, 1.57, 0],
+            "initial_direction": [1, -0.995, 0, 0.05],
+            "integration_steps": 1000
+          },
+          "expected": {
+            "deflection_angle": 0.2,
+            "closest_approach": 19.98,
+            "is_captured": false,
+            "orbit_type": "escape"
+          },
+          "note": "Weak field: Δφ ≈ 4M/b = 0.2 rad"
+        },
+        {
+          "name": "Strong deflection (b=6M)",
+          "input": {
+            "mass": 1.0,
+            "impact_parameter": 6.0,
+            "initial_position": [0, 50, 1.57, 0],
+            "initial_direction": [1, -0.998, 0, 0.12],
+            "integration_steps": 2000
+          },
+          "expected": {
+            "deflection_angle": 0.785,
+            "closest_approach": 5.5,
+            "is_captured": false,
+            "orbit_type": "escape"
+          },
+          "note": "Strong field: Δφ > 4M/b (nonlinear effects)"
+        },
+        {
+          "name": "Photon capture (b=4M < b_crit)",
+          "input": {
+            "mass": 1.0,
+            "impact_parameter": 4.0,
+            "initial_position": [0, 50, 1.57, 0],
+            "initial_direction": [1, -0.998, 0, 0.08],
+            "integration_steps": 2000
+          },
+          "expected": {
+            "deflection_angle": "diverges",
+            "closest_approach": 2.5,
+            "is_captured": true,
+            "orbit_type": "capture"
+          },
+          "note": "Photon spirals into black hole"
+        },
+        {
+          "name": "Grazing photon sphere (b=5.5M)",
+          "input": {
+            "mass": 1.0,
+            "impact_parameter": 5.5,
+            "initial_position": [0, 50, 1.57, 0],
+            "initial_direction": [1, -0.998, 0, 0.11],
+            "integration_steps": 2000
+          },
+          "expected": {
+            "deflection_angle": 1.047,
+            "closest_approach": 3.2,
+            "is_captured": false,
+            "orbit_type": "escape"
+          },
+          "note": "Near-critical: large deflection, multiple orbits possible"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "Head-on collision (b=0)",
+          "input": {
+            "mass": 1.0,
+            "impact_parameter": 0.0,
+            "initial_position": [0, 50, 1.57, 0],
+            "initial_direction": [1, -1, 0, 0],
+            "integration_steps": 1000
+          },
+          "expected_behavior": "Radial infall: photon falls straight into singularity. Deflection angle undefined (or Δφ=0)."
+        },
+        {
+          "name": "Multiple orbits (b slightly > b_crit)",
+          "input": {
+            "mass": 1.0,
+            "impact_parameter": 5.2,
+            "initial_position": [0, 50, 1.57, 0],
+            "initial_direction": [1, -0.998, 0, 0.104],
+            "integration_steps": 5000
+          },
+          "expected_behavior": "Photon makes multiple orbits around black hole before escaping. Deflection angle > 2π. Chaotic behavior near photon sphere."
+        },
+        {
+          "name": "Starting inside horizon",
+          "input": {
+            "mass": 1.0,
+            "impact_parameter": 5.0,
+            "initial_position": [0, 1.5, 1.57, 0],
+            "initial_direction": [1, -0.5, 0, 0.5],
+            "integration_steps": 1000
+          },
+          "expected_behavior": "All null geodesics inside horizon lead to singularity. Photon captured regardless of impact parameter."
+        }
+      ]
+    }
+  ],
+  "dependencies": [
+    "schwarzschild_metric_basic (Phase 1)",
+    "numerical_integration_library (RK4, Dormand-Prince)",
+    "coordinate_transformation_utilities"
+  ],
+  "references": [
+    "Misner, Thorne, Wheeler - Gravitation (1973), Chapter 25",
+    "Chandrasekhar - The Mathematical Theory of Black Holes (1983)",
+    "Wald - General Relativity (1984), Chapter 6",
+    "Hartle - Gravity: An Introduction to Einstein's General Relativity (2003)"
+  ]
+}
