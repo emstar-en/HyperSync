@@ -1,6 +1,0 @@
-{
-  "deterministic": true,
-  "id": "op://scen_ot_marginal_1d.0",
-  "kind": "scenario",
-  "notes": "Per-asset quantile transport"
-}

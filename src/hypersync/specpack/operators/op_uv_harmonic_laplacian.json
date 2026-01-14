@@ -1,6 +1,0 @@
-{
-  "deterministic": true,
-  "id": "op://uv_harmonic_laplacian.0",
-  "kind": "uv",
-  "notes": "Cotan Laplacian; fixed sparse ordering"
-}

@@ -1,6 +1,0 @@
-{
-  "deterministic": true,
-  "id": "op://mpc_setup.0",
-  "kind": "mpc",
-  "notes": "Party setup and policy enforcement"
-}

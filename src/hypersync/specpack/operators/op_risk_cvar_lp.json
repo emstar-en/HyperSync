@@ -1,6 +1,0 @@
-{
-  "deterministic": true,
-  "id": "op://risk_cvar_lp.0",
-  "kind": "risk",
-  "notes": "CVaR via LP/IPM with stable pivoting"
-}

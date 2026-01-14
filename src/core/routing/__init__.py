@@ -1,1 +1,0 @@
-# HyperSync Core Routing Package

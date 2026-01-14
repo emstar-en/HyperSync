@@ -1,9 +1,0 @@
-{
-  "mechanism_id": "proof_of_stake",
-  "parameters": {
-    "epoch_length": 1000,
-    "slashing_enabled": true,
-    "stake_threshold": 1000,
-    "validator_set_size": 100
-  }
-}

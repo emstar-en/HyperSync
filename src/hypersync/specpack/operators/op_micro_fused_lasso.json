@@ -1,6 +1,0 @@
-{
-  "deterministic": true,
-  "id": "op://micro_fused_lasso.0",
-  "kind": "microstructure",
-  "notes": "L1 trend filtering with lexicographic ties"
-}

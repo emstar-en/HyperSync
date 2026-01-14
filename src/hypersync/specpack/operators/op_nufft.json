@@ -1,9 +1,0 @@
-{
-  "deterministic": true,
-  "id": "op://nufft.2",
-  "kind": "nufft",
-  "libs": [
-    "FINUFFT"
-  ],
-  "notes": "Fixed gridding, density compensation v1.0"
-}

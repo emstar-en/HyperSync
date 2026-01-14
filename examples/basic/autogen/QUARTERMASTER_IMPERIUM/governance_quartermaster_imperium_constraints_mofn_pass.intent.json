@@ -1,9 +1,0 @@
-{
-  "intent_kind": "ReductionIntent",
-  "params": {
-    "m_of_n": "3/5",
-    "satisfied": true
-  },
-  "profile": "QUARTERMASTER_IMPERIUM",
-  "task": "enterprise_sign_mofn"
-}

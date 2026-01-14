@@ -1,9 +1,0 @@
-{
-  "module": "ux_presentation",
-  "description": "Schemas for the UX Presentation Layer, defining how ActivityContext drives Presentation Schemas and Presets.",
-  "files": [
-    "presentation_schema.schema.json",
-    "presentation_preset.schema.json",
-    "activity_context.schema.json"
-  ]
-}

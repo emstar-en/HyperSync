@@ -1,6 +1,0 @@
-{
-  "deterministic": true,
-  "id": "op://mc_orchestrator_openmc.0",
-  "kind": "mc_wrapper",
-  "notes": "Deterministic orchestration of OpenMC runs"
-}

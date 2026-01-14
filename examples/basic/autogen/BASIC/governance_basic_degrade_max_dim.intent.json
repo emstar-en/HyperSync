@@ -1,8 +1,0 @@
-{
-  "intent_kind": "ReductionIntent",
-  "params": {
-    "dim": 65
-  },
-  "profile": "BASIC",
-  "task": "constraints_check"
-}

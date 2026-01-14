@@ -1,9 +1,0 @@
-{
-  "intent_kind": "ReductionIntent",
-  "op_ref": "op://finance/predictive/probe",
-  "params": {
-    "probe": true
-  },
-  "profile": "BASIC",
-  "task": "finance_predictive_probe"
-}

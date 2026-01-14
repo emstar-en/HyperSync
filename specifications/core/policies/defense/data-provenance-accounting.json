@@ -1,9 +1,0 @@
-{
-  "description": "Defense provenance accounting and audit.",
-  "enabled": false,
-  "id": "defense/data-provenance-accounting",
-  "rules": {
-    "attestation_required": true,
-    "provenance_required": true
-  }
-}

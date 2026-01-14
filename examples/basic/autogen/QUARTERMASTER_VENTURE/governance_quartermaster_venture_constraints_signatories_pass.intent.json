@@ -1,8 +1,0 @@
-{
-  "intent_kind": "ReductionIntent",
-  "params": {
-    "signatures": 2
-  },
-  "profile": "QUARTERMASTER_VENTURE",
-  "task": "enterprise_sign"
-}

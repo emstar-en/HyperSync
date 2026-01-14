@@ -1,8 +1,0 @@
-{
-  "intent_kind": "ReductionIntent",
-  "params": {
-    "uncertainty_radius": 1.2
-  },
-  "profile": "PRO",
-  "task": "constraints_check"
-}

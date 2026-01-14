@@ -1,6 +1,0 @@
-{
-  "deterministic": true,
-  "id": "op://pdhg_prox.0",
-  "kind": "first_order",
-  "notes": "PDHG fixed schedule"
-}

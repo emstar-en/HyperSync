@@ -1,8 +1,0 @@
-{
-  "mechanism_id": "crdt",
-  "parameters": {
-    "conflict_resolution": "last_write_wins",
-    "crdt_type": "LWW",
-    "merge_strategy": "automatic"
-  }
-}

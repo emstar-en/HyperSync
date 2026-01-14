@@ -1,9 +1,0 @@
-{
-  "intent_kind": "ReductionIntent",
-  "op_ref": "op://vg/convex_seg_masks/probe",
-  "params": {
-    "probe": true
-  },
-  "profile": "PRO",
-  "task": "vg_convex_seg_masks_probe"
-}

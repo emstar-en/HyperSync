@@ -1,9 +1,0 @@
-{
-  "intent_kind": "ReductionIntent",
-  "op_ref": "op://network/probe",
-  "params": {
-    "probe": true
-  },
-  "profile": "QUARTERMASTER_CAMPAIGN",
-  "task": "network_probe_probe"
-}

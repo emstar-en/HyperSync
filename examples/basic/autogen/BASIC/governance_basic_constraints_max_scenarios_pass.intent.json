@@ -1,8 +1,0 @@
-{
-  "intent_kind": "ReductionIntent",
-  "params": {
-    "scenarios": 10000
-  },
-  "profile": "BASIC",
-  "task": "constraints_check"
-}

@@ -1,8 +1,0 @@
-{
-  "intent_kind": "ReductionIntent",
-  "params": {
-    "action": "consensus_and_sign"
-  },
-  "profile": "QUARTERMASTER_VENTURE",
-  "task": "enterprise_governance"
-}

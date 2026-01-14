@@ -1,8 +1,0 @@
-{
-  "$id": "schema://schemas/systemf/SystemFModule.schema.json",
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "additionalProperties": true,
-  "properties": {},
-  "title": "SystemF Module",
-  "type": "object"
-}

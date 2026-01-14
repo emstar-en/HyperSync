@@ -1,6 +1,0 @@
-{
-  "deterministic": true,
-  "id": "op://scen_ot_multivariate.0",
-  "kind": "scenario",
-  "notes": "Entropic OT in factor space with barycentric map"
-}

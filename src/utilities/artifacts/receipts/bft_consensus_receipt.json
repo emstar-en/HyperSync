@@ -1,8 +1,0 @@
-{
-  "digest": "0xabc123",
-  "protocol": "HotStuff",
-  "quorum": "3/5",
-  "receipt_kind": "BFTConsensusReceipt",
-  "round": 12,
-  "view": 3
-}

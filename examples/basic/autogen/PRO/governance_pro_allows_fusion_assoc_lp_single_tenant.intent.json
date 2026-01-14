@@ -1,9 +1,0 @@
-{
-  "intent_kind": "ReductionIntent",
-  "op_ref": "op://fusion/assoc_lp_single_tenant/probe",
-  "params": {
-    "probe": true
-  },
-  "profile": "PRO",
-  "task": "fusion_assoc_lp_single_tenant_probe"
-}

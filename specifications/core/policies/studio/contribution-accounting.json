@@ -1,8 +1,0 @@
-{
-  "description": "Account contributions and receipts for attribution/payouts.",
-  "enabled": true,
-  "id": "studio/contribution-accounting",
-  "rules": {
-    "dual_sign_critical_receipts": true
-  }
-}

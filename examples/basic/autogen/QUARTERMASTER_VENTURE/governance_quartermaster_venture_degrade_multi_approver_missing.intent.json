@@ -1,8 +1,0 @@
-{
-  "intent_kind": "ReductionIntent",
-  "params": {
-    "commands": 1
-  },
-  "profile": "QUARTERMASTER_VENTURE",
-  "task": "actuation_guard"
-}

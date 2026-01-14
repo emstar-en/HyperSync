@@ -1,6 +1,0 @@
-{
-  "deterministic": true,
-  "id": "op://sinkhorn_entropic.0",
-  "kind": "ot",
-  "notes": "Log-domain entropic Sinkhorn with fixed sweep order"
-}

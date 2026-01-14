@@ -1,6 +1,0 @@
-{
-  "deterministic": true,
-  "id": "op://del.0",
-  "kind": "integrator",
-  "notes": "Discrete Euler\u2013Lagrange"
-}

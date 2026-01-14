@@ -1,6 +1,0 @@
-{
-  "deterministic": true,
-  "id": "op://pn_operator.0",
-  "kind": "transport",
-  "notes": "PN diffusion operator"
-}

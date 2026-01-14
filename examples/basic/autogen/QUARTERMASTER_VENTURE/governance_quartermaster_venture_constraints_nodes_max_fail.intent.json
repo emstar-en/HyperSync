@@ -1,8 +1,0 @@
-{
-  "intent_kind": "ReductionIntent",
-  "params": {
-    "nodes": 201
-  },
-  "profile": "QUARTERMASTER_VENTURE",
-  "task": "cluster_scale_request"
-}

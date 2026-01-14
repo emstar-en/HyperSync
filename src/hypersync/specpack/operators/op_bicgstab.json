@@ -1,6 +1,0 @@
-{
-  "deterministic": true,
-  "id": "op://bicgstab.0",
-  "kind": "linear_solver",
-  "notes": "Deterministic BiCGSTAB"
-}

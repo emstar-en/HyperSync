@@ -1,1 +1,0 @@
-# HyperSync Audio Subsystem

@@ -1,6 +1,0 @@
-{
-  "deterministic": true,
-  "id": "op://knn_graph.0",
-  "kind": "graph",
-  "notes": "Mutual kNN/epsilon with fixed tie-breaking"
-}

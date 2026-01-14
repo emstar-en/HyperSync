@@ -1,9 +1,0 @@
-{
-  "description": "Healthcare provenance and privacy accounting.",
-  "enabled": false,
-  "id": "healthcare/data-provenance-accounting",
-  "rules": {
-    "require_model_lineage": true,
-    "share_only_aggregates": true
-  }
-}

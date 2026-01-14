@@ -1,9 +1,0 @@
-{
-  "mechanism_id": "paxos",
-  "parameters": {
-    "accept_timeout_ms": 2000,
-    "learn_timeout_ms": 1000,
-    "max_rounds": 10,
-    "prepare_timeout_ms": 2000
-  }
-}

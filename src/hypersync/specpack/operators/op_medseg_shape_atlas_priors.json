@@ -1,6 +1,0 @@
-{
-  "deterministic": true,
-  "id": "op://medseg_shape_atlas_priors.0",
-  "kind": "medseg",
-  "notes": "Shape/atlas priors with trust-region weights"
-}

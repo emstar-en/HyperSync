@@ -1,6 +1,0 @@
-{
-  "deterministic": true,
-  "id": "op://diis_accel.0",
-  "kind": "acceleration",
-  "notes": "DIIS fixed history policy"
-}

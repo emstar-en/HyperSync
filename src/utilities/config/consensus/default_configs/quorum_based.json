@@ -1,9 +1,0 @@
-{
-  "mechanism_id": "quorum_based",
-  "parameters": {
-    "quorum_size": 3,
-    "read_quorum": 2,
-    "timeout_ms": 3000,
-    "write_quorum": 2
-  }
-}

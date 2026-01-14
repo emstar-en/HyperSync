@@ -1,9 +1,0 @@
-{
-  "intent_kind": "ReductionIntent",
-  "op_ref": "op://routing/static_multi_constraint/probe",
-  "params": {
-    "probe": true
-  },
-  "profile": "BASIC",
-  "task": "routing_static_multi_constraint_probe"
-}

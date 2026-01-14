@@ -1,6 +1,0 @@
-{
-  "chain_digest": "0xfeedbeef",
-  "depth": 2,
-  "receipt_kind": "AttestationValidationReceipt",
-  "validated": true
-}

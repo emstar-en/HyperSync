@@ -1,7 +1,0 @@
-{
-  "mechanism_id": "vector_clock",
-  "parameters": {
-    "clock_precision": "millisecond",
-    "max_drift_ms": 100
-  }
-}

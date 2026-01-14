@@ -1,1 +1,0 @@
-"""HyperSync Hyperbolic Geometry Engine"""
