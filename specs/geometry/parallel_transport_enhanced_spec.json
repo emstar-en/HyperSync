@@ -1,0 +1,309 @@
+{
+  "specification": {
+    "name": "Enhanced Parallel Transport Operations",
+    "version": "1.0.0",
+    "description": "Enhanced parallel transport operations for hyperbolic, spherical, and general Riemannian manifolds with numerical stability, batch processing, and advanced features.",
+    "total_operations": 5,
+    "format": "STUNIR",
+    "tier_availability": "Core (Free)",
+    "complexity_target": "O(n) or O(n log n)",
+    "integration": ["HVS", "AGUA", "STUNIR", "Dual-Model System"],
+    "supported_geometries": ["hyperbolic", "spherical", "euclidean", "general_riemannian"]
+  },
+  "mathematical_foundations": {
+    "parallel_transport": {
+      "description": "Transport tangent vector along curve preserving inner product",
+      "properties": ["Preserves norm", "Preserves angles", "Path-dependent"],
+      "equation": "∇_γ'(t) V(t) = 0 where V(t) is transported vector"
+    },
+    "holonomy": {
+      "description": "Rotation angle after parallel transport around closed loop",
+      "formula": "θ = ∫∫_S K dA (Gauss-Bonnet theorem)",
+      "interpretation": "Measures curvature via parallel transport"
+    }
+  },
+  "operations": [
+    {
+      "id": "parallel_transport_geodesic",
+      "name": "Parallel Transport Along Geodesic",
+      "category": "core_operations",
+      "description": "Parallel transport tangent vector along geodesic between two points with automatic geometry detection",
+      "input": {
+        "v": "Tangent vector at start point",
+        "x": "Start point on manifold",
+        "y": "End point on manifold",
+        "geometry": "Geometry type ('hyperbolic', 'spherical', 'euclidean', 'auto')",
+        "model": "Model for hyperbolic ('lorentz', 'poincare', 'auto')",
+        "curvature": "Curvature parameter (for variable curvature spaces)"
+      },
+      "output": {
+        "transported_vector": "Tangent vector at end point",
+        "geometry_used": "Geometry type used",
+        "model_used": "Model used (if hyperbolic)"
+      },
+      "complexity": "O(n)",
+      "precision": "1e-12",
+      "validation": {
+        "norm_preservation": "||P_{x→y}(v)||_y = ||v||_x",
+        "tangent_constraint": "Transported vector is tangent at y"
+      },
+      "implementation_notes": [
+        "Auto-detect geometry if geometry='auto'",
+        "Use appropriate formula for each geometry",
+        "Hyperbolic: P(v) = v - (⟨y,v⟩_L/(1-⟨x,y⟩_L))(x+y) (Lorentz)",
+        "Spherical: P(v) = v - (⟨x,v⟩/(1+⟨x,y⟩))(x+y)",
+        "Euclidean: P(v) = v (trivial)",
+        "Validate norm preservation"
+      ],
+      "test_cases": [
+        {
+          "name": "hyperbolic_transport",
+          "geometry": "hyperbolic",
+          "model": "lorentz",
+          "expected": "norm preserved"
+        },
+        {
+          "name": "spherical_transport",
+          "geometry": "spherical",
+          "expected": "norm preserved"
+        },
+        {
+          "name": "euclidean_transport",
+          "geometry": "euclidean",
+          "expected": "v unchanged"
+        }
+      ],
+      "edge_cases": [
+        "Identical start and end points (return v)",
+        "Zero tangent vector",
+        "Antipodal points (spherical)",
+        "Large distances (hyperbolic)"
+      ]
+    },
+    {
+      "id": "parallel_transport_curve",
+      "name": "Parallel Transport Along Curve",
+      "category": "advanced_operations",
+      "description": "Parallel transport tangent vector along arbitrary curve (piecewise geodesic approximation)",
+      "input": {
+        "v": "Tangent vector at start point",
+        "curve_points": "Array of points defining curve",
+        "geometry": "Geometry type",
+        "model": "Model for hyperbolic (if applicable)",
+        "return_intermediate": "Return transported vectors at all points (default: false)"
+      },
+      "output": {
+        "transported_vector": "Final transported vector",
+        "intermediate_vectors": "Transported vectors at each point (if requested)",
+        "total_holonomy": "Total holonomy angle (for closed curves)"
+      },
+      "complexity": "O(m·n) where m=num_points",
+      "precision": "1e-12",
+      "implementation_notes": [
+        "Transport along geodesic segments",
+        "Compose transports sequentially",
+        "Compute holonomy for closed curves",
+        "Validate norm preservation at each step"
+      ],
+      "applications": [
+        "Transport along non-geodesic paths",
+        "Holonomy computation",
+        "Curvature estimation"
+      ]
+    },
+    {
+      "id": "parallel_transport_batch",
+      "name": "Batch Parallel Transport",
+      "category": "batch_operations",
+      "description": "Parallel transport multiple tangent vectors efficiently",
+      "input": {
+        "tangent_vectors": "Array of tangent vectors at start point",
+        "x": "Start point on manifold",
+        "y": "End point on manifold",
+        "geometry": "Geometry type",
+        "model": "Model for hyperbolic (if applicable)",
+        "parallel": "Enable parallel processing (default: true)"
+      },
+      "output": {
+        "transported_vectors": "Array of transported tangent vectors"
+      },
+      "complexity": "O(m·n) where m=num_vectors",
+      "precision": "1e-12",
+      "implementation_notes": [
+        "Vectorize operations for efficiency",
+        "Use parallel processing for large batches",
+        "Reuse computed values (inner products, norms)",
+        "Batch validation of constraints"
+      ],
+      "applications": [
+        "Transport of vector fields",
+        "Covariant derivative computation",
+        "Riemannian optimization"
+      ]
+    },
+    {
+      "id": "parallel_transport_frame",
+      "name": "Parallel Transport of Orthonormal Frame",
+      "category": "advanced_operations",
+      "description": "Parallel transport entire orthonormal frame along geodesic",
+      "input": {
+        "frame": "Orthonormal frame at start point (array of n-1 tangent vectors)",
+        "x": "Start point on manifold",
+        "y": "End point on manifold",
+        "geometry": "Geometry type",
+        "model": "Model for hyperbolic (if applicable)"
+      },
+      "output": {
+        "transported_frame": "Orthonormal frame at end point",
+        "orthonormality_error": "Maximum deviation from orthonormality"
+      },
+      "complexity": "O(n²)",
+      "precision": "1e-12",
+      "validation": {
+        "orthonormality": "⟨eᵢ, eⱼ⟩ = δᵢⱼ at end point",
+        "norm_preservation": "||eᵢ|| = 1 for all i"
+      },
+      "implementation_notes": [
+        "Transport each frame vector independently",
+        "Verify orthonormality after transport",
+        "Apply Gram-Schmidt if needed (should not be necessary)",
+        "Useful for constructing coordinate systems"
+      ],
+      "applications": [
+        "Moving frames method",
+        "Coordinate system construction",
+        "Curvature computation",
+        "Geometric analysis"
+      ]
+    },
+    {
+      "id": "holonomy_computation",
+      "name": "Holonomy Computation for Closed Loop",
+      "category": "geometric_analysis",
+      "description": "Compute holonomy (rotation angle) after parallel transport around closed loop",
+      "input": {
+        "v": "Initial tangent vector",
+        "loop_points": "Array of points defining closed loop",
+        "geometry": "Geometry type",
+        "model": "Model for hyperbolic (if applicable)",
+        "return_transported": "Return final transported vector (default: false)"
+      },
+      "output": {
+        "holonomy_angle": "Holonomy angle in radians",
+        "transported_vector": "Final transported vector (if requested)",
+        "enclosed_area": "Enclosed area (if computable)",
+        "average_curvature": "Average curvature (holonomy/area)"
+      },
+      "complexity": "O(m·n) where m=num_points",
+      "precision": "1e-12",
+      "implementation_notes": [
+        "Transport around entire loop",
+        "Compute angle between initial and final vectors",
+        "For constant curvature: holonomy = curvature × area",
+        "Verify loop closure (first point = last point)"
+      ],
+      "mathematical_foundation": {
+        "gauss_bonnet": "θ = ∫∫_S K dA for surface S",
+        "constant_curvature": "θ = K·A where K is curvature, A is area",
+        "spherical": "θ = A (curvature = 1)",
+        "hyperbolic": "θ = -A (curvature = -1)",
+        "euclidean": "θ = 0 (curvature = 0)"
+      },
+      "applications": [
+        "Curvature measurement",
+        "Geometric phase computation",
+        "Topological analysis",
+        "Validation of geometric computations"
+      ],
+      "test_cases": [
+        {
+          "name": "spherical_triangle",
+          "geometry": "spherical",
+          "loop": "geodesic triangle",
+          "expected": "holonomy = area of triangle"
+        },
+        {
+          "name": "hyperbolic_triangle",
+          "geometry": "hyperbolic",
+          "loop": "geodesic triangle",
+          "expected": "holonomy = -area of triangle"
+        },
+        {
+          "name": "euclidean_loop",
+          "geometry": "euclidean",
+          "expected": "holonomy = 0"
+        }
+      ]
+    }
+  ],
+  "geometry_specific_formulas": {
+    "hyperbolic_lorentz": {
+      "formula": "P_{x→y}(v) = v - (⟨y,v⟩_L/(1-⟨x,y⟩_L))(x+y)",
+      "properties": ["Preserves Lorentz norm", "Stable for large distances"]
+    },
+    "hyperbolic_poincare": {
+      "formula": "P_{x→y}(v) = (λ(x)/λ(y))·gyro_transport(v)",
+      "properties": ["Uses gyrovector transport", "Conformal factor scaling"]
+    },
+    "spherical": {
+      "formula": "P_{x→y}(v) = v - (⟨x,v⟩/(1+⟨x,y⟩))(x+y)",
+      "properties": ["Preserves Euclidean norm", "Singular at antipodal points"]
+    },
+    "euclidean": {
+      "formula": "P_{x→y}(v) = v",
+      "properties": ["Trivial transport", "Path-independent"]
+    }
+  },
+  "numerical_stability_guidelines": {
+    "identical_points": {
+      "condition": "x = y",
+      "method": "Return v unchanged",
+      "notes": "Avoid division by zero"
+    },
+    "antipodal_points_spherical": {
+      "condition": "⟨x,y⟩ ≈ -1",
+      "method": "Use alternative formula or return error",
+      "notes": "Parallel transport is not unique"
+    },
+    "large_distances_hyperbolic": {
+      "condition": "d(x,y) > 100",
+      "method": "Use Lorentz model for stability",
+      "notes": "Poincaré model numerically unstable"
+    },
+    "small_vectors": {
+      "condition": "||v|| < 1e-15",
+      "method": "Return zero vector",
+      "notes": "Avoid numerical noise"
+    }
+  },
+  "validation_checks": {
+    "norm_preservation": {
+      "check": "||P_{x→y}(v)||_y = ||v||_x",
+      "tolerance": "1e-10",
+      "action": "Warn if violated"
+    },
+    "tangent_constraint": {
+      "check": "⟨y, P_{x→y}(v)⟩ = 0 (hyperbolic Lorentz)",
+      "tolerance": "1e-10",
+      "action": "Warn if violated"
+    },
+    "orthonormality": {
+      "check": "⟨eᵢ, eⱼ⟩ = δᵢⱼ for frame transport",
+      "tolerance": "1e-10",
+      "action": "Apply Gram-Schmidt if needed"
+    }
+  },
+  "performance_optimization": {
+    "batch_processing": "Vectorize operations for multiple vectors",
+    "parallel_processing": "Enable parallelization for large batches",
+    "caching": "Cache inner products and norms",
+    "model_selection": "Use dual-model system for hyperbolic geometry"
+  },
+  "applications": {
+    "riemannian_optimization": "Transport gradients along geodesics",
+    "geometric_deep_learning": "Transport features on manifolds",
+    "curvature_estimation": "Compute holonomy to estimate curvature",
+    "coordinate_systems": "Construct moving frames",
+    "geometric_phase": "Compute Berry phase and related phenomena"
+  }
+}

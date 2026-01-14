@@ -1,0 +1,490 @@
+{
+  "specification": {
+    "name": "Dual Model System - Poincaré Model Operations",
+    "version": "1.0.0",
+    "description": "Poincaré ball model operations for hyperbolic geometry. Part of the dual-model system (Lorentz + Poincaré) that automatically selects optimal representation based on numerical stability and computational efficiency.",
+    "total_operations": 15,
+    "format": "STUNIR",
+    "tier_availability": "Core (Free)",
+    "complexity_target": "O(n) or O(n log n)",
+    "integration": ["HVS", "AGUA", "STUNIR", "Dual-Model System"],
+    "model_type": "Poincaré Ball",
+    "coordinate_system": "Conformal ball model"
+  },
+  "mathematical_foundations": {
+    "poincare_model": {
+      "description": "Ball model B^n = {x ∈ ℝ^n | ||x|| < 1}",
+      "metric": "ds² = 4(Σᵢdxᵢ²)/(1-||x||²)²",
+      "curvature": "-1 (constant negative)",
+      "advantages": [
+        "Intuitive visualization",
+        "Efficient for small distances",
+        "Natural boundary representation",
+        "Conformal (angle-preserving)",
+        "Lower dimensional (no extra coordinate)"
+      ],
+      "disadvantages": [
+        "Numerical instability near boundary",
+        "Distortion increases toward boundary",
+        "Less stable for large distances"
+      ]
+    },
+    "poincare_distance": {
+      "formula": "d(x,y) = arccosh(1 + 2||x-y||²/((1-||x||²)(1-||y||²)))",
+      "range": "[0, ∞)",
+      "properties": ["Unbounded", "Symmetric", "Triangle inequality"]
+    },
+    "conformal_factor": {
+      "formula": "λ(x) = 2/(1-||x||²)",
+      "description": "Conformal factor relating Euclidean and hyperbolic metrics",
+      "boundary_behavior": "λ(x) → ∞ as ||x|| → 1"
+    }
+  },
+  "operations": [
+    {
+      "id": "poincare_distance",
+      "name": "Poincaré Distance",
+      "category": "core_operations",
+      "description": "Compute hyperbolic distance in Poincaré ball model",
+      "formula": "d(x,y) = arccosh(1 + 2||x-y||²/((1-||x||²)(1-||y||²)))",
+      "input": {
+        "x": "Point in Poincaré ball B^n (||x|| < 1)",
+        "y": "Point in Poincaré ball B^n (||y|| < 1)"
+      },
+      "output": {
+        "distance": "Scalar in [0, ∞)"
+      },
+      "complexity": "O(n)",
+      "precision": "1e-12",
+      "validation": {
+        "constraint": "||x|| < 1, ||y|| < 1",
+        "range": "[0, ∞)"
+      },
+      "implementation_notes": [
+        "Numerically stable for small distances",
+        "Handle near-boundary points carefully",
+        "Use alternative formula for identical points",
+        "Clamp to avoid domain errors in arccosh"
+      ],
+      "test_cases": [
+        {
+          "name": "origin_distance",
+          "x": "[0, 0, ..., 0]",
+          "y": "[0.5, 0, ..., 0]",
+          "expected": "arccosh(1 + 2·0.25/0.75) ≈ 1.0986"
+        },
+        {
+          "name": "identical_points",
+          "x": "[0, 0, ..., 0]",
+          "y": "[0, 0, ..., 0]",
+          "expected": "0.0"
+        }
+      ],
+      "edge_cases": [
+        "Near-identical points (distance < 1e-10)",
+        "Points near boundary (||x|| > 0.99)",
+        "Numerical precision at boundaries"
+      ]
+    },
+    {
+      "id": "poincare_inner_product",
+      "name": "Poincaré Inner Product",
+      "category": "core_operations",
+      "description": "Compute Riemannian inner product in Poincaré ball",
+      "formula": "⟨u,v⟩_x = (4/(1-||x||²)²)⟨u,v⟩_E where ⟨·,·⟩_E is Euclidean inner product",
+      "input": {
+        "u": "Tangent vector at x",
+        "v": "Tangent vector at x",
+        "x": "Base point in Poincaré ball"
+      },
+      "output": {
+        "inner_product": "Scalar"
+      },
+      "complexity": "O(n)",
+      "precision": "1e-15",
+      "implementation_notes": [
+        "Conformal factor λ² = 4/(1-||x||²)²",
+        "Reduces to Euclidean at origin",
+        "Diverges near boundary"
+      ],
+      "test_cases": [
+        {
+          "name": "at_origin",
+          "u": "[1, 0, ..., 0]",
+          "v": "[1, 0, ..., 0]",
+          "x": "[0, 0, ..., 0]",
+          "expected": "4.0"
+        }
+      ]
+    },
+    {
+      "id": "poincare_norm",
+      "name": "Poincaré Norm",
+      "category": "core_operations",
+      "description": "Compute Riemannian norm of tangent vector in Poincaré ball",
+      "formula": "||v||_x = (2/(1-||x||²))||v||_E",
+      "input": {
+        "v": "Tangent vector at x",
+        "x": "Base point in Poincaré ball"
+      },
+      "output": {
+        "norm": "Non-negative scalar"
+      },
+      "complexity": "O(n)",
+      "precision": "1e-15",
+      "implementation_notes": [
+        "Conformal factor λ = 2/(1-||x||²)",
+        "Euclidean norm scaled by conformal factor",
+        "Diverges near boundary"
+      ]
+    },
+    {
+      "id": "poincare_exp_map",
+      "name": "Poincaré Exponential Map",
+      "category": "core_operations",
+      "description": "Map tangent vector to Poincaré ball via geodesic",
+      "formula": "exp_x(v) = x ⊕ (tanh(||v||_x/2)(v/||v||_E)) where ⊕ is Möbius addition",
+      "input": {
+        "x": "Base point in Poincaré ball B^n",
+        "v": "Tangent vector at x"
+      },
+      "output": {
+        "point": "Point in Poincaré ball B^n"
+      },
+      "complexity": "O(n)",
+      "precision": "1e-12",
+      "validation": {
+        "input_constraint": "||x|| < 1",
+        "output_constraint": "||exp_x(v)|| < 1"
+      },
+      "implementation_notes": [
+        "Handle zero tangent vector (return x)",
+        "Use Möbius addition for composition",
+        "Numerically stable for small ||v||",
+        "Verify output stays in ball"
+      ],
+      "test_cases": [
+        {
+          "name": "zero_tangent",
+          "x": "[0, 0, ..., 0]",
+          "v": "[0, 0, ..., 0]",
+          "expected": "[0, 0, ..., 0]"
+        }
+      ]
+    },
+    {
+      "id": "poincare_log_map",
+      "name": "Poincaré Logarithmic Map",
+      "category": "core_operations",
+      "description": "Inverse of exponential map: compute tangent vector from point to point",
+      "formula": "log_x(y) = (2/(1-||x||²))arctanh(||(-x)⊕y||)((-x)⊕y)/||(-x)⊕y||",
+      "input": {
+        "x": "Base point in Poincaré ball B^n",
+        "y": "Target point in Poincaré ball B^n"
+      },
+      "output": {
+        "tangent_vector": "Tangent vector at x pointing toward y"
+      },
+      "complexity": "O(n)",
+      "precision": "1e-12",
+      "validation": {
+        "magnitude": "||log_x(y)||_x = d(x,y)"
+      },
+      "implementation_notes": [
+        "Handle identical points (return zero vector)",
+        "Use Möbius addition for translation",
+        "Numerically stable for nearby points",
+        "Handle near-boundary points"
+      ]
+    },
+    {
+      "id": "poincare_parallel_transport",
+      "name": "Poincaré Parallel Transport",
+      "category": "core_operations",
+      "description": "Parallel transport tangent vector along geodesic in Poincaré ball",
+      "formula": "P_{x→y}(v) = (λ(x)/λ(y))·PT(v) where PT is gyrovector transport",
+      "input": {
+        "v": "Tangent vector at x",
+        "x": "Start point in Poincaré ball",
+        "y": "End point in Poincaré ball"
+      },
+      "output": {
+        "transported_vector": "Tangent vector at y"
+      },
+      "complexity": "O(n)",
+      "precision": "1e-12",
+      "validation": {
+        "norm_preservation": "||P_{x→y}(v)||_y = ||v||_x"
+      },
+      "implementation_notes": [
+        "Use gyrovector parallel transport",
+        "Scale by conformal factor ratio",
+        "Handle identical points (return v)",
+        "Numerically stable formulation"
+      ]
+    },
+    {
+      "id": "poincare_geodesic",
+      "name": "Poincaré Geodesic",
+      "category": "core_operations",
+      "description": "Compute point along geodesic between two points in Poincaré ball",
+      "formula": "γ(t) = x ⊕ (t·((-x)⊕y)) where ⊕ is Möbius addition",
+      "input": {
+        "x": "Start point in Poincaré ball",
+        "y": "End point in Poincaré ball",
+        "t": "Parameter in [0,1]"
+      },
+      "output": {
+        "point": "Point in Poincaré ball at parameter t"
+      },
+      "complexity": "O(n)",
+      "precision": "1e-12",
+      "validation": {
+        "output_constraint": "||γ(t)|| < 1",
+        "boundary": "γ(0) = x, γ(1) = y"
+      },
+      "implementation_notes": [
+        "Handle identical points",
+        "Use Möbius addition",
+        "Numerically stable for small distances",
+        "Verify output stays in ball"
+      ]
+    },
+    {
+      "id": "poincare_projection",
+      "name": "Poincaré Projection",
+      "category": "core_operations",
+      "description": "Project arbitrary point in ℝ^n to Poincaré ball",
+      "formula": "proj(x) = x/max(1, ||x||·(1+ε)) where ε is small constant",
+      "input": {
+        "x": "Vector in ℝ^n"
+      },
+      "output": {
+        "point": "Point in Poincaré ball B^n (||point|| < 1)"
+      },
+      "complexity": "O(n)",
+      "precision": "1e-12",
+      "validation": {
+        "output_constraint": "||proj(x)|| < 1"
+      },
+      "implementation_notes": [
+        "Ensure output strictly inside ball",
+        "Use small epsilon for numerical safety",
+        "Handle zero vector",
+        "Radial projection toward origin if needed"
+      ]
+    },
+    {
+      "id": "poincare_tangent_projection",
+      "name": "Poincaré Tangent Projection",
+      "category": "core_operations",
+      "description": "Project vector to tangent space at point (identity in Poincaré model)",
+      "formula": "proj_T(v,x) = v (tangent space is ℝ^n)",
+      "input": {
+        "v": "Vector in ℝ^n",
+        "x": "Point in Poincaré ball"
+      },
+      "output": {
+        "tangent_vector": "Vector in tangent space T_x B^n"
+      },
+      "complexity": "O(1)",
+      "precision": "1e-15",
+      "implementation_notes": [
+        "Tangent space is entire ℝ^n in Poincaré model",
+        "No projection needed (identity operation)",
+        "Included for API consistency"
+      ]
+    },
+    {
+      "id": "poincare_mean",
+      "name": "Poincaré Fréchet Mean",
+      "category": "statistical_operations",
+      "description": "Compute Fréchet mean of points in Poincaré ball using gradient descent",
+      "formula": "argmin_μ Σᵢ d²(μ, xᵢ)",
+      "input": {
+        "points": "Array of points in Poincaré ball B^n",
+        "weights": "Optional weights (default: uniform)",
+        "max_iterations": "Maximum iterations (default: 100)",
+        "tolerance": "Convergence tolerance (default: 1e-8)"
+      },
+      "output": {
+        "mean": "Point in Poincaré ball B^n",
+        "converged": "Boolean indicating convergence"
+      },
+      "complexity": "O(k·m·n) where k=iterations, m=num_points",
+      "precision": "1e-8",
+      "implementation_notes": [
+        "Initialize at Euclidean mean (projected to ball)",
+        "Use gradient descent with exp/log maps",
+        "Check convergence via gradient norm",
+        "Handle near-boundary points carefully"
+      ],
+      "test_cases": [
+        {
+          "name": "single_point",
+          "points": "[[0,0,...,0]]",
+          "expected": "[0,0,...,0]"
+        }
+      ]
+    },
+    {
+      "id": "poincare_variance",
+      "name": "Poincaré Variance",
+      "category": "statistical_operations",
+      "description": "Compute variance of points in Poincaré ball relative to mean",
+      "formula": "σ² = (1/n)Σᵢ d²(μ, xᵢ)",
+      "input": {
+        "points": "Array of points in Poincaré ball",
+        "mean": "Optional precomputed mean (computed if not provided)",
+        "weights": "Optional weights"
+      },
+      "output": {
+        "variance": "Non-negative scalar"
+      },
+      "complexity": "O(m·n) where m=num_points",
+      "precision": "1e-12",
+      "implementation_notes": [
+        "Compute mean if not provided",
+        "Use squared distances",
+        "Apply weights if provided"
+      ]
+    },
+    {
+      "id": "poincare_curvature",
+      "name": "Poincaré Sectional Curvature",
+      "category": "geometric_properties",
+      "description": "Compute sectional curvature (constant -1 for hyperbolic space)",
+      "formula": "K = -1",
+      "input": {
+        "x": "Point in Poincaré ball (unused, for API consistency)",
+        "v1": "First tangent vector (unused)",
+        "v2": "Second tangent vector (unused)"
+      },
+      "output": {
+        "curvature": "-1.0"
+      },
+      "complexity": "O(1)",
+      "precision": "exact",
+      "implementation_notes": [
+        "Always returns -1 (constant curvature)",
+        "Included for API consistency with variable curvature spaces"
+      ]
+    },
+    {
+      "id": "poincare_volume",
+      "name": "Poincaré Hyperbolic Volume",
+      "category": "geometric_properties",
+      "description": "Compute volume of hyperbolic ball in Poincaré model",
+      "formula": "V(r) = ωₙ ∫₀ʳ sinhⁿ⁻¹(t) dt where ωₙ is surface area of unit (n-1)-sphere",
+      "input": {
+        "radius": "Radius of ball",
+        "dimension": "Dimension n"
+      },
+      "output": {
+        "volume": "Volume of ball"
+      },
+      "complexity": "O(1)",
+      "precision": "1e-12",
+      "implementation_notes": [
+        "Use closed-form formulas for low dimensions",
+        "Numerical integration for high dimensions",
+        "Volume grows exponentially with radius",
+        "Same formula as Lorentz model (intrinsic property)"
+      ],
+      "test_cases": [
+        {
+          "name": "dimension_2",
+          "radius": "1.0",
+          "dimension": "2",
+          "expected": "2π(cosh(1)-1)"
+        }
+      ]
+    },
+    {
+      "id": "poincare_area",
+      "name": "Poincaré Hyperbolic Surface Area",
+      "category": "geometric_properties",
+      "description": "Compute surface area of hyperbolic sphere in Poincaré model",
+      "formula": "A(r) = ωₙ sinhⁿ⁻¹(r) where ωₙ = 2πⁿ/²/Γ(n/2)",
+      "input": {
+        "radius": "Radius of sphere",
+        "dimension": "Dimension n"
+      },
+      "output": {
+        "area": "Surface area"
+      },
+      "complexity": "O(1)",
+      "precision": "1e-12",
+      "implementation_notes": [
+        "Use closed-form formulas",
+        "Area grows exponentially with radius",
+        "Related to volume by differentiation",
+        "Same formula as Lorentz model (intrinsic property)"
+      ]
+    },
+    {
+      "id": "poincare_to_lorentz",
+      "name": "Poincaré to Lorentz Conversion",
+      "category": "model_conversion",
+      "description": "Convert point from Poincaré ball model to Lorentz hyperboloid model",
+      "formula": "L(x) = (1+||x||², 2x₁, 2x₂, ..., 2xₙ) / (1-||x||²)",
+      "input": {
+        "x": "Point in Poincaré ball B^n (||x|| < 1)"
+      },
+      "output": {
+        "point": "Point on hyperboloid H^n"
+      },
+      "complexity": "O(n)",
+      "precision": "1e-12",
+      "validation": {
+        "input_constraint": "||x|| < 1",
+        "output_constraint": "⟨L(x), L(x)⟩_L = -1"
+      },
+      "implementation_notes": [
+        "Inverse stereographic projection",
+        "Handle points near boundary carefully",
+        "Verify output satisfies hyperboloid constraint",
+        "Inverse of lorentz_to_poincare"
+      ],
+      "test_cases": [
+        {
+          "name": "origin",
+          "x": "[0, 0, ..., 0]",
+          "expected": "[1, 0, 0, ..., 0]"
+        }
+      ],
+      "edge_cases": [
+        "Points near boundary (||x|| → 1)",
+        "High-dimensional spaces"
+      ]
+    }
+  ],
+  "mobius_operations": {
+    "description": "Möbius gyrovector operations for Poincaré ball",
+    "mobius_addition": {
+      "formula": "x ⊕ y = ((1+2⟨x,y⟩+||y||²)x + (1-||x||²)y) / (1+2⟨x,y⟩+||x||²||y||²)",
+      "properties": ["Non-commutative", "Non-associative", "Identity: 0"]
+    },
+    "mobius_scalar_multiplication": {
+      "formula": "r ⊗ x = tanh(r·arctanh(||x||))·(x/||x||)",
+      "properties": ["Preserves direction", "Bounded by ball"]
+    }
+  },
+  "usage_guidelines": {
+    "when_to_use_poincare": [
+      "Small distances (d < 5)",
+      "Low-dimensional spaces (n ≤ 10)",
+      "Visualization and intuition",
+      "Boundary analysis",
+      "When computational efficiency is critical"
+    ],
+    "when_to_use_lorentz": [
+      "Large distances (d > 5)",
+      "High-dimensional spaces (n > 10)",
+      "Parallel transport operations",
+      "Statistical computations (mean, variance)",
+      "When numerical stability is critical"
+    ],
+    "automatic_selection": "Use dual_model_distance and related operations for automatic model selection"
+  }
+}

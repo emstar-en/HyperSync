@@ -1,0 +1,359 @@
+{
+  "specification": {
+    "name": "Enhanced Hyperbolic Exponential and Logarithmic Maps",
+    "version": "1.0.0",
+    "description": "Enhanced exponential and logarithmic map operations for hyperbolic geometry with numerical stability improvements, batch processing, and advanced features for HVS/AGUA integration.",
+    "total_operations": 10,
+    "format": "STUNIR",
+    "tier_availability": "Core (Free)",
+    "complexity_target": "O(n) or O(n log n)",
+    "integration": ["HVS", "AGUA", "STUNIR", "Dual-Model System"],
+    "enhancements": [
+      "Numerical stability for extreme cases",
+      "Batch processing for efficiency",
+      "Jacobian computation for optimization",
+      "Inverse operations with validation",
+      "Adaptive precision control"
+    ]
+  },
+  "mathematical_foundations": {
+    "exponential_map": {
+      "description": "Maps tangent vectors to manifold via geodesics",
+      "formula": "exp_x(v) = cosh(||v||)x + sinh(||v||)(v/||v||) (Lorentz)",
+      "properties": ["Surjective", "Smooth", "Geodesic flow"],
+      "injectivity_radius": "∞ (hyperbolic space)"
+    },
+    "logarithmic_map": {
+      "description": "Inverse of exponential map",
+      "formula": "log_x(y) = d(x,y) · (y + ⟨x,y⟩_L·x) / ||y + ⟨x,y⟩_L·x||",
+      "properties": ["Inverse of exp", "Smooth away from x", "Tangent vector output"]
+    }
+  },
+  "operations": [
+    {
+      "id": "hyperbolic_exp_map_stable",
+      "name": "Stable Hyperbolic Exponential Map",
+      "category": "core_operations",
+      "description": "Numerically stable exponential map with Taylor expansion for small tangent vectors and special handling for large vectors",
+      "formula": "exp_x(v) with adaptive precision based on ||v||",
+      "input": {
+        "x": "Base point on hyperbolic manifold",
+        "v": "Tangent vector at x",
+        "model": "Model type ('lorentz' or 'poincare')",
+        "epsilon": "Threshold for Taylor expansion (default: 1e-8)"
+      },
+      "output": {
+        "point": "Point on hyperbolic manifold",
+        "numerical_method": "Method used ('standard', 'taylor', 'high_precision')"
+      },
+      "complexity": "O(n)",
+      "precision": "1e-15",
+      "implementation_notes": [
+        "Use Taylor expansion for ||v|| < epsilon: exp_x(v) ≈ x + v + O(||v||²)",
+        "Use standard formula for epsilon ≤ ||v|| < 100",
+        "Use high-precision arithmetic for ||v|| ≥ 100",
+        "Validate output constraint after computation"
+      ],
+      "test_cases": [
+        {
+          "name": "tiny_tangent",
+          "v_norm": "1e-12",
+          "expected_method": "taylor"
+        },
+        {
+          "name": "normal_tangent",
+          "v_norm": "1.0",
+          "expected_method": "standard"
+        },
+        {
+          "name": "large_tangent",
+          "v_norm": "150.0",
+          "expected_method": "high_precision"
+        }
+      ],
+      "edge_cases": [
+        "Zero tangent vector",
+        "Very small tangent vectors (||v|| < 1e-15)",
+        "Very large tangent vectors (||v|| > 100)",
+        "Near-boundary points in Poincaré model"
+      ]
+    },
+    {
+      "id": "hyperbolic_log_map_stable",
+      "name": "Stable Hyperbolic Logarithmic Map",
+      "category": "core_operations",
+      "description": "Numerically stable logarithmic map with special handling for nearby points and large distances",
+      "formula": "log_x(y) with adaptive precision based on d(x,y)",
+      "input": {
+        "x": "Base point on hyperbolic manifold",
+        "y": "Target point on hyperbolic manifold",
+        "model": "Model type ('lorentz' or 'poincare')",
+        "epsilon": "Threshold for nearby points (default: 1e-8)"
+      },
+      "output": {
+        "tangent_vector": "Tangent vector at x",
+        "numerical_method": "Method used ('standard', 'nearby', 'high_precision')"
+      },
+      "complexity": "O(n)",
+      "precision": "1e-15",
+      "implementation_notes": [
+        "Use Taylor expansion for d(x,y) < epsilon",
+        "Use standard formula for epsilon ≤ d(x,y) < 100",
+        "Use high-precision arithmetic for d(x,y) ≥ 100",
+        "Validate tangent constraint after computation"
+      ],
+      "test_cases": [
+        {
+          "name": "nearby_points",
+          "distance": "1e-12",
+          "expected_method": "nearby"
+        },
+        {
+          "name": "normal_distance",
+          "distance": "5.0",
+          "expected_method": "standard"
+        },
+        {
+          "name": "large_distance",
+          "distance": "150.0",
+          "expected_method": "high_precision"
+        }
+      ]
+    },
+    {
+      "id": "hyperbolic_exp_map_batch",
+      "name": "Batch Hyperbolic Exponential Map",
+      "category": "batch_operations",
+      "description": "Compute exponential map for multiple tangent vectors efficiently",
+      "input": {
+        "x": "Base point on hyperbolic manifold",
+        "tangent_vectors": "Array of tangent vectors at x",
+        "model": "Model type ('lorentz' or 'poincare')",
+        "parallel": "Enable parallel processing (default: true)"
+      },
+      "output": {
+        "points": "Array of points on hyperbolic manifold"
+      },
+      "complexity": "O(m·n) where m=num_vectors",
+      "precision": "1e-15",
+      "implementation_notes": [
+        "Vectorize operations for efficiency",
+        "Use parallel processing for large batches",
+        "Reuse computed values (e.g., cosh, sinh)",
+        "Batch validation of constraints"
+      ]
+    },
+    {
+      "id": "hyperbolic_log_map_batch",
+      "name": "Batch Hyperbolic Logarithmic Map",
+      "category": "batch_operations",
+      "description": "Compute logarithmic map for multiple target points efficiently",
+      "input": {
+        "x": "Base point on hyperbolic manifold",
+        "target_points": "Array of target points",
+        "model": "Model type ('lorentz' or 'poincare')",
+        "parallel": "Enable parallel processing (default: true)"
+      },
+      "output": {
+        "tangent_vectors": "Array of tangent vectors at x"
+      },
+      "complexity": "O(m·n) where m=num_points",
+      "precision": "1e-15",
+      "implementation_notes": [
+        "Vectorize operations for efficiency",
+        "Use parallel processing for large batches",
+        "Batch distance computation",
+        "Batch validation of constraints"
+      ]
+    },
+    {
+      "id": "hyperbolic_exp_map_jacobian",
+      "name": "Hyperbolic Exponential Map Jacobian",
+      "category": "differential_operations",
+      "description": "Compute Jacobian matrix of exponential map for optimization and gradient-based methods",
+      "formula": "J_exp(v) = ∂exp_x(v)/∂v",
+      "input": {
+        "x": "Base point on hyperbolic manifold",
+        "v": "Tangent vector at x",
+        "model": "Model type ('lorentz' or 'poincare')"
+      },
+      "output": {
+        "jacobian": "Jacobian matrix (n×n)",
+        "determinant": "Determinant of Jacobian (optional)"
+      },
+      "complexity": "O(n²)",
+      "precision": "1e-12",
+      "implementation_notes": [
+        "Use analytical formula when available",
+        "Fall back to numerical differentiation if needed",
+        "Exploit sparsity structure for efficiency",
+        "Cache intermediate computations"
+      ],
+      "applications": [
+        "Riemannian optimization",
+        "Gradient descent on manifolds",
+        "Uncertainty propagation",
+        "Sensitivity analysis"
+      ]
+    },
+    {
+      "id": "hyperbolic_log_map_jacobian",
+      "name": "Hyperbolic Logarithmic Map Jacobian",
+      "category": "differential_operations",
+      "description": "Compute Jacobian matrix of logarithmic map",
+      "formula": "J_log(y) = ∂log_x(y)/∂y",
+      "input": {
+        "x": "Base point on hyperbolic manifold",
+        "y": "Target point on hyperbolic manifold",
+        "model": "Model type ('lorentz' or 'poincare')"
+      },
+      "output": {
+        "jacobian": "Jacobian matrix (n×n)",
+        "determinant": "Determinant of Jacobian (optional)"
+      },
+      "complexity": "O(n²)",
+      "precision": "1e-12",
+      "implementation_notes": [
+        "Use analytical formula when available",
+        "Handle singularity at x=y",
+        "Exploit sparsity structure",
+        "Inverse of exp_map Jacobian"
+      ]
+    },
+    {
+      "id": "hyperbolic_exp_log_inverse_check",
+      "name": "Exponential-Logarithmic Inverse Validation",
+      "category": "validation",
+      "description": "Validate that exp and log are inverses with specified tolerance",
+      "input": {
+        "x": "Base point on hyperbolic manifold",
+        "v": "Tangent vector at x (for exp→log→exp test)",
+        "y": "Target point (for log→exp→log test)",
+        "model": "Model type ('lorentz' or 'poincare')",
+        "tolerance": "Tolerance for validation (default: 1e-10)"
+      },
+      "output": {
+        "exp_log_exp_valid": "Boolean for exp→log→exp test",
+        "log_exp_log_valid": "Boolean for log→exp→log test",
+        "max_error": "Maximum error observed",
+        "details": "Detailed error analysis"
+      },
+      "complexity": "O(n)",
+      "precision": "1e-10",
+      "implementation_notes": [
+        "Test: exp_x(log_x(y)) ≈ y",
+        "Test: log_x(exp_x(v)) ≈ v",
+        "Report detailed error metrics",
+        "Useful for debugging and validation"
+      ]
+    },
+    {
+      "id": "hyperbolic_retraction",
+      "name": "Hyperbolic Retraction",
+      "category": "optimization_operations",
+      "description": "First-order retraction approximation to exponential map (faster, less accurate)",
+      "formula": "R_x(v) ≈ exp_x(v) using first-order approximation",
+      "input": {
+        "x": "Base point on hyperbolic manifold",
+        "v": "Tangent vector at x",
+        "model": "Model type ('lorentz' or 'poincare')"
+      },
+      "output": {
+        "point": "Point on hyperbolic manifold (approximate)"
+      },
+      "complexity": "O(n)",
+      "precision": "1e-6 (lower than exp_map)",
+      "implementation_notes": [
+        "Use for optimization when speed > accuracy",
+        "First-order Taylor approximation",
+        "Project result to manifold",
+        "Faster than full exponential map"
+      ],
+      "applications": [
+        "Riemannian optimization (line search)",
+        "Gradient descent iterations",
+        "Real-time applications"
+      ]
+    },
+    {
+      "id": "hyperbolic_vector_transport",
+      "name": "Hyperbolic Vector Transport via Exp/Log",
+      "category": "transport_operations",
+      "description": "Transport tangent vector using exponential and logarithmic maps",
+      "formula": "Transport v from x to y: P_{x→y}(v) using exp/log composition",
+      "input": {
+        "v": "Tangent vector at x",
+        "x": "Start point on hyperbolic manifold",
+        "y": "End point on hyperbolic manifold",
+        "model": "Model type ('lorentz' or 'poincare')"
+      },
+      "output": {
+        "transported_vector": "Tangent vector at y"
+      },
+      "complexity": "O(n)",
+      "precision": "1e-12",
+      "implementation_notes": [
+        "Alternative to parallel transport",
+        "Uses exp/log composition",
+        "May differ from parallel transport",
+        "Useful for optimization algorithms"
+      ]
+    },
+    {
+      "id": "hyperbolic_shooting_method",
+      "name": "Hyperbolic Shooting Method",
+      "category": "geodesic_operations",
+      "description": "Find tangent vector that shoots from x to y using iterative refinement",
+      "formula": "Find v such that exp_x(v) = y using Newton's method",
+      "input": {
+        "x": "Start point on hyperbolic manifold",
+        "y": "Target point on hyperbolic manifold",
+        "model": "Model type ('lorentz' or 'poincare')",
+        "max_iterations": "Maximum iterations (default: 20)",
+        "tolerance": "Convergence tolerance (default: 1e-10)"
+      },
+      "output": {
+        "tangent_vector": "Tangent vector v such that exp_x(v) ≈ y",
+        "converged": "Boolean indicating convergence",
+        "iterations": "Number of iterations used",
+        "final_error": "Final error ||exp_x(v) - y||"
+      },
+      "complexity": "O(k·n²) where k=iterations",
+      "precision": "1e-10",
+      "implementation_notes": [
+        "Initialize with log_x(y)",
+        "Use Newton's method with Jacobian",
+        "Converges quadratically near solution",
+        "Useful for validation and testing"
+      ],
+      "applications": [
+        "Validation of log_map implementation",
+        "High-precision geodesic computation",
+        "Inverse problems"
+      ]
+    }
+  ],
+  "numerical_stability_guidelines": {
+    "small_vectors": {
+      "threshold": "||v|| < 1e-8",
+      "method": "Taylor expansion",
+      "formula": "exp_x(v) ≈ x + v + (1/2)⟨v,v⟩x + O(||v||³)"
+    },
+    "large_vectors": {
+      "threshold": "||v|| > 100",
+      "method": "High-precision arithmetic",
+      "notes": "Use extended precision to avoid overflow/underflow"
+    },
+    "boundary_proximity": {
+      "threshold": "||x|| > 0.95 (Poincaré)",
+      "method": "Switch to Lorentz model",
+      "notes": "Poincaré numerically unstable near boundary"
+    }
+  },
+  "performance_optimization": {
+    "batch_processing": "Use vectorized operations for multiple vectors",
+    "parallel_processing": "Enable parallelization for large batches",
+    "caching": "Cache frequently computed values (cosh, sinh, norms)",
+    "model_selection": "Use dual-model system for automatic optimization"
+  }
+}

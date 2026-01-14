@@ -1,0 +1,447 @@
+{
+  "specification": {
+    "name": "Dual Model System - Conversion and Selection Operations",
+    "version": "1.0.0",
+    "description": "Automatic model selection, conversion, and unified operations for the dual-model system (Lorentz + Poincaré). Provides intelligent switching between models based on numerical stability, computational efficiency, and geometric properties.",
+    "total_operations": 10,
+    "format": "STUNIR",
+    "tier_availability": "Core (Free)",
+    "complexity_target": "O(n) or O(n log n)",
+    "integration": ["HVS", "AGUA", "STUNIR", "Dual-Model System"]
+  },
+  "mathematical_foundations": {
+    "model_selection_criteria": {
+      "distance_threshold": {
+        "description": "Switch models based on distance magnitude",
+        "poincare_optimal": "d < 5 (small distances)",
+        "lorentz_optimal": "d > 5 (large distances)",
+        "rationale": "Poincaré numerically unstable for large distances"
+      },
+      "dimension_threshold": {
+        "description": "Switch models based on dimensionality",
+        "poincare_optimal": "n ≤ 10 (low dimensions)",
+        "lorentz_optimal": "n > 10 (high dimensions)",
+        "rationale": "Lorentz extra dimension overhead negligible in high-D"
+      },
+      "boundary_proximity": {
+        "description": "Switch models based on distance to boundary",
+        "poincare_optimal": "||x|| < 0.9 (interior points)",
+        "lorentz_optimal": "||x|| > 0.9 (near boundary)",
+        "rationale": "Poincaré numerically unstable near boundary"
+      },
+      "operation_type": {
+        "poincare_optimal": ["visualization", "small_scale_operations", "boundary_analysis"],
+        "lorentz_optimal": ["parallel_transport", "statistical_operations", "large_scale_operations"]
+      }
+    },
+    "conversion_formulas": {
+      "lorentz_to_poincare": "P(x) = (x₁, ..., xₙ) / (1 + x₀)",
+      "poincare_to_lorentz": "L(x) = ((1+||x||²)/(1-||x||²), 2x/(1-||x||²))"
+    }
+  },
+  "operations": [
+    {
+      "id": "auto_select_model",
+      "name": "Automatic Model Selection",
+      "category": "model_selection",
+      "description": "Automatically select optimal model (Lorentz or Poincaré) based on operation type, distance, dimension, and boundary proximity",
+      "input": {
+        "points": "Array of points (in either model)",
+        "operation_type": "Type of operation ('distance', 'geodesic', 'mean', 'parallel_transport', etc.)",
+        "dimension": "Dimension of space",
+        "current_model": "Current model representation ('lorentz' or 'poincare')"
+      },
+      "output": {
+        "selected_model": "Optimal model ('lorentz' or 'poincare')",
+        "reason": "Explanation for selection",
+        "conversion_needed": "Boolean indicating if conversion is required"
+      },
+      "complexity": "O(m·n) where m=num_points",
+      "precision": "N/A",
+      "selection_logic": {
+        "step_1": "Analyze operation type",
+        "step_2": "Compute distance statistics (if applicable)",
+        "step_3": "Check boundary proximity",
+        "step_4": "Consider dimensionality",
+        "step_5": "Return optimal model with justification"
+      },
+      "implementation_notes": [
+        "Use heuristics based on empirical performance",
+        "Cache selection decisions for repeated operations",
+        "Provide detailed reasoning for debugging",
+        "Allow manual override via configuration"
+      ],
+      "test_cases": [
+        {
+          "name": "small_distance_low_dim",
+          "operation_type": "distance",
+          "dimension": "3",
+          "max_distance": "2.0",
+          "expected": "poincare"
+        },
+        {
+          "name": "large_distance_high_dim",
+          "operation_type": "distance",
+          "dimension": "50",
+          "max_distance": "10.0",
+          "expected": "lorentz"
+        },
+        {
+          "name": "parallel_transport",
+          "operation_type": "parallel_transport",
+          "expected": "lorentz"
+        }
+      ]
+    },
+    {
+      "id": "convert_between_models",
+      "name": "Convert Between Models",
+      "category": "model_conversion",
+      "description": "Convert points between Lorentz and Poincaré models with validation",
+      "input": {
+        "points": "Array of points in source model",
+        "source_model": "Source model ('lorentz' or 'poincare')",
+        "target_model": "Target model ('lorentz' or 'poincare')",
+        "validate": "Boolean to enable validation (default: true)"
+      },
+      "output": {
+        "converted_points": "Array of points in target model",
+        "validation_passed": "Boolean indicating validation success"
+      },
+      "complexity": "O(m·n) where m=num_points",
+      "precision": "1e-12",
+      "implementation_notes": [
+        "Use lorentz_to_poincare and poincare_to_lorentz",
+        "Validate constraints before and after conversion",
+        "Handle edge cases (boundary points, origin)",
+        "Batch conversion for efficiency"
+      ],
+      "test_cases": [
+        {
+          "name": "lorentz_to_poincare_origin",
+          "points": "[[1, 0, 0, ..., 0]]",
+          "source_model": "lorentz",
+          "target_model": "poincare",
+          "expected": "[[0, 0, ..., 0]]"
+        },
+        {
+          "name": "round_trip_conversion",
+          "points": "[[0.5, 0.3, 0.2]]",
+          "source_model": "poincare",
+          "target_model": "lorentz",
+          "then_back": "poincare",
+          "expected": "[[0.5, 0.3, 0.2]] (within tolerance)"
+        }
+      ]
+    },
+    {
+      "id": "dual_model_distance",
+      "name": "Dual Model Distance",
+      "category": "unified_operations",
+      "description": "Compute distance using automatically selected optimal model",
+      "input": {
+        "x": "Point in either model",
+        "y": "Point in either model",
+        "model": "Current model ('lorentz', 'poincare', or 'auto')",
+        "dimension": "Dimension of space"
+      },
+      "output": {
+        "distance": "Hyperbolic distance",
+        "model_used": "Model used for computation"
+      },
+      "complexity": "O(n)",
+      "precision": "1e-12",
+      "implementation_notes": [
+        "If model='auto', call auto_select_model",
+        "Convert if necessary",
+        "Use appropriate distance function",
+        "Return both distance and model used"
+      ],
+      "test_cases": [
+        {
+          "name": "auto_small_distance",
+          "x": "[0, 0, 0]",
+          "y": "[0.1, 0, 0]",
+          "model": "auto",
+          "expected_model": "poincare"
+        }
+      ]
+    },
+    {
+      "id": "dual_model_geodesic",
+      "name": "Dual Model Geodesic",
+      "category": "unified_operations",
+      "description": "Compute geodesic using automatically selected optimal model",
+      "input": {
+        "x": "Start point in either model",
+        "y": "End point in either model",
+        "t": "Parameter in [0,1]",
+        "model": "Current model ('lorentz', 'poincare', or 'auto')",
+        "dimension": "Dimension of space"
+      },
+      "output": {
+        "point": "Point on geodesic at parameter t",
+        "model_used": "Model used for computation"
+      },
+      "complexity": "O(n)",
+      "precision": "1e-12",
+      "implementation_notes": [
+        "If model='auto', call auto_select_model",
+        "Convert if necessary",
+        "Use appropriate geodesic function",
+        "Return point in original model if requested"
+      ]
+    },
+    {
+      "id": "dual_model_mean",
+      "name": "Dual Model Fréchet Mean",
+      "category": "unified_operations",
+      "description": "Compute Fréchet mean using automatically selected optimal model",
+      "input": {
+        "points": "Array of points in either model",
+        "weights": "Optional weights",
+        "model": "Current model ('lorentz', 'poincare', or 'auto')",
+        "max_iterations": "Maximum iterations (default: 100)",
+        "tolerance": "Convergence tolerance (default: 1e-8)"
+      },
+      "output": {
+        "mean": "Fréchet mean point",
+        "model_used": "Model used for computation",
+        "converged": "Boolean indicating convergence"
+      },
+      "complexity": "O(k·m·n) where k=iterations, m=num_points",
+      "precision": "1e-8",
+      "implementation_notes": [
+        "If model='auto', call auto_select_model with operation_type='mean'",
+        "Prefer Lorentz for statistical operations",
+        "Convert if necessary",
+        "Use appropriate mean function"
+      ]
+    },
+    {
+      "id": "benchmark_models",
+      "name": "Benchmark Model Performance",
+      "category": "performance_analysis",
+      "description": "Benchmark performance of both models for given operation and data",
+      "input": {
+        "points": "Array of points for benchmarking",
+        "operation_type": "Operation to benchmark ('distance', 'geodesic', 'mean', etc.)",
+        "num_trials": "Number of trials (default: 10)",
+        "dimension": "Dimension of space"
+      },
+      "output": {
+        "lorentz_time": "Average time for Lorentz model (seconds)",
+        "poincare_time": "Average time for Poincaré model (seconds)",
+        "lorentz_accuracy": "Numerical accuracy for Lorentz",
+        "poincare_accuracy": "Numerical accuracy for Poincaré",
+        "recommendation": "Recommended model based on benchmark"
+      },
+      "complexity": "O(num_trials · operation_complexity)",
+      "precision": "N/A",
+      "implementation_notes": [
+        "Run operation in both models",
+        "Measure execution time",
+        "Compare numerical accuracy",
+        "Provide recommendation with justification"
+      ]
+    },
+    {
+      "id": "validate_model_consistency",
+      "name": "Validate Model Consistency",
+      "category": "validation",
+      "description": "Validate that operations produce consistent results across models",
+      "input": {
+        "points": "Array of points for validation",
+        "operation_type": "Operation to validate",
+        "tolerance": "Tolerance for consistency check (default: 1e-10)"
+      },
+      "output": {
+        "consistent": "Boolean indicating consistency",
+        "max_difference": "Maximum difference between models",
+        "details": "Detailed comparison results"
+      },
+      "complexity": "O(m·n) where m=num_points",
+      "precision": "1e-10",
+      "implementation_notes": [
+        "Perform operation in both models",
+        "Convert results to common representation",
+        "Compare with specified tolerance",
+        "Report any inconsistencies"
+      ],
+      "test_cases": [
+        {
+          "name": "distance_consistency",
+          "operation_type": "distance",
+          "expected": "consistent=true, max_difference < 1e-10"
+        }
+      ]
+    },
+    {
+      "id": "get_optimal_model",
+      "name": "Get Optimal Model",
+      "category": "model_selection",
+      "description": "Get optimal model for specific use case with detailed analysis",
+      "input": {
+        "use_case": "Description of use case",
+        "dimension": "Dimension of space",
+        "typical_distance_range": "Typical distance range [min, max]",
+        "operation_types": "List of operation types to be performed",
+        "performance_priority": "Priority ('speed', 'accuracy', or 'balanced')"
+      },
+      "output": {
+        "optimal_model": "Recommended model",
+        "confidence": "Confidence score (0-1)",
+        "analysis": "Detailed analysis and reasoning",
+        "alternative": "Alternative model with trade-offs"
+      },
+      "complexity": "O(1)",
+      "precision": "N/A",
+      "implementation_notes": [
+        "Analyze all input criteria",
+        "Apply decision tree or scoring system",
+        "Provide detailed reasoning",
+        "Suggest alternative with trade-offs"
+      ]
+    },
+    {
+      "id": "dual_model_interpolation",
+      "name": "Dual Model Interpolation",
+      "category": "unified_operations",
+      "description": "Interpolate between points using automatically selected optimal model",
+      "input": {
+        "points": "Array of points to interpolate",
+        "t_values": "Array of interpolation parameters",
+        "model": "Current model ('lorentz', 'poincare', or 'auto')",
+        "interpolation_type": "Type ('linear', 'cubic', 'spline')"
+      },
+      "output": {
+        "interpolated_points": "Array of interpolated points",
+        "model_used": "Model used for computation"
+      },
+      "complexity": "O(m·n) where m=num_points",
+      "precision": "1e-12",
+      "implementation_notes": [
+        "If model='auto', call auto_select_model",
+        "Use geodesic interpolation for 'linear'",
+        "Implement higher-order interpolation for 'cubic' and 'spline'",
+        "Ensure interpolated points stay on manifold"
+      ]
+    },
+    {
+      "id": "dual_model_parallel_transport",
+      "name": "Dual Model Parallel Transport",
+      "category": "unified_operations",
+      "description": "Parallel transport using automatically selected optimal model",
+      "input": {
+        "v": "Tangent vector to transport",
+        "x": "Start point",
+        "y": "End point",
+        "model": "Current model ('lorentz', 'poincare', or 'auto')"
+      },
+      "output": {
+        "transported_vector": "Transported tangent vector at y",
+        "model_used": "Model used for computation"
+      },
+      "complexity": "O(n)",
+      "precision": "1e-12",
+      "implementation_notes": [
+        "If model='auto', prefer Lorentz (more stable for parallel transport)",
+        "Convert if necessary",
+        "Use appropriate parallel transport function",
+        "Verify norm preservation"
+      ]
+    }
+  ],
+  "decision_tree": {
+    "description": "Decision tree for automatic model selection",
+    "root": {
+      "condition": "operation_type",
+      "branches": {
+        "parallel_transport": {
+          "decision": "lorentz",
+          "reason": "Lorentz model has more stable parallel transport"
+        },
+        "statistical": {
+          "decision": "lorentz",
+          "reason": "Lorentz model better for mean, variance computations"
+        },
+        "visualization": {
+          "decision": "poincare",
+          "reason": "Poincaré model more intuitive for visualization"
+        },
+        "general": {
+          "condition": "dimension",
+          "branches": {
+            "high_dim": {
+              "threshold": "> 10",
+              "decision": "lorentz",
+              "reason": "Extra dimension overhead negligible in high-D"
+            },
+            "low_dim": {
+              "threshold": "≤ 10",
+              "condition": "distance_range",
+              "branches": {
+                "large_distance": {
+                  "threshold": "> 5",
+                  "decision": "lorentz",
+                  "reason": "Poincaré numerically unstable for large distances"
+                },
+                "small_distance": {
+                  "threshold": "≤ 5",
+                  "condition": "boundary_proximity",
+                  "branches": {
+                    "near_boundary": {
+                      "threshold": "||x|| > 0.9",
+                      "decision": "lorentz",
+                      "reason": "Poincaré numerically unstable near boundary"
+                    },
+                    "interior": {
+                      "threshold": "||x|| ≤ 0.9",
+                      "decision": "poincare",
+                      "reason": "Poincaré efficient for interior points with small distances"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "performance_characteristics": {
+    "lorentz_model": {
+      "strengths": [
+        "Numerically stable for large distances",
+        "Better for high-dimensional spaces",
+        "Stable parallel transport",
+        "Better for statistical operations"
+      ],
+      "weaknesses": [
+        "Extra dimension overhead",
+        "Less intuitive",
+        "Constraint maintenance required"
+      ]
+    },
+    "poincare_model": {
+      "strengths": [
+        "Efficient for small distances",
+        "Intuitive visualization",
+        "Lower dimensional",
+        "Conformal (angle-preserving)"
+      ],
+      "weaknesses": [
+        "Numerically unstable near boundary",
+        "Unstable for large distances",
+        "Distortion increases toward boundary"
+      ]
+    }
+  },
+  "usage_guidelines": {
+    "automatic_mode": "Use 'auto' for model parameter to enable automatic selection",
+    "manual_override": "Specify 'lorentz' or 'poincare' to force specific model",
+    "benchmarking": "Use benchmark_models to empirically determine optimal model for your use case",
+    "validation": "Use validate_model_consistency to ensure correctness across models",
+    "performance_tuning": "Use get_optimal_model for detailed analysis and recommendations"
+  }
+}

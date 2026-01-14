@@ -1,0 +1,94 @@
+{
+  "specification": {
+    "name": "Schwarzschild Black Hole Geometry Operations",
+    "version": "1.0.0",
+    "description": "Schwarzschild (non-rotating) black hole geometry operations for HyperSync Core tier.",
+    "language_agnostic": true,
+    "format": "STUNIR",
+    "tier_availability": "Core (Free)",
+    "total_operations": 8,
+    "complexity_target": "O(1) to O(n)"
+  },
+  "mathematical_foundations": {
+    "schwarzschild_metric": "ds\u00b2 = -(1-2M/r)dt\u00b2 + (1-2M/r)\u207b\u00b9dr\u00b2 + r\u00b2d\u03a9\u00b2",
+    "event_horizon": "r_s = 2GM/c\u00b2 = 2M (geometric units)",
+    "singularity": "r = 0",
+    "geodesics": "Determined by Christoffel symbols and conservation laws"
+  },
+  "operations": [
+    {
+      "id": "schwarzschild_metric",
+      "name": "Schwarzschild Metric Tensor",
+      "formula": "g_\u03bc\u03bd = diag(-(1-2M/r), (1-2M/r)\u207b\u00b9, r\u00b2, r\u00b2sin\u00b2\u03b8)",
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      },
+      "precision": "1e-12"
+    },
+    {
+      "id": "schwarzschild_christoffel",
+      "name": "Schwarzschild Christoffel Symbols",
+      "description": "Compute Christoffel symbols \u0393^\u03bc_\u03bd\u03c3",
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      },
+      "precision": "1e-12"
+    },
+    {
+      "id": "schwarzschild_event_horizon",
+      "name": "Event Horizon Properties",
+      "formula": "r_s = 2M, Area = 16\u03c0M\u00b2, Surface gravity = 1/(4M)",
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      }
+    },
+    {
+      "id": "schwarzschild_geodesic",
+      "name": "Schwarzschild Geodesic Integration",
+      "description": "Integrate geodesic equations for particle trajectories",
+      "complexity": {
+        "time": "O(n) where n=integration steps",
+        "space": "O(n)"
+      }
+    },
+    {
+      "id": "schwarzschild_escape_velocity",
+      "name": "Escape Velocity",
+      "formula": "v_esc = sqrt(2M/r) = sqrt(r_s/r)",
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      }
+    },
+    {
+      "id": "schwarzschild_time_dilation",
+      "name": "Gravitational Time Dilation",
+      "formula": "dt_proper = sqrt(1-2M/r) \u00b7 dt_coordinate",
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      }
+    },
+    {
+      "id": "schwarzschild_redshift",
+      "name": "Gravitational Redshift",
+      "formula": "z = sqrt((1-2M/r_e)/(1-2M/r_o)) - 1",
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      }
+    },
+    {
+      "id": "schwarzschild_orbital_velocity",
+      "name": "Circular Orbital Velocity",
+      "formula": "v_orb = sqrt(M/r) for r > 3M (stable orbits)",
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      }
+    }
+  ]
+}

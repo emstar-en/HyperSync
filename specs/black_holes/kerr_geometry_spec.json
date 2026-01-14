@@ -1,0 +1,82 @@
+{
+  "specification": {
+    "name": "Kerr Black Hole Geometry Operations",
+    "version": "1.0.0",
+    "description": "Kerr (rotating) black hole geometry operations for HyperSync Core tier.",
+    "language_agnostic": true,
+    "format": "STUNIR",
+    "tier_availability": "Core (Free)",
+    "total_operations": 7,
+    "complexity_target": "O(1) to O(n)"
+  },
+  "mathematical_foundations": {
+    "kerr_metric": "ds\u00b2 in Boyer-Lindquist coordinates",
+    "event_horizon": "r_\u00b1 = M \u00b1 sqrt(M\u00b2-a\u00b2) where a=J/M (angular momentum per unit mass)",
+    "ergosphere": "r_ergo = M + sqrt(M\u00b2-a\u00b2cos\u00b2\u03b8)",
+    "frame_dragging": "\u03c9 = 2Mar/(r\u00b2+a\u00b2cos\u00b2\u03b8)\u00b2 (ZAMO angular velocity)"
+  },
+  "operations": [
+    {
+      "id": "kerr_metric_boyer_lindquist",
+      "name": "Kerr Metric in Boyer-Lindquist Coordinates",
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      },
+      "precision": "1e-12"
+    },
+    {
+      "id": "kerr_horizons",
+      "name": "Kerr Event Horizons",
+      "formula": "r_\u00b1 = M \u00b1 sqrt(M\u00b2-a\u00b2)",
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      }
+    },
+    {
+      "id": "kerr_ergosphere",
+      "name": "Ergosphere Boundary",
+      "formula": "r_ergo(\u03b8) = M + sqrt(M\u00b2-a\u00b2cos\u00b2\u03b8)",
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      }
+    },
+    {
+      "id": "kerr_frame_dragging",
+      "name": "Frame Dragging Frequency",
+      "formula": "\u03c9 = 2Mar/(r\u00b2+a\u00b2cos\u00b2\u03b8)\u00b2",
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      }
+    },
+    {
+      "id": "kerr_christoffel",
+      "name": "Kerr Christoffel Symbols",
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      }
+    },
+    {
+      "id": "kerr_geodesic",
+      "name": "Kerr Geodesic Integration",
+      "description": "Integrate geodesic equations in Kerr spacetime",
+      "complexity": {
+        "time": "O(n)",
+        "space": "O(n)"
+      }
+    },
+    {
+      "id": "kerr_photon_orbit",
+      "name": "Photon Sphere Radius",
+      "description": "Compute photon sphere radius for light orbits",
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      }
+    }
+  ]
+}
