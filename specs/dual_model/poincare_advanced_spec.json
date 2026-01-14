@@ -1,0 +1,2011 @@
+{
+  "specification": {
+    "name": "Dual Model System - Advanced Poincaré Operations",
+    "version": "1.0.0",
+    "description": "Advanced Poincaré ball model operations including higher-order derivatives, batch processing, optimization routines, and numerical stability enhancements. Extends the basic Poincaré operations with sophisticated geometric and computational tools.",
+    "total_operations": 30,
+    "format": "STUNIR",
+    "tier_availability": "Core (Free)",
+    "complexity_target": "O(n) to O(n²)",
+    "integration": ["HVS", "AGUA", "STUNIR", "Dual-Model System"],
+    "model_type": "Poincaré Ball (Advanced)",
+    "coordinate_system": "Unit ball with conformal metric",
+    "dependencies": ["dual_model_poincare_spec.json"]
+  },
+  "mathematical_foundations": {
+    "conformal_factor": {
+      "description": "Conformal factor for Poincaré metric",
+      "formula": "λ(x) = 2/(1 - ||x||²)",
+      "range": "[2, ∞) as ||x|| → 1"
+    },
+    "mobius_operations": {
+      "addition": "x ⊕ y = (x + y)/(1 + ⟨x,y⟩) normalized",
+      "gyration": "gyr[u,v]w compensates non-associativity",
+      "properties": ["Non-associative", "Non-commutative (gyration)"]
+    },
+    "christoffel_symbols": {
+      "description": "Connection coefficients for Poincaré model",
+      "formula": "Γⁱⱼₖ = λ(x)(δⁱⱼxₖ + δⁱₖxⱼ - δⱼₖxⁱ)",
+      "properties": ["Depend on conformal factor", "Related to Euclidean space"]
+    },
+    "ricci_curvature": {
+      "description": "Ricci curvature tensor for Poincaré ball",
+      "formula": "Ric = -(n-1)g",
+      "scalar_curvature": "R = -n(n-1)"
+    }
+  },
+  "operations": [
+    {
+      "id": "poincare_geodesic_midpoint",
+      "name": "Poincaré Geodesic Midpoint",
+      "category": "advanced_distance",
+      "description": "Compute the midpoint along the geodesic connecting two points in Poincaré ball",
+      "formula": "mid(x,y) = exp_x(0.5 * log_x(y))",
+      "input": {
+        "x": "Point in Poincaré ball B^n (||x|| < 1)",
+        "y": "Point in Poincaré ball B^n (||y|| < 1)"
+      },
+      "output": {
+        "midpoint": "Point in Poincaré ball B^n"
+      },
+      "complexity": {
+        "time": "O(n)",
+        "space": "O(n)"
+      },
+      "precision": "1e-12",
+      "implementation_notes": [
+        "Use Möbius addition formula for efficiency",
+        "Alternative: mid = (-x) ⊕ (0.5 ⊗ (x ⊕ y))",
+        "Verify ||result|| < 1",
+        "Handle coincident points"
+      ],
+      "test_cases": [
+        {
+          "name": "origin_axis_midpoint",
+          "x": "[0, 0, 0]",
+          "y": "[0.5, 0, 0]",
+          "expected": "[0.25, 0, 0] approximately",
+          "tolerance": "1e-10"
+        },
+        {
+          "name": "symmetric_points",
+          "x": "[0.3, 0, 0]",
+          "y": "[-0.3, 0, 0]",
+          "expected": "near origin",
+          "tolerance": "1e-10"
+        },
+        {
+          "name": "near_boundary",
+          "x": "[0.99, 0, 0]",
+          "y": "[0.0, 0, 0]",
+          "expected": "stable computation",
+          "tolerance": "1e-9"
+        },
+        {
+          "name": "high_dimensional",
+          "x": "origin in B^100",
+          "y": "point at distance 2",
+          "expected_distance_from_x": "1.0",
+          "tolerance": "1e-9"
+        },
+        {
+          "name": "identical_points",
+          "x": "[0.5, 0.3, 0]",
+          "y": "[0.5, 0.3, 0]",
+          "expected": "[0.5, 0.3, 0]",
+          "tolerance": "1e-12"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "coincident_points",
+          "condition": "x == y",
+          "expected": "return x"
+        },
+        {
+          "name": "points_near_boundary",
+          "condition": "||x|| or ||y|| → 1",
+          "handling": "use high precision arithmetic"
+        },
+        {
+          "name": "numerical_drift",
+          "condition": "||result|| ≥ 1",
+          "handling": "project back to ball"
+        }
+      ]
+    },
+    {
+      "id": "poincare_weighted_frechet_mean",
+      "name": "Poincaré Weighted Fréchet Mean",
+      "category": "advanced_distance",
+      "description": "Compute weighted Fréchet mean of points in Poincaré ball using Riemannian gradient descent",
+      "formula": "argmin_μ Σᵢ wᵢ d²(μ, xᵢ)",
+      "input": {
+        "points": "Array of n points in Poincaré ball B^d",
+        "weights": "Array of n positive weights (sum to 1)",
+        "max_iterations": "Integer, default 100",
+        "tolerance": "Float, default 1e-8"
+      },
+      "output": {
+        "mean": "Point in Poincaré ball B^d",
+        "converged": "Boolean",
+        "iterations": "Integer"
+      },
+      "complexity": {
+        "time": "O(n * d * k) where k = iterations",
+        "space": "O(n * d)"
+      },
+      "precision": "1e-10",
+      "implementation_notes": [
+        "Initialize at weighted Euclidean mean projected to ball",
+        "Use Riemannian gradient descent: μ_{t+1} = exp_μ(-α ∇f(μ))",
+        "Gradient: ∇f(μ) = -2 Σᵢ wᵢ log_μ(xᵢ)",
+        "Handle boundary proximity carefully"
+      ],
+      "test_cases": [
+        {
+          "name": "uniform_weights_origin",
+          "points": "3 points at equal distances from origin",
+          "weights": "[1/3, 1/3, 1/3]",
+          "expected": "near origin",
+          "tolerance": "1e-8"
+        },
+        {
+          "name": "single_dominant_weight",
+          "points": "10 points",
+          "weights": "[0.9, 0.01, ...]",
+          "expected": "near point with weight 0.9",
+          "tolerance": "1e-7"
+        },
+        {
+          "name": "points_near_boundary",
+          "points": "5 points with ||x|| > 0.95",
+          "weights": "uniform",
+          "expected": "stable convergence",
+          "tolerance": "1e-7"
+        },
+        {
+          "name": "high_dimensional",
+          "points": "100 points in B^50",
+          "weights": "uniform",
+          "expected": "convergence in <100 iterations",
+          "tolerance": "1e-6"
+        },
+        {
+          "name": "collinear_points",
+          "points": "points on same geodesic",
+          "weights": "arbitrary",
+          "expected": "on same geodesic",
+          "tolerance": "1e-9"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "single_point",
+          "condition": "n == 1",
+          "expected": "return that point"
+        },
+        {
+          "name": "boundary_proximity",
+          "condition": "mean converging to boundary",
+          "handling": "use step size control"
+        },
+        {
+          "name": "non_convergence",
+          "condition": "max_iterations reached",
+          "handling": "return best result, set converged=False"
+        }
+      ]
+    },
+    {
+      "id": "poincare_christoffel_symbols",
+      "name": "Poincaré Christoffel Symbols",
+      "category": "higher_order_derivatives",
+      "description": "Compute Christoffel symbols at a point in Poincaré ball",
+      "formula": "Γⁱⱼₖ(x) = λ(x)(δⁱⱼxₖ + δⁱₖxⱼ - δⱼₖxⁱ) where λ = 2/(1-||x||²)",
+      "input": {
+        "x": "Point in Poincaré ball B^n",
+        "basis_vectors": "Optional: tangent basis at x"
+      },
+      "output": {
+        "christoffel": "3D array of shape (n, n, n)"
+      },
+      "complexity": {
+        "time": "O(n³)",
+        "space": "O(n³)"
+      },
+      "precision": "1e-11",
+      "implementation_notes": [
+        "Use conformal formula: involves λ(x) factor",
+        "Christoffel symbols are symmetric in lower indices",
+        "Blow up as ||x|| → 1"
+      ],
+      "test_cases": [
+        {
+          "name": "origin_symbols",
+          "x": "[0, 0, 0]",
+          "expected": "all zeros (Euclidean at origin)",
+          "tolerance": "1e-12"
+        },
+        {
+          "name": "symmetry_check",
+          "x": "arbitrary point",
+          "expected": "Γⁱⱼₖ == Γⁱₖⱼ for all i,j,k",
+          "tolerance": "1e-10"
+        },
+        {
+          "name": "boundary_behavior",
+          "x": "[0.95, 0, 0]",
+          "expected": "large values near boundary",
+          "tolerance": "1e-8"
+        },
+        {
+          "name": "conformal_factor_check",
+          "x": "arbitrary point",
+          "expected": "scales with λ(x)",
+          "tolerance": "1e-9"
+        },
+        {
+          "name": "high_dimension",
+          "x": "point in B^20",
+          "expected": "correct shape (20,20,20)",
+          "tolerance": "1e-8"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "near_boundary",
+          "condition": "||x|| → 1",
+          "handling": "use high precision, may be unstable"
+        },
+        {
+          "name": "sparse_storage",
+          "condition": "n > 50",
+          "handling": "store only non-zero pattern"
+        },
+        {
+          "name": "origin_special_case",
+          "condition": "x ≈ 0",
+          "handling": "return zeros or small values"
+        }
+      ]
+    },
+    {
+      "id": "poincare_ricci_tensor",
+      "name": "Poincaré Ricci Tensor",
+      "category": "higher_order_derivatives",
+      "description": "Compute Ricci curvature tensor at a point in Poincaré ball",
+      "formula": "Ric(x) = -(n-1)g where g is metric tensor",
+      "input": {
+        "x": "Point in Poincaré ball B^n",
+        "dimension": "Integer n"
+      },
+      "output": {
+        "ricci_tensor": "Matrix of shape (n, n)",
+        "scalar_curvature": "Scalar R = -n(n-1)"
+      },
+      "complexity": {
+        "time": "O(n²)",
+        "space": "O(n²)"
+      },
+      "precision": "1e-11",
+      "implementation_notes": [
+        "For hyperbolic space: Ric = -(n-1)g",
+        "Metric: g_ij = λ²(x)δ_ij where λ = 2/(1-||x||²)",
+        "Scalar curvature constant: R = -n(n-1)"
+      ],
+      "test_cases": [
+        {
+          "name": "origin_ricci",
+          "x": "[0, 0, 0]",
+          "dimension": 3,
+          "expected_scalar": "-6",
+          "tolerance": "1e-10"
+        },
+        {
+          "name": "arbitrary_point_ricci",
+          "x": "[0.5, 0, 0]",
+          "dimension": 3,
+          "expected_scalar": "-6",
+          "tolerance": "1e-10"
+        },
+        {
+          "name": "high_dimension",
+          "x": "point in B^50",
+          "dimension": 50,
+          "expected_scalar": "-2450",
+          "tolerance": "1e-8"
+        },
+        {
+          "name": "proportional_to_metric",
+          "x": "arbitrary point",
+          "dimension": 5,
+          "expected": "Ric = -4*g",
+          "tolerance": "1e-9"
+        },
+        {
+          "name": "near_boundary",
+          "x": "[0.99, 0, 0]",
+          "dimension": 3,
+          "expected_scalar": "-6",
+          "tolerance": "1e-8"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "boundary_limit",
+          "condition": "||x|| → 1",
+          "handling": "curvature constant, but metric explodes"
+        },
+        {
+          "name": "very_high_dimension",
+          "condition": "n > 100",
+          "handling": "use sparse representation"
+        },
+        {
+          "name": "origin",
+          "condition": "x = 0",
+          "handling": "simplest case, standard formulas"
+        }
+      ]
+    },
+    {
+      "id": "poincare_hessian",
+      "name": "Poincaré Hessian",
+      "category": "higher_order_derivatives",
+      "description": "Compute Riemannian Hessian of a function on Poincaré ball",
+      "formula": "Hess f(X,Y) = ⟨∇ₓ∇f, Y⟩",
+      "input": {
+        "x": "Point in Poincaré ball B^n",
+        "function": "Scalar function f: B^n → ℝ",
+        "gradient": "Gradient ∇f at x (tangent vector)",
+        "tangent_vectors": "Pair of tangent vectors (X, Y)"
+      },
+      "output": {
+        "hessian": "Matrix of shape (n, n)"
+      },
+      "complexity": {
+        "time": "O(n²)",
+        "space": "O(n²)"
+      },
+      "precision": "1e-10",
+      "implementation_notes": [
+        "Use finite differences for second derivatives",
+        "Apply covariant derivative with Christoffel symbols",
+        "Account for conformal factor λ(x)"
+      ],
+      "test_cases": [
+        {
+          "name": "distance_hessian",
+          "function": "d(·, y) for fixed y",
+          "x": "point in ball",
+          "expected": "specific form",
+          "tolerance": "1e-9"
+        },
+        {
+          "name": "quadratic_function",
+          "function": "f(x) = ||x||²",
+          "x": "arbitrary point",
+          "expected": "Hessian with conformal correction",
+          "tolerance": "1e-9"
+        },
+        {
+          "name": "symmetry",
+          "function": "arbitrary smooth function",
+          "x": "arbitrary point",
+          "expected": "Hess(X,Y) == Hess(Y,X)",
+          "tolerance": "1e-9"
+        },
+        {
+          "name": "convex_function",
+          "function": "convex f",
+          "x": "arbitrary point",
+          "expected": "positive semi-definite Hessian",
+          "tolerance": "1e-8"
+        },
+        {
+          "name": "boundary_behavior",
+          "function": "smooth function",
+          "x": "near boundary",
+          "expected": "Hessian scales with λ²",
+          "tolerance": "1e-8"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "near_boundary",
+          "condition": "||x|| → 1",
+          "handling": "large Hessian values, use high precision"
+        },
+        {
+          "name": "non_smooth_function",
+          "condition": "function not C²",
+          "handling": "return error or approximate"
+        },
+        {
+          "name": "origin",
+          "condition": "x = 0",
+          "handling": "Euclidean Hessian with corrections"
+        }
+      ]
+    },
+    {
+      "id": "poincare_sectional_curvature_tensor",
+      "name": "Poincaré Sectional Curvature Tensor",
+      "category": "higher_order_derivatives",
+      "description": "Compute Riemann curvature tensor and sectional curvatures in Poincaré ball",
+      "formula": "K(X,Y) = -1 for all tangent planes",
+      "input": {
+        "x": "Point in Poincaré ball B^n",
+        "tangent_vectors": "Pair of tangent vectors (X, Y)"
+      },
+      "output": {
+        "sectional_curvature": "Scalar (should be -1)",
+        "riemann_tensor": "4D array of shape (n, n, n, n)"
+      },
+      "complexity": {
+        "time": "O(n⁴)",
+        "space": "O(n⁴)"
+      },
+      "precision": "1e-10",
+      "implementation_notes": [
+        "For hyperbolic space: K = -1 constant",
+        "Riemann tensor involves conformal factor",
+        "Use symmetries to reduce computation"
+      ],
+      "test_cases": [
+        {
+          "name": "origin_curvature",
+          "x": "[0, 0, 0]",
+          "tangent_vectors": "orthonormal (X,Y)",
+          "expected": "-1",
+          "tolerance": "1e-10"
+        },
+        {
+          "name": "arbitrary_point_curvature",
+          "x": "[0.5, 0.3, 0]",
+          "tangent_vectors": "orthonormal (X,Y)",
+          "expected": "-1",
+          "tolerance": "1e-9"
+        },
+        {
+          "name": "near_boundary_curvature",
+          "x": "[0.95, 0, 0]",
+          "tangent_vectors": "orthonormal (X,Y)",
+          "expected": "-1",
+          "tolerance": "1e-9"
+        },
+        {
+          "name": "riemann_symmetries",
+          "x": "arbitrary point",
+          "expected": "R(X,Y,Z,W) = -R(Y,X,Z,W)",
+          "tolerance": "1e-9"
+        },
+        {
+          "name": "constant_curvature_check",
+          "x": "various points",
+          "tangent_vectors": "various pairs",
+          "expected": "always -1",
+          "tolerance": "1e-9"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "linearly_dependent",
+          "condition": "X and Y not independent",
+          "handling": "return error or NaN"
+        },
+        {
+          "name": "high_dimension",
+          "condition": "n > 20",
+          "handling": "sparse tensor representation"
+        },
+        {
+          "name": "numerical_error",
+          "condition": "curvature ≠ -1",
+          "handling": "warn if deviation > threshold"
+        }
+      ]
+    },
+    {
+      "id": "poincare_jacobian_exp",
+      "name": "Poincaré Exponential Map Jacobian",
+      "category": "higher_order_derivatives",
+      "description": "Compute Jacobian of exponential map in Poincaré ball",
+      "formula": "D exp_x: T_xB^n → T_yB^n where y = exp_x(v)",
+      "input": {
+        "x": "Point in Poincaré ball B^n",
+        "v": "Tangent vector at x"
+      },
+      "output": {
+        "jacobian": "Matrix of shape (n, n)"
+      },
+      "complexity": {
+        "time": "O(n²)",
+        "space": "O(n²)"
+      },
+      "precision": "1e-10",
+      "implementation_notes": [
+        "Jacobian involves conformal factor and Möbius operations",
+        "Use parallel transport formula",
+        "Handle small ||v|| with Taylor expansion"
+      ],
+      "test_cases": [
+        {
+          "name": "zero_tangent",
+          "x": "arbitrary point",
+          "v": "zero vector",
+          "expected": "identity matrix",
+          "tolerance": "1e-10"
+        },
+        {
+          "name": "small_tangent",
+          "x": "arbitrary point",
+          "v": "small ||v|| < 0.01",
+          "expected": "near identity with conformal correction",
+          "tolerance": "1e-9"
+        },
+        {
+          "name": "large_tangent",
+          "x": "origin",
+          "v": "large ||v||",
+          "expected": "specific scaling",
+          "tolerance": "1e-8"
+        },
+        {
+          "name": "origin_base",
+          "x": "[0, 0, 0]",
+          "v": "arbitrary tangent",
+          "expected": "simplified formula",
+          "tolerance": "1e-9"
+        },
+        {
+          "name": "determinant_positive",
+          "x": "arbitrary point",
+          "v": "arbitrary tangent",
+          "expected": "det(J) > 0",
+          "tolerance": "N/A"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "tangent_norm_zero",
+          "condition": "||v|| = 0",
+          "handling": "return identity"
+        },
+        {
+          "name": "result_near_boundary",
+          "condition": "y = exp_x(v) has ||y|| → 1",
+          "handling": "use high precision"
+        },
+        {
+          "name": "numerical_instability",
+          "condition": "ill-conditioned Jacobian",
+          "handling": "increase precision"
+        }
+      ]
+    },
+    {
+      "id": "poincare_batch_distance",
+      "name": "Poincaré Batch Distance",
+      "category": "batch_operations",
+      "description": "Compute pairwise distances between two sets of points in Poincaré ball",
+      "formula": "D[i,j] = d(X[i], Y[j]) for all i,j",
+      "input": {
+        "X": "Array of m points in Poincaré ball B^n",
+        "Y": "Array of k points in Poincaré ball B^n"
+      },
+      "output": {
+        "distances": "Matrix of shape (m, k)"
+      },
+      "complexity": {
+        "time": "O(m * k * n)",
+        "space": "O(m * k)"
+      },
+      "precision": "1e-11",
+      "implementation_notes": [
+        "Vectorize Poincaré distance formula",
+        "Use BLAS for matrix operations",
+        "Handle boundary proximity uniformly"
+      ],
+      "test_cases": [
+        {
+          "name": "self_distance",
+          "X": "10 random points",
+          "Y": "same 10 points",
+          "expected": "diagonal is zero",
+          "tolerance": "1e-10"
+        },
+        {
+          "name": "symmetry",
+          "X": "set A",
+          "Y": "set B",
+          "expected": "D(A,B) == D(B,A)^T",
+          "tolerance": "1e-10"
+        },
+        {
+          "name": "large_batch",
+          "X": "1000 points",
+          "Y": "1000 points",
+          "expected": "efficient computation",
+          "tolerance": "1e-9"
+        },
+        {
+          "name": "near_boundary",
+          "X": "points with ||x|| > 0.9",
+          "Y": "points with ||y|| > 0.9",
+          "expected": "stable distances",
+          "tolerance": "1e-8"
+        },
+        {
+          "name": "high_dimensional",
+          "X": "100 points in B^100",
+          "Y": "100 points in B^100",
+          "expected": "accurate computation",
+          "tolerance": "1e-8"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "empty_set",
+          "condition": "m = 0 or k = 0",
+          "handling": "return empty array"
+        },
+        {
+          "name": "single_point",
+          "condition": "m = 1 or k = 1",
+          "handling": "reduce to vector operation"
+        },
+        {
+          "name": "memory_limit",
+          "condition": "m * k too large",
+          "handling": "compute in chunks"
+        }
+      ]
+    },
+    {
+      "id": "poincare_batch_mobius_add",
+      "name": "Poincaré Batch Möbius Addition",
+      "category": "batch_operations",
+      "description": "Apply Möbius addition to multiple pairs of points efficiently",
+      "formula": "Z[i] = X[i] ⊕ Y[i] for all i",
+      "input": {
+        "X": "Array of n points in Poincaré ball B^d",
+        "Y": "Array of n points in Poincaré ball B^d"
+      },
+      "output": {
+        "Z": "Array of n points in Poincaré ball B^d"
+      },
+      "complexity": {
+        "time": "O(n * d)",
+        "space": "O(n * d)"
+      },
+      "precision": "1e-11",
+      "implementation_notes": [
+        "Vectorize Möbius addition formula",
+        "Formula: (x⊕y) = (x+y)/(1+⟨x,y⟩) normalized",
+        "Ensure ||result|| < 1"
+      ],
+      "test_cases": [
+        {
+          "name": "identity_element",
+          "X": "10 random points",
+          "Y": "all zeros",
+          "expected": "returns X",
+          "tolerance": "1e-11"
+        },
+        {
+          "name": "commutativity",
+          "X": "100 points",
+          "Y": "100 points",
+          "expected": "X⊕Y == Y⊕X",
+          "tolerance": "1e-10"
+        },
+        {
+          "name": "inverse_property",
+          "X": "points",
+          "Y": "-X (Möbius inverse)",
+          "expected": "result near origin",
+          "tolerance": "1e-10"
+        },
+        {
+          "name": "large_batch",
+          "X": "10000 points",
+          "Y": "10000 points",
+          "expected": "efficient computation",
+          "tolerance": "1e-9"
+        },
+        {
+          "name": "boundary_handling",
+          "X": "points with ||x|| > 0.95",
+          "Y": "points with ||y|| > 0.95",
+          "expected": "results in ball",
+          "tolerance": "1e-9"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "result_outside_ball",
+          "condition": "||x⊕y|| ≥ 1",
+          "handling": "project back to ball"
+        },
+        {
+          "name": "numerical_cancellation",
+          "condition": "x ≈ -y",
+          "handling": "use high precision"
+        },
+        {
+          "name": "size_mismatch",
+          "condition": "len(X) ≠ len(Y)",
+          "handling": "return error"
+        }
+      ]
+    },
+    {
+      "id": "poincare_batch_exp_map",
+      "name": "Poincaré Batch Exponential Map",
+      "category": "batch_operations",
+      "description": "Apply exponential map to multiple tangent vectors at multiple base points",
+      "formula": "Y[i] = exp_{X[i]}(V[i]) for all i",
+      "input": {
+        "X": "Array of n points in Poincaré ball B^d",
+        "V": "Array of n tangent vectors"
+      },
+      "output": {
+        "Y": "Array of n points in Poincaré ball B^d"
+      },
+      "complexity": {
+        "time": "O(n * d)",
+        "space": "O(n * d)"
+      },
+      "precision": "1e-11",
+      "implementation_notes": [
+        "Vectorize across all points",
+        "Use Möbius operations for efficiency",
+        "Verify ||result|| < 1"
+      ],
+      "test_cases": [
+        {
+          "name": "zero_tangents",
+          "X": "10 random points",
+          "V": "all zero vectors",
+          "expected": "returns X",
+          "tolerance": "1e-11"
+        },
+        {
+          "name": "consistency",
+          "X": "100 points",
+          "V": "100 tangent vectors",
+          "expected": "matches individual exp_map",
+          "tolerance": "1e-10"
+        },
+        {
+          "name": "large_batch",
+          "X": "10000 points",
+          "V": "10000 tangent vectors",
+          "expected": "efficient computation",
+          "tolerance": "1e-9"
+        },
+        {
+          "name": "varied_magnitudes",
+          "X": "points",
+          "V": "tangents with varied norms",
+          "expected": "all results in ball",
+          "tolerance": "1e-9"
+        },
+        {
+          "name": "high_dimensional",
+          "X": "1000 points in B^200",
+          "V": "1000 tangent vectors",
+          "expected": "stable computation",
+          "tolerance": "1e-8"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "mismatched_sizes",
+          "condition": "len(X) ≠ len(V)",
+          "handling": "return error"
+        },
+        {
+          "name": "result_outside_ball",
+          "condition": "||Y[i]|| ≥ 1",
+          "handling": "project back"
+        },
+        {
+          "name": "invalid_tangent",
+          "condition": "V[i] not in tangent space",
+          "handling": "project to tangent space first"
+        }
+      ]
+    },
+    {
+      "id": "poincare_batch_log_map",
+      "name": "Poincaré Batch Logarithmic Map",
+      "category": "batch_operations",
+      "description": "Apply logarithmic map from multiple base points to multiple target points",
+      "formula": "V[i] = log_{X[i]}(Y[i]) for all i",
+      "input": {
+        "X": "Array of n points in Poincaré ball B^d",
+        "Y": "Array of n points in Poincaré ball B^d"
+      },
+      "output": {
+        "V": "Array of n tangent vectors at X[i]"
+      },
+      "complexity": {
+        "time": "O(n * d)",
+        "space": "O(n * d)"
+      },
+      "precision": "1e-11",
+      "implementation_notes": [
+        "Vectorize logarithmic map",
+        "Handle X[i] == Y[i] efficiently",
+        "Use conformal factor correctly"
+      ],
+      "test_cases": [
+        {
+          "name": "identical_points",
+          "X": "10 random points",
+          "Y": "same 10 points",
+          "expected": "all zero tangent vectors",
+          "tolerance": "1e-11"
+        },
+        {
+          "name": "inverse_property",
+          "X": "100 points",
+          "Y": "exp_X(V) for random V",
+          "expected": "log_X(Y) recovers V",
+          "tolerance": "1e-10"
+        },
+        {
+          "name": "large_batch",
+          "X": "5000 points",
+          "Y": "5000 points",
+          "expected": "efficient computation",
+          "tolerance": "1e-9"
+        },
+        {
+          "name": "boundary_handling",
+          "X": "points",
+          "Y": "points near boundary",
+          "expected": "stable tangent vectors",
+          "tolerance": "1e-8"
+        },
+        {
+          "name": "high_dimensional",
+          "X": "1000 points in B^150",
+          "Y": "1000 points in B^150",
+          "expected": "accurate results",
+          "tolerance": "1e-8"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "mismatched_sizes",
+          "condition": "len(X) ≠ len(Y)",
+          "handling": "return error"
+        },
+        {
+          "name": "points_near_boundary",
+          "condition": "||X[i]|| or ||Y[i]|| → 1",
+          "handling": "use high precision"
+        },
+        {
+          "name": "tangent_verification",
+          "condition": "result not tangent",
+          "handling": "project to tangent space"
+        }
+      ]
+    },
+    {
+      "id": "poincare_batch_parallel_transport",
+      "name": "Poincaré Batch Parallel Transport",
+      "category": "batch_operations",
+      "description": "Parallel transport multiple tangent vectors along multiple geodesics",
+      "formula": "W[i] = PT_{X[i]→Y[i]}(V[i]) for all i",
+      "input": {
+        "X": "Array of n points (start)",
+        "Y": "Array of n points (end)",
+        "V": "Array of n tangent vectors at X[i]"
+      },
+      "output": {
+        "W": "Array of n tangent vectors at Y[i]"
+      },
+      "complexity": {
+        "time": "O(n * d)",
+        "space": "O(n * d)"
+      },
+      "precision": "1e-11",
+      "implementation_notes": [
+        "Vectorize parallel transport formula",
+        "Use gyration operations for Poincaré",
+        "Preserve norm"
+      ],
+      "test_cases": [
+        {
+          "name": "identity_transport",
+          "X": "10 points",
+          "Y": "same 10 points",
+          "V": "10 tangent vectors",
+          "expected": "returns V",
+          "tolerance": "1e-11"
+        },
+        {
+          "name": "norm_preservation",
+          "X": "100 points",
+          "Y": "100 different points",
+          "V": "100 tangent vectors",
+          "expected": "||W[i]||_g == ||V[i]||_g",
+          "tolerance": "1e-10"
+        },
+        {
+          "name": "consistency",
+          "X": "points",
+          "Y": "points",
+          "V": "tangent vectors",
+          "expected": "matches individual PT",
+          "tolerance": "1e-10"
+        },
+        {
+          "name": "large_batch",
+          "X": "10000 points",
+          "Y": "10000 points",
+          "V": "10000 tangent vectors",
+          "expected": "efficient computation",
+          "tolerance": "1e-9"
+        },
+        {
+          "name": "boundary_points",
+          "X": "points near boundary",
+          "Y": "points near boundary",
+          "V": "tangent vectors",
+          "expected": "stable transport",
+          "tolerance": "1e-8"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "size_mismatch",
+          "condition": "array sizes don't match",
+          "handling": "return error"
+        },
+        {
+          "name": "invalid_tangent",
+          "condition": "V[i] not tangent to X[i]",
+          "handling": "project first"
+        },
+        {
+          "name": "numerical_drift",
+          "condition": "W[i] not tangent to Y[i]",
+          "handling": "re-project"
+        }
+      ]
+    },
+    {
+      "id": "poincare_gradient_descent",
+      "name": "Poincaré Riemannian Gradient Descent",
+      "category": "optimization",
+      "description": "Perform Riemannian gradient descent on Poincaré ball",
+      "formula": "x_{t+1} = exp_{x_t}(-α_t ∇f(x_t))",
+      "input": {
+        "f": "Objective function f: B^n → ℝ",
+        "grad_f": "Riemannian gradient function",
+        "x0": "Initial point in ball",
+        "learning_rate": "Step size α",
+        "max_iterations": "Integer, default 1000",
+        "tolerance": "Float, default 1e-8"
+      },
+      "output": {
+        "x_opt": "Optimal point in ball",
+        "f_opt": "Function value",
+        "converged": "Boolean",
+        "iterations": "Integer",
+        "trajectory": "Optional: sequence of points"
+      },
+      "complexity": {
+        "time": "O(k * n * T)",
+        "space": "O(n) or O(n*T) with trajectory"
+      },
+      "precision": "1e-9",
+      "implementation_notes": [
+        "Use exponential map for retraction",
+        "Account for conformal factor in gradient",
+        "Monitor gradient norm for convergence",
+        "Handle boundary proximity"
+      ],
+      "test_cases": [
+        {
+          "name": "quadratic_function",
+          "f": "convex quadratic",
+          "x0": "random point",
+          "expected": "convergence to minimum",
+          "tolerance": "1e-8"
+        },
+        {
+          "name": "distance_minimization",
+          "f": "d²(·, y) for fixed y",
+          "x0": "point far from y",
+          "expected": "converges to y",
+          "tolerance": "1e-7"
+        },
+        {
+          "name": "frechet_mean",
+          "f": "Σᵢ d²(·, xᵢ)",
+          "x0": "random point",
+          "expected": "converges to mean",
+          "tolerance": "1e-7"
+        },
+        {
+          "name": "non_convex",
+          "f": "non-convex function",
+          "x0": "various starts",
+          "expected": "finds local minimum",
+          "tolerance": "1e-6"
+        },
+        {
+          "name": "high_dimensional",
+          "f": "objective in B^100",
+          "x0": "random point",
+          "expected": "reasonable convergence",
+          "tolerance": "1e-6"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "approaching_boundary",
+          "condition": "||x_t|| → 1",
+          "handling": "reduce step size"
+        },
+        {
+          "name": "gradient_vanishing",
+          "condition": "||∇f|| very small",
+          "handling": "declare convergence"
+        },
+        {
+          "name": "divergence",
+          "condition": "f increasing",
+          "handling": "reduce step size"
+        }
+      ]
+    },
+    {
+      "id": "poincare_conjugate_gradient",
+      "name": "Poincaré Conjugate Gradient Method",
+      "category": "optimization",
+      "description": "Conjugate gradient optimization on Poincaré ball",
+      "formula": "x_{t+1} = exp_{x_t}(-α_t d_t) with conjugate directions",
+      "input": {
+        "f": "Objective function",
+        "grad_f": "Gradient function",
+        "x0": "Initial point",
+        "max_iterations": "Integer, default 500",
+        "tolerance": "Float, default 1e-8"
+      },
+      "output": {
+        "x_opt": "Optimal point",
+        "f_opt": "Function value",
+        "converged": "Boolean",
+        "iterations": "Integer"
+      },
+      "complexity": {
+        "time": "O(n * k * T)",
+        "space": "O(n)"
+      },
+      "precision": "1e-9",
+      "implementation_notes": [
+        "Use Polak-Ribière formula",
+        "Transport conjugate direction via parallel transport",
+        "Account for conformal geometry",
+        "Periodic resets"
+      ],
+      "test_cases": [
+        {
+          "name": "quadratic_convergence",
+          "f": "quadratic function",
+          "x0": "random point",
+          "expected": "convergence in ≤ n iterations",
+          "tolerance": "1e-8"
+        },
+        {
+          "name": "faster_than_gd",
+          "f": "ill-conditioned objective",
+          "x0": "same start",
+          "expected": "fewer iterations than GD",
+          "tolerance": "1e-7"
+        },
+        {
+          "name": "rosenbrock_analog",
+          "f": "Rosenbrock-like",
+          "x0": "random point",
+          "expected": "convergence",
+          "tolerance": "1e-6"
+        },
+        {
+          "name": "restart_mechanism",
+          "f": "non-quadratic",
+          "x0": "random point",
+          "expected": "restarts improve convergence",
+          "tolerance": "1e-6"
+        },
+        {
+          "name": "high_dimensional",
+          "f": "objective in B^50",
+          "x0": "random point",
+          "expected": "efficient convergence",
+          "tolerance": "1e-6"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "loss_of_conjugacy",
+          "condition": "directions not conjugate",
+          "handling": "reset to steepest descent"
+        },
+        {
+          "name": "line_search_failure",
+          "condition": "no decreasing step",
+          "handling": "restart"
+        },
+        {
+          "name": "boundary_proximity",
+          "condition": "iterations approach boundary",
+          "handling": "use smaller steps"
+        }
+      ]
+    },
+    {
+      "id": "poincare_line_search",
+      "name": "Poincaré Geodesic Line Search",
+      "category": "optimization",
+      "description": "Find optimal step size along geodesic in Poincaré ball",
+      "formula": "α* = argmin_α f(exp_x(α*d))",
+      "input": {
+        "f": "Objective function",
+        "x": "Current point in ball",
+        "d": "Search direction (tangent)",
+        "alpha_init": "Initial step, default 1.0",
+        "method": "'backtracking', 'wolfe', or 'exact'",
+        "c1": "Armijo constant, default 1e-4",
+        "c2": "Wolfe constant, default 0.9"
+      },
+      "output": {
+        "alpha_opt": "Optimal step size",
+        "x_new": "New point exp_x(α*d)",
+        "f_new": "Function value",
+        "evaluations": "Number of evaluations"
+      },
+      "complexity": {
+        "time": "O(k * n * log(1/α))",
+        "space": "O(n)"
+      },
+      "precision": "1e-10",
+      "implementation_notes": [
+        "Ensure exp_x(α*d) stays in ball",
+        "Use backtracking with Armijo rule",
+        "Account for conformal metric"
+      ],
+      "test_cases": [
+        {
+          "name": "descent_direction",
+          "f": "convex function",
+          "x": "arbitrary point",
+          "d": "-∇f(x)",
+          "expected": "f_new < f(x)",
+          "tolerance": "1e-9"
+        },
+        {
+          "name": "armijo_satisfaction",
+          "f": "smooth function",
+          "x": "arbitrary point",
+          "d": "descent direction",
+          "expected": "Armijo condition satisfied",
+          "tolerance": "1e-8"
+        },
+        {
+          "name": "wolfe_conditions",
+          "method": "wolfe",
+          "f": "smooth function",
+          "expected": "both conditions satisfied",
+          "tolerance": "1e-8"
+        },
+        {
+          "name": "boundary_avoidance",
+          "f": "function",
+          "x": "point with ||x|| = 0.9",
+          "d": "direction toward boundary",
+          "expected": "α keeps result in ball",
+          "tolerance": "1e-9"
+        },
+        {
+          "name": "exact_minimum",
+          "method": "exact",
+          "f": "quadratic along geodesic",
+          "expected": "finds exact minimum",
+          "tolerance": "1e-7"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "result_outside_ball",
+          "condition": "exp_x(α*d) approaches boundary",
+          "handling": "reduce α"
+        },
+        {
+          "name": "ascent_direction",
+          "condition": "⟨∇f(x),d⟩ > 0",
+          "handling": "return α=0 or error"
+        },
+        {
+          "name": "no_improvement",
+          "condition": "all α fail Armijo",
+          "handling": "return smallest α"
+        }
+      ]
+    },
+    {
+      "id": "poincare_trust_region",
+      "name": "Poincaré Trust Region Method",
+      "category": "optimization",
+      "description": "Trust region optimization on Poincaré ball",
+      "formula": "min_{d, ||d||≤Δ} m(d) = f(x) + ⟨∇f,d⟩ + ½⟨Hess f d,d⟩",
+      "input": {
+        "f": "Objective function",
+        "grad_f": "Gradient function",
+        "hess_f": "Hessian function (optional)",
+        "x0": "Initial point",
+        "delta_init": "Initial radius, default 1.0",
+        "max_iterations": "Integer, default 500"
+      },
+      "output": {
+        "x_opt": "Optimal point",
+        "f_opt": "Function value",
+        "converged": "Boolean",
+        "iterations": "Integer"
+      },
+      "complexity": {
+        "time": "O(n³ * T)",
+        "space": "O(n²)"
+      },
+      "precision": "1e-9",
+      "implementation_notes": [
+        "Solve subproblem in tangent space",
+        "Use Steihaug-Toint CG",
+        "Adjust Δ based on reduction ratio",
+        "Ensure result stays in ball"
+      ],
+      "test_cases": [
+        {
+          "name": "quadratic_function",
+          "f": "convex quadratic",
+          "x0": "random point",
+          "expected": "convergence",
+          "tolerance": "1e-8"
+        },
+        {
+          "name": "radius_adaptation",
+          "f": "non-quadratic",
+          "x0": "random point",
+          "expected": "Δ adapts appropriately",
+          "tolerance": "1e-7"
+        },
+        {
+          "name": "negative_curvature",
+          "f": "non-convex",
+          "x0": "near saddle",
+          "expected": "escapes saddle",
+          "tolerance": "1e-6"
+        },
+        {
+          "name": "boundary_handling",
+          "f": "function",
+          "x0": "near boundary",
+          "expected": "stays in ball",
+          "tolerance": "1e-7"
+        },
+        {
+          "name": "high_dimensional",
+          "f": "objective in B^50",
+          "x0": "random point",
+          "expected": "convergence",
+          "tolerance": "1e-6"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "very_small_delta",
+          "condition": "Δ < threshold",
+          "handling": "declare convergence or increase"
+        },
+        {
+          "name": "rejected_steps",
+          "condition": "actual reduction negative",
+          "handling": "reduce Δ and retry"
+        },
+        {
+          "name": "approach_boundary",
+          "condition": "solution approaches ||x|| = 1",
+          "handling": "constrain Δ"
+        }
+      ]
+    },
+    {
+      "id": "poincare_adaptive_projection",
+      "name": "Poincaré Adaptive Precision Projection",
+      "category": "numerical_stability",
+      "description": "Project point to Poincaré ball with adaptive precision",
+      "formula": "x_proj = x / max(1, ||x|| + ε)",
+      "input": {
+        "x": "Point in ℝ^n (possibly ||x|| ≥ 1)",
+        "tolerance": "Float, default 1e-12",
+        "max_iterations": "Integer, default 10"
+      },
+      "output": {
+        "x_proj": "Point in ball with ||x_proj|| < 1",
+        "constraint_error": "1 - ||x_proj||",
+        "iterations": "Number of refinement iterations"
+      },
+      "complexity": {
+        "time": "O(n * k)",
+        "space": "O(n)"
+      },
+      "precision": "1e-14",
+      "implementation_notes": [
+        "Simple projection: normalize if ||x|| ≥ 1",
+        "Ensure margin: ||x_proj|| ≤ 1 - ε",
+        "Use iterative refinement for strict tolerance"
+      ],
+      "test_cases": [
+        {
+          "name": "already_in_ball",
+          "x": "point with ||x|| = 0.5",
+          "expected": "returns x unchanged",
+          "tolerance": "1e-14"
+        },
+        {
+          "name": "on_boundary",
+          "x": "point with ||x|| = 1.0",
+          "expected": "projects to ||x|| < 1",
+          "tolerance": "1e-12"
+        },
+        {
+          "name": "outside_ball",
+          "x": "point with ||x|| = 2.0",
+          "expected": "normalized to unit ball",
+          "tolerance": "1e-12"
+        },
+        {
+          "name": "high_dimension",
+          "x": "point in ℝ^200",
+          "expected": "stable projection",
+          "tolerance": "1e-11"
+        },
+        {
+          "name": "extreme_precision",
+          "x": "arbitrary point",
+          "tolerance": "1e-15",
+          "expected": "achieves tolerance",
+          "tolerance": "1e-15"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "zero_vector",
+          "condition": "x = 0",
+          "handling": "return origin"
+        },
+        {
+          "name": "very_large_norm",
+          "condition": "||x|| >> 1",
+          "handling": "normalize to ball"
+        },
+        {
+          "name": "margin_control",
+          "condition": "need ||x|| ≤ 1 - ε",
+          "handling": "scale by (1-ε)/||x||"
+        }
+      ]
+    },
+    {
+      "id": "poincare_robust_exp_map",
+      "name": "Poincaré Robust Exponential Map",
+      "category": "numerical_stability",
+      "description": "Numerically stable exponential map with adaptive methods",
+      "formula": "exp_x(v) with automatic method selection",
+      "input": {
+        "x": "Point in Poincaré ball B^n",
+        "v": "Tangent vector at x",
+        "method": "'auto', 'standard', 'taylor', or 'high_precision'"
+      },
+      "output": {
+        "y": "Point in ball B^n",
+        "method_used": "String",
+        "accuracy_estimate": "Estimated error"
+      },
+      "complexity": {
+        "time": "O(n)",
+        "space": "O(n)"
+      },
+      "precision": "1e-13",
+      "implementation_notes": [
+        "For ||v|| < 1e-8: use Taylor expansion",
+        "For result near boundary: use high precision",
+        "Standard Möbius-based formula otherwise",
+        "Verify ||result|| < 1"
+      ],
+      "test_cases": [
+        {
+          "name": "tiny_tangent",
+          "x": "arbitrary point",
+          "v": "||v|| = 1e-10",
+          "expected": "uses Taylor expansion",
+          "tolerance": "1e-12"
+        },
+        {
+          "name": "boundary_approach",
+          "x": "[0.95, 0, 0]",
+          "v": "toward boundary",
+          "expected": "stable result in ball",
+          "tolerance": "1e-10"
+        },
+        {
+          "name": "normal_tangent",
+          "x": "arbitrary point",
+          "v": "normal magnitude",
+          "expected": "standard computation",
+          "tolerance": "1e-12"
+        },
+        {
+          "name": "accuracy_validation",
+          "x": "arbitrary point",
+          "v": "arbitrary tangent",
+          "expected": "exp-log inverse holds",
+          "tolerance": "1e-11"
+        },
+        {
+          "name": "high_dimensional",
+          "x": "point in B^200",
+          "v": "tangent vector",
+          "expected": "stable computation",
+          "tolerance": "1e-10"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "zero_tangent",
+          "condition": "||v|| = 0",
+          "handling": "return x immediately"
+        },
+        {
+          "name": "result_on_boundary",
+          "condition": "||exp_x(v)|| → 1",
+          "handling": "use high precision, may fail"
+        },
+        {
+          "name": "invalid_tangent",
+          "condition": "v not in tangent space",
+          "handling": "project to tangent space"
+        }
+      ]
+    },
+    {
+      "id": "poincare_robust_log_map",
+      "name": "Poincaré Robust Logarithmic Map",
+      "category": "numerical_stability",
+      "description": "Numerically stable logarithmic map with edge case handling",
+      "formula": "log_x(y) with automatic method selection",
+      "input": {
+        "x": "Point in Poincaré ball B^n",
+        "y": "Point in Poincaré ball B^n",
+        "method": "'auto', 'standard', 'series', or 'high_precision'"
+      },
+      "output": {
+        "v": "Tangent vector at x",
+        "method_used": "String",
+        "accuracy_estimate": "Estimated error"
+      },
+      "complexity": {
+        "time": "O(n)",
+        "space": "O(n)"
+      },
+      "precision": "1e-13",
+      "implementation_notes": [
+        "For d(x,y) < 1e-8: use Taylor series",
+        "For points near boundary: use high precision",
+        "Handle numerical cancellation carefully"
+      ],
+      "test_cases": [
+        {
+          "name": "nearby_points",
+          "x": "arbitrary point",
+          "y": "point at distance 1e-10",
+          "expected": "uses series expansion",
+          "tolerance": "1e-12"
+        },
+        {
+          "name": "boundary_points",
+          "x": "[0.99, 0, 0]",
+          "y": "[0.99, 0.01, 0]",
+          "expected": "stable tangent vector",
+          "tolerance": "1e-10"
+        },
+        {
+          "name": "normal_distance",
+          "x": "arbitrary point",
+          "y": "arbitrary point",
+          "expected": "standard computation",
+          "tolerance": "1e-12"
+        },
+        {
+          "name": "inverse_property",
+          "x": "arbitrary point",
+          "y": "arbitrary point",
+          "expected": "exp_x(log_x(y)) = y",
+          "tolerance": "1e-11"
+        },
+        {
+          "name": "high_dimensional",
+          "x": "point in B^200",
+          "y": "point in B^200",
+          "expected": "accurate tangent",
+          "tolerance": "1e-10"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "identical_points",
+          "condition": "x == y",
+          "handling": "return zero tangent"
+        },
+        {
+          "name": "numerical_cancellation",
+          "condition": "x ≈ y",
+          "handling": "use series expansion"
+        },
+        {
+          "name": "boundary_singular",
+          "condition": "||x|| → 1 or ||y|| → 1",
+          "handling": "use high precision"
+        }
+      ]
+    },
+    {
+      "id": "poincare_condition_number",
+      "name": "Poincaré Condition Number Estimation",
+      "category": "numerical_stability",
+      "description": "Estimate condition number of operations in Poincaré ball",
+      "formula": "κ = ||J|| * ||J^(-1)|| for operation Jacobian",
+      "input": {
+        "x": "Point in ball B^n",
+        "operation": "'exp_map', 'log_map', 'distance', 'mobius_add'",
+        "parameters": "Operation-specific parameters"
+      },
+      "output": {
+        "condition_number": "Float",
+        "sensitivity_estimate": "Error amplification",
+        "recommendation": "'stable', 'caution', 'unstable'"
+      },
+      "complexity": {
+        "time": "O(n²)",
+        "space": "O(n²)"
+      },
+      "precision": "1e-10",
+      "implementation_notes": [
+        "Compute Jacobian numerically",
+        "Use SVD for condition number",
+        "Account for conformal factor effects"
+      ],
+      "test_cases": [
+        {
+          "name": "origin_well_conditioned",
+          "x": "[0, 0, 0]",
+          "operation": "exp_map",
+          "expected": "κ ≈ 1",
+          "tolerance": "1e-1"
+        },
+        {
+          "name": "boundary_ill_conditioned",
+          "x": "[0.99, 0, 0]",
+          "operation": "any operation",
+          "expected": "large κ",
+          "tolerance": "N/A"
+        },
+        {
+          "name": "distance_conditioning",
+          "x": "arbitrary point",
+          "operation": "distance",
+          "expected": "κ analysis",
+          "tolerance": "N/A"
+        },
+        {
+          "name": "mobius_add_conditioning",
+          "x": "near boundary",
+          "operation": "mobius_add",
+          "expected": "sensitive near boundary",
+          "tolerance": "N/A"
+        },
+        {
+          "name": "high_dimensional",
+          "x": "point in B^50",
+          "operation": "exp_map",
+          "expected": "condition estimate",
+          "tolerance": "N/A"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "singular_jacobian",
+          "condition": "J not invertible",
+          "handling": "return infinity"
+        },
+        {
+          "name": "boundary_singularity",
+          "condition": "||x|| → 1",
+          "handling": "expect large κ, warn"
+        },
+        {
+          "name": "computation_failure",
+          "condition": "SVD fails",
+          "handling": "return estimate or error"
+        }
+      ]
+    },
+    {
+      "id": "poincare_error_propagation",
+      "name": "Poincaré Error Propagation Analysis",
+      "category": "numerical_stability",
+      "description": "Analyze error propagation through sequence of Poincaré operations",
+      "formula": "δy ≈ J·δx with conformal corrections",
+      "input": {
+        "operations": "List of operations",
+        "x": "Initial point",
+        "input_error": "Estimated error in x",
+        "parameters": "Parameters for each operation"
+      },
+      "output": {
+        "output_error": "Estimated final error",
+        "error_amplification": "Amplification ratio",
+        "critical_operations": "Most error-prone operations",
+        "recommendations": "Stability suggestions"
+      },
+      "complexity": {
+        "time": "O(k * n²)",
+        "space": "O(k * n²)"
+      },
+      "precision": "1e-10",
+      "implementation_notes": [
+        "Use chain rule with conformal factors",
+        "Track error accumulation",
+        "Identify boundary-sensitive operations"
+      ],
+      "test_cases": [
+        {
+          "name": "single_operation",
+          "operations": "exp_map",
+          "x": "origin",
+          "input_error": "1e-10",
+          "expected": "proportional error",
+          "tolerance": "1e-2"
+        },
+        {
+          "name": "exp_log_composition",
+          "operations": "exp then log",
+          "x": "arbitrary point",
+          "input_error": "1e-10",
+          "expected": "amplification ≈ 1",
+          "tolerance": "1e-1"
+        },
+        {
+          "name": "long_chain",
+          "operations": "10 operations",
+          "x": "arbitrary point",
+          "input_error": "1e-10",
+          "expected": "error growth estimate",
+          "tolerance": "N/A"
+        },
+        {
+          "name": "boundary_sensitivity",
+          "operations": "operations near boundary",
+          "x": "point with ||x|| = 0.95",
+          "input_error": "1e-10",
+          "expected": "large amplification",
+          "tolerance": "N/A"
+        },
+        {
+          "name": "identify_critical",
+          "operations": "mixed operations",
+          "x": "arbitrary point",
+          "input_error": "1e-10",
+          "expected": "identifies problematic ops",
+          "tolerance": "N/A"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "unstable_sequence",
+          "condition": "amplification > 1000",
+          "handling": "recommend alternative"
+        },
+        {
+          "name": "boundary_operations",
+          "condition": "operations near ||x|| = 1",
+          "handling": "warn about instability"
+        },
+        {
+          "name": "numerical_cancellation",
+          "condition": "loss of significance",
+          "handling": "suggest higher precision"
+        }
+      ]
+    },
+    {
+      "id": "poincare_auto_differentiation",
+      "name": "Poincaré Automatic Differentiation",
+      "category": "numerical_stability",
+      "description": "Compute derivatives of composite Poincaré operations using AD",
+      "formula": "∇f via forward or reverse mode AD with conformal corrections",
+      "input": {
+        "function": "Composite function using Poincaré ops",
+        "x": "Input point in ball",
+        "mode": "'forward' or 'reverse'",
+        "order": "Integer: 1 for gradient, 2 for Hessian"
+      },
+      "output": {
+        "gradient": "Tangent vector (order=1)",
+        "hessian": "Matrix (order=2)",
+        "computation_graph": "Optional: graph"
+      },
+      "complexity": {
+        "time": "O(n) forward, O(1) reverse",
+        "space": "O(n) forward, O(k) reverse"
+      },
+      "precision": "1e-11",
+      "implementation_notes": [
+        "Implement dual numbers for forward",
+        "Tape-based recording for reverse",
+        "Account for conformal factor in derivatives",
+        "Cache intermediate results"
+      ],
+      "test_cases": [
+        {
+          "name": "distance_gradient",
+          "function": "d(x, y) for fixed y",
+          "x": "arbitrary point",
+          "expected": "specific gradient form",
+          "tolerance": "1e-10"
+        },
+        {
+          "name": "composition_gradient",
+          "function": "f(exp_x(v))",
+          "x": "arbitrary point",
+          "expected": "chain rule result",
+          "tolerance": "1e-10"
+        },
+        {
+          "name": "forward_vs_reverse",
+          "function": "arbitrary composition",
+          "x": "arbitrary point",
+          "expected": "both modes agree",
+          "tolerance": "1e-10"
+        },
+        {
+          "name": "hessian_computation",
+          "function": "smooth function",
+          "x": "arbitrary point",
+          "order": 2,
+          "expected": "symmetric Hessian",
+          "tolerance": "1e-9"
+        },
+        {
+          "name": "high_dimensional",
+          "function": "complex composition",
+          "x": "point in B^100",
+          "expected": "efficient gradient",
+          "tolerance": "1e-9"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "non_differentiable",
+          "condition": "function not smooth",
+          "handling": "return error or subgradient"
+        },
+        {
+          "name": "boundary_singularity",
+          "condition": "derivatives blow up at boundary",
+          "handling": "use high precision or warn"
+        },
+        {
+          "name": "complex_graph",
+          "condition": "many operations",
+          "handling": "optimize tape"
+        }
+      ]
+    },
+    {
+      "id": "poincare_vectorized_operations",
+      "name": "Poincaré Vectorized Mixed Operations",
+      "category": "batch_operations",
+      "description": "Efficiently apply mixed operations across large batches",
+      "formula": "Various, with automatic optimization",
+      "input": {
+        "operations": "List of operation specifications",
+        "points": "Arrays of points and parameters",
+        "optimization": "'auto', 'parallel', 'sequential', 'gpu'"
+      },
+      "output": {
+        "results": "List of results",
+        "performance_stats": "Timing metrics"
+      },
+      "complexity": {
+        "time": "O(total_ops * n)",
+        "space": "O(batch_size * n)"
+      },
+      "precision": "1e-11",
+      "implementation_notes": [
+        "Batch similar operations",
+        "Use SIMD/GPU acceleration",
+        "Parallelize independent operations",
+        "Optimize memory patterns"
+      ],
+      "test_cases": [
+        {
+          "name": "uniform_distances",
+          "operations": "1000 distance computations",
+          "optimization": "auto",
+          "expected": "speedup vs sequential",
+          "tolerance": "N/A"
+        },
+        {
+          "name": "mixed_exp_log",
+          "operations": "500 exp + 500 log",
+          "optimization": "auto",
+          "expected": "efficient batching",
+          "tolerance": "1e-10"
+        },
+        {
+          "name": "mobius_batch",
+          "operations": "10000 Möbius additions",
+          "optimization": "parallel",
+          "expected": "near-linear speedup",
+          "tolerance": "1e-10"
+        },
+        {
+          "name": "heterogeneous_mix",
+          "operations": "varied operations",
+          "optimization": "auto",
+          "expected": "automatic optimization",
+          "tolerance": "1e-9"
+        },
+        {
+          "name": "gpu_acceleration",
+          "operations": "100000 operations",
+          "optimization": "gpu",
+          "expected": "GPU speedup if available",
+          "tolerance": "1e-8"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "empty_batch",
+          "condition": "no operations",
+          "handling": "return immediately"
+        },
+        {
+          "name": "memory_limit",
+          "condition": "batch too large",
+          "handling": "process in chunks"
+        },
+        {
+          "name": "gpu_not_available",
+          "condition": "no GPU",
+          "handling": "fall back to CPU"
+        }
+      ]
+    },
+    {
+      "id": "poincare_numerical_diagnostics",
+      "name": "Poincaré Numerical Diagnostics Suite",
+      "category": "numerical_stability",
+      "description": "Comprehensive numerical health check for Poincaré operations",
+      "formula": "Multiple diagnostic tests",
+      "input": {
+        "x": "Point in ball (optional)",
+        "operations_to_test": "List of operations",
+        "test_points": "Array of test points",
+        "verbose": "Boolean"
+      },
+      "output": {
+        "health_score": "Score 0-100",
+        "constraint_violations": "List of ||x|| ≥ 1 violations",
+        "numerical_errors": "Detected issues",
+        "stability_metrics": "Condition numbers, errors",
+        "recommendations": "Actionable suggestions",
+        "detailed_report": "Full report"
+      },
+      "complexity": {
+        "time": "O(k * n²)",
+        "space": "O(k * n)"
+      },
+      "precision": "1e-11",
+      "implementation_notes": [
+        "Test: exp-log inverse",
+        "Test: distance triangle inequality",
+        "Test: parallel transport norm preservation",
+        "Test: ball constraint ||x|| < 1",
+        "Test: Möbius addition properties",
+        "Generate recommendations"
+      ],
+      "test_cases": [
+        {
+          "name": "healthy_system",
+          "test_points": "well-conditioned points",
+          "operations_to_test": "all basic operations",
+          "expected": "health_score > 95",
+          "tolerance": "N/A"
+        },
+        {
+          "name": "detect_constraint_violations",
+          "test_points": "points with ||x|| ≥ 1",
+          "expected": "identifies all violations",
+          "tolerance": "N/A"
+        },
+        {
+          "name": "detect_boundary_instabilities",
+          "test_points": "points near boundary",
+          "expected": "warns about instability",
+          "tolerance": "N/A"
+        },
+        {
+          "name": "provide_recommendations",
+          "test_points": "problematic points",
+          "expected": "actionable suggestions",
+          "tolerance": "N/A"
+        },
+        {
+          "name": "high_dimensional",
+          "test_points": "points in B^100",
+          "operations_to_test": "subset",
+          "expected": "completes diagnostic",
+          "tolerance": "N/A"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "no_test_points",
+          "condition": "empty test set",
+          "handling": "generate random points"
+        },
+        {
+          "name": "all_operations_fail",
+          "condition": "catastrophic issues",
+          "handling": "recommend system check"
+        },
+        {
+          "name": "partial_failures",
+          "condition": "some operations unstable",
+          "handling": "identify and isolate"
+        }
+      ]
+    }
+  ],
+  "integration_notes": {
+    "dependencies": [
+      "numpy for linear algebra",
+      "scipy for optimization",
+      "Optional: JAX/PyTorch for AD",
+      "Optional: CuPy for GPU"
+    ],
+    "performance_considerations": [
+      "Batch operations for efficiency",
+      "Monitor boundary proximity",
+      "Use adaptive precision near boundary",
+      "Consider GPU for large batches"
+    ],
+    "testing_strategy": [
+      "Property-based testing for Möbius algebra",
+      "Numerical stability tests",
+      "Performance benchmarks",
+      "Integration tests with basic Poincaré ops"
+    ]
+  }
+}

@@ -1,0 +1,1941 @@
+{
+  "specification": {
+    "name": "Dual Model System - Advanced Lorentz Operations",
+    "version": "1.0.0",
+    "description": "Advanced Lorentz hyperboloid model operations including higher-order derivatives, batch processing, optimization routines, and numerical stability enhancements. Extends the basic Lorentz operations with sophisticated geometric and computational tools.",
+    "total_operations": 30,
+    "format": "STUNIR",
+    "tier_availability": "Core (Free)",
+    "complexity_target": "O(n) to O(n²)",
+    "integration": ["HVS", "AGUA", "STUNIR", "Dual-Model System"],
+    "model_type": "Lorentz Hyperboloid (Advanced)",
+    "coordinate_system": "Minkowski embedding",
+    "dependencies": ["dual_model_lorentz_spec.json"]
+  },
+  "mathematical_foundations": {
+    "christoffel_symbols": {
+      "description": "Connection coefficients for Lorentz model",
+      "formula": "Γⁱⱼₖ = ⟨∇ⱼeₖ, eⁱ⟩ where eᵢ are basis vectors",
+      "properties": ["Symmetric in lower indices", "Determines parallel transport"]
+    },
+    "ricci_curvature": {
+      "description": "Ricci curvature tensor for hyperbolic space",
+      "formula": "Ric = -(n-1)g",
+      "scalar_curvature": "R = -n(n-1)"
+    },
+    "sectional_curvature": {
+      "formula": "K(X,Y) = -1 for all tangent planes",
+      "constant": "-1 (constant negative curvature)"
+    },
+    "hessian": {
+      "description": "Second-order covariant derivative",
+      "formula": "Hess f(X,Y) = ⟨∇ₓ∇f, Y⟩",
+      "applications": ["Optimization", "Convexity analysis"]
+    }
+  },
+  "operations": [
+    {
+      "id": "lorentz_geodesic_midpoint",
+      "name": "Lorentz Geodesic Midpoint",
+      "category": "advanced_distance",
+      "description": "Compute the midpoint along the geodesic connecting two points in Lorentz model",
+      "formula": "mid(x,y) = exp_x(0.5 * log_x(y))",
+      "input": {
+        "x": "Point on hyperboloid H^n",
+        "y": "Point on hyperboloid H^n"
+      },
+      "output": {
+        "midpoint": "Point on hyperboloid H^n"
+      },
+      "complexity": {
+        "time": "O(n)",
+        "space": "O(n)"
+      },
+      "precision": "1e-12",
+      "implementation_notes": [
+        "Use log_map and exp_map composition",
+        "Verify hyperboloid constraint after computation",
+        "Handle coincident points specially"
+      ],
+      "test_cases": [
+        {
+          "name": "origin_axis_midpoint",
+          "x": "[1, 0, 0, 0]",
+          "y": "[cosh(2), sinh(2), 0, 0]",
+          "expected": "[cosh(1), sinh(1), 0, 0]",
+          "tolerance": "1e-10"
+        },
+        {
+          "name": "symmetric_points",
+          "x": "[cosh(1), sinh(1), 0, 0]",
+          "y": "[cosh(1), -sinh(1), 0, 0]",
+          "expected_property": "lies on geodesic",
+          "tolerance": "1e-10"
+        },
+        {
+          "name": "high_dimensional",
+          "x": "origin in H^100",
+          "y": "point at distance 5",
+          "expected_distance_from_x": "2.5",
+          "tolerance": "1e-9"
+        },
+        {
+          "name": "identical_points",
+          "x": "[1, 0, 0, 0]",
+          "y": "[1, 0, 0, 0]",
+          "expected": "[1, 0, 0, 0]",
+          "tolerance": "1e-12"
+        },
+        {
+          "name": "near_boundary",
+          "x": "point near infinity",
+          "y": "origin",
+          "expected_property": "stable computation",
+          "tolerance": "1e-8"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "coincident_points",
+          "condition": "x == y",
+          "expected": "return x"
+        },
+        {
+          "name": "antipodal_points",
+          "condition": "d(x,y) very large",
+          "handling": "use high precision arithmetic"
+        },
+        {
+          "name": "numerical_drift",
+          "condition": "result not on hyperboloid",
+          "handling": "re-project to hyperboloid"
+        }
+      ]
+    },
+    {
+      "id": "lorentz_weighted_frechet_mean",
+      "name": "Lorentz Weighted Fréchet Mean",
+      "category": "advanced_distance",
+      "description": "Compute weighted Fréchet mean (barycenter) of points in Lorentz model using gradient descent",
+      "formula": "argmin_μ Σᵢ wᵢ d²(μ, xᵢ)",
+      "input": {
+        "points": "Array of n points on hyperboloid H^d",
+        "weights": "Array of n positive weights (sum to 1)",
+        "max_iterations": "Integer, default 100",
+        "tolerance": "Float, default 1e-8"
+      },
+      "output": {
+        "mean": "Point on hyperboloid H^d",
+        "converged": "Boolean",
+        "iterations": "Integer"
+      },
+      "complexity": {
+        "time": "O(n * d * k) where k = iterations",
+        "space": "O(n * d)"
+      },
+      "precision": "1e-10",
+      "implementation_notes": [
+        "Initialize at weighted Euclidean mean projected to hyperboloid",
+        "Use Riemannian gradient descent: μ_{t+1} = exp_μ(-α ∇f(μ))",
+        "Gradient: ∇f(μ) = -2 Σᵢ wᵢ log_μ(xᵢ)",
+        "Use adaptive step size with Armijo backtracking"
+      ],
+      "test_cases": [
+        {
+          "name": "uniform_weights",
+          "points": "3 points at equal distances",
+          "weights": "[1/3, 1/3, 1/3]",
+          "expected": "geometric center",
+          "tolerance": "1e-8"
+        },
+        {
+          "name": "single_dominant_weight",
+          "points": "10 points",
+          "weights": "[0.9, 0.01, ...]",
+          "expected": "near point with weight 0.9",
+          "tolerance": "1e-7"
+        },
+        {
+          "name": "two_clusters",
+          "points": "2 clusters of 5 points each",
+          "weights": "equal within cluster",
+          "expected": "between cluster centers",
+          "tolerance": "1e-7"
+        },
+        {
+          "name": "high_dimensional",
+          "points": "100 points in H^50",
+          "weights": "uniform",
+          "expected": "convergence in <100 iterations",
+          "tolerance": "1e-6"
+        },
+        {
+          "name": "collinear_points",
+          "points": "points on same geodesic",
+          "weights": "arbitrary",
+          "expected": "on same geodesic",
+          "tolerance": "1e-9"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "single_point",
+          "condition": "n == 1",
+          "expected": "return that point"
+        },
+        {
+          "name": "zero_weights",
+          "condition": "some weights are 0",
+          "handling": "filter out zero-weight points"
+        },
+        {
+          "name": "non_convergence",
+          "condition": "max_iterations reached",
+          "handling": "return best result, set converged=False"
+        }
+      ]
+    },
+    {
+      "id": "lorentz_christoffel_symbols",
+      "name": "Lorentz Christoffel Symbols",
+      "category": "higher_order_derivatives",
+      "description": "Compute Christoffel symbols (connection coefficients) at a point in Lorentz model",
+      "formula": "Γⁱⱼₖ(x) = ⟨x, eⱼ⟩⟨x, eₖ⟩gⁱⁱ - ½δⁱⱼ⟨x, eₖ⟩ - ½δⁱₖ⟨x, eⱼ⟩",
+      "input": {
+        "x": "Point on hyperboloid H^n",
+        "basis_vectors": "Optional: tangent basis at x"
+      },
+      "output": {
+        "christoffel": "3D array of shape (n, n, n)"
+      },
+      "complexity": {
+        "time": "O(n³)",
+        "space": "O(n³)"
+      },
+      "precision": "1e-11",
+      "implementation_notes": [
+        "Use simplified formula for hyperboloid: Γⁱⱼₖ = xⱼxₖgⁱⁱ - ½(δⁱⱼxₖ + δⁱₖxⱼ)",
+        "Christoffel symbols are symmetric in lower indices",
+        "Can use sparse representation for efficiency"
+      ],
+      "test_cases": [
+        {
+          "name": "origin_symbols",
+          "x": "[1, 0, 0, 0]",
+          "expected": "specific pattern based on formula",
+          "tolerance": "1e-10"
+        },
+        {
+          "name": "symmetry_check",
+          "x": "arbitrary point",
+          "expected": "Γⁱⱼₖ == Γⁱₖⱼ for all i,j,k",
+          "tolerance": "1e-10"
+        },
+        {
+          "name": "parallel_transport_consistency",
+          "x": "point on hyperboloid",
+          "expected": "parallel transport agrees with exp/log",
+          "tolerance": "1e-9"
+        },
+        {
+          "name": "trace_property",
+          "x": "arbitrary point",
+          "expected": "trace has specific value",
+          "tolerance": "1e-9"
+        },
+        {
+          "name": "high_dimension",
+          "x": "point in H^20",
+          "expected": "correct shape (20,20,20)",
+          "tolerance": "1e-8"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "numerical_precision",
+          "condition": "high dimensions",
+          "handling": "use higher precision if needed"
+        },
+        {
+          "name": "sparse_storage",
+          "condition": "n > 50",
+          "handling": "store only non-zero entries"
+        },
+        {
+          "name": "basis_not_orthonormal",
+          "condition": "custom basis provided",
+          "handling": "orthonormalize first"
+        }
+      ]
+    },
+    {
+      "id": "lorentz_ricci_tensor",
+      "name": "Lorentz Ricci Tensor",
+      "category": "higher_order_derivatives",
+      "description": "Compute Ricci curvature tensor at a point in Lorentz model",
+      "formula": "Ric(x) = -(n-1)g where g is metric tensor",
+      "input": {
+        "x": "Point on hyperboloid H^n",
+        "dimension": "Integer n"
+      },
+      "output": {
+        "ricci_tensor": "Matrix of shape (n, n)",
+        "scalar_curvature": "Scalar R = -n(n-1)"
+      },
+      "complexity": {
+        "time": "O(n²)",
+        "space": "O(n²)"
+      },
+      "precision": "1e-11",
+      "implementation_notes": [
+        "For hyperbolic space: Ric = -(n-1)g",
+        "Scalar curvature: R = -n(n-1)",
+        "Constant curvature simplifies computation"
+      ],
+      "test_cases": [
+        {
+          "name": "origin_ricci",
+          "x": "[1, 0, 0, 0]",
+          "dimension": 3,
+          "expected_scalar": "-6",
+          "tolerance": "1e-10"
+        },
+        {
+          "name": "arbitrary_point_ricci",
+          "x": "[cosh(2), sinh(2), 0, 0]",
+          "dimension": 3,
+          "expected_scalar": "-6",
+          "tolerance": "1e-10"
+        },
+        {
+          "name": "high_dimension",
+          "x": "point in H^50",
+          "dimension": 50,
+          "expected_scalar": "-2450",
+          "tolerance": "1e-8"
+        },
+        {
+          "name": "ricci_trace",
+          "x": "arbitrary point",
+          "dimension": 10,
+          "expected": "trace equals scalar curvature",
+          "tolerance": "1e-9"
+        },
+        {
+          "name": "proportional_to_metric",
+          "x": "arbitrary point",
+          "dimension": 5,
+          "expected": "Ric = -4*g",
+          "tolerance": "1e-9"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "low_dimension",
+          "condition": "n = 2",
+          "expected": "Ric = -g"
+        },
+        {
+          "name": "very_high_dimension",
+          "condition": "n > 100",
+          "handling": "use sparse representation"
+        },
+        {
+          "name": "numerical_stability",
+          "condition": "large curvature values",
+          "handling": "scale appropriately"
+        }
+      ]
+    },
+    {
+      "id": "lorentz_hessian",
+      "name": "Lorentz Hessian",
+      "category": "higher_order_derivatives",
+      "description": "Compute Riemannian Hessian of a function on Lorentz manifold",
+      "formula": "Hess f(X,Y) = ⟨∇ₓ∇f, Y⟩ = X(Y(f)) - (∇ₓY)(f)",
+      "input": {
+        "x": "Point on hyperboloid H^n",
+        "function": "Scalar function f: H^n → ℝ",
+        "gradient": "Gradient ∇f at x (tangent vector)",
+        "tangent_vectors": "Pair of tangent vectors (X, Y)"
+      },
+      "output": {
+        "hessian": "Matrix of shape (n, n)"
+      },
+      "complexity": {
+        "time": "O(n²)",
+        "space": "O(n²)"
+      },
+      "precision": "1e-10",
+      "implementation_notes": [
+        "Use finite differences for second derivatives",
+        "Apply covariant derivative correction",
+        "Hessian is symmetric for smooth functions"
+      ],
+      "test_cases": [
+        {
+          "name": "distance_hessian",
+          "function": "d(·, y) for fixed y",
+          "x": "point on hyperboloid",
+          "expected": "specific form based on distance",
+          "tolerance": "1e-9"
+        },
+        {
+          "name": "quadratic_function",
+          "function": "f(x) = ||x||²",
+          "x": "arbitrary point",
+          "expected": "constant Hessian",
+          "tolerance": "1e-9"
+        },
+        {
+          "name": "symmetry",
+          "function": "arbitrary smooth function",
+          "x": "arbitrary point",
+          "expected": "Hess(X,Y) == Hess(Y,X)",
+          "tolerance": "1e-9"
+        },
+        {
+          "name": "convex_function",
+          "function": "convex f",
+          "x": "arbitrary point",
+          "expected": "positive semi-definite Hessian",
+          "tolerance": "1e-8"
+        },
+        {
+          "name": "geodesic_convexity",
+          "function": "g-convex function",
+          "x": "arbitrary point",
+          "expected": "Hessian bounds",
+          "tolerance": "1e-8"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "non_smooth_function",
+          "condition": "function not C²",
+          "handling": "return error or approximate"
+        },
+        {
+          "name": "numerical_derivatives",
+          "condition": "function given numerically",
+          "handling": "use adaptive step size"
+        },
+        {
+          "name": "ill_conditioned",
+          "condition": "nearly singular Hessian",
+          "handling": "add regularization"
+        }
+      ]
+    },
+    {
+      "id": "lorentz_sectional_curvature_tensor",
+      "name": "Lorentz Sectional Curvature Tensor",
+      "category": "higher_order_derivatives",
+      "description": "Compute full Riemann curvature tensor and sectional curvatures",
+      "formula": "K(X,Y) = ⟨R(X,Y)Y, X⟩ / (||X||²||Y||² - ⟨X,Y⟩²)",
+      "input": {
+        "x": "Point on hyperboloid H^n",
+        "tangent_vectors": "Pair of tangent vectors (X, Y)"
+      },
+      "output": {
+        "sectional_curvature": "Scalar (should be -1 for hyperbolic space)",
+        "riemann_tensor": "4D array of shape (n, n, n, n)"
+      },
+      "complexity": {
+        "time": "O(n⁴)",
+        "space": "O(n⁴)"
+      },
+      "precision": "1e-10",
+      "implementation_notes": [
+        "For hyperbolic space: K(X,Y) = -1 for all orthonormal X,Y",
+        "Riemann tensor: R(X,Y)Z = ⟨Y,Z⟩X - ⟨X,Z⟩Y",
+        "Use symmetries to reduce computation"
+      ],
+      "test_cases": [
+        {
+          "name": "orthonormal_vectors",
+          "x": "origin",
+          "tangent_vectors": "orthonormal (X,Y)",
+          "expected": "-1",
+          "tolerance": "1e-10"
+        },
+        {
+          "name": "parallel_vectors",
+          "x": "arbitrary point",
+          "tangent_vectors": "Y = λX",
+          "expected": "undefined (return error)",
+          "tolerance": "N/A"
+        },
+        {
+          "name": "arbitrary_vectors",
+          "x": "arbitrary point",
+          "tangent_vectors": "non-orthogonal (X,Y)",
+          "expected": "-1 after normalization",
+          "tolerance": "1e-9"
+        },
+        {
+          "name": "riemann_symmetries",
+          "x": "arbitrary point",
+          "expected": "R(X,Y,Z,W) = -R(Y,X,Z,W) = -R(X,Y,W,Z)",
+          "tolerance": "1e-9"
+        },
+        {
+          "name": "bianchi_identity",
+          "x": "arbitrary point",
+          "expected": "cyclic sum R(X,Y,Z) = 0",
+          "tolerance": "1e-8"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "linearly_dependent",
+          "condition": "X and Y not independent",
+          "handling": "return error or NaN"
+        },
+        {
+          "name": "high_dimension",
+          "condition": "n > 20",
+          "handling": "sparse tensor representation"
+        },
+        {
+          "name": "numerical_error",
+          "condition": "curvature ≠ -1",
+          "handling": "warn if deviation > threshold"
+        }
+      ]
+    },
+    {
+      "id": "lorentz_jacobian_exp",
+      "name": "Lorentz Exponential Map Jacobian",
+      "category": "higher_order_derivatives",
+      "description": "Compute Jacobian (differential) of exponential map",
+      "formula": "D exp_x: T_xH^n → T_yH^n where y = exp_x(v)",
+      "input": {
+        "x": "Point on hyperboloid H^n",
+        "v": "Tangent vector at x"
+      },
+      "output": {
+        "jacobian": "Matrix of shape (n, n)"
+      },
+      "complexity": {
+        "time": "O(n²)",
+        "space": "O(n²)"
+      },
+      "precision": "1e-10",
+      "implementation_notes": [
+        "Jacobian involves sinh(||v||)/||v|| and cosh(||v||) terms",
+        "Use parallel transport formula",
+        "Handle ||v|| → 0 with Taylor expansion"
+      ],
+      "test_cases": [
+        {
+          "name": "zero_tangent",
+          "x": "arbitrary point",
+          "v": "zero vector",
+          "expected": "identity matrix",
+          "tolerance": "1e-10"
+        },
+        {
+          "name": "small_tangent",
+          "x": "arbitrary point",
+          "v": "small ||v|| < 0.01",
+          "expected": "near identity",
+          "tolerance": "1e-9"
+        },
+        {
+          "name": "large_tangent",
+          "x": "origin",
+          "v": "large ||v|| = 10",
+          "expected": "specific scaling",
+          "tolerance": "1e-8"
+        },
+        {
+          "name": "composition_rule",
+          "x": "arbitrary point",
+          "v": "arbitrary tangent",
+          "expected": "chain rule with log_map",
+          "tolerance": "1e-8"
+        },
+        {
+          "name": "determinant_check",
+          "x": "arbitrary point",
+          "v": "arbitrary tangent",
+          "expected": "positive determinant",
+          "tolerance": "1e-7"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "tangent_norm_zero",
+          "condition": "||v|| = 0",
+          "handling": "return identity"
+        },
+        {
+          "name": "very_large_norm",
+          "condition": "||v|| > 100",
+          "handling": "use asymptotic formula"
+        },
+        {
+          "name": "numerical_instability",
+          "condition": "ill-conditioned Jacobian",
+          "handling": "use higher precision"
+        }
+      ]
+    },
+    {
+      "id": "lorentz_batch_distance",
+      "name": "Lorentz Batch Distance",
+      "category": "batch_operations",
+      "description": "Compute pairwise distances between two sets of points efficiently",
+      "formula": "D[i,j] = d(X[i], Y[j]) for all i,j",
+      "input": {
+        "X": "Array of m points on hyperboloid H^n",
+        "Y": "Array of k points on hyperboloid H^n"
+      },
+      "output": {
+        "distances": "Matrix of shape (m, k)"
+      },
+      "complexity": {
+        "time": "O(m * k * n)",
+        "space": "O(m * k)"
+      },
+      "precision": "1e-11",
+      "implementation_notes": [
+        "Vectorize inner product computation",
+        "Use BLAS for matrix operations",
+        "Can parallelize across points",
+        "Handle numerical issues uniformly"
+      ],
+      "test_cases": [
+        {
+          "name": "self_distance",
+          "X": "10 random points",
+          "Y": "same 10 points",
+          "expected": "diagonal is zero",
+          "tolerance": "1e-10"
+        },
+        {
+          "name": "symmetry",
+          "X": "set A",
+          "Y": "set B",
+          "expected": "D(A,B) == D(B,A)^T",
+          "tolerance": "1e-10"
+        },
+        {
+          "name": "large_batch",
+          "X": "1000 points",
+          "Y": "1000 points",
+          "expected": "completes in reasonable time",
+          "tolerance": "1e-9"
+        },
+        {
+          "name": "high_dimensional",
+          "X": "100 points in H^100",
+          "Y": "100 points in H^100",
+          "expected": "stable computation",
+          "tolerance": "1e-8"
+        },
+        {
+          "name": "triangle_inequality",
+          "X": "points A",
+          "Y": "points B",
+          "expected": "satisfies triangle inequality",
+          "tolerance": "1e-8"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "empty_set",
+          "condition": "m = 0 or k = 0",
+          "handling": "return empty array"
+        },
+        {
+          "name": "single_point",
+          "condition": "m = 1 or k = 1",
+          "handling": "reduce to vector operation"
+        },
+        {
+          "name": "memory_limit",
+          "condition": "m * k too large",
+          "handling": "compute in chunks"
+        }
+      ]
+    },
+    {
+      "id": "lorentz_batch_exp_map",
+      "name": "Lorentz Batch Exponential Map",
+      "category": "batch_operations",
+      "description": "Apply exponential map to multiple tangent vectors at multiple base points",
+      "formula": "Y[i] = exp_{X[i]}(V[i]) for all i",
+      "input": {
+        "X": "Array of n points on hyperboloid H^d",
+        "V": "Array of n tangent vectors at corresponding points"
+      },
+      "output": {
+        "Y": "Array of n points on hyperboloid H^d"
+      },
+      "complexity": {
+        "time": "O(n * d)",
+        "space": "O(n * d)"
+      },
+      "precision": "1e-11",
+      "implementation_notes": [
+        "Vectorize across all points simultaneously",
+        "Use SIMD/GPU when available",
+        "Batch projection to hyperboloid"
+      ],
+      "test_cases": [
+        {
+          "name": "zero_tangents",
+          "X": "10 random points",
+          "V": "all zero vectors",
+          "expected": "returns X unchanged",
+          "tolerance": "1e-11"
+        },
+        {
+          "name": "consistency_with_single",
+          "X": "100 points",
+          "V": "100 tangent vectors",
+          "expected": "matches individual exp_map calls",
+          "tolerance": "1e-10"
+        },
+        {
+          "name": "large_batch",
+          "X": "10000 points",
+          "V": "10000 tangent vectors",
+          "expected": "efficient computation",
+          "tolerance": "1e-9"
+        },
+        {
+          "name": "varied_magnitudes",
+          "X": "points",
+          "V": "tangents with norms from 0.01 to 100",
+          "expected": "all results on hyperboloid",
+          "tolerance": "1e-9"
+        },
+        {
+          "name": "high_dimensional",
+          "X": "1000 points in H^200",
+          "V": "1000 tangent vectors",
+          "expected": "stable computation",
+          "tolerance": "1e-8"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "mismatched_sizes",
+          "condition": "len(X) ≠ len(V)",
+          "handling": "return error"
+        },
+        {
+          "name": "invalid_tangent",
+          "condition": "V[i] not tangent to X[i]",
+          "handling": "project to tangent space first"
+        },
+        {
+          "name": "numerical_drift",
+          "condition": "results not on hyperboloid",
+          "handling": "batch re-projection"
+        }
+      ]
+    },
+    {
+      "id": "lorentz_batch_log_map",
+      "name": "Lorentz Batch Logarithmic Map",
+      "category": "batch_operations",
+      "description": "Apply logarithmic map from multiple base points to multiple target points",
+      "formula": "V[i] = log_{X[i]}(Y[i]) for all i",
+      "input": {
+        "X": "Array of n points on hyperboloid H^d (base points)",
+        "Y": "Array of n points on hyperboloid H^d (target points)"
+      },
+      "output": {
+        "V": "Array of n tangent vectors at X[i]"
+      },
+      "complexity": {
+        "time": "O(n * d)",
+        "space": "O(n * d)"
+      },
+      "precision": "1e-11",
+      "implementation_notes": [
+        "Vectorize across all point pairs",
+        "Handle X[i] == Y[i] cases efficiently",
+        "Batch tangent space projection"
+      ],
+      "test_cases": [
+        {
+          "name": "identical_points",
+          "X": "10 random points",
+          "Y": "same 10 points",
+          "expected": "all zero tangent vectors",
+          "tolerance": "1e-11"
+        },
+        {
+          "name": "inverse_property",
+          "X": "100 points",
+          "Y": "exp_X(V) for random V",
+          "expected": "log_X(Y) recovers V",
+          "tolerance": "1e-10"
+        },
+        {
+          "name": "large_batch",
+          "X": "5000 points",
+          "Y": "5000 points",
+          "expected": "efficient computation",
+          "tolerance": "1e-9"
+        },
+        {
+          "name": "far_points",
+          "X": "points",
+          "Y": "points at distance > 10",
+          "expected": "stable computation",
+          "tolerance": "1e-8"
+        },
+        {
+          "name": "high_dimensional",
+          "X": "1000 points in H^150",
+          "Y": "1000 points in H^150",
+          "expected": "accurate tangent vectors",
+          "tolerance": "1e-8"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "mismatched_sizes",
+          "condition": "len(X) ≠ len(Y)",
+          "handling": "return error"
+        },
+        {
+          "name": "antipodal_points",
+          "condition": "d(X[i],Y[i]) very large",
+          "handling": "use high precision"
+        },
+        {
+          "name": "tangent_verification",
+          "condition": "result not tangent",
+          "handling": "project to tangent space"
+        }
+      ]
+    },
+    {
+      "id": "lorentz_batch_parallel_transport",
+      "name": "Lorentz Batch Parallel Transport",
+      "category": "batch_operations",
+      "description": "Parallel transport multiple tangent vectors along multiple geodesics",
+      "formula": "W[i] = PT_{X[i]→Y[i]}(V[i]) for all i",
+      "input": {
+        "X": "Array of n points (start points)",
+        "Y": "Array of n points (end points)",
+        "V": "Array of n tangent vectors at X[i]"
+      },
+      "output": {
+        "W": "Array of n tangent vectors at Y[i]"
+      },
+      "complexity": {
+        "time": "O(n * d)",
+        "space": "O(n * d)"
+      },
+      "precision": "1e-11",
+      "implementation_notes": [
+        "Vectorize parallel transport formula",
+        "Use batch geodesic computation",
+        "Verify tangent space membership in batch"
+      ],
+      "test_cases": [
+        {
+          "name": "identity_transport",
+          "X": "10 points",
+          "Y": "same 10 points",
+          "V": "10 tangent vectors",
+          "expected": "returns V unchanged",
+          "tolerance": "1e-11"
+        },
+        {
+          "name": "norm_preservation",
+          "X": "100 points",
+          "Y": "100 different points",
+          "V": "100 tangent vectors",
+          "expected": "||W[i]|| == ||V[i]|| for all i",
+          "tolerance": "1e-10"
+        },
+        {
+          "name": "consistency",
+          "X": "points",
+          "Y": "points",
+          "V": "tangent vectors",
+          "expected": "matches individual PT calls",
+          "tolerance": "1e-10"
+        },
+        {
+          "name": "large_batch",
+          "X": "10000 points",
+          "Y": "10000 points",
+          "V": "10000 tangent vectors",
+          "expected": "efficient computation",
+          "tolerance": "1e-9"
+        },
+        {
+          "name": "long_geodesics",
+          "X": "points",
+          "Y": "points at distance > 5",
+          "V": "tangent vectors",
+          "expected": "stable transport",
+          "tolerance": "1e-8"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "size_mismatch",
+          "condition": "array sizes don't match",
+          "handling": "return error"
+        },
+        {
+          "name": "invalid_tangent",
+          "condition": "V[i] not tangent to X[i]",
+          "handling": "project first"
+        },
+        {
+          "name": "numerical_drift",
+          "condition": "W[i] not tangent to Y[i]",
+          "handling": "re-project to tangent space"
+        }
+      ]
+    },
+    {
+      "id": "lorentz_gradient_descent",
+      "name": "Lorentz Riemannian Gradient Descent",
+      "category": "optimization",
+      "description": "Perform Riemannian gradient descent on Lorentz manifold",
+      "formula": "x_{t+1} = exp_{x_t}(-α_t ∇f(x_t))",
+      "input": {
+        "f": "Objective function f: H^n → ℝ",
+        "grad_f": "Riemannian gradient function",
+        "x0": "Initial point on hyperboloid",
+        "learning_rate": "Step size α or schedule",
+        "max_iterations": "Integer, default 1000",
+        "tolerance": "Float, default 1e-8"
+      },
+      "output": {
+        "x_opt": "Optimal point on hyperboloid",
+        "f_opt": "Function value at optimum",
+        "converged": "Boolean",
+        "iterations": "Number of iterations",
+        "trajectory": "Optional: sequence of points"
+      },
+      "complexity": {
+        "time": "O(k * n * T) where k=grad complexity, T=iterations",
+        "space": "O(n) or O(n*T) with trajectory"
+      },
+      "precision": "1e-9",
+      "implementation_notes": [
+        "Use retraction via exponential map",
+        "Implement line search for step size",
+        "Monitor gradient norm for convergence",
+        "Use momentum or adaptive rates (Adam on manifolds)"
+      ],
+      "test_cases": [
+        {
+          "name": "quadratic_function",
+          "f": "convex quadratic",
+          "x0": "random point",
+          "expected": "convergence to minimum",
+          "tolerance": "1e-8"
+        },
+        {
+          "name": "distance_minimization",
+          "f": "d²(·, y) for fixed y",
+          "x0": "point far from y",
+          "expected": "converges to y",
+          "tolerance": "1e-7"
+        },
+        {
+          "name": "frechet_mean_objective",
+          "f": "Σᵢ d²(·, xᵢ)",
+          "x0": "random point",
+          "expected": "converges to Fréchet mean",
+          "tolerance": "1e-7"
+        },
+        {
+          "name": "non_convex",
+          "f": "non-convex function with local minima",
+          "x0": "various starting points",
+          "expected": "finds local minimum",
+          "tolerance": "1e-6"
+        },
+        {
+          "name": "high_dimensional",
+          "f": "objective in H^100",
+          "x0": "random point",
+          "expected": "convergence in reasonable time",
+          "tolerance": "1e-6"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "gradient_vanishing",
+          "condition": "||∇f|| very small",
+          "handling": "declare convergence"
+        },
+        {
+          "name": "divergence",
+          "condition": "f(x_t) increasing",
+          "handling": "reduce step size"
+        },
+        {
+          "name": "numerical_issues",
+          "condition": "points drift off hyperboloid",
+          "handling": "project back at each step"
+        }
+      ]
+    },
+    {
+      "id": "lorentz_conjugate_gradient",
+      "name": "Lorentz Conjugate Gradient Method",
+      "category": "optimization",
+      "description": "Conjugate gradient optimization on Lorentz manifold",
+      "formula": "x_{t+1} = exp_{x_t}(-α_t d_t) where d_t is conjugate direction",
+      "input": {
+        "f": "Objective function",
+        "grad_f": "Gradient function",
+        "x0": "Initial point",
+        "max_iterations": "Integer, default 500",
+        "tolerance": "Float, default 1e-8"
+      },
+      "output": {
+        "x_opt": "Optimal point",
+        "f_opt": "Function value",
+        "converged": "Boolean",
+        "iterations": "Integer"
+      },
+      "complexity": {
+        "time": "O(n * k * T) where k=grad complexity",
+        "space": "O(n)"
+      },
+      "precision": "1e-9",
+      "implementation_notes": [
+        "Use Polak-Ribière or Hestenes-Stiefel formula",
+        "Transport conjugate direction via parallel transport",
+        "Reset direction periodically (every n iterations)",
+        "Line search for step size"
+      ],
+      "test_cases": [
+        {
+          "name": "quadratic_convergence",
+          "f": "quadratic function",
+          "x0": "random point",
+          "expected": "convergence in ≤ n iterations",
+          "tolerance": "1e-8"
+        },
+        {
+          "name": "faster_than_gd",
+          "f": "ill-conditioned objective",
+          "x0": "same starting point",
+          "expected": "fewer iterations than gradient descent",
+          "tolerance": "1e-7"
+        },
+        {
+          "name": "rosenbrock_analog",
+          "f": "Rosenbrock-like on manifold",
+          "x0": "random point",
+          "expected": "convergence to minimum",
+          "tolerance": "1e-6"
+        },
+        {
+          "name": "restart_mechanism",
+          "f": "non-quadratic function",
+          "x0": "random point",
+          "expected": "periodic restarts improve convergence",
+          "tolerance": "1e-6"
+        },
+        {
+          "name": "high_dimensional",
+          "f": "objective in H^50",
+          "x0": "random point",
+          "expected": "efficient convergence",
+          "tolerance": "1e-6"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "loss_of_conjugacy",
+          "condition": "directions no longer conjugate",
+          "handling": "reset to steepest descent"
+        },
+        {
+          "name": "line_search_failure",
+          "condition": "no step size decreases f",
+          "handling": "restart with gradient direction"
+        },
+        {
+          "name": "numerical_errors",
+          "condition": "accumulated transport errors",
+          "handling": "periodic resets"
+        }
+      ]
+    },
+    {
+      "id": "lorentz_line_search",
+      "name": "Lorentz Geodesic Line Search",
+      "category": "optimization",
+      "description": "Find optimal step size along geodesic direction using backtracking or exact line search",
+      "formula": "α* = argmin_α f(exp_x(α*d)) subject to Armijo/Wolfe conditions",
+      "input": {
+        "f": "Objective function",
+        "x": "Current point on hyperboloid",
+        "d": "Search direction (tangent vector)",
+        "alpha_init": "Initial step size, default 1.0",
+        "method": "'backtracking', 'wolfe', or 'exact'",
+        "c1": "Armijo constant, default 1e-4",
+        "c2": "Wolfe constant, default 0.9"
+      },
+      "output": {
+        "alpha_opt": "Optimal step size",
+        "x_new": "New point exp_x(α*d)",
+        "f_new": "Function value at x_new",
+        "evaluations": "Number of function evaluations"
+      },
+      "complexity": {
+        "time": "O(k * n * log(1/α)) where k=f complexity",
+        "space": "O(n)"
+      },
+      "precision": "1e-10",
+      "implementation_notes": [
+        "Backtracking: reduce α until sufficient decrease",
+        "Wolfe: ensure both Armijo and curvature conditions",
+        "Exact: use golden section or Brent's method",
+        "Cache exponential map computations"
+      ],
+      "test_cases": [
+        {
+          "name": "descent_direction",
+          "f": "convex function",
+          "x": "arbitrary point",
+          "d": "-∇f(x)",
+          "expected": "f_new < f(x)",
+          "tolerance": "1e-9"
+        },
+        {
+          "name": "armijo_satisfaction",
+          "f": "smooth function",
+          "x": "arbitrary point",
+          "d": "descent direction",
+          "expected": "f(x_new) ≤ f(x) + c1*α*⟨∇f(x),d⟩",
+          "tolerance": "1e-8"
+        },
+        {
+          "name": "wolfe_conditions",
+          "method": "wolfe",
+          "f": "smooth function",
+          "expected": "both Armijo and curvature satisfied",
+          "tolerance": "1e-8"
+        },
+        {
+          "name": "exact_minimum",
+          "method": "exact",
+          "f": "quadratic along geodesic",
+          "expected": "finds exact minimum",
+          "tolerance": "1e-7"
+        },
+        {
+          "name": "step_reduction",
+          "f": "function with large gradient",
+          "d": "descent direction",
+          "alpha_init": "10.0",
+          "expected": "reduces to acceptable α",
+          "tolerance": "1e-7"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "ascent_direction",
+          "condition": "⟨∇f(x),d⟩ > 0",
+          "handling": "return α=0 or error"
+        },
+        {
+          "name": "no_improvement",
+          "condition": "all α fail Armijo",
+          "handling": "return smallest α tried"
+        },
+        {
+          "name": "numerical_underflow",
+          "condition": "α becomes too small",
+          "handling": "return minimum α threshold"
+        }
+      ]
+    },
+    {
+      "id": "lorentz_trust_region",
+      "name": "Lorentz Trust Region Method",
+      "category": "optimization",
+      "description": "Trust region optimization on Lorentz manifold using quadratic model",
+      "formula": "min_{d∈T_xH^n, ||d||≤Δ} m(d) = f(x) + ⟨∇f(x),d⟩ + ½⟨Hess f(x)d,d⟩",
+      "input": {
+        "f": "Objective function",
+        "grad_f": "Gradient function",
+        "hess_f": "Hessian function (optional)",
+        "x0": "Initial point",
+        "delta_init": "Initial trust region radius, default 1.0",
+        "max_iterations": "Integer, default 500"
+      },
+      "output": {
+        "x_opt": "Optimal point",
+        "f_opt": "Function value",
+        "converged": "Boolean",
+        "iterations": "Integer"
+      },
+      "complexity": {
+        "time": "O(n³ * T) per iteration for subproblem",
+        "space": "O(n²)"
+      },
+      "precision": "1e-9",
+      "implementation_notes": [
+        "Solve trust region subproblem in tangent space",
+        "Use Steihaug-Toint conjugate gradient",
+        "Adjust Δ based on actual vs predicted reduction",
+        "Use BFGS for Hessian approximation if not provided"
+      ],
+      "test_cases": [
+        {
+          "name": "quadratic_function",
+          "f": "convex quadratic",
+          "x0": "random point",
+          "expected": "convergence to minimum",
+          "tolerance": "1e-8"
+        },
+        {
+          "name": "radius_adaptation",
+          "f": "non-quadratic function",
+          "x0": "random point",
+          "expected": "Δ increases/decreases appropriately",
+          "tolerance": "1e-7"
+        },
+        {
+          "name": "negative_curvature",
+          "f": "non-convex function",
+          "x0": "saddle point region",
+          "expected": "escapes saddle point",
+          "tolerance": "1e-6"
+        },
+        {
+          "name": "comparison_with_line_search",
+          "f": "smooth objective",
+          "x0": "random point",
+          "expected": "similar or better performance",
+          "tolerance": "1e-6"
+        },
+        {
+          "name": "high_dimensional",
+          "f": "objective in H^50",
+          "x0": "random point",
+          "expected": "convergence",
+          "tolerance": "1e-6"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "very_small_delta",
+          "condition": "Δ < threshold",
+          "handling": "declare convergence or increase"
+        },
+        {
+          "name": "rejected_steps",
+          "condition": "actual reduction negative",
+          "handling": "reduce Δ and retry"
+        },
+        {
+          "name": "subproblem_failure",
+          "condition": "cannot solve trust region subproblem",
+          "handling": "use Cauchy point"
+        }
+      ]
+    },
+    {
+      "id": "lorentz_adaptive_projection",
+      "name": "Lorentz Adaptive Precision Projection",
+      "category": "numerical_stability",
+      "description": "Project point to hyperboloid with adaptive precision based on constraint violation",
+      "formula": "x_proj = x / sqrt(-⟨x,x⟩_L) * ||x|| scaling",
+      "input": {
+        "x": "Point in ℝ^(n+1) (possibly off hyperboloid)",
+        "tolerance": "Float, default 1e-12",
+        "max_iterations": "Integer, default 10"
+      },
+      "output": {
+        "x_proj": "Point on hyperboloid H^n",
+        "constraint_error": "Final |⟨x_proj,x_proj⟩_L + 1|",
+        "iterations": "Number of refinement iterations"
+      },
+      "complexity": {
+        "time": "O(n * k) where k = iterations",
+        "space": "O(n)"
+      },
+      "precision": "1e-14",
+      "implementation_notes": [
+        "Use Newton's method for constraint satisfaction",
+        "Switch to higher precision (quad precision) if needed",
+        "Monitor conditioning of projection",
+        "Use iterative refinement for very strict tolerances"
+      ],
+      "test_cases": [
+        {
+          "name": "already_on_hyperboloid",
+          "x": "point with |⟨x,x⟩_L + 1| < 1e-12",
+          "expected": "returns x with minimal change",
+          "tolerance": "1e-14"
+        },
+        {
+          "name": "small_violation",
+          "x": "point with |⟨x,x⟩_L + 1| ≈ 1e-8",
+          "expected": "one iteration sufficient",
+          "tolerance": "1e-12"
+        },
+        {
+          "name": "large_violation",
+          "x": "point far from hyperboloid",
+          "expected": "converges in few iterations",
+          "tolerance": "1e-12"
+        },
+        {
+          "name": "high_dimension",
+          "x": "point in ℝ^201 for H^200",
+          "expected": "stable projection",
+          "tolerance": "1e-11"
+        },
+        {
+          "name": "extreme_precision",
+          "x": "arbitrary point",
+          "tolerance": "1e-15",
+          "expected": "achieves tolerance or reports failure",
+          "tolerance": "1e-15"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "null_vector",
+          "condition": "x ≈ 0",
+          "handling": "return origin [1,0,...]"
+        },
+        {
+          "name": "non_convergence",
+          "condition": "max_iterations reached",
+          "handling": "return best result, warn user"
+        },
+        {
+          "name": "numerical_instability",
+          "condition": "ill-conditioned projection",
+          "handling": "switch to quad precision"
+        }
+      ]
+    },
+    {
+      "id": "lorentz_robust_exp_map",
+      "name": "Lorentz Robust Exponential Map",
+      "category": "numerical_stability",
+      "description": "Numerically stable exponential map with adaptive methods based on tangent vector magnitude",
+      "formula": "exp_x(v) with automatic method selection",
+      "input": {
+        "x": "Point on hyperboloid H^n",
+        "v": "Tangent vector at x",
+        "method": "'auto', 'standard', 'taylor', or 'high_precision'"
+      },
+      "output": {
+        "y": "Point on hyperboloid H^n",
+        "method_used": "String indicating method",
+        "accuracy_estimate": "Estimated error"
+      },
+      "complexity": {
+        "time": "O(n)",
+        "space": "O(n)"
+      },
+      "precision": "1e-13",
+      "implementation_notes": [
+        "For ||v|| < 1e-8: use Taylor expansion",
+        "For ||v|| > 100: use asymptotic formula",
+        "For 1e-8 ≤ ||v|| ≤ 100: use standard formula",
+        "Always verify hyperboloid constraint"
+      ],
+      "test_cases": [
+        {
+          "name": "tiny_tangent",
+          "x": "arbitrary point",
+          "v": "||v|| = 1e-10",
+          "expected": "uses Taylor expansion",
+          "tolerance": "1e-12"
+        },
+        {
+          "name": "huge_tangent",
+          "x": "arbitrary point",
+          "v": "||v|| = 200",
+          "expected": "stable result on hyperboloid",
+          "tolerance": "1e-10"
+        },
+        {
+          "name": "normal_tangent",
+          "x": "arbitrary point",
+          "v": "||v|| = 1",
+          "expected": "standard computation",
+          "tolerance": "1e-12"
+        },
+        {
+          "name": "accuracy_validation",
+          "x": "arbitrary point",
+          "v": "arbitrary tangent",
+          "expected": "exp-log inverse holds",
+          "tolerance": "1e-11"
+        },
+        {
+          "name": "high_dimensional",
+          "x": "point in H^200",
+          "v": "tangent vector",
+          "expected": "stable computation",
+          "tolerance": "1e-10"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "zero_tangent",
+          "condition": "||v|| = 0",
+          "handling": "return x immediately"
+        },
+        {
+          "name": "invalid_tangent",
+          "condition": "⟨x,v⟩_L ≠ 0",
+          "handling": "project v to tangent space"
+        },
+        {
+          "name": "overflow_risk",
+          "condition": "sinh/cosh overflow",
+          "handling": "use logarithmic computation"
+        }
+      ]
+    },
+    {
+      "id": "lorentz_robust_log_map",
+      "name": "Lorentz Robust Logarithmic Map",
+      "category": "numerical_stability",
+      "description": "Numerically stable logarithmic map with special handling for edge cases",
+      "formula": "log_x(y) with automatic method selection",
+      "input": {
+        "x": "Point on hyperboloid H^n",
+        "y": "Point on hyperboloid H^n",
+        "method": "'auto', 'standard', 'series', or 'high_precision'"
+      },
+      "output": {
+        "v": "Tangent vector at x",
+        "method_used": "String indicating method",
+        "accuracy_estimate": "Estimated error"
+      },
+      "complexity": {
+        "time": "O(n)",
+        "space": "O(n)"
+      },
+      "precision": "1e-13",
+      "implementation_notes": [
+        "For d(x,y) < 1e-8: use Taylor series",
+        "For d(x,y) > 100: use asymptotic expansion",
+        "Handle near-antipodal points carefully",
+        "Verify tangent space constraint"
+      ],
+      "test_cases": [
+        {
+          "name": "nearby_points",
+          "x": "arbitrary point",
+          "y": "point at distance 1e-10",
+          "expected": "uses series expansion",
+          "tolerance": "1e-12"
+        },
+        {
+          "name": "far_points",
+          "x": "arbitrary point",
+          "y": "point at distance 150",
+          "expected": "stable tangent vector",
+          "tolerance": "1e-10"
+        },
+        {
+          "name": "normal_distance",
+          "x": "arbitrary point",
+          "y": "point at distance 2",
+          "expected": "standard computation",
+          "tolerance": "1e-12"
+        },
+        {
+          "name": "inverse_property",
+          "x": "arbitrary point",
+          "y": "arbitrary point",
+          "expected": "exp_x(log_x(y)) = y",
+          "tolerance": "1e-11"
+        },
+        {
+          "name": "high_dimensional",
+          "x": "point in H^200",
+          "y": "point in H^200",
+          "expected": "accurate tangent vector",
+          "tolerance": "1e-10"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "identical_points",
+          "condition": "x == y",
+          "handling": "return zero tangent vector"
+        },
+        {
+          "name": "antipodal_points",
+          "condition": "⟨x,y⟩_L ≈ 1 (no antipodal in hyperboloid, but nearly)",
+          "handling": "use high precision"
+        },
+        {
+          "name": "numerical_issues",
+          "condition": "result not tangent",
+          "handling": "project to tangent space"
+        }
+      ]
+    },
+    {
+      "id": "lorentz_condition_number",
+      "name": "Lorentz Condition Number Estimation",
+      "category": "numerical_stability",
+      "description": "Estimate condition number of operations at a point (sensitivity to perturbations)",
+      "formula": "κ = ||J|| * ||J^(-1)|| for Jacobian J of operation",
+      "input": {
+        "x": "Point on hyperboloid H^n",
+        "operation": "'exp_map', 'log_map', 'distance', or 'parallel_transport'",
+        "parameters": "Operation-specific parameters"
+      },
+      "output": {
+        "condition_number": "Float",
+        "sensitivity_estimate": "Expected relative error amplification",
+        "recommendation": "String: 'stable', 'caution', or 'unstable'"
+      },
+      "complexity": {
+        "time": "O(n²)",
+        "space": "O(n²)"
+      },
+      "precision": "1e-10",
+      "implementation_notes": [
+        "Compute numerical Jacobian via finite differences",
+        "Use SVD for condition number",
+        "Provide recommendations based on threshold",
+        "Cache computations for efficiency"
+      ],
+      "test_cases": [
+        {
+          "name": "well_conditioned",
+          "x": "origin",
+          "operation": "exp_map",
+          "parameters": "small tangent vector",
+          "expected": "κ ≈ 1",
+          "tolerance": "1e-1"
+        },
+        {
+          "name": "ill_conditioned",
+          "x": "arbitrary point",
+          "operation": "log_map",
+          "parameters": "very close point",
+          "expected": "large κ",
+          "tolerance": "N/A"
+        },
+        {
+          "name": "distance_conditioning",
+          "x": "arbitrary point",
+          "operation": "distance",
+          "parameters": "far point",
+          "expected": "moderate κ",
+          "tolerance": "N/A"
+        },
+        {
+          "name": "parallel_transport",
+          "x": "arbitrary point",
+          "operation": "parallel_transport",
+          "parameters": "long geodesic",
+          "expected": "κ analysis",
+          "tolerance": "N/A"
+        },
+        {
+          "name": "high_dimensional",
+          "x": "point in H^50",
+          "operation": "exp_map",
+          "parameters": "arbitrary",
+          "expected": "condition number estimate",
+          "tolerance": "N/A"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "singular_jacobian",
+          "condition": "J not invertible",
+          "handling": "return infinity"
+        },
+        {
+          "name": "numerical_rank_deficiency",
+          "condition": "J nearly singular",
+          "handling": "return large value, warn"
+        },
+        {
+          "name": "computation_failure",
+          "condition": "SVD fails",
+          "handling": "return estimate or error"
+        }
+      ]
+    },
+    {
+      "id": "lorentz_error_propagation",
+      "name": "Lorentz Error Propagation Analysis",
+      "category": "numerical_stability",
+      "description": "Analyze how errors propagate through sequence of Lorentz operations",
+      "formula": "δy ≈ J·δx where J is Jacobian",
+      "input": {
+        "operations": "List of operations to compose",
+        "x": "Initial point",
+        "input_error": "Estimated error in x",
+        "parameters": "Parameters for each operation"
+      },
+      "output": {
+        "output_error": "Estimated error in final result",
+        "error_amplification": "Ratio output_error/input_error",
+        "critical_operations": "List of operations that amplify errors most",
+        "recommendations": "Suggestions for improving stability"
+      },
+      "complexity": {
+        "time": "O(k * n²) where k = number of operations",
+        "space": "O(k * n²)"
+      },
+      "precision": "1e-10",
+      "implementation_notes": [
+        "Use chain rule for composed operations",
+        "Track error accumulation step by step",
+        "Identify operations with large Jacobian norms",
+        "Suggest alternative sequences if unstable"
+      ],
+      "test_cases": [
+        {
+          "name": "single_operation",
+          "operations": "exp_map",
+          "x": "origin",
+          "input_error": "1e-10",
+          "expected": "output_error proportional to input",
+          "tolerance": "1e-2"
+        },
+        {
+          "name": "exp_log_composition",
+          "operations": "exp then log",
+          "x": "arbitrary point",
+          "input_error": "1e-10",
+          "expected": "error amplification near 1",
+          "tolerance": "1e-1"
+        },
+        {
+          "name": "long_chain",
+          "operations": "10 operations",
+          "x": "arbitrary point",
+          "input_error": "1e-10",
+          "expected": "error growth estimate",
+          "tolerance": "N/A"
+        },
+        {
+          "name": "identify_critical",
+          "operations": "mixed operations",
+          "x": "arbitrary point",
+          "input_error": "1e-10",
+          "expected": "identifies most sensitive operation",
+          "tolerance": "N/A"
+        },
+        {
+          "name": "high_dimensional",
+          "operations": "3 operations",
+          "x": "point in H^100",
+          "input_error": "1e-10",
+          "expected": "error analysis",
+          "tolerance": "N/A"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "unstable_sequence",
+          "condition": "error amplification > 1000",
+          "handling": "recommend alternative"
+        },
+        {
+          "name": "no_error_propagation_path",
+          "condition": "operations independent",
+          "handling": "analyze separately"
+        },
+        {
+          "name": "numerical_cancellation",
+          "condition": "loss of significance detected",
+          "handling": "warn and suggest remediation"
+        }
+      ]
+    },
+    {
+      "id": "lorentz_auto_differentiation",
+      "name": "Lorentz Automatic Differentiation",
+      "category": "numerical_stability",
+      "description": "Compute derivatives of composite Lorentz operations using automatic differentiation",
+      "formula": "∇f via forward or reverse mode AD",
+      "input": {
+        "function": "Composite function using Lorentz operations",
+        "x": "Input point on hyperboloid",
+        "mode": "'forward' or 'reverse'",
+        "order": "Integer: 1 for gradient, 2 for Hessian"
+      },
+      "output": {
+        "gradient": "Tangent vector (order=1)",
+        "hessian": "Matrix (order=2)",
+        "computation_graph": "Optional: graph structure"
+      },
+      "complexity": {
+        "time": "O(n) for forward mode gradient, O(1) for reverse mode",
+        "space": "O(n) forward, O(k) reverse where k=operations"
+      },
+      "precision": "1e-11",
+      "implementation_notes": [
+        "Implement dual numbers for forward mode",
+        "Use tape-based recording for reverse mode",
+        "Respect manifold structure in derivatives",
+        "Cache intermediate results"
+      ],
+      "test_cases": [
+        {
+          "name": "distance_gradient",
+          "function": "d(x, y) for fixed y",
+          "x": "arbitrary point",
+          "expected": "log_x(y) / d(x,y)",
+          "tolerance": "1e-10"
+        },
+        {
+          "name": "composition_gradient",
+          "function": "f(exp_x(v))",
+          "x": "arbitrary point",
+          "expected": "chain rule result",
+          "tolerance": "1e-10"
+        },
+        {
+          "name": "forward_vs_reverse",
+          "function": "arbitrary composition",
+          "x": "arbitrary point",
+          "expected": "both modes agree",
+          "tolerance": "1e-10"
+        },
+        {
+          "name": "hessian_computation",
+          "function": "smooth function",
+          "x": "arbitrary point",
+          "order": 2,
+          "expected": "symmetric Hessian",
+          "tolerance": "1e-9"
+        },
+        {
+          "name": "high_dimensional",
+          "function": "complex composition",
+          "x": "point in H^100",
+          "expected": "efficient gradient computation",
+          "tolerance": "1e-9"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "non_differentiable",
+          "condition": "function not smooth",
+          "handling": "return error or subgradient"
+        },
+        {
+          "name": "numerical_instability",
+          "condition": "ill-conditioned derivatives",
+          "handling": "use higher precision"
+        },
+        {
+          "name": "complex_graph",
+          "condition": "many operations",
+          "handling": "optimize tape recording"
+        }
+      ]
+    },
+    {
+      "id": "lorentz_vectorized_operations",
+      "name": "Lorentz Vectorized Mixed Operations",
+      "category": "batch_operations",
+      "description": "Efficiently apply mixed operations (distance, exp, log, PT) across large batches with automatic optimization",
+      "formula": "Various, depending on operation mix",
+      "input": {
+        "operations": "List of operation specifications",
+        "points": "Arrays of points and parameters",
+        "optimization": "'auto', 'parallel', 'sequential', or 'gpu'"
+      },
+      "output": {
+        "results": "List of results for each operation",
+        "performance_stats": "Timing and efficiency metrics"
+      },
+      "complexity": {
+        "time": "O(total_operations * n)",
+        "space": "O(batch_size * n)"
+      },
+      "precision": "1e-11",
+      "implementation_notes": [
+        "Batch similar operations together",
+        "Use SIMD/GPU when available",
+        "Parallelize independent operations",
+        "Optimize memory access patterns"
+      ],
+      "test_cases": [
+        {
+          "name": "uniform_distances",
+          "operations": "1000 distance computations",
+          "optimization": "auto",
+          "expected": "significant speedup vs sequential",
+          "tolerance": "N/A"
+        },
+        {
+          "name": "mixed_exp_log",
+          "operations": "500 exp + 500 log",
+          "optimization": "auto",
+          "expected": "efficient batching",
+          "tolerance": "1e-10"
+        },
+        {
+          "name": "parallel_transport_batch",
+          "operations": "10000 PT operations",
+          "optimization": "parallel",
+          "expected": "near-linear speedup",
+          "tolerance": "1e-10"
+        },
+        {
+          "name": "heterogeneous_mix",
+          "operations": "varied operations",
+          "optimization": "auto",
+          "expected": "automatic optimization selection",
+          "tolerance": "1e-9"
+        },
+        {
+          "name": "gpu_acceleration",
+          "operations": "100000 operations",
+          "optimization": "gpu",
+          "expected": "GPU speedup if available",
+          "tolerance": "1e-8"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "empty_batch",
+          "condition": "no operations",
+          "handling": "return immediately"
+        },
+        {
+          "name": "memory_limit",
+          "condition": "batch too large for memory",
+          "handling": "process in chunks"
+        },
+        {
+          "name": "gpu_not_available",
+          "condition": "optimization='gpu' but no GPU",
+          "handling": "fall back to CPU parallel"
+        }
+      ]
+    },
+    {
+      "id": "lorentz_numerical_diagnostics",
+      "name": "Lorentz Numerical Diagnostics Suite",
+      "category": "numerical_stability",
+      "description": "Comprehensive numerical health check for Lorentz operations including error analysis, stability metrics, and recommendations",
+      "formula": "Multiple diagnostic tests",
+      "input": {
+        "x": "Point on hyperboloid (optional)",
+        "operations_to_test": "List of operations",
+        "test_points": "Array of test points",
+        "verbose": "Boolean, detailed output"
+      },
+      "output": {
+        "health_score": "Overall score 0-100",
+        "constraint_violations": "List of hyperboloid constraint violations",
+        "numerical_errors": "Detected numerical issues",
+        "stability_metrics": "Condition numbers, error estimates",
+        "recommendations": "Actionable suggestions",
+        "detailed_report": "Full diagnostic report"
+      },
+      "complexity": {
+        "time": "O(k * n²) where k = number of tests",
+        "space": "O(k * n)"
+      },
+      "precision": "1e-11",
+      "implementation_notes": [
+        "Test: exp-log inverse property",
+        "Test: distance triangle inequality",
+        "Test: parallel transport norm preservation",
+        "Test: hyperboloid constraint satisfaction",
+        "Test: numerical precision limits",
+        "Generate recommendations based on failures"
+      ],
+      "test_cases": [
+        {
+          "name": "healthy_system",
+          "test_points": "well-conditioned points",
+          "operations_to_test": "all basic operations",
+          "expected": "health_score > 95",
+          "tolerance": "N/A"
+        },
+        {
+          "name": "detect_constraint_violations",
+          "test_points": "points slightly off hyperboloid",
+          "expected": "identifies all violations",
+          "tolerance": "N/A"
+        },
+        {
+          "name": "detect_instabilities",
+          "test_points": "ill-conditioned configurations",
+          "expected": "identifies and reports",
+          "tolerance": "N/A"
+        },
+        {
+          "name": "provide_recommendations",
+          "test_points": "problematic points",
+          "expected": "actionable suggestions",
+          "tolerance": "N/A"
+        },
+        {
+          "name": "high_dimensional",
+          "test_points": "points in H^100",
+          "operations_to_test": "subset of operations",
+          "expected": "completes diagnostic",
+          "tolerance": "N/A"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "no_test_points",
+          "condition": "empty test set",
+          "handling": "generate random test points"
+        },
+        {
+          "name": "all_operations_fail",
+          "condition": "catastrophic numerical issues",
+          "handling": "recommend system check or higher precision"
+        },
+        {
+          "name": "partial_failures",
+          "condition": "some operations unstable",
+          "handling": "identify and isolate problem operations"
+        }
+      ]
+    }
+  ],
+  "integration_notes": {
+    "dependencies": [
+      "numpy for linear algebra",
+      "scipy for optimization and special functions",
+      "Optional: JAX/PyTorch for automatic differentiation",
+      "Optional: CuPy for GPU acceleration"
+    ],
+    "performance_considerations": [
+      "Batch operations for efficiency",
+      "Use adaptive precision for critical computations",
+      "Profile before optimizing",
+      "Consider GPU for large batches (>10000 operations)"
+    ],
+    "testing_strategy": [
+      "Property-based testing for mathematical invariants",
+      "Numerical stability tests across dimensions",
+      "Performance benchmarks vs single operations",
+      "Integration tests with basic Lorentz operations"
+    ]
+  }
+}

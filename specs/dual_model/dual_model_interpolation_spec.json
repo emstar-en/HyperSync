@@ -1,0 +1,353 @@
+{
+  "specification": {
+    "name": "Dual Model System - Interpolation & Sampling",
+    "version": "1.0.0",
+    "description": "Advanced interpolation methods and sampling algorithms on hyperbolic space with dual model support",
+    "total_operations": 15,
+    "format": "STUNIR",
+    "tier_availability": "Core (Free)",
+    "complexity_target": "O(n) to O(n\u00b2)",
+    "integration": [
+      "HVS",
+      "AGUA",
+      "STUNIR",
+      "Dual-Model System"
+    ],
+    "dependencies": [
+      "lorentz_advanced_spec.json",
+      "poincare_advanced_spec.json"
+    ]
+  },
+  "operations": [
+    {
+      "id": "dual_geodesic_interpolation",
+      "name": "Dual Model Geodesic Interpolation",
+      "category": "interpolation",
+      "description": "Interpolate along geodesics with automatic model selection",
+      "complexity": {
+        "time": "O(n * k)",
+        "space": "O(n * k)"
+      },
+      "test_cases": [
+        {
+          "name": "uniform_samples",
+          "expected": "constant speed"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "boundary_proximity",
+          "handling": "switch models"
+        }
+      ]
+    },
+    {
+      "id": "dual_bezier_interpolation",
+      "name": "Dual Model B\u00e9zier Interpolation",
+      "category": "interpolation",
+      "description": "B\u00e9zier curves on hyperbolic space using de Casteljau algorithm",
+      "complexity": {
+        "time": "O(n * m\u00b2)",
+        "space": "O(n * m)"
+      },
+      "test_cases": [
+        {
+          "name": "cubic_bezier",
+          "expected": "smooth curve"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "control_points_scattered",
+          "handling": "stable computation"
+        }
+      ]
+    },
+    {
+      "id": "dual_hermite_interpolation",
+      "name": "Dual Model Hermite Interpolation",
+      "category": "interpolation",
+      "description": "Hermite interpolation with tangent vector constraints",
+      "complexity": {
+        "time": "O(n * m)",
+        "space": "O(n * m)"
+      },
+      "test_cases": [
+        {
+          "name": "match_derivatives",
+          "expected": "verified"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "incompatible_tangents",
+          "handling": "least squares fit"
+        }
+      ]
+    },
+    {
+      "id": "dual_spline_interpolation",
+      "name": "Dual Model Hyperbolic Spline",
+      "category": "interpolation",
+      "description": "C\u00b2 splines on hyperbolic space minimizing energy",
+      "complexity": {
+        "time": "O(n * m\u00b3)",
+        "space": "O(n * m\u00b2)"
+      },
+      "test_cases": [
+        {
+          "name": "natural_spline",
+          "expected": "smooth interpolation"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "many_points",
+          "handling": "sparse solver"
+        }
+      ]
+    },
+    {
+      "id": "dual_kernel_interpolation",
+      "name": "Dual Model Kernel Interpolation",
+      "category": "interpolation",
+      "description": "Kernel-based interpolation using hyperbolic kernels",
+      "complexity": {
+        "time": "O(n * m\u00b2)",
+        "space": "O(m\u00b2)"
+      },
+      "test_cases": [
+        {
+          "name": "rbf_kernel",
+          "expected": "smooth interpolant"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "ill_conditioned",
+          "handling": "regularization"
+        }
+      ]
+    },
+    {
+      "id": "dual_shepard_interpolation",
+      "name": "Dual Model Shepard Interpolation",
+      "category": "interpolation",
+      "description": "Inverse distance weighted interpolation on hyperbolic space",
+      "complexity": {
+        "time": "O(n * m * k)",
+        "space": "O(n * m)"
+      },
+      "test_cases": [
+        {
+          "name": "scattered_data",
+          "expected": "local interpolation"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "coincident_points",
+          "handling": "return value"
+        }
+      ]
+    },
+    {
+      "id": "dual_uniform_sampling",
+      "name": "Dual Model Uniform Sampling",
+      "category": "sampling",
+      "description": "Generate uniformly distributed points in hyperbolic space",
+      "complexity": {
+        "time": "O(n * k)",
+        "space": "O(n * k)"
+      },
+      "test_cases": [
+        {
+          "name": "statistical_tests",
+          "expected": "uniform distribution"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "boundary_sampling",
+          "handling": "rejection sampling"
+        }
+      ]
+    },
+    {
+      "id": "dual_gaussian_sampling",
+      "name": "Dual Model Hyperbolic Gaussian Sampling",
+      "category": "sampling",
+      "description": "Sample from wrapped normal distribution on hyperbolic space",
+      "complexity": {
+        "time": "O(n * k)",
+        "space": "O(n * k)"
+      },
+      "test_cases": [
+        {
+          "name": "concentration_parameter",
+          "expected": "correct distribution"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "high_concentration",
+          "handling": "asymptotic approximation"
+        }
+      ]
+    },
+    {
+      "id": "dual_brownian_motion",
+      "name": "Dual Model Hyperbolic Brownian Motion",
+      "category": "sampling",
+      "description": "Simulate Brownian motion on hyperbolic space",
+      "complexity": {
+        "time": "O(n * T)",
+        "space": "O(n * T)"
+      },
+      "test_cases": [
+        {
+          "name": "long_trajectory",
+          "expected": "correct statistics"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "boundary_behavior",
+          "handling": "reflection"
+        }
+      ]
+    },
+    {
+      "id": "dual_random_walk",
+      "name": "Dual Model Random Walk",
+      "category": "sampling",
+      "description": "Random walk on hyperbolic space with adaptive step size",
+      "complexity": {
+        "time": "O(n * T)",
+        "space": "O(n * T)"
+      },
+      "test_cases": [
+        {
+          "name": "mixing_time",
+          "expected": "convergence to stationary"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "boundary_proximity",
+          "handling": "reduce step size"
+        }
+      ]
+    },
+    {
+      "id": "dual_mcmc_sampling",
+      "name": "Dual Model MCMC Sampling",
+      "category": "sampling",
+      "description": "Markov Chain Monte Carlo on hyperbolic space",
+      "complexity": {
+        "time": "O(n * T * k)",
+        "space": "O(n * T)"
+      },
+      "test_cases": [
+        {
+          "name": "target_distribution",
+          "expected": "correct samples"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "poor_mixing",
+          "handling": "adapt proposal"
+        }
+      ]
+    },
+    {
+      "id": "dual_rejection_sampling",
+      "name": "Dual Model Rejection Sampling",
+      "category": "sampling",
+      "description": "Rejection sampling for complex distributions on hyperbolic space",
+      "complexity": {
+        "time": "O(n * k / \u03b1)",
+        "space": "O(n * k)"
+      },
+      "test_cases": [
+        {
+          "name": "acceptance_rate",
+          "expected": "reasonable efficiency"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "low_acceptance",
+          "handling": "improve proposal"
+        }
+      ]
+    },
+    {
+      "id": "dual_importance_sampling",
+      "name": "Dual Model Importance Sampling",
+      "category": "sampling",
+      "description": "Importance sampling with hyperbolic proposal distribution",
+      "complexity": {
+        "time": "O(n * k)",
+        "space": "O(n * k)"
+      },
+      "test_cases": [
+        {
+          "name": "variance_reduction",
+          "expected": "improved estimates"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "weight_degeneracy",
+          "handling": "resample"
+        }
+      ]
+    },
+    {
+      "id": "dual_latininterpolation",
+      "name": "Dual Model Latin Hypercube Sampling",
+      "category": "sampling",
+      "description": "Space-filling design on hyperbolic space",
+      "complexity": {
+        "time": "O(n * k * log k)",
+        "space": "O(n * k)"
+      },
+      "test_cases": [
+        {
+          "name": "coverage",
+          "expected": "uniform coverage"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "high_dimension",
+          "handling": "optimize placement"
+        }
+      ]
+    },
+    {
+      "id": "dual_quasi_monte_carlo",
+      "name": "Dual Model Quasi-Monte Carlo",
+      "category": "sampling",
+      "description": "Low-discrepancy sequences on hyperbolic space",
+      "complexity": {
+        "time": "O(n * k)",
+        "space": "O(n * k)"
+      },
+      "test_cases": [
+        {
+          "name": "integration_error",
+          "expected": "better than MC"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "dimensionality_curse",
+          "handling": "randomized QMC"
+        }
+      ]
+    }
+  ]
+}
