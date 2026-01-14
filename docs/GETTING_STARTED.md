@@ -12,7 +12,7 @@ Or from source:
 
 ```bash
 git clone https://github.com/emstar-en/HyperSync.git
-cd HyperSync/hypersync-core
+cd HyperSync
 pip install -e .
 ```
 

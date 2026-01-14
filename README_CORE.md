@@ -122,7 +122,7 @@ HyperSync Core is an open-source library providing **43 high-performance geometr
 ```bash
 # Clone the repository
 git clone https://github.com/emstar-en/HyperSync.git
-cd HyperSync/hypersync-core
+cd HyperSync
 
 # Install dependencies
 pip install -r requirements.txt
@@ -235,7 +235,7 @@ print(f"Flowed {len(flowed_points)} points")
 ## 🏗️ Architecture
 
 ```
-hypersync-core/
+HyperSync/
 ├── src/hypersync_core/
 │   ├── geometry/          # 28 geometric operations
 │   │   ├── hyperbolic.py  # 14 hyperbolic operations
@@ -295,7 +295,7 @@ We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 ```bash
 # Clone repository
 git clone https://github.com/emstar-en/HyperSync.git
-cd HyperSync/hypersync-core
+cd HyperSync
 
 # Create virtual environment
 python -m venv venv

@@ -14,7 +14,7 @@ setup(
     url="https://github.com/emstar-en/HyperSync",
     project_urls={
         "Bug Tracker": "https://github.com/emstar-en/HyperSync/issues",
-        "Documentation": "https://github.com/emstar-en/HyperSync/tree/main/hypersync-core/docs",
+        "Documentation": "https://github.com/emstar-en/HyperSync/tree/main/docs",
         "Source Code": "https://github.com/emstar-en/HyperSync",
     },
     classifiers=[
