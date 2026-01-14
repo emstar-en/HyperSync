@@ -1,9 +1,0 @@
-{
-  "intent_kind": "ReductionIntent",
-  "op_ref": "op://scen/ot_jko_mid/probe",
-  "params": {
-    "probe": true
-  },
-  "profile": "PRO",
-  "task": "scen_ot_jko_mid_probe"
-}

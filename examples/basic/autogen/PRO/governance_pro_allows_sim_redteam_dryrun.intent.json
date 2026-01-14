@@ -1,9 +1,0 @@
-{
-  "intent_kind": "ReductionIntent",
-  "op_ref": "op://sim/redteam_dryrun/probe",
-  "params": {
-    "probe": true
-  },
-  "profile": "PRO",
-  "task": "sim_redteam_dryrun_probe"
-}

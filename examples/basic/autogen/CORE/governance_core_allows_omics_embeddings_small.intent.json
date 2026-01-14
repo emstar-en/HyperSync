@@ -1,9 +1,0 @@
-{
-  "intent_kind": "ReductionIntent",
-  "op_ref": "op://omics/embeddings_small/probe",
-  "params": {
-    "probe": true
-  },
-  "profile": "CORE",
-  "task": "omics_embeddings_small_probe"
-}

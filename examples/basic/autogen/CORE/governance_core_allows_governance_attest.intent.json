@@ -1,9 +1,0 @@
-{
-  "intent_kind": "ReductionIntent",
-  "op_ref": "op://governance/attest/probe",
-  "params": {
-    "probe": true
-  },
-  "profile": "CORE",
-  "task": "governance_attest_probe"
-}

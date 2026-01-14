@@ -1,9 +1,0 @@
-{
-  "intent_kind": "ReductionIntent",
-  "op_ref": "op://privacy/probe",
-  "params": {
-    "probe": true
-  },
-  "profile": "QUARTERMASTER_IMPERIUM",
-  "task": "privacy_probe_probe"
-}

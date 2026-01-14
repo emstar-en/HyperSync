@@ -1,9 +1,0 @@
-{
-  "intent_kind": "ReductionIntent",
-  "op_ref": "op://actuation/probe",
-  "params": {
-    "probe": true
-  },
-  "profile": "ADVANCED",
-  "task": "actuation_probe_probe"
-}

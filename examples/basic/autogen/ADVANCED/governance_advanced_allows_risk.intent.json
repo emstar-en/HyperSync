@@ -1,9 +1,0 @@
-{
-  "intent_kind": "ReductionIntent",
-  "op_ref": "op://risk/probe",
-  "params": {
-    "probe": true
-  },
-  "profile": "ADVANCED",
-  "task": "risk_probe_probe"
-}

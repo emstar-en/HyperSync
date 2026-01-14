@@ -1,9 +1,0 @@
-{
-  "intent_kind": "ReductionIntent",
-  "params": {
-    "payload": "hello-core"
-  },
-  "profile": "CORE",
-  "service_ref": "network://ico/ping",
-  "task": "network_ico_service_call"
-}
