@@ -1,0 +1,560 @@
+{
+  "component": "black_hole_geometries",
+  "subcomponent": "schwarzschild_gravitational_lensing",
+  "description": "Gravitational lensing effects in Schwarzschild spacetime including light deflection, Shapiro time delay, and Einstein rings. These operations compute observable effects of spacetime curvature on light propagation, crucial for astrophysical observations and tests of general relativity.",
+  "operations": [
+    {
+      "id": "sch_026",
+      "name": "compute_light_deflection",
+      "category": "gravitational_lensing",
+      "description": "Compute gravitational light deflection angle for a photon passing near a massive body. General relativity predicts deflection Δφ ≈ 4M/b for weak fields, with exact formula for strong fields. First confirmed during 1919 solar eclipse (Eddington).",
+      "parameters": {
+        "mass": {
+          "type": "float",
+          "description": "Lensing mass M (black hole or star)",
+          "constraints": "M > 0"
+        },
+        "impact_parameter": {
+          "type": "float",
+          "description": "Impact parameter b (closest approach distance)",
+          "constraints": "b > 2M (outside horizon)"
+        },
+        "regime": {
+          "type": "string",
+          "description": "Calculation regime: 'weak_field' (b>>M), 'strong_field' (b~M), or 'exact'",
+          "default": "exact"
+        }
+      },
+      "returns": {
+        "deflection_angle": {
+          "type": "float",
+          "description": "Total deflection angle Δφ (radians)"
+        },
+        "deflection_angle_arcsec": {
+          "type": "float",
+          "description": "Deflection angle in arcseconds"
+        },
+        "closest_approach": {
+          "type": "float",
+          "description": "Actual closest approach distance r_min"
+        },
+        "weak_field_approximation": {
+          "type": "float",
+          "description": "Weak field result: Δφ ≈ 4M/b"
+        },
+        "einstein_prediction_ratio": {
+          "type": "float",
+          "description": "Ratio to Newtonian prediction (GR/Newtonian = 2)"
+        }
+      },
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      },
+      "mathematical_formula": "Weak field: Δφ ≈ 4M/b. Exact: Δφ = 2∫[b/r² √(1-2M/r) / √(1 - b²(1-2M/r)/r²)] dr from r_min to ∞. For Sun (M=M_☉, b=R_☉): Δφ ≈ 1.75 arcsec. Newtonian prediction: Δφ_N = 2M/b (half of GR).",
+      "implementation_notes": [
+        "Weak field (b >> M): Δφ ≈ 4M/b (first-order post-Newtonian)",
+        "Strong field (b ~ 3M): use exact integral (numerical integration)",
+        "Photon sphere (b = 3√3 M): critical impact parameter (capture)",
+        "For b < 3√3 M: photon captured (no deflection, falls into BH)",
+        "Newtonian prediction: Δφ_N = 2M/b (corpuscular theory)",
+        "GR prediction: Δφ_GR = 4M/b (factor of 2 larger)",
+        "1919 Eddington expedition: confirmed GR (Δφ ≈ 1.75\" for Sun)",
+        "Observable in quasar lensing, gravitational arcs, Einstein rings"
+      ],
+      "test_cases": [
+        {
+          "name": "Solar deflection (1919 eclipse test)",
+          "input": {
+            "mass": 1.0,
+            "impact_parameter": 695700,
+            "regime": "weak_field"
+          },
+          "expected": {
+            "deflection_angle": 8.49e-6,
+            "deflection_angle_arcsec": 1.75,
+            "closest_approach": 695700,
+            "weak_field_approximation": 8.49e-6,
+            "einstein_prediction_ratio": 2.0
+          },
+          "note": "Sun: M=1.477 km, R=695700 km, Δφ ≈ 1.75 arcsec (GR), 0.875 arcsec (Newtonian)"
+        },
+        {
+          "name": "Weak deflection (b=20M)",
+          "input": {
+            "mass": 1.0,
+            "impact_parameter": 20.0,
+            "regime": "weak_field"
+          },
+          "expected": {
+            "deflection_angle": 0.2,
+            "deflection_angle_arcsec": 11459,
+            "closest_approach": 19.98,
+            "weak_field_approximation": 0.2,
+            "einstein_prediction_ratio": 2.0
+          },
+          "note": "Δφ = 4M/b = 4/20 = 0.2 rad ≈ 11.5°"
+        },
+        {
+          "name": "Strong deflection (b=6M)",
+          "input": {
+            "mass": 1.0,
+            "impact_parameter": 6.0,
+            "regime": "exact"
+          },
+          "expected": {
+            "deflection_angle": 0.785,
+            "deflection_angle_arcsec": 45000,
+            "closest_approach": 5.5,
+            "weak_field_approximation": 0.667,
+            "einstein_prediction_ratio": 2.0
+          },
+          "note": "Strong field: Δφ > 4M/b (nonlinear effects). Exact: Δφ ≈ 0.785 rad ≈ 45°"
+        },
+        {
+          "name": "Near photon sphere (b=5.5M)",
+          "input": {
+            "mass": 1.0,
+            "impact_parameter": 5.5,
+            "regime": "exact"
+          },
+          "expected": {
+            "deflection_angle": 1.047,
+            "deflection_angle_arcsec": 60000,
+            "closest_approach": 3.2,
+            "weak_field_approximation": 0.727,
+            "einstein_prediction_ratio": 2.0
+          },
+          "note": "Near critical: large deflection, Δφ ≈ 60°. Photon makes partial orbit."
+        },
+        {
+          "name": "Distant deflection (b=1000M)",
+          "input": {
+            "mass": 1.0,
+            "impact_parameter": 1000.0,
+            "regime": "weak_field"
+          },
+          "expected": {
+            "deflection_angle": 0.004,
+            "deflection_angle_arcsec": 229,
+            "closest_approach": 1000.0,
+            "weak_field_approximation": 0.004,
+            "einstein_prediction_ratio": 2.0
+          },
+          "note": "Weak field: Δφ = 4/1000 = 0.004 rad ≈ 0.23°"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "At photon sphere (b=3√3 M ≈ 5.196M)",
+          "input": {
+            "mass": 1.0,
+            "impact_parameter": 5.196,
+            "regime": "exact"
+          },
+          "expected_behavior": "Critical impact parameter: photon makes circular orbit at r=3M. Deflection angle diverges (Δφ → ∞ for multiple orbits). Unstable: slight perturbation causes capture or escape."
+        },
+        {
+          "name": "Below critical (b < 3√3 M)",
+          "input": {
+            "mass": 1.0,
+            "impact_parameter": 5.0,
+            "regime": "exact"
+          },
+          "expected_behavior": "Photon captured: spirals into black hole. No deflection angle (photon doesn't escape to infinity). Return null or error."
+        },
+        {
+          "name": "Grazing horizon (b ≈ 2M)",
+          "input": {
+            "mass": 1.0,
+            "impact_parameter": 2.1,
+            "regime": "exact"
+          },
+          "expected_behavior": "Extreme deflection: Δφ → π (180°). Photon nearly captured, extreme strong-field regime. Numerical integration required."
+        }
+      ]
+    },
+    {
+      "id": "sch_027",
+      "name": "compute_shapiro_time_delay",
+      "category": "gravitational_lensing",
+      "description": "Compute Shapiro gravitational time delay for a light signal passing near a massive body. Photons take longer to traverse curved spacetime than flat space. Δt ≈ 4M ln(4r₁r₂/b²) for weak fields. Confirmed by Viking Mars lander (1976).",
+      "parameters": {
+        "mass": {
+          "type": "float",
+          "description": "Lensing mass M",
+          "constraints": "M > 0"
+        },
+        "source_distance": {
+          "type": "float",
+          "description": "Distance from mass to source r₁",
+          "constraints": "r₁ > 2M"
+        },
+        "observer_distance": {
+          "type": "float",
+          "description": "Distance from mass to observer r₂",
+          "constraints": "r₂ > 2M"
+        },
+        "impact_parameter": {
+          "type": "float",
+          "description": "Closest approach distance b",
+          "constraints": "b > 2M"
+        }
+      },
+      "returns": {
+        "time_delay": {
+          "type": "float",
+          "description": "Shapiro time delay Δt (geometric units: M)"
+        },
+        "time_delay_seconds": {
+          "type": "float",
+          "description": "Time delay in seconds (if SI units)"
+        },
+        "flat_space_time": {
+          "type": "float",
+          "description": "Light travel time in flat spacetime"
+        },
+        "curved_space_time": {
+          "type": "float",
+          "description": "Light travel time in curved spacetime"
+        },
+        "delay_percentage": {
+          "type": "float",
+          "description": "Percentage delay: (Δt / t_flat) × 100%"
+        }
+      },
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      },
+      "mathematical_formula": "Shapiro delay: Δt ≈ 4M ln[(r₁ + r₂ + d)/(r₁ + r₂ - d)] where d = √[(r₁-r₂)² + 4b²]. Weak field: Δt ≈ 4M ln(4r₁r₂/b²). For Sun-Earth-Mars: Δt ≈ 250 μs. Exact: integrate along null geodesic.",
+      "implementation_notes": [
+        "Weak field approximation: Δt ≈ 4M ln(4r₁r₂/b²)",
+        "Exact formula: Δt = 2M ln[(r₁+√(r₁²-b²))(r₂+√(r₂²-b²))/b²]",
+        "Coordinate time delay (measured by distant observer)",
+        "For superior conjunction (Earth-Sun-Mars): maximum delay",
+        "Viking Mars lander (1976): measured Δt ≈ 250 μs, confirmed GR to 0.1%",
+        "Cassini spacecraft (2003): confirmed GR to 0.002%",
+        "Observable in pulsar timing, radar ranging, VLBI",
+        "Depends logarithmically on distances (weak dependence)"
+      ],
+      "test_cases": [
+        {
+          "name": "Earth-Sun-Mars (Viking experiment)",
+          "input": {
+            "mass": 1.477,
+            "source_distance": 2.28e11,
+            "observer_distance": 1.5e11,
+            "impact_parameter": 6.96e8
+          },
+          "expected": {
+            "time_delay": 250e-6,
+            "time_delay_seconds": 250e-6,
+            "flat_space_time": 1260,
+            "curved_space_time": 1260.00025,
+            "delay_percentage": 0.00002
+          },
+          "note": "Sun: M=1.477 km, Δt ≈ 250 μs (Viking 1976 measurement)"
+        },
+        {
+          "name": "Weak field (r₁=r₂=100M, b=10M)",
+          "input": {
+            "mass": 1.0,
+            "source_distance": 100.0,
+            "observer_distance": 100.0,
+            "impact_parameter": 10.0
+          },
+          "expected": {
+            "time_delay": 11.09,
+            "time_delay_seconds": null,
+            "flat_space_time": 200.5,
+            "curved_space_time": 211.6,
+            "delay_percentage": 5.5
+          },
+          "note": "Δt = 4 ln(4×100×100/100) ≈ 11.09M"
+        },
+        {
+          "name": "Strong field (r₁=r₂=10M, b=3M)",
+          "input": {
+            "mass": 1.0,
+            "source_distance": 10.0,
+            "observer_distance": 10.0,
+            "impact_parameter": 3.0
+          },
+          "expected": {
+            "time_delay": 9.21,
+            "time_delay_seconds": null,
+            "flat_space_time": 20.44,
+            "curved_space_time": 29.65,
+            "delay_percentage": 45.0
+          },
+          "note": "Strong field: large delay, Δt ≈ 9.21M"
+        },
+        {
+          "name": "Grazing incidence (b=2.5M)",
+          "input": {
+            "mass": 1.0,
+            "source_distance": 50.0,
+            "observer_distance": 50.0,
+            "impact_parameter": 2.5
+          },
+          "expected": {
+            "time_delay": 15.42,
+            "time_delay_seconds": null,
+            "flat_space_time": 100.06,
+            "curved_space_time": 115.48,
+            "delay_percentage": 15.4
+          },
+          "note": "Near horizon: extreme delay"
+        },
+        {
+          "name": "Asymmetric configuration (r₁=200M, r₂=50M, b=20M)",
+          "input": {
+            "mass": 1.0,
+            "source_distance": 200.0,
+            "observer_distance": 50.0,
+            "impact_parameter": 20.0
+          },
+          "expected": {
+            "time_delay": 9.21,
+            "time_delay_seconds": null,
+            "flat_space_time": 255.0,
+            "curved_space_time": 264.2,
+            "delay_percentage": 3.6
+          },
+          "note": "Asymmetric: Δt = 4 ln(4×200×50/400) ≈ 9.21M"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "Grazing horizon (b=2M)",
+          "input": {
+            "mass": 1.0,
+            "source_distance": 100.0,
+            "observer_distance": 100.0,
+            "impact_parameter": 2.0
+          },
+          "expected_behavior": "Extreme delay: Δt → ∞ as b → 2M. Photon takes infinite coordinate time to pass horizon. Use Eddington-Finkelstein coordinates for finite proper time."
+        },
+        {
+          "name": "Source or observer at horizon",
+          "input": {
+            "mass": 1.0,
+            "source_distance": 2.0,
+            "observer_distance": 100.0,
+            "impact_parameter": 10.0
+          },
+          "expected_behavior": "Infinite delay: photons from horizon never reach distant observer (infinite redshift). Coordinate singularity."
+        },
+        {
+          "name": "Very large distances (r₁, r₂ >> M)",
+          "input": {
+            "mass": 1.0,
+            "source_distance": 1e10,
+            "observer_distance": 1e10,
+            "impact_parameter": 1000.0
+          },
+          "expected_behavior": "Weak field: Δt ≈ 4 ln(4×10²⁰/10⁶) ≈ 65.7M. Logarithmic dependence on distances."
+        }
+      ]
+    },
+    {
+      "id": "sch_028",
+      "name": "compute_einstein_ring",
+      "category": "gravitational_lensing",
+      "description": "Compute Einstein ring angular radius for perfect alignment of source, lens, and observer. When source is directly behind lens, light is deflected into a ring. θ_E = √(4M D_LS / (D_L D_S)) where D are angular diameter distances.",
+      "parameters": {
+        "lens_mass": {
+          "type": "float",
+          "description": "Lens mass M (black hole, galaxy, cluster)",
+          "constraints": "M > 0"
+        },
+        "lens_distance": {
+          "type": "float",
+          "description": "Angular diameter distance to lens D_L",
+          "constraints": "D_L > 0"
+        },
+        "source_distance": {
+          "type": "float",
+          "description": "Angular diameter distance to source D_S",
+          "constraints": "D_S > D_L"
+        },
+        "cosmology": {
+          "type": "object",
+          "description": "Cosmological parameters (H₀, Ω_m, Ω_Λ) for distance calculations",
+          "default": "flat ΛCDM (H₀=70, Ω_m=0.3, Ω_Λ=0.7)"
+        }
+      },
+      "returns": {
+        "einstein_radius_angle": {
+          "type": "float",
+          "description": "Einstein ring angular radius θ_E (radians)"
+        },
+        "einstein_radius_arcsec": {
+          "type": "float",
+          "description": "Einstein ring angular radius (arcseconds)"
+        },
+        "einstein_radius_physical": {
+          "type": "float",
+          "description": "Physical Einstein radius at lens: R_E = θ_E × D_L"
+        },
+        "critical_surface_density": {
+          "type": "float",
+          "description": "Critical surface density Σ_crit = c²/(4πG) × D_S/(D_L D_LS)"
+        },
+        "magnification": {
+          "type": "float",
+          "description": "Magnification for source on Einstein ring (diverges for perfect alignment)"
+        }
+      },
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      },
+      "mathematical_formula": "Einstein radius: θ_E = √(4GM/c² × D_LS/(D_L D_S)) where D_LS = D_S - D_L (lens-source distance). In geometric units: θ_E = √(4M D_LS/(D_L D_S)). For point mass: perfect ring. For extended source: arcs and multiple images.",
+      "implementation_notes": [
+        "Einstein radius: θ_E = √(4M D_LS / (D_L D_S)) (thin lens approximation)",
+        "Angular diameter distances: D_L (observer-lens), D_S (observer-source), D_LS (lens-source)",
+        "Physical radius at lens: R_E = θ_E × D_L",
+        "Critical surface density: Σ_crit = c²/(4πG) × D_S/(D_L D_LS)",
+        "Magnification: μ = (u² + 2)/(u√(u² + 4)) where u = θ/θ_E (angular separation)",
+        "Perfect alignment (u=0): infinite magnification (caustic)",
+        "Observable: quasar lensing, galaxy-galaxy lensing, microlensing",
+        "Typical scales: θ_E ~ 1\" (galaxies), θ_E ~ 10\" (clusters)"
+      ],
+      "test_cases": [
+        {
+          "name": "Galaxy lens (M=10¹¹ M_☉, z_L=0.5, z_S=2.0)",
+          "input": {
+            "lens_mass": 1.477e14,
+            "lens_distance": 1.5e9,
+            "source_distance": 4.5e9,
+            "cosmology": {"H0": 70, "Om": 0.3, "OL": 0.7}
+          },
+          "expected": {
+            "einstein_radius_angle": 4.85e-6,
+            "einstein_radius_arcsec": 1.0,
+            "einstein_radius_physical": 7.28e3,
+            "critical_surface_density": 0.35,
+            "magnification": "diverges"
+          },
+          "note": "Typical galaxy lens: θ_E ≈ 1 arcsec"
+        },
+        {
+          "name": "Stellar microlensing (M=1 M_☉, D_L=8 kpc, D_S=50 kpc)",
+          "input": {
+            "lens_mass": 1.477,
+            "lens_distance": 2.47e20,
+            "source_distance": 1.54e21,
+            "cosmology": null
+          },
+          "expected": {
+            "einstein_radius_angle": 5e-10,
+            "einstein_radius_arcsec": 1e-4,
+            "einstein_radius_physical": 1.24e11,
+            "critical_surface_density": 0.01,
+            "magnification": "diverges"
+          },
+          "note": "Microlensing: θ_E ≈ 0.1 mas, R_E ≈ 1 AU"
+        },
+        {
+          "name": "Cluster lens (M=10¹⁵ M_☉, z_L=0.3, z_S=1.5)",
+          "input": {
+            "lens_mass": 1.477e18,
+            "lens_distance": 1.0e9,
+            "source_distance": 3.5e9,
+            "cosmology": {"H0": 70, "Om": 0.3, "OL": 0.7}
+          },
+          "expected": {
+            "einstein_radius_angle": 4.85e-5,
+            "einstein_radius_arcsec": 10.0,
+            "einstein_radius_physical": 4.85e4,
+            "critical_surface_density": 0.1,
+            "magnification": "diverges"
+          },
+          "note": "Galaxy cluster: θ_E ≈ 10 arcsec, giant arcs"
+        },
+        {
+          "name": "Supermassive BH (M=10⁹ M_☉, z_L=1.0, z_S=3.0)",
+          "input": {
+            "lens_mass": 1.477e12,
+            "lens_distance": 2.5e9,
+            "source_distance": 6.0e9,
+            "cosmology": {"H0": 70, "Om": 0.3, "OL": 0.7}
+          },
+          "expected": {
+            "einstein_radius_angle": 4.85e-7,
+            "einstein_radius_arcsec": 0.1,
+            "einstein_radius_physical": 1.21e3,
+            "critical_surface_density": 0.5,
+            "magnification": "diverges"
+          },
+          "note": "SMBH lens: θ_E ≈ 0.1 arcsec"
+        },
+        {
+          "name": "Nearby lens (M=10¹⁰ M_☉, D_L=100 Mpc, D_S=500 Mpc)",
+          "input": {
+            "lens_mass": 1.477e13,
+            "lens_distance": 3.09e24,
+            "source_distance": 1.54e25,
+            "cosmology": null
+          },
+          "expected": {
+            "einstein_radius_angle": 1.94e-6,
+            "einstein_radius_arcsec": 0.4,
+            "einstein_radius_physical": 6.0e3,
+            "critical_surface_density": 0.2,
+            "magnification": "diverges"
+          },
+          "note": "Nearby galaxy: θ_E ≈ 0.4 arcsec"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "Source at lens distance (D_S = D_L)",
+          "input": {
+            "lens_mass": 1e11,
+            "lens_distance": 1e9,
+            "source_distance": 1e9,
+            "cosmology": null
+          },
+          "expected_behavior": "Error: source must be behind lens (D_S > D_L). No lensing if source at lens plane."
+        },
+        {
+          "name": "Zero lens mass",
+          "input": {
+            "lens_mass": 0.0,
+            "lens_distance": 1e9,
+            "source_distance": 2e9,
+            "cosmology": null
+          },
+          "expected_behavior": "θ_E = 0 (no lensing). Flat spacetime, no deflection."
+        },
+        {
+          "name": "Extreme mass (M=10¹⁸ M_☉, nearby)",
+          "input": {
+            "lens_mass": 1.477e21,
+            "lens_distance": 1e8,
+            "source_distance": 1e9,
+            "cosmology": null
+          },
+          "expected_behavior": "Very large Einstein radius: θ_E >> 1 arcsec. Thin lens approximation may break down. Strong lensing regime."
+        }
+      ]
+    }
+  ],
+  "dependencies": [
+    "schwarzschild_metric_basic (Phase 1)",
+    "photon_geodesic_computation (sch_013)",
+    "numerical_integration (for exact deflection)",
+    "cosmological_distance_calculations (angular diameter distances)"
+  ],
+  "references": [
+    "Einstein - Lens-Like Action of a Star (1936)",
+    "Eddington - Solar eclipse expedition (1919)",
+    "Shapiro - Fourth Test of General Relativity (1964)",
+    "Schneider, Ehlers, Falco - Gravitational Lenses (1992)",
+    "Narayan & Bartelmann - Lectures on Gravitational Lensing (1996)",
+    "Bertotti et al. - Cassini Shapiro delay test (2003)"
+  ]
+}

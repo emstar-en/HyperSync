@@ -1,0 +1,667 @@
+{
+  "component": "black_hole_geometries",
+  "subcomponent": "schwarzschild_physical_effects",
+  "description": "Physical effects in Schwarzschild spacetime including gravitational redshift, time dilation, escape velocity, and tidal forces. These operations compute observable relativistic phenomena near black holes.",
+  "operations": [
+    {
+      "id": "sch_014",
+      "name": "compute_gravitational_redshift",
+      "category": "physical_effects",
+      "description": "Compute gravitational redshift z between two radial positions in Schwarzschild spacetime. Photons climbing out of gravitational well lose energy, increasing wavelength: λ_obs = λ_emit(1+z).",
+      "parameters": {
+        "mass": {
+          "type": "float",
+          "description": "Black hole mass M",
+          "constraints": "M > 0"
+        },
+        "emission_radius": {
+          "type": "float",
+          "description": "Radial coordinate where photon is emitted r_emit",
+          "constraints": "r_emit > r_s"
+        },
+        "observation_radius": {
+          "type": "float",
+          "description": "Radial coordinate where photon is observed r_obs",
+          "constraints": "r_obs > r_s"
+        }
+      },
+      "returns": {
+        "redshift": {
+          "type": "float",
+          "description": "Gravitational redshift z = (λ_obs - λ_emit)/λ_emit"
+        },
+        "frequency_ratio": {
+          "type": "float",
+          "description": "Frequency ratio ν_obs/ν_emit = 1/(1+z)"
+        },
+        "energy_ratio": {
+          "type": "float",
+          "description": "Energy ratio E_obs/E_emit = 1/(1+z)"
+        },
+        "wavelength_shift": {
+          "type": "float",
+          "description": "Wavelength shift Δλ/λ = z"
+        }
+      },
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      },
+      "mathematical_formula": "Gravitational redshift: 1+z = √[(1-r_s/r_obs)/(1-r_s/r_emit)]. For r_obs → ∞: 1+z = 1/√(1-r_s/r_emit). Near horizon (r_emit → r_s): z → ∞ (infinite redshift).",
+      "implementation_notes": [
+        "Redshift formula from time dilation: dt/dτ = 1/√(1-r_s/r)",
+        "Positive z: redshift (photon loses energy climbing out)",
+        "Negative z: blueshift (photon gains energy falling in)",
+        "Infinite redshift at horizon: photons from r=r_s never escape",
+        "Weak field limit (r >> r_s): z ≈ GM(1/r_emit - 1/r_obs)/c²",
+        "Observable in spectral lines from accretion disks"
+      ],
+      "test_cases": [
+        {
+          "name": "Emission from r=3M to infinity",
+          "input": {
+            "mass": 1.0,
+            "emission_radius": 3.0,
+            "observation_radius": 1e10
+          },
+          "expected": {
+            "redshift": 0.732,
+            "frequency_ratio": 0.577,
+            "energy_ratio": 0.577,
+            "wavelength_shift": 0.732
+          },
+          "note": "z = 1/√(1-2/3) - 1 = √3 - 1 ≈ 0.732"
+        },
+        {
+          "name": "Emission from r=10M to infinity",
+          "input": {
+            "mass": 1.0,
+            "emission_radius": 10.0,
+            "observation_radius": 1e10
+          },
+          "expected": {
+            "redshift": 0.118,
+            "frequency_ratio": 0.894,
+            "energy_ratio": 0.894,
+            "wavelength_shift": 0.118
+          },
+          "note": "z = 1/√(1-0.2) - 1 ≈ 0.118"
+        },
+        {
+          "name": "Emission from r=100M to infinity",
+          "input": {
+            "mass": 1.0,
+            "emission_radius": 100.0,
+            "observation_radius": 1e10
+          },
+          "expected": {
+            "redshift": 0.0101,
+            "frequency_ratio": 0.990,
+            "energy_ratio": 0.990,
+            "wavelength_shift": 0.0101
+          },
+          "note": "Weak field: z ≈ M/r = 0.01"
+        },
+        {
+          "name": "Emission from r=10M to r=100M",
+          "input": {
+            "mass": 1.0,
+            "emission_radius": 10.0,
+            "observation_radius": 100.0
+          },
+          "expected": {
+            "redshift": 0.107,
+            "frequency_ratio": 0.904,
+            "energy_ratio": 0.904,
+            "wavelength_shift": 0.107
+          },
+          "note": "Finite distance: z = √[(1-0.02)/(1-0.2)] - 1"
+        },
+        {
+          "name": "Near horizon emission (r=2.1M to infinity)",
+          "input": {
+            "mass": 1.0,
+            "emission_radius": 2.1,
+            "observation_radius": 1e10
+          },
+          "expected": {
+            "redshift": 2.162,
+            "frequency_ratio": 0.316,
+            "energy_ratio": 0.316,
+            "wavelength_shift": 2.162
+          },
+          "note": "Large redshift near horizon: z = 1/√(0.1) - 1 ≈ 2.16"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "Emission exactly at horizon (r=2M)",
+          "input": {
+            "mass": 1.0,
+            "emission_radius": 2.0,
+            "observation_radius": 1e10
+          },
+          "expected_behavior": "Infinite redshift: z → ∞. Photons emitted at horizon never reach distant observer (frozen star effect)."
+        },
+        {
+          "name": "Blueshift (falling photon)",
+          "input": {
+            "mass": 1.0,
+            "emission_radius": 100.0,
+            "observation_radius": 10.0
+          },
+          "expected_behavior": "Negative redshift (blueshift): z ≈ -0.106. Photon gains energy falling into gravitational well."
+        },
+        {
+          "name": "Same emission and observation radius",
+          "input": {
+            "mass": 1.0,
+            "emission_radius": 10.0,
+            "observation_radius": 10.0
+          },
+          "expected_behavior": "No redshift: z = 0. Photon observed at same gravitational potential."
+        }
+      ]
+    },
+    {
+      "id": "sch_015",
+      "name": "compute_time_dilation",
+      "category": "physical_effects",
+      "description": "Compute gravitational time dilation factor between a static observer at radius r and an observer at infinity. Clocks run slower in stronger gravitational fields: dτ/dt = √(1-r_s/r).",
+      "parameters": {
+        "mass": {
+          "type": "float",
+          "description": "Black hole mass M",
+          "constraints": "M > 0"
+        },
+        "radius": {
+          "type": "float",
+          "description": "Radial coordinate of observer r",
+          "constraints": "r > r_s"
+        },
+        "reference_radius": {
+          "type": "float",
+          "description": "Reference radius (default: infinity)",
+          "default": 1e10
+        }
+      },
+      "returns": {
+        "time_dilation_factor": {
+          "type": "float",
+          "description": "Ratio dt/dτ = 1/√(1-r_s/r) (coordinate time per proper time)"
+        },
+        "proper_time_rate": {
+          "type": "float",
+          "description": "Proper time rate dτ/dt = √(1-r_s/r)"
+        },
+        "gravitational_potential": {
+          "type": "float",
+          "description": "Newtonian potential Φ = -M/r (geometric units)"
+        },
+        "time_dilation_percentage": {
+          "type": "float",
+          "description": "Percentage slowdown: (1 - dτ/dt) × 100%"
+        }
+      },
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      },
+      "mathematical_formula": "Time dilation: dτ/dt = √(1-r_s/r) where r_s = 2M. Coordinate time dt measured by distant observer, proper time dτ measured by local clock. Near horizon: dτ/dt → 0 (clock stops from distant perspective).",
+      "implementation_notes": [
+        "Time dilation factor: γ = dt/dτ = 1/√(1-r_s/r)",
+        "Proper time always slower than coordinate time: dτ < dt",
+        "At horizon: time dilation infinite (clock appears frozen)",
+        "Weak field limit: γ ≈ 1 + M/r (Newtonian approximation)",
+        "GPS satellites use this correction: Δt/t ≈ GM/(rc²) ≈ 10⁻¹⁰",
+        "Observable in pulsar timing, gravitational wave signals"
+      ],
+      "test_cases": [
+        {
+          "name": "Time dilation at r=3M",
+          "input": {
+            "mass": 1.0,
+            "radius": 3.0,
+            "reference_radius": 1e10
+          },
+          "expected": {
+            "time_dilation_factor": 1.732,
+            "proper_time_rate": 0.577,
+            "gravitational_potential": -0.333,
+            "time_dilation_percentage": 42.3
+          },
+          "note": "Clock runs 42% slower than at infinity"
+        },
+        {
+          "name": "Time dilation at r=10M",
+          "input": {
+            "mass": 1.0,
+            "radius": 10.0,
+            "reference_radius": 1e10
+          },
+          "expected": {
+            "time_dilation_factor": 1.118,
+            "proper_time_rate": 0.894,
+            "gravitational_potential": -0.1,
+            "time_dilation_percentage": 10.6
+          }
+        },
+        {
+          "name": "Time dilation at r=100M",
+          "input": {
+            "mass": 1.0,
+            "radius": 100.0,
+            "reference_radius": 1e10
+          },
+          "expected": {
+            "time_dilation_factor": 1.0101,
+            "proper_time_rate": 0.990,
+            "gravitational_potential": -0.01,
+            "time_dilation_percentage": 1.0
+          },
+          "note": "Weak field: γ ≈ 1 + M/r"
+        },
+        {
+          "name": "Near horizon (r=2.1M)",
+          "input": {
+            "mass": 1.0,
+            "radius": 2.1,
+            "reference_radius": 1e10
+          },
+          "expected": {
+            "time_dilation_factor": 3.162,
+            "proper_time_rate": 0.316,
+            "gravitational_potential": -0.476,
+            "time_dilation_percentage": 68.4
+          },
+          "note": "Extreme time dilation: clock runs 3× slower"
+        },
+        {
+          "name": "Asymptotic observer (r=1000M)",
+          "input": {
+            "mass": 1.0,
+            "radius": 1000.0,
+            "reference_radius": 1e10
+          },
+          "expected": {
+            "time_dilation_factor": 1.001,
+            "proper_time_rate": 0.999,
+            "gravitational_potential": -0.001,
+            "time_dilation_percentage": 0.1
+          },
+          "note": "Negligible time dilation far from black hole"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "At event horizon (r=2M)",
+          "input": {
+            "mass": 1.0,
+            "radius": 2.0,
+            "reference_radius": 1e10
+          },
+          "expected_behavior": "Infinite time dilation: dt/dτ → ∞. Clock appears frozen from distant observer's perspective. Coordinate singularity."
+        },
+        {
+          "name": "Inside horizon (r<2M)",
+          "input": {
+            "mass": 1.0,
+            "radius": 1.5,
+            "reference_radius": 1e10
+          },
+          "expected_behavior": "Error or complex value: √(1-r_s/r) imaginary. Schwarzschild coordinates invalid inside horizon. Use Eddington-Finkelstein or Kruskal-Szekeres coordinates."
+        },
+        {
+          "name": "Relative time dilation (two finite radii)",
+          "input": {
+            "mass": 1.0,
+            "radius": 10.0,
+            "reference_radius": 100.0
+          },
+          "expected_behavior": "Relative dilation: (dτ₁/dt)/(dτ₂/dt) = √[(1-r_s/r₁)/(1-r_s/r₂)] ≈ 0.904. Clock at r=10M runs 10% slower than at r=100M."
+        }
+      ]
+    },
+    {
+      "id": "sch_016",
+      "name": "compute_escape_velocity",
+      "category": "physical_effects",
+      "description": "Compute escape velocity from a given radius in Schwarzschild spacetime. Minimum velocity needed for a particle to reach infinity: v_esc = √(2M/r) in geometric units.",
+      "parameters": {
+        "mass": {
+          "type": "float",
+          "description": "Black hole mass M",
+          "constraints": "M > 0"
+        },
+        "radius": {
+          "type": "float",
+          "description": "Radial coordinate r",
+          "constraints": "r > r_s"
+        },
+        "units": {
+          "type": "string",
+          "description": "Unit system: 'geometric' (c=1) or 'SI'",
+          "default": "geometric"
+        }
+      },
+      "returns": {
+        "escape_velocity": {
+          "type": "float",
+          "description": "Escape velocity v_esc = √(2M/r) (fraction of c in geometric units)"
+        },
+        "escape_velocity_si": {
+          "type": "float",
+          "description": "Escape velocity in m/s (if units='SI')"
+        },
+        "escape_energy": {
+          "type": "float",
+          "description": "Specific escape energy E = 1 (energy per unit mass)"
+        },
+        "binding_energy": {
+          "type": "float",
+          "description": "Binding energy per unit mass: E_bind = 1 - √(1-2M/r)"
+        }
+      },
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      },
+      "mathematical_formula": "Escape velocity: v_esc = √(2M/r) in geometric units (G=c=1). In SI: v_esc = √(2GM/r). At horizon (r=r_s=2M): v_esc = c (speed of light). Newtonian limit (r>>M): v_esc ≈ √(2GM/r).",
+      "implementation_notes": [
+        "Escape velocity from energy conservation: E = √(1-2M/r + v²) = 1",
+        "At horizon: v_esc = c (nothing escapes, not even light)",
+        "Newtonian formula v = √(2GM/r) exact in Schwarzschild for radial motion",
+        "Binding energy: fraction of mass-energy needed to escape",
+        "For circular orbit at r: v_orbit = √(M/r), v_esc = √2 × v_orbit",
+        "Observable in accretion disk velocities, gravitational wave mergers"
+      ],
+      "test_cases": [
+        {
+          "name": "Escape velocity at r=3M",
+          "input": {
+            "mass": 1.0,
+            "radius": 3.0,
+            "units": "geometric"
+          },
+          "expected": {
+            "escape_velocity": 0.816,
+            "escape_energy": 1.0,
+            "binding_energy": 0.423
+          },
+          "note": "v_esc = √(2/3) ≈ 0.816c, 42% of mass-energy needed to escape"
+        },
+        {
+          "name": "Escape velocity at r=10M",
+          "input": {
+            "mass": 1.0,
+            "radius": 10.0,
+            "units": "geometric"
+          },
+          "expected": {
+            "escape_velocity": 0.447,
+            "escape_energy": 1.0,
+            "binding_energy": 0.106
+          },
+          "note": "v_esc = √(0.2) ≈ 0.447c"
+        },
+        {
+          "name": "Escape velocity at r=100M",
+          "input": {
+            "mass": 1.0,
+            "radius": 100.0,
+            "units": "geometric"
+          },
+          "expected": {
+            "escape_velocity": 0.141,
+            "escape_energy": 1.0,
+            "binding_energy": 0.010
+          },
+          "note": "Weak field: v_esc ≈ √(2M/r) = 0.141c"
+        },
+        {
+          "name": "Escape velocity at ISCO (r=6M)",
+          "input": {
+            "mass": 1.0,
+            "radius": 6.0,
+            "units": "geometric"
+          },
+          "expected": {
+            "escape_velocity": 0.577,
+            "escape_energy": 1.0,
+            "binding_energy": 0.057
+          },
+          "note": "At ISCO: v_esc = √(1/3) ≈ 0.577c, maximum binding energy for circular orbits"
+        },
+        {
+          "name": "Solar mass black hole at r=10km (SI units)",
+          "input": {
+            "mass": 1.989e30,
+            "radius": 10000,
+            "units": "SI"
+          },
+          "expected": {
+            "escape_velocity": 1.634e8,
+            "escape_velocity_si": 1.634e8,
+            "escape_energy": 1.0,
+            "binding_energy": 0.132
+          },
+          "note": "v_esc ≈ 0.545c ≈ 1.63×10⁸ m/s"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "At event horizon (r=2M)",
+          "input": {
+            "mass": 1.0,
+            "radius": 2.0,
+            "units": "geometric"
+          },
+          "expected_behavior": "Escape velocity = c (speed of light). Nothing can escape from horizon, defining property of black hole."
+        },
+        {
+          "name": "Inside horizon (r<2M)",
+          "input": {
+            "mass": 1.0,
+            "radius": 1.5,
+            "units": "geometric"
+          },
+          "expected_behavior": "Error or v_esc > c. Inside horizon, escape impossible regardless of velocity. All future-directed paths lead to singularity."
+        },
+        {
+          "name": "Asymptotic limit (r→∞)",
+          "input": {
+            "mass": 1.0,
+            "radius": 1e10,
+            "units": "geometric"
+          },
+          "expected_behavior": "Escape velocity → 0. Far from black hole, negligible gravitational binding."
+        }
+      ]
+    },
+    {
+      "id": "sch_017",
+      "name": "compute_tidal_force",
+      "category": "physical_effects",
+      "description": "Compute tidal force (differential gravitational acceleration) on an extended object in Schwarzschild spacetime. Tidal forces arise from spacetime curvature (Riemann tensor) and cause spaghettification near black holes.",
+      "parameters": {
+        "mass": {
+          "type": "float",
+          "description": "Black hole mass M",
+          "constraints": "M > 0"
+        },
+        "position": {
+          "type": "array",
+          "description": "Center of mass position [t, r, θ, φ]",
+          "shape": "[4]"
+        },
+        "object_length": {
+          "type": "float",
+          "description": "Proper length of extended object L",
+          "constraints": "L > 0"
+        },
+        "orientation": {
+          "type": "string",
+          "description": "Object orientation: 'radial', 'tangential', or 'angular'",
+          "default": "radial"
+        }
+      },
+      "returns": {
+        "tidal_acceleration": {
+          "type": "float",
+          "description": "Tidal acceleration Δa = |a_near - a_far| (differential acceleration)"
+        },
+        "tidal_force_per_mass": {
+          "type": "float",
+          "description": "Tidal force per unit mass F_tidal/m"
+        },
+        "riemann_component": {
+          "type": "float",
+          "description": "Relevant Riemann tensor component R^r_trt or R^θ_tθt"
+        },
+        "spaghettification_factor": {
+          "type": "float",
+          "description": "Ratio of tidal force to object's self-gravity (if applicable)"
+        }
+      },
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      },
+      "mathematical_formula": "Tidal acceleration from geodesic deviation: D²ξ^μ/Dτ² = -R^μ_νρσ u^ν u^ρ ξ^σ. For radial orientation: Δa_radial ≈ 2M L/r³. For tangential: Δa_tangential ≈ M L/r³. Riemann tensor: R^r_trt = 2M/r³, R^θ_tθt = -M/r³.",
+      "implementation_notes": [
+        "Tidal force from Riemann curvature tensor (geodesic deviation equation)",
+        "Radial tidal force (stretching): F_r ≈ 2M L/r³ (strongest component)",
+        "Tangential tidal force (squeezing): F_θ ≈ -M L/r³",
+        "Spaghettification: extreme tidal stretching near black holes",
+        "For stellar-mass BH: tidal forces lethal at r~100M",
+        "For supermassive BH: tidal forces weak at horizon (r_s ∝ M)",
+        "Observable in tidal disruption events (TDEs), gravitational wave signals"
+      ],
+      "test_cases": [
+        {
+          "name": "Radial tidal force at r=10M (1m object)",
+          "input": {
+            "mass": 1.0,
+            "position": [0, 10, 1.57, 0],
+            "object_length": 0.001,
+            "orientation": "radial"
+          },
+          "expected": {
+            "tidal_acceleration": 0.002,
+            "tidal_force_per_mass": 0.002,
+            "riemann_component": 0.002,
+            "spaghettification_factor": "N/A"
+          },
+          "note": "Δa = 2M L/r³ = 2×1×0.001/1000 = 0.002"
+        },
+        {
+          "name": "Radial tidal force at r=3M (1m object)",
+          "input": {
+            "mass": 1.0,
+            "position": [0, 3, 1.57, 0],
+            "object_length": 0.001,
+            "orientation": "radial"
+          },
+          "expected": {
+            "tidal_acceleration": 0.074,
+            "tidal_force_per_mass": 0.074,
+            "riemann_component": 0.074,
+            "spaghettification_factor": "N/A"
+          },
+          "note": "Δa = 2×1×0.001/27 ≈ 0.074 (37× stronger than at r=10M)"
+        },
+        {
+          "name": "Tangential tidal force at r=10M",
+          "input": {
+            "mass": 1.0,
+            "position": [0, 10, 1.57, 0],
+            "object_length": 0.001,
+            "orientation": "tangential"
+          },
+          "expected": {
+            "tidal_acceleration": 0.001,
+            "tidal_force_per_mass": 0.001,
+            "riemann_component": -0.001,
+            "spaghettification_factor": "N/A"
+          },
+          "note": "Δa = M L/r³ = 0.001 (half of radial, compressive)"
+        },
+        {
+          "name": "Human-sized object at r=100M (stellar-mass BH)",
+          "input": {
+            "mass": 1.0,
+            "position": [0, 100, 1.57, 0],
+            "object_length": 0.002,
+            "orientation": "radial"
+          },
+          "expected": {
+            "tidal_acceleration": 4e-6,
+            "tidal_force_per_mass": 4e-6,
+            "riemann_component": 2e-6,
+            "spaghettification_factor": "N/A"
+          },
+          "note": "Weak tidal force: survivable for humans"
+        },
+        {
+          "name": "Near horizon (r=2.5M, 1m object)",
+          "input": {
+            "mass": 1.0,
+            "position": [0, 2.5, 1.57, 0],
+            "object_length": 0.001,
+            "orientation": "radial"
+          },
+          "expected": {
+            "tidal_acceleration": 0.128,
+            "tidal_force_per_mass": 0.128,
+            "riemann_component": 0.128,
+            "spaghettification_factor": "N/A"
+          },
+          "note": "Extreme tidal forces near horizon"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "At event horizon (r=2M)",
+          "input": {
+            "mass": 1.0,
+            "position": [0, 2, 1.57, 0],
+            "object_length": 0.001,
+            "orientation": "radial"
+          },
+          "expected_behavior": "Tidal acceleration: Δa = 2M L/r³ = 0.25. Finite tidal force at horizon (coordinate singularity, not curvature singularity)."
+        },
+        {
+          "name": "At singularity (r=0)",
+          "input": {
+            "mass": 1.0,
+            "position": [0, 0.01, 1.57, 0],
+            "object_length": 0.001,
+            "orientation": "radial"
+          },
+          "expected_behavior": "Tidal force diverges: Δa → ∞ as r→0. True curvature singularity, infinite tidal forces (spaghettification to atomic scale)."
+        },
+        {
+          "name": "Supermassive black hole (M=4×10⁶ M_☉) at horizon",
+          "input": {
+            "mass": 4e6,
+            "position": [0, 8e6, 1.57, 0],
+            "object_length": 2.0,
+            "orientation": "radial"
+          },
+          "expected_behavior": "Tidal acceleration: Δa ≈ 6.25×10⁻¹⁴ (negligible). Human could survive crossing horizon of supermassive BH (tidal forces ∝ M⁻²)."
+        }
+      ]
+    }
+  ],
+  "dependencies": [
+    "schwarzschild_metric_basic (Phase 1)",
+    "riemann_tensor_computation (sch_004)",
+    "coordinate_time_proper_time_conversions"
+  ],
+  "references": [
+    "Misner, Thorne, Wheeler - Gravitation (1973), Chapters 25, 31",
+    "Wald - General Relativity (1984), Chapter 6",
+    "Hartle - Gravity: An Introduction to Einstein's General Relativity (2003), Chapters 9, 12",
+    "Pound-Rebka experiment (1959) - first measurement of gravitational redshift"
+  ]
+}
