@@ -1,6 +1,0 @@
-{
-  "deterministic": true,
-  "id": "op://ichol_prec.0",
-  "kind": "preconditioner",
-  "notes": "Incomplete Cholesky"
-}

@@ -1,9 +1,0 @@
-{
-  "mechanism_id": "hotstuff",
-  "parameters": {
-    "delta_ms": 100,
-    "pacemaker_type": "rotating_leader",
-    "threshold_signature": true,
-    "view_timeout_ms": 5000
-  }
-}

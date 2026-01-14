@@ -1,6 +1,0 @@
-{
-  "deterministic": true,
-  "id": "op://dp_accountant_rdp.0",
-  "kind": "accountant",
-  "notes": "RDP/zCDP accountant deterministic search"
-}

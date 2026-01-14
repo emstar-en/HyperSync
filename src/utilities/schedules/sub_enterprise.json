@@ -1,9 +1,0 @@
-{
-  "validation_schedule": {
-    "comprehensive_report": "Daily summary",
-    "entity_health": "Every 5 minutes",
-    "policy_enforcement": "Every 10 minutes",
-    "resource_management": "Every 30 seconds",
-    "structural_checks": "On startup"
-  }
-}

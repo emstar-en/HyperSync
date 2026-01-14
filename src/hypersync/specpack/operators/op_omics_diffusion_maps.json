@@ -1,6 +1,0 @@
-{
-  "deterministic": true,
-  "id": "op://omics_diffusion_maps.0",
-  "kind": "omics",
-  "notes": "Alpha-kernel; Markov normalization; eigensolve ordering"
-}

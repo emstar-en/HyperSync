@@ -1,6 +1,0 @@
-{
-  "deterministic": true,
-  "id": "op://utility_regularizer.0",
-  "kind": "regularization",
-  "notes": "Convex utility preservation term"
-}

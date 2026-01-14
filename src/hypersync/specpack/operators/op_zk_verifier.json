@@ -1,6 +1,0 @@
-{
-  "deterministic": true,
-  "id": "op://zk_verifier.0",
-  "kind": "zk",
-  "notes": "Verifier producing transcript hash"
-}

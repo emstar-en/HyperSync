@@ -1,6 +1,0 @@
-{
-  "deterministic": true,
-  "id": "op://fem_time_leapfrog.0",
-  "kind": "time_integration",
-  "notes": "Deterministic leapfrog scheme"
-}

@@ -1,6 +1,0 @@
-{
-  "deterministic": true,
-  "id": "op://prox_update_generic.0",
-  "kind": "prox",
-  "notes": "Deterministic proximal parameter update"
-}

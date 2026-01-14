@@ -1,6 +1,0 @@
-{
-  "deterministic": true,
-  "id": "op://mpc_policy_gate.0",
-  "kind": "mpc",
-  "notes": "Redaction/reveal policy gate"
-}

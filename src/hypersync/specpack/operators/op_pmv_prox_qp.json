@@ -1,6 +1,0 @@
-{
-  "deterministic": true,
-  "id": "op://pmv_prox_qp.0",
-  "kind": "portfolio",
-  "notes": "Prox QP (ADMM/PDHG hybrid) with L1/L2 costs"
-}

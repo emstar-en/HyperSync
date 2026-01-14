@@ -1,6 +1,0 @@
-{
-  "deterministic": true,
-  "id": "op://kmedoids.0",
-  "kind": "clustering",
-  "notes": "PAM with pinned initialization"
-}

@@ -1,6 +1,0 @@
-{
-  "deterministic": true,
-  "id": "op://latent_mask_blend.0",
-  "kind": "latent",
-  "notes": "Mask-aware blend with fixed interpolation"
-}

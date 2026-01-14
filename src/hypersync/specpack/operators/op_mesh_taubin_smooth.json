@@ -1,6 +1,0 @@
-{
-  "deterministic": true,
-  "id": "op://mesh_taubin_smooth.0",
-  "kind": "mesh",
-  "notes": "Fixed (lambda, mu, passes)"
-}

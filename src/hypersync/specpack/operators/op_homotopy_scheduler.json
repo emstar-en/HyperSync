@@ -1,6 +1,0 @@
-{
-  "deterministic": true,
-  "id": "op://homotopy_scheduler.0",
-  "kind": "scheduler",
-  "notes": "Deterministic path schedule across weight vectors"
-}

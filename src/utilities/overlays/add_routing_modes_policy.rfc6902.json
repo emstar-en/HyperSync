@@ -1,9 +1,0 @@
-{
-  "op": "add_policy_requirement",
-  "path": [
-    "policy_requirements",
-    "*"
-  ],
-  "target": "planner/defaults.json",
-  "value": "policy://modes/routing.modes.json"
-}

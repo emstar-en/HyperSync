@@ -1,6 +1,0 @@
-{
-  "deterministic": true,
-  "id": "op://pmv_turnover_budget.0",
-  "kind": "portfolio",
-  "notes": "Turnover cap projection/penalty"
-}

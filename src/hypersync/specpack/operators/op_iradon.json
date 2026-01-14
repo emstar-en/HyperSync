@@ -1,9 +1,0 @@
-{
-  "deterministic": true,
-  "id": "op://iradon.1",
-  "kind": "iradon",
-  "libs": [
-    "custom"
-  ],
-  "notes": "FBP inverse with ramp/Hann"
-}

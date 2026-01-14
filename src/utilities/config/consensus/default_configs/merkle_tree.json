@@ -1,8 +1,0 @@
-{
-  "mechanism_id": "merkle_tree",
-  "parameters": {
-    "hash_algorithm": "sha256",
-    "leaf_size_bytes": 4096,
-    "tree_depth": 10
-  }
-}

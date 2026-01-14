@@ -1,6 +1,0 @@
-{
-  "deterministic": true,
-  "id": "op://medreg_svf_lddmm.0",
-  "kind": "medreg",
-  "notes": "SVF diffeomorphic reg; scaling-and-squaring pinned"
-}

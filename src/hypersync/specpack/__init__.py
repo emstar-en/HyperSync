@@ -1,1 +1,0 @@
-# Embedded spec pack data

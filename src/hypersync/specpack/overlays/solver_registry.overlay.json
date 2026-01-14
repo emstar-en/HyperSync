@@ -1,7 +1,0 @@
-{
-  "add_operators": [],
-  "add_solver_bindings": [],
-  "notes": "Users may drop additional bindings/operators here; loader merges at runtime.",
-  "overlay_id": "overlay://planner/user_registry",
-  "update_operator_registry": {}
-}

@@ -1,6 +1,0 @@
-{
-  "deterministic": true,
-  "id": "op://cluster_edit_ilp.0",
-  "kind": "linkage",
-  "notes": "ILP relax+round with stable ties"
-}

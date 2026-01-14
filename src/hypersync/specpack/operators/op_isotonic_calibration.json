@@ -1,6 +1,0 @@
-{
-  "deterministic": true,
-  "id": "op://isotonic_calibration.0",
-  "kind": "postproc",
-  "notes": "Deterministic isotonic/threshold calibration"
-}

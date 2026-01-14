@@ -1,6 +1,0 @@
-{
-  "deterministic": true,
-  "id": "op://mma_optimizer.0",
-  "kind": "optimizer",
-  "notes": "MMA updates with fixed ordering"
-}

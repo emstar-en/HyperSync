@@ -1,6 +1,0 @@
-{
-  "deterministic": true,
-  "id": "op://r1cs_compile.0",
-  "kind": "zk",
-  "notes": "Deterministic circuit compile with gate ordering"
-}
