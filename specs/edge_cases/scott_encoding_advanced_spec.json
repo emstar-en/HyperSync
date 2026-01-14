@@ -1,0 +1,427 @@
+{
+  "specification": {
+    "name": "Advanced Scott Encoding Operations",
+    "version": "1.0.0",
+    "description": "Advanced Mogensen-Scott encoding for complex data structures including natural numbers, trees, and recursive types with O(1) pattern matching efficiency.",
+    "language_agnostic": true,
+    "format": "STUNIR",
+    "tier": "CORE",
+    "tier_availability": "Core (Free)",
+    "component": "edge_case_handling",
+    "total_operations": 3,
+    "complexity_target": "O(1) to O(n)",
+    "license": "AGPLv3"
+  },
+  "mathematical_foundations": {
+    "mogensen_scott_encoding": "Extension of Scott encoding that combines efficient pattern matching with elegant recursion schemes",
+    "scott_encoding": "Encode data structures as lambda terms: constructor pattern matching in O(1)",
+    "church_encoding_comparison": "Church: O(n) pattern match vs Scott: O(1) pattern match",
+    "key_innovation": "Mogensen-Scott enables both O(1) pattern matching AND efficient catamorphisms/anamorphisms",
+    "theoretical_basis": "Lambda calculus, category theory (F-algebras, F-coalgebras)"
+  },
+  "operations": [
+    {
+      "id": "ms_nat",
+      "name": "Mogensen-Scott Natural Numbers",
+      "category": "Data Structure Encoding",
+      "description": "Encode natural numbers using Mogensen-Scott encoding for O(1) pattern matching. zero = \u03bbz s. z, succ(n) = \u03bbz s. s (n z s). Combines Church numeral benefits with Scott encoding efficiency.",
+      "parameters": [
+        {
+          "name": "n",
+          "type": "integer",
+          "description": "Natural number to encode (n \u2265 0)",
+          "constraints": "n \u2265 0"
+        }
+      ],
+      "returns": {
+        "type": "lambda_term",
+        "description": "Scott-encoded natural number as lambda term",
+        "encoding": "\u03bbz s. (s applied n times to z)"
+      },
+      "complexity": {
+        "time": "O(1) for constructor creation, O(n) for complete encoding",
+        "space": "O(n) for storing the term",
+        "pattern_match": "O(1)"
+      },
+      "mathematical_formula": {
+        "zero": "zero = \u03bbz s. z",
+        "successor": "succ(n) = \u03bbz s. s (n z s)",
+        "example_3": "3 = \u03bbz s. s (s (s z))",
+        "elimination": "n z s reduces to z if n=0, else s (pred(n) z s)"
+      },
+      "implementation_notes": [
+        "Mogensen-Scott encoding enables O(1) pattern matching unlike Church numerals",
+        "Each successor wraps the predecessor in a function application",
+        "Pattern matching: apply to zero-case and succ-case handlers",
+        "Supports primitive recursion efficiently",
+        "Can be optimized with defunctionalization in strict languages"
+      ],
+      "test_cases": [
+        {
+          "input": {
+            "n": 0
+          },
+          "expected_output": "\u03bbz s. z",
+          "description": "Zero encoding"
+        },
+        {
+          "input": {
+            "n": 1
+          },
+          "expected_output": "\u03bbz s. s z",
+          "description": "One encoding"
+        },
+        {
+          "input": {
+            "n": 3
+          },
+          "expected_output": "\u03bbz s. s (s (s z))",
+          "description": "Three encoding"
+        },
+        {
+          "input": {
+            "n": 10
+          },
+          "expected_output": "\u03bbz s. s^10(z)",
+          "description": "Ten encoding (s applied 10 times)",
+          "note": "s^10 denotes 10 nested applications"
+        },
+        {
+          "input": {
+            "n": 100
+          },
+          "expected_output": "\u03bbz s. s^100(z)",
+          "description": "Large number encoding",
+          "performance_note": "O(n) space complexity"
+        },
+        {
+          "input": {
+            "n": 1
+          },
+          "pattern_match": {
+            "zero_case": "zero_value",
+            "succ_case": "\u03bbpred. succ_value"
+          },
+          "expected_output": "succ_value with pred=0",
+          "description": "Pattern matching on succ(zero)"
+        }
+      ],
+      "edge_cases": [
+        {
+          "case": "Zero value",
+          "input": {
+            "n": 0
+          },
+          "behavior": "Returns the zero-case handler directly",
+          "expected": "\u03bbz s. z"
+        },
+        {
+          "case": "Large numbers",
+          "input": {
+            "n": 1000000
+          },
+          "behavior": "May cause stack overflow in strict languages without tail recursion",
+          "mitigation": "Use iterative encoding or defunctionalization"
+        },
+        {
+          "case": "Negative input",
+          "input": {
+            "n": -5
+          },
+          "behavior": "Should raise error or type mismatch",
+          "expected": "Error: natural numbers must be non-negative"
+        },
+        {
+          "case": "Pattern matching on zero",
+          "input": {
+            "n": 0
+          },
+          "pattern_match": true,
+          "behavior": "Immediately returns zero-case without recursion",
+          "complexity": "O(1)"
+        }
+      ],
+      "usage_example": {
+        "pseudocode": "// Encode 3\nthree = ms_nat(3)\n// Pattern match\nthree(zero_case, succ_case)\n// For zero: returns zero_case\n// For succ: returns succ_case(predecessor)",
+        "addition": "add m n = m n (\u03bbk. succ(add k n))",
+        "multiplication": "mul m n = m zero (\u03bbk. add n (mul k n))"
+      },
+      "references": [
+        "Mogensen, T. (1992). Efficient Self-Interpretation in Lambda Calculus",
+        "Scott, D. (1970). Outline of a Mathematical Theory of Computation",
+        "Parigot, M. (1992). Lambda-mu-calculus: An algorithmic interpretation"
+      ]
+    },
+    {
+      "id": "ms_tree",
+      "name": "Mogensen-Scott Tree Encoding",
+      "category": "Data Structure Encoding",
+      "description": "Encode binary trees using Mogensen-Scott encoding for O(1) pattern matching per node. leaf(x) = \u03bbl n. l x, node(l, r) = \u03bbl n. n (left l n) (right l n). Enables efficient tree traversal and catamorphisms.",
+      "parameters": [
+        {
+          "name": "tree",
+          "type": "binary_tree",
+          "description": "Binary tree structure to encode",
+          "structure": "Either Leaf(value) or Node(left, right)"
+        }
+      ],
+      "returns": {
+        "type": "lambda_term",
+        "description": "Scott-encoded binary tree as lambda term",
+        "encoding": "\u03bbl n. ... (leaf or node handler)"
+      },
+      "complexity": {
+        "time": "O(1) for pattern match on single node, O(n) for full tree traversal",
+        "space": "O(n) where n is number of nodes",
+        "tree_height": "O(h) stack space for traversal where h is height"
+      },
+      "mathematical_formula": {
+        "leaf": "leaf(x) = \u03bbl n. l x",
+        "node": "node(left, right) = \u03bbl n. n (left l n) (right l n)",
+        "pattern_match": "tree leaf_handler node_handler",
+        "catamorphism": "fold tree leaf_f node_f = tree leaf_f (\u03bbl r. node_f (fold l) (fold r))"
+      },
+      "implementation_notes": [
+        "Each tree node is a lambda that accepts leaf and node handlers",
+        "Pattern matching is O(1) - apply tree to handlers",
+        "Supports structural recursion (catamorphisms) naturally",
+        "Can encode binary search trees, expression trees, etc.",
+        "Lazy evaluation enables infinite trees (coinductive types)",
+        "Node encoding includes recursive calls for children"
+      ],
+      "test_cases": [
+        {
+          "input": {
+            "tree": "Leaf(42)"
+          },
+          "expected_output": "\u03bbl n. l 42",
+          "description": "Single leaf tree"
+        },
+        {
+          "input": {
+            "tree": "Node(Leaf(1), Leaf(2))"
+          },
+          "expected_output": "\u03bbl n. n (\u03bbl n. l 1) (\u03bbl n. l 2)",
+          "description": "Tree with one internal node and two leaves"
+        },
+        {
+          "input": {
+            "tree": "Node(Node(Leaf(1), Leaf(2)), Leaf(3))"
+          },
+          "expected_output": "\u03bbl n. n (\u03bbl n. n (\u03bbl n. l 1) (\u03bbl n. l 2)) (\u03bbl n. l 3)",
+          "description": "Left-skewed tree"
+        },
+        {
+          "input": {
+            "tree": "Node(Leaf(1), Node(Leaf(2), Leaf(3)))"
+          },
+          "expected_output": "\u03bbl n. n (\u03bbl n. l 1) (\u03bbl n. n (\u03bbl n. l 2) (\u03bbl n. l 3))",
+          "description": "Right-skewed tree"
+        },
+        {
+          "input": {
+            "tree": "Leaf('a')",
+            "pattern_match": {
+              "leaf_handler": "\u03bbx. x",
+              "node_handler": "\u03bbl r. 'node'"
+            }
+          },
+          "expected_output": "'a'",
+          "description": "Pattern match on leaf extracts value"
+        },
+        {
+          "input": {
+            "tree": "Node(Leaf(10), Leaf(20))",
+            "operation": "sum_tree"
+          },
+          "expected_output": 30,
+          "description": "Catamorphism: sum all leaf values"
+        }
+      ],
+      "edge_cases": [
+        {
+          "case": "Empty tree",
+          "input": {
+            "tree": null
+          },
+          "behavior": "Depends on encoding choice - typically use Option/Maybe type",
+          "expected": "Could encode as separate Nothing case or use null object pattern"
+        },
+        {
+          "case": "Deeply nested tree",
+          "input": {
+            "tree": "Chain of 10000 right nodes"
+          },
+          "behavior": "May cause stack overflow without tail call optimization",
+          "mitigation": "Use continuation-passing style or iterative traversal"
+        },
+        {
+          "case": "Infinite tree (coinductive)",
+          "input": {
+            "tree": "ones = Node(Leaf(1), ones)"
+          },
+          "behavior": "Requires lazy evaluation, encoding never terminates",
+          "expected": "Lazy: succeeds, Strict: diverges"
+        },
+        {
+          "case": "Single leaf",
+          "input": {
+            "tree": "Leaf(x)"
+          },
+          "behavior": "Returns leaf handler applied to x",
+          "complexity": "O(1)"
+        }
+      ],
+      "usage_example": {
+        "pseudocode": "// Encode tree\ntree = Node(Leaf(1), Node(Leaf(2), Leaf(3)))\nencoded = ms_tree(tree)\n\n// Pattern match\nencoded(\n  leaf_handler = \u03bbx. x,\n  node_handler = \u03bbl r. combine(l, r)\n)",
+        "height": "height t = t (\u03bbx. 0) (\u03bbl r. 1 + max (height l) (height r))",
+        "size": "size t = t (\u03bbx. 1) (\u03bbl r. size l + size r)",
+        "mirror": "mirror t = t leaf (\u03bbl r. node (mirror r) (mirror l))"
+      },
+      "references": [
+        "Hinze, R. (2012). Scrap Your Constructors: Church Encoding Algebraic Types",
+        "Bird, R. & de Moor, O. (1997). Algebra of Programming",
+        "Mogensen, T. (1992). Efficient Self-Interpretation in Lambda Calculus"
+      ]
+    },
+    {
+      "id": "ms_recursive_type",
+      "name": "Mogensen-Scott Recursive Type Constructor",
+      "category": "Generic Type Encoding",
+      "description": "General constructor for recursive algebraic data types using Mogensen-Scott encoding. Supports arbitrary constructors with multiple arguments. Enables generic programming over algebraic types.",
+      "parameters": [
+        {
+          "name": "type_definition",
+          "type": "algebraic_type",
+          "description": "Definition of recursive type with constructors",
+          "structure": "List of constructors, each with name and parameter types"
+        },
+        {
+          "name": "value",
+          "type": "any",
+          "description": "Value to encode using the defined type"
+        }
+      ],
+      "returns": {
+        "type": "lambda_term",
+        "description": "Scott-encoded value of the recursive type",
+        "encoding": "\u03bbc1 c2 ... cn. (selected constructor with encoded arguments)"
+      },
+      "complexity": {
+        "time": "O(1) for construction of single constructor",
+        "space": "O(k) where k is number of constructor arguments",
+        "pattern_match": "O(1) per constructor case"
+      },
+      "mathematical_formula": {
+        "general_form": "Constructor_i(a1, ..., ak) = \u03bbc1 ... cn. ci (encode a1) ... (encode ak)",
+        "fixpoint": "\u03bcX. F(X) where F is a functor",
+        "pattern_match": "value c1 c2 ... cn",
+        "recursion": "For recursive arguments: apply same encoding recursively"
+      },
+      "implementation_notes": [
+        "Generic construction for any algebraic data type (ADT)",
+        "Each constructor becomes a lambda accepting all constructor handlers",
+        "Recursive occurrences are encoded recursively",
+        "Supports n-ary constructors (not limited to binary)",
+        "Can encode: lists, trees, graphs, ASTs, etc.",
+        "Type-driven encoding: structure follows type definition",
+        "Compatible with F-algebra and catamorphism patterns"
+      ],
+      "test_cases": [
+        {
+          "input": {
+            "type_definition": "List a = Nil | Cons a (List a)",
+            "value": "Nil"
+          },
+          "expected_output": "\u03bbnil cons. nil",
+          "description": "Empty list encoding"
+        },
+        {
+          "input": {
+            "type_definition": "List a = Nil | Cons a (List a)",
+            "value": "Cons(1, Nil)"
+          },
+          "expected_output": "\u03bbnil cons. cons 1 (\u03bbnil cons. nil)",
+          "description": "Single-element list"
+        },
+        {
+          "input": {
+            "type_definition": "Maybe a = Nothing | Just a",
+            "value": "Just(42)"
+          },
+          "expected_output": "\u03bbnothing just. just 42",
+          "description": "Optional value encoding"
+        },
+        {
+          "input": {
+            "type_definition": "Expr = Lit Int | Add Expr Expr | Mul Expr Expr",
+            "value": "Add(Lit(2), Mul(Lit(3), Lit(4)))"
+          },
+          "expected_output": "\u03bblit add mul. add (lit 2) (mul (lit 3) (lit 4))",
+          "description": "Expression AST encoding"
+        },
+        {
+          "input": {
+            "type_definition": "Rose a = Node a [Rose a]",
+            "value": "Node(1, [Node(2, []), Node(3, [])])"
+          },
+          "expected_output": "\u03bbnode. node 1 [node 2 [], node 3 []]",
+          "description": "Rose tree (n-ary tree) encoding"
+        },
+        {
+          "input": {
+            "type_definition": "Peano = Zero | Succ Peano",
+            "value": "Succ(Succ(Zero))"
+          },
+          "expected_output": "\u03bbz s. s (s z)",
+          "description": "Peano numerals (same as ms_nat)"
+        }
+      ],
+      "edge_cases": [
+        {
+          "case": "Type with no constructors (void type)",
+          "input": {
+            "type_definition": "Void = {empty}"
+          },
+          "behavior": "No valid encoding exists - uninhabited type",
+          "expected": "Type error or special marker"
+        },
+        {
+          "case": "Type with single constructor (newtype)",
+          "input": {
+            "type_definition": "Wrapper a = Wrap a",
+            "value": "Wrap(42)"
+          },
+          "behavior": "Isomorphic to identity - can be optimized away",
+          "expected": "\u03bbwrap. wrap 42"
+        },
+        {
+          "case": "Mutually recursive types",
+          "input": {
+            "type_definition": "Tree a = Leaf a | Node (Forest a); Forest a = Empty | Trees (Tree a) (Forest a)"
+          },
+          "behavior": "Requires joint fixpoint - encode both simultaneously",
+          "complexity": "Same as single recursive type"
+        },
+        {
+          "case": "Non-regular recursive type",
+          "input": {
+            "type_definition": "Perfect a = Leaf a | Node (Perfect (a, a))"
+          },
+          "behavior": "Parameter changes in recursion - still encodable",
+          "note": "Requires nested encoding"
+        }
+      ],
+      "usage_example": {
+        "pseudocode": "// Define custom type\ntype BinaryOp = Add | Sub | Mul | Div\ntype Expr = \n  | Const(Int)\n  | BinOp(BinaryOp, Expr, Expr)\n\n// Encode expression\nexpr = BinOp(Add, Const(2), Const(3))\nencoded = ms_recursive_type(Expr, expr)\n\n// Pattern match and evaluate\neval = \u03bbexpr. expr\n  (\u03bbn. n)  // Const case\n  (\u03bbop l r. apply op (eval l) (eval r))  // BinOp case",
+        "generic_fold": "fold :: (\u2200i. Constructor_i -> Result) -> RecType -> Result\nfold handlers value = value handler1 handler2 ... handlerN"
+      },
+      "references": [
+        "Scott, D. (1976). Data Types as Lattices",
+        "Mogensen, T. (1992). Efficient Self-Interpretation in Lambda Calculus",
+        "Hinze, R. (2012). Church Encodings of Algebraic Data Types",
+        "Wadler, P. (2003). Call-by-Value Is Dual to Call-by-Name"
+      ]
+    }
+  ]
+}

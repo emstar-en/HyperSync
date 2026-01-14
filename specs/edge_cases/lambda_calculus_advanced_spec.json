@@ -1,0 +1,500 @@
+{
+  "specification": {
+    "name": "Advanced Lambda Calculus - Recursion Schemes",
+    "version": "1.0.0",
+    "description": "Advanced lambda calculus operations focusing on catamorphisms (folds) for Mogensen-Scott encoded structures. Catamorphisms provide systematic recursion patterns for algebraic data types.",
+    "language_agnostic": true,
+    "format": "STUNIR",
+    "tier": "CORE",
+    "tier_availability": "Core (Free)",
+    "component": "edge_case_handling",
+    "total_operations": 3,
+    "complexity_target": "O(n) for linear structures, O(n) with O(h) space for trees",
+    "license": "AGPLv3"
+  },
+  "mathematical_foundations": {
+    "catamorphism": "Structural fold over recursive data types - unique homomorphism from initial algebra",
+    "f_algebra": "An F-algebra is a pair (A, \u03b1) where \u03b1: F(A) \u2192 A is the algebra map",
+    "universal_property": "For any F-algebra (A, \u03b1), exists unique catamorphism cata \u03b1: \u03bcF \u2192 A",
+    "banana_brackets": "Notation: \u2987\u03b1\u2988 denotes catamorphism with algebra \u03b1",
+    "structural_recursion": "Catamorphisms capture the essence of primitive recursion on data structures",
+    "category_theory": "Initial algebra semantics - catamorphisms are the unique arrows from initial algebra"
+  },
+  "operations": [
+    {
+      "id": "ms_nat_fold",
+      "name": "Mogensen-Scott Natural Number Fold",
+      "category": "Catamorphism",
+      "description": "Fold over Mogensen-Scott natural number, combining pattern matching efficiency with recursion elegance. Implements catamorphism for Peano numerals: fold(z, f, n) computes f applied n times to z.",
+      "parameters": [
+        {
+          "name": "nat",
+          "type": "ms_nat",
+          "description": "Mogensen-Scott encoded natural number",
+          "encoding": "\u03bbz s. (s applied n times to z)"
+        },
+        {
+          "name": "zero_case",
+          "type": "a",
+          "description": "Value to return for zero",
+          "role": "Base case of recursion"
+        },
+        {
+          "name": "succ_case",
+          "type": "a -> a",
+          "description": "Function to apply for each successor",
+          "role": "Recursive step: combines previous result"
+        }
+      ],
+      "returns": {
+        "type": "a",
+        "description": "Result of folding the natural number",
+        "computation": "succ_case applied n times to zero_case"
+      },
+      "complexity": {
+        "time": "O(n) where n is the natural number",
+        "space": "O(n) call stack (O(1) with tail recursion optimization)",
+        "pattern_match": "O(1) per step"
+      },
+      "mathematical_formula": {
+        "definition": "fold z f n = n z f",
+        "zero_case": "fold z f zero = z",
+        "succ_case": "fold z f (succ n) = f (fold z f n)",
+        "church_numeral_relation": "fold z f n \u2248 n f z (but with better pattern matching)",
+        "algebra": "\u03b1: 1 + Nat \u2192 Nat, fold \u03b1 is the unique homomorphism"
+      },
+      "implementation_notes": [
+        "Tail-recursive implementation possible via continuation-passing style",
+        "Pattern matching is O(1) due to Mogensen-Scott encoding",
+        "Can implement all primitive recursive functions",
+        "More efficient than Church numerals for pattern matching",
+        "Supports short-circuit evaluation (e.g., isZero returns immediately)",
+        "Fusion optimization: fold f (fold g n) = fold (f \u2218 g) n"
+      ],
+      "test_cases": [
+        {
+          "input": {
+            "nat": "ms_nat(0)",
+            "zero_case": 42,
+            "succ_case": "\u03bbx. x + 1"
+          },
+          "expected_output": 42,
+          "description": "Fold over zero returns base case"
+        },
+        {
+          "input": {
+            "nat": "ms_nat(3)",
+            "zero_case": 0,
+            "succ_case": "\u03bbx. x + 1"
+          },
+          "expected_output": 3,
+          "description": "Fold to compute identity (convert to integer)"
+        },
+        {
+          "input": {
+            "nat": "ms_nat(5)",
+            "zero_case": 1,
+            "succ_case": "\u03bbx. x * 2"
+          },
+          "expected_output": 32,
+          "description": "Fold to compute 2^n: 2^5 = 32"
+        },
+        {
+          "input": {
+            "nat": "ms_nat(4)",
+            "zero_case": 1,
+            "succ_case": "\u03bbx. x * 3"
+          },
+          "expected_output": 81,
+          "description": "Fold to compute 3^n: 3^4 = 81"
+        },
+        {
+          "input": {
+            "nat": "ms_nat(10)",
+            "zero_case": 0,
+            "succ_case": "\u03bbx. x + 2"
+          },
+          "expected_output": 20,
+          "description": "Fold to compute 2n: 2*10 = 20"
+        },
+        {
+          "input": {
+            "nat": "ms_nat(6)",
+            "zero_case": 1,
+            "succ_case": "\u03bbx. x * (n+1)"
+          },
+          "expected_output": 720,
+          "description": "Fold to compute factorial: 6! = 720",
+          "note": "Requires index awareness in succ_case"
+        }
+      ],
+      "edge_cases": [
+        {
+          "case": "Zero input",
+          "input": {
+            "nat": "ms_nat(0)",
+            "zero_case": "base",
+            "succ_case": "f"
+          },
+          "behavior": "Returns base immediately without calling f",
+          "expected": "base",
+          "complexity": "O(1)"
+        },
+        {
+          "case": "Large number",
+          "input": {
+            "nat": "ms_nat(1000000)",
+            "zero_case": 0,
+            "succ_case": "\u03bbx. x + 1"
+          },
+          "behavior": "May cause stack overflow without tail call optimization",
+          "mitigation": "Use continuation-passing style or iterative implementation"
+        },
+        {
+          "case": "Non-terminating function",
+          "input": {
+            "nat": "ms_nat(5)",
+            "zero_case": 0,
+            "succ_case": "\u03bbx. loop(x)"
+          },
+          "behavior": "Diverges on first application",
+          "expected": "\u22a5 (bottom)"
+        },
+        {
+          "case": "Short-circuit evaluation",
+          "input": {
+            "nat": "ms_nat(1000)",
+            "operation": "isZero"
+          },
+          "behavior": "Pattern match returns immediately - O(1) not O(n)",
+          "complexity": "O(1)"
+        }
+      ],
+      "usage_example": {
+        "pseudocode": "// Addition: add m n = m + n\nadd m n = fold n (\u03bbx. succ(x)) m\n\n// Multiplication: mul m n = m * n\nmul m n = fold zero (\u03bbx. add x n) m\n\n// Power: pow m n = m^n\npow m n = fold one (\u03bbx. mul x m) n\n\n// Predecessor (with default)\npred n def = fold def (\u03bbx. x) n\n\n// Is zero check (O(1))\nisZero n = fold true (\u03bb_. false) n",
+        "factorial": "fact n = fst (fold (1, 0) (\u03bb(p, i). (p*(i+1), i+1)) n)"
+      },
+      "references": [
+        "Mogensen, T. (1992). Efficient Self-Interpretation in Lambda Calculus",
+        "Meijer, E., Fokkinga, M., Paterson, R. (1991). Functional Programming with Bananas, Lenses, Envelopes and Barbed Wire",
+        "Hinze, R. (2013). Reasoning About Codata",
+        "Bird, R. (1998). Introduction to Functional Programming using Haskell"
+      ]
+    },
+    {
+      "id": "ms_tree_fold",
+      "name": "Mogensen-Scott Tree Catamorphism",
+      "category": "Catamorphism",
+      "description": "Perform catamorphism (fold) on Mogensen-Scott tree, visiting each node exactly once in post-order traversal. Combines results from leaves and internal nodes systematically.",
+      "parameters": [
+        {
+          "name": "tree",
+          "type": "ms_tree",
+          "description": "Mogensen-Scott encoded binary tree",
+          "encoding": "leaf x = \u03bbl n. l x, node left right = \u03bbl n. n left right"
+        },
+        {
+          "name": "leaf_handler",
+          "type": "a -> b",
+          "description": "Function to apply to leaf values",
+          "role": "Base case: transforms leaf data"
+        },
+        {
+          "name": "node_handler",
+          "type": "b -> b -> b",
+          "description": "Function to combine results from left and right subtrees",
+          "role": "Recursive case: combines two subtree results"
+        }
+      ],
+      "returns": {
+        "type": "b",
+        "description": "Result of folding the tree",
+        "computation": "Bottom-up aggregation from leaves to root"
+      },
+      "complexity": {
+        "time": "O(n) where n is number of nodes",
+        "space": "O(h) where h is tree height (call stack)",
+        "optimal": "Yes - visits each node exactly once"
+      },
+      "mathematical_formula": {
+        "definition": "fold leaf_f node_f tree = tree leaf_f (\u03bbl r. node_f (fold leaf_f node_f l) (fold leaf_f node_f r))",
+        "leaf_case": "fold leaf_f node_f (leaf x) = leaf_f x",
+        "node_case": "fold leaf_f node_f (node l r) = node_f (fold leaf_f node_f l) (fold leaf_f node_f r)",
+        "f_algebra": "\u03b1: F(A) \u2192 A where F(A) = Val + A \u00d7 A",
+        "catamorphism": "cata \u03b1: Tree Val \u2192 A is unique homomorphism"
+      },
+      "implementation_notes": [
+        "Post-order traversal: process children before parent",
+        "Tail recursion not possible for general trees (need stack)",
+        "Can be parallelized: left and right subtrees independent",
+        "Supports accumulating parameters for more complex folds",
+        "Fusion law: fold f \u2218 map g = fold (f \u2218 F(g))",
+        "Short-circuit evaluation possible with lazy semantics"
+      ],
+      "test_cases": [
+        {
+          "input": {
+            "tree": "Leaf(5)",
+            "leaf_handler": "\u03bbx. x",
+            "node_handler": "\u03bbl r. l + r"
+          },
+          "expected_output": 5,
+          "description": "Fold over single leaf"
+        },
+        {
+          "input": {
+            "tree": "Node(Leaf(1), Leaf(2))",
+            "leaf_handler": "\u03bbx. x",
+            "node_handler": "\u03bbl r. l + r"
+          },
+          "expected_output": 3,
+          "description": "Sum tree with two leaves"
+        },
+        {
+          "input": {
+            "tree": "Node(Node(Leaf(1), Leaf(2)), Node(Leaf(3), Leaf(4)))",
+            "leaf_handler": "\u03bbx. x",
+            "node_handler": "\u03bbl r. l + r"
+          },
+          "expected_output": 10,
+          "description": "Sum balanced tree: 1+2+3+4 = 10"
+        },
+        {
+          "input": {
+            "tree": "Node(Leaf(10), Node(Leaf(5), Leaf(3)))",
+            "leaf_handler": "\u03bbx. x",
+            "node_handler": "\u03bbl r. max(l, r)"
+          },
+          "expected_output": 10,
+          "description": "Find maximum value in tree"
+        },
+        {
+          "input": {
+            "tree": "Node(Node(Leaf(2), Leaf(3)), Leaf(4))",
+            "leaf_handler": "\u03bbx. 1",
+            "node_handler": "\u03bbl r. l + r"
+          },
+          "expected_output": 3,
+          "description": "Count leaves: (1 + 1) + 1 = 3"
+        },
+        {
+          "input": {
+            "tree": "Node(Node(Leaf(1), Leaf(2)), Leaf(3))",
+            "leaf_handler": "\u03bbx. 0",
+            "node_handler": "\u03bbl r. 1 + max(l, r)"
+          },
+          "expected_output": 2,
+          "description": "Compute tree height"
+        }
+      ],
+      "edge_cases": [
+        {
+          "case": "Single leaf",
+          "input": {
+            "tree": "Leaf(x)",
+            "leaf_handler": "f",
+            "node_handler": "g"
+          },
+          "behavior": "Returns f(x) without calling node_handler",
+          "expected": "f(x)",
+          "complexity": "O(1)"
+        },
+        {
+          "case": "Deeply left-skewed tree",
+          "input": {
+            "tree": "Node(Node(...Node(Leaf, Leaf), Leaf), Leaf) [depth 10000]"
+          },
+          "behavior": "Requires O(depth) stack space - may overflow",
+          "mitigation": "Use continuation-passing style or explicit stack"
+        },
+        {
+          "case": "Infinite tree (coinductive)",
+          "input": {
+            "tree": "ones = Node(Leaf(1), ones)"
+          },
+          "behavior": "Diverges - catamorphism never terminates",
+          "note": "Requires anamorphism or hylomorphism for infinite structures"
+        },
+        {
+          "case": "Unbalanced tree",
+          "input": {
+            "tree": "Completely right-skewed tree with 1000 nodes"
+          },
+          "behavior": "Still O(n) time but O(n) space due to skewness",
+          "performance": "Worse than balanced tree (h = log n)"
+        }
+      ],
+      "usage_example": {
+        "pseudocode": "// Tree sum\nsum_tree t = fold (\u03bbx. x) (\u03bbl r. l + r) t\n\n// Tree product\nproduct_tree t = fold (\u03bbx. x) (\u03bbl r. l * r) t\n\n// Tree height\nheight t = fold (\u03bbx. 0) (\u03bbl r. 1 + max l r) t\n\n// Count leaves\ncount_leaves t = fold (\u03bbx. 1) (\u03bbl r. l + r) t\n\n// Count internal nodes\ncount_nodes t = fold (\u03bbx. 0) (\u03bbl r. 1 + l + r) t\n\n// Mirror tree (structure-preserving)\nmirror t = fold leaf (\u03bbl r. node r l) t\n\n// Flatten to list (in-order)\nflatten t = fold (\u03bbx. [x]) (\u03bbl r. l ++ r) t",
+        "expression_eval": "// Evaluate expression tree\neval t = fold \n  (\u03bbn. n)  // Leaf: return number\n  (\u03bbl r. l + r)  // Node: add results"
+      },
+      "references": [
+        "Bird, R. & de Moor, O. (1997). Algebra of Programming",
+        "Gibbons, J. (2002). Calculating Functional Programs",
+        "Hinze, R. & Wu, N. (2016). Unifying Structured Recursion Schemes",
+        "Meijer, E. et al. (1991). Functional Programming with Bananas"
+      ]
+    },
+    {
+      "id": "ms_list_fold",
+      "name": "Mogensen-Scott List Catamorphism",
+      "category": "Catamorphism",
+      "description": "Efficient fold over Scott-encoded lists using Mogensen-Scott recursion scheme. Processes elements left-to-right (foldr) or right-to-left (foldl) with O(n) time complexity.",
+      "parameters": [
+        {
+          "name": "list",
+          "type": "ms_list",
+          "description": "Mogensen-Scott encoded list",
+          "encoding": "nil = \u03bbn c. n, cons h t = \u03bbn c. c h t"
+        },
+        {
+          "name": "nil_case",
+          "type": "b",
+          "description": "Value to return for empty list",
+          "role": "Base case of recursion"
+        },
+        {
+          "name": "cons_case",
+          "type": "a -> b -> b",
+          "description": "Function to combine head and accumulated tail result",
+          "role": "Recursive case: cons_case head (fold tail)"
+        }
+      ],
+      "returns": {
+        "type": "b",
+        "description": "Result of folding the list",
+        "computation": "Recursive combination of all elements"
+      },
+      "complexity": {
+        "time": "O(n) where n is list length",
+        "space": "O(n) call stack for foldr, O(1) for tail-recursive foldl",
+        "optimal": "Yes - single pass through list"
+      },
+      "mathematical_formula": {
+        "foldr": "foldr f z [] = z; foldr f z (x:xs) = f x (foldr f z xs)",
+        "foldl": "foldl f z [] = z; foldl f z (x:xs) = foldl f (f z x) xs",
+        "relationship": "foldr f z xs = xs z f (direct from Scott encoding)",
+        "f_algebra": "\u03b1: 1 + A \u00d7 List A \u2192 List A",
+        "universal_property": "h (foldr f z) = g \u27fa h [] = g z \u2227 h (x:xs) = f x (h xs)"
+      },
+      "implementation_notes": [
+        "foldr is natural catamorphism for lists",
+        "foldl can be implemented tail-recursively",
+        "foldr works on infinite lists with lazy evaluation",
+        "foldl is strict - evaluates entire list",
+        "Fusion optimization: foldr f z \u2218 map g = foldr (f \u2218 g) z",
+        "Short-circuit: foldr (&&) True can stop early on False",
+        "Duality: foldr cons [] = id (list identity)"
+      ],
+      "test_cases": [
+        {
+          "input": {
+            "list": "[]",
+            "nil_case": 0,
+            "cons_case": "\u03bbh t. h + t"
+          },
+          "expected_output": 0,
+          "description": "Fold over empty list returns base case"
+        },
+        {
+          "input": {
+            "list": "[1, 2, 3, 4, 5]",
+            "nil_case": 0,
+            "cons_case": "\u03bbh t. h + t"
+          },
+          "expected_output": 15,
+          "description": "Sum list: 1+2+3+4+5 = 15"
+        },
+        {
+          "input": {
+            "list": "[1, 2, 3, 4]",
+            "nil_case": 1,
+            "cons_case": "\u03bbh t. h * t"
+          },
+          "expected_output": 24,
+          "description": "Product list: 1*2*3*4 = 24"
+        },
+        {
+          "input": {
+            "list": "[1, 2, 3]",
+            "nil_case": "[]",
+            "cons_case": "\u03bbh t. cons (h*2) t"
+          },
+          "expected_output": "[2, 4, 6]",
+          "description": "Map: double each element"
+        },
+        {
+          "input": {
+            "list": "[1, 2, 3, 4, 5]",
+            "nil_case": "[]",
+            "cons_case": "\u03bbh t. if even(h) then cons h t else t"
+          },
+          "expected_output": "[2, 4]",
+          "description": "Filter: keep even numbers"
+        },
+        {
+          "input": {
+            "list": "['h', 'e', 'l', 'l', 'o']",
+            "nil_case": "''",
+            "cons_case": "\u03bbh t. h ++ t"
+          },
+          "expected_output": "'hello'",
+          "description": "String concatenation from char list"
+        }
+      ],
+      "edge_cases": [
+        {
+          "case": "Empty list",
+          "input": {
+            "list": "[]",
+            "nil_case": "z",
+            "cons_case": "f"
+          },
+          "behavior": "Returns z without calling f",
+          "expected": "z",
+          "complexity": "O(1)"
+        },
+        {
+          "case": "Infinite list with foldr",
+          "input": {
+            "list": "[1, 2, 3, ...]",
+            "nil_case": "0",
+            "cons_case": "\u03bbh t. if h == 5 then h else t"
+          },
+          "behavior": "With lazy evaluation, stops at first match",
+          "expected": "5",
+          "note": "foldl would diverge"
+        },
+        {
+          "case": "Long list",
+          "input": {
+            "list": "[1..1000000]",
+            "nil_case": "0",
+            "cons_case": "\u03bbh t. h + t"
+          },
+          "behavior": "foldr may stack overflow, foldl with accumulator works",
+          "mitigation": "Use strict foldl with tail recursion"
+        },
+        {
+          "case": "Non-commutative operation",
+          "input": {
+            "list": "[1, 2, 3]",
+            "operation": "subtract"
+          },
+          "behavior": "foldr: 1-(2-(3-0))=2, foldl: ((0-1)-2)-3=-6",
+          "note": "Order matters!"
+        }
+      ],
+      "usage_example": {
+        "pseudocode": "// Sum\nsum xs = foldr (+) 0 xs\n\n// Product\nproduct xs = foldr (*) 1 xs\n\n// Length\nlength xs = foldr (\u03bb_ n. n+1) 0 xs\n\n// Reverse (inefficient)\nreverse xs = foldr (\u03bbh t. t ++ [h]) [] xs\n\n// Reverse (efficient with foldl)\nreverse xs = foldl (\u03bbt h. h:t) [] xs\n\n// Map\nmap f xs = foldr (\u03bbh t. f h : t) [] xs\n\n// Filter\nfilter p xs = foldr (\u03bbh t. if p h then h:t else t) [] xs\n\n// Append\nappend xs ys = foldr cons ys xs\n\n// Flatten\nconcat xss = foldr append [] xss\n\n// All\nall p xs = foldr (&&) True (map p xs)\n\n// Any\nany p xs = foldr (||) False (map p xs)",
+        "real_world": "// Parse and validate\nvalidate_all rules data = \n  foldr (\u03bbrule acc. acc && check rule data) True rules"
+      },
+      "references": [
+        "Hutton, G. (1999). A Tutorial on the Universality and Expressiveness of Fold",
+        "Bird, R. (1998). Introduction to Functional Programming",
+        "Meijer, E. et al. (1991). Functional Programming with Bananas, Lenses, Envelopes and Barbed Wire",
+        "Wadler, P. (1989). Theorems for Free!"
+      ]
+    }
+  ]
+}
