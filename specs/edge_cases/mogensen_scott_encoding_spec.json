@@ -1,0 +1,366 @@
+{
+  "specification": {
+    "name": "Mogensen-Scott Encoding - Dual Constructs",
+    "version": "1.0.0",
+    "description": "Anamorphism (unfold) and hylomorphism (fold-unfold fusion) for Mogensen-Scott encoded structures. These dual constructs enable building and transforming structures efficiently, often without materializing intermediate representations.",
+    "language_agnostic": true,
+    "format": "STUNIR",
+    "tier": "CORE",
+    "tier_availability": "Core (Free)",
+    "component": "edge_case_handling",
+    "total_operations": 2,
+    "complexity_target": "O(n) with optimized space usage",
+    "license": "AGPLv3"
+  },
+  "mathematical_foundations": {
+    "catamorphism_dual": "Anamorphism is the categorical dual of catamorphism",
+    "f_coalgebra": "An F-coalgebra is a pair (A, \u03b1) where \u03b1: A \u2192 F(A) generates structure",
+    "anamorphism": "Unfold from seed using coalgebra - unique homomorphism to final coalgebra",
+    "hylomorphism": "Composition of anamorphism then catamorphism: build then fold",
+    "deforestation": "Hylomorphisms enable fusion - no intermediate structure materialization",
+    "recursion_schemes": "Complete algebra: catamorphisms (fold), anamorphisms (unfold), hylomorphisms (refold)",
+    "category_theory": "Final coalgebra semantics - anamorphisms are unique arrows to final coalgebra"
+  },
+  "operations": [
+    {
+      "id": "ms_anamorphism",
+      "name": "Mogensen-Scott Anamorphism (Unfold)",
+      "category": "Corecursion",
+      "description": "Build Mogensen-Scott structures from seeds using coalgebras (dual of catamorphism). Unfolds a seed value into a recursive structure by repeatedly applying a generation function. Enables coinductive (potentially infinite) structure creation.",
+      "parameters": [
+        {
+          "name": "seed",
+          "type": "s",
+          "description": "Initial seed value to unfold",
+          "role": "Starting point for structure generation"
+        },
+        {
+          "name": "coalgebra",
+          "type": "s -> F(s)",
+          "description": "Function that generates the next layer of structure",
+          "role": "Determines whether to stop (base case) or continue (recursive case)",
+          "structure": "Returns either terminal value or constructor with new seeds"
+        },
+        {
+          "name": "structure_type",
+          "type": "type_descriptor",
+          "description": "Type of structure to generate (list, tree, stream, etc.)",
+          "examples": [
+            "List",
+            "Tree",
+            "Stream",
+            "Rose"
+          ]
+        }
+      ],
+      "returns": {
+        "type": "ms_structure",
+        "description": "Mogensen-Scott encoded recursive structure",
+        "generation": "Built top-down from seed"
+      },
+      "complexity": {
+        "time": "O(n) where n is size of generated structure",
+        "space": "O(n) for finite structures, O(1) seed storage for infinite streams",
+        "termination": "May not terminate for infinite structures (coinductive types)"
+      },
+      "mathematical_formula": {
+        "definition": "ana coalg seed = case (coalg seed) of { Stop x \u2192 base x; Continue f seeds \u2192 cons (ana coalg seed1) ... }",
+        "list_unfold": "ana f z = if done z then [] else x : ana f (next z) where (x, next z) = f z",
+        "tree_unfold": "ana f z = if leaf z then Leaf (value z) else Node (ana f (left z)) (ana f (right z))",
+        "f_coalgebra": "\u03b1: A \u2192 F(A) where F is functor",
+        "universal_property": "For any F-coalgebra (A, \u03b1), exists unique anamorphism ana \u03b1: A \u2192 \u03bdF"
+      },
+      "implementation_notes": [
+        "Dual to catamorphism: builds up instead of tears down",
+        "Enables generation of infinite structures with lazy evaluation",
+        "Coalgebra determines both structure and content",
+        "Can produce streams, infinite trees, etc.",
+        "Requires careful termination analysis for finite structures",
+        "Memoization can optimize repeated generation",
+        "Natural for modeling state machines and iterative processes"
+      ],
+      "test_cases": [
+        {
+          "input": {
+            "seed": 5,
+            "coalgebra": "\u03bbn. if n == 0 then Stop else Continue (n, n-1)",
+            "structure_type": "List"
+          },
+          "expected_output": "[5, 4, 3, 2, 1]",
+          "description": "Generate countdown list from 5 to 1"
+        },
+        {
+          "input": {
+            "seed": 10,
+            "coalgebra": "\u03bbn. if n == 0 then Leaf n else Node (n-1, n-1)",
+            "structure_type": "Tree"
+          },
+          "expected_output": "Complete binary tree of depth 10",
+          "description": "Generate complete binary tree",
+          "note": "2^10 - 1 = 1023 nodes"
+        },
+        {
+          "input": {
+            "seed": "(0, 1)",
+            "coalgebra": "\u03bb(a, b). Continue (a, (b, a+b))",
+            "structure_type": "Stream"
+          },
+          "expected_output": "[0, 1, 1, 2, 3, 5, 8, 13, ...]",
+          "description": "Generate infinite Fibonacci stream"
+        },
+        {
+          "input": {
+            "seed": 100,
+            "coalgebra": "\u03bbn. if n < 2 then Leaf n else Node (n `div` 2, n `div` 2)",
+            "structure_type": "Tree"
+          },
+          "expected_output": "Binary tree with halving",
+          "description": "Generate tree by repeatedly halving",
+          "depth": "log\u2082(100) \u2248 7"
+        },
+        {
+          "input": {
+            "seed": "'hello'",
+            "coalgebra": "\u03bbs. if empty s then Stop else Continue (head s, tail s)",
+            "structure_type": "List"
+          },
+          "expected_output": "['h', 'e', 'l', 'l', 'o']",
+          "description": "Unfold string to character list"
+        },
+        {
+          "input": {
+            "seed": 1,
+            "coalgebra": "\u03bbn. Continue (n, n+1)",
+            "structure_type": "Stream"
+          },
+          "expected_output": "[1, 2, 3, 4, 5, ...]",
+          "description": "Generate infinite natural number stream"
+        }
+      ],
+      "edge_cases": [
+        {
+          "case": "Immediate termination",
+          "input": {
+            "seed": 0,
+            "coalgebra": "\u03bbn. Stop"
+          },
+          "behavior": "Generates single element or empty structure",
+          "expected": "Base case structure",
+          "complexity": "O(1)"
+        },
+        {
+          "case": "Infinite structure",
+          "input": {
+            "seed": 1,
+            "coalgebra": "\u03bbn. Continue (n, n)"
+          },
+          "behavior": "Never terminates - generates infinite constant stream",
+          "expected": "[1, 1, 1, ...]",
+          "note": "Requires lazy evaluation"
+        },
+        {
+          "case": "Exponential growth",
+          "input": {
+            "seed": 0,
+            "coalgebra": "\u03bbn. if n > 20 then Leaf n else Node (n+1, n+1)"
+          },
+          "behavior": "Generates complete binary tree - exponential nodes",
+          "size": "2^21 - 1 \u2248 2 million nodes",
+          "mitigation": "Add depth limit or use breadth-first generation"
+        },
+        {
+          "case": "Cyclic seed transformation",
+          "input": {
+            "seed": 3,
+            "coalgebra": "\u03bbn. Continue (n, (n * 3 + 1) if odd else n/2)"
+          },
+          "behavior": "Collatz conjecture - termination unknown for general case",
+          "expected": "Depends on seed - may diverge"
+        }
+      ],
+      "usage_example": {
+        "pseudocode": "// Generate list [n, n-1, ..., 1]\ncountdown n = ana \n  (\u03bbx. if x <= 0 then Stop else Continue (x, x-1))\n  n\n\n// Generate infinite stream of natural numbers\nnats n = ana (\u03bbx. Continue (x, x+1)) n\n\n// Generate binary tree of given depth\ntree_depth d = ana\n  (\u03bb(val, depth). \n    if depth == 0 \n      then Leaf val \n      else Node ((val*2, depth-1), (val*2+1, depth-1)))\n  (1, d)\n\n// Iterate function to generate sequence\niterate f x = ana (\u03bby. Continue (y, f y)) x\n\n// Unfold with state\nunfoldState f init = ana f init",
+        "range": "range a b = ana (\u03bbx. if x > b then Stop else Continue (x, x+1)) a",
+        "iterate_example": "powers_of_2 = iterate (*2) 1  // [1, 2, 4, 8, 16, ...]"
+      },
+      "references": [
+        "Meijer, E. et al. (1991). Functional Programming with Bananas, Lenses, Envelopes and Barbed Wire",
+        "Hinze, R. & Wu, N. (2016). Unifying Structured Recursion Schemes",
+        "Gibbons, J. (2002). Calculating Functional Programs",
+        "Vene, V. (2000). Categorical Programming with Inductive and Coinductive Types"
+      ]
+    },
+    {
+      "id": "ms_hylomorphism",
+      "name": "Mogensen-Scott Hylomorphism",
+      "category": "Refold / Fusion",
+      "description": "Compose anamorphism and catamorphism: build then fold in one pass (virtual structure). Hylomorphisms enable deforestation - the intermediate structure is never materialized, resulting in O(n) time with O(h) space instead of O(n) space.",
+      "parameters": [
+        {
+          "name": "seed",
+          "type": "s",
+          "description": "Initial seed for unfolding",
+          "role": "Starting point for virtual structure generation"
+        },
+        {
+          "name": "coalgebra",
+          "type": "s -> F(s)",
+          "description": "Function to generate (unfold) structure from seed",
+          "role": "Produces virtual intermediate structure"
+        },
+        {
+          "name": "algebra",
+          "type": "F(a) -> a",
+          "description": "Function to consume (fold) structure to result",
+          "role": "Reduces generated structure to final value"
+        }
+      ],
+      "returns": {
+        "type": "a",
+        "description": "Final result without materializing intermediate structure",
+        "computation": "fold (algebra) (unfold (coalgebra) seed)"
+      },
+      "complexity": {
+        "time": "O(n) where n is size of virtual structure",
+        "space": "O(h) where h is maximum structure depth (not O(n)!)",
+        "optimization": "Deforestation eliminates intermediate structure allocation"
+      },
+      "mathematical_formula": {
+        "definition": "hylo alg coalg seed = cata alg (ana coalg seed)",
+        "optimized": "hylo alg coalg seed = alg (fmap (hylo alg coalg) (coalg seed))",
+        "composition": "hylo = cata \u2218 ana (but fused)",
+        "recursion_equation": "hylo f g x = case g x of { Base b \u2192 f b; Rec s \u2192 f (fmap (hylo f g) s) }",
+        "space_efficiency": "No intermediate structure - O(depth) not O(size)"
+      },
+      "implementation_notes": [
+        "Key optimization: intermediate structure never materialized",
+        "Combines generation and consumption in single pass",
+        "Stack depth proportional to structure depth, not size",
+        "Ideal for transformations that don't need to traverse structure multiple times",
+        "Automatic deforestation in many functional compilers",
+        "Can process infinite structures if algebra is lazy",
+        "Natural for divide-and-conquer algorithms"
+      ],
+      "test_cases": [
+        {
+          "input": {
+            "seed": 5,
+            "coalgebra": "\u03bbn. if n == 0 then Nil else Cons (n, n-1)",
+            "algebra": "\u03bbx. case x of { Nil \u2192 0; Cons h t \u2192 h + t }"
+          },
+          "expected_output": 15,
+          "description": "Sum of 1+2+3+4+5 = 15 without building list",
+          "space": "O(1) excluding recursion stack"
+        },
+        {
+          "input": {
+            "seed": 10,
+            "coalgebra": "\u03bbn. if n <= 1 then n else unfold(n-1) + unfold(n-2)",
+            "algebra": "\u03bbx. x",
+            "structure": "Tree"
+          },
+          "expected_output": 55,
+          "description": "Compute Fibonacci(10) = 55 using tree structure",
+          "note": "Would normally build full recursion tree"
+        },
+        {
+          "input": {
+            "seed": 100,
+            "coalgebra": "\u03bbn. if n < 10 then Leaf (digit_sum n) else Node (n div 10)",
+            "algebra": "\u03bbx. case x of { Leaf d \u2192 d; Node ts \u2192 sum ts }"
+          },
+          "expected_output": 1,
+          "description": "Compute digital root of 100: 1+0+0 = 1",
+          "iterations": "Single pass through digits"
+        },
+        {
+          "input": {
+            "seed": "[3, 1, 4, 1, 5, 9, 2, 6]",
+            "coalgebra": "quicksort unfold",
+            "algebra": "flatten fold"
+          },
+          "expected_output": "[1, 1, 2, 3, 4, 5, 6, 9]",
+          "description": "Quicksort via hylomorphism",
+          "space": "O(log n) average case"
+        },
+        {
+          "input": {
+            "seed": 1000,
+            "coalgebra": "\u03bbn. if n == 0 then Nil else Cons (n mod 10, n div 10)",
+            "algebra": "\u03bbx. case x of { Nil \u2192 0; Cons h t \u2192 max h t }"
+          },
+          "expected_output": 1,
+          "description": "Find maximum digit in 1000",
+          "result": "max(1, 0, 0, 0) = 1"
+        },
+        {
+          "input": {
+            "seed": 7,
+            "coalgebra": "\u03bbn. if n == 0 then Leaf n else Node (n-1, n-1)",
+            "algebra": "\u03bbx. case x of { Leaf _ \u2192 1; Node l r \u2192 l + r + 1 }"
+          },
+          "expected_output": 255,
+          "description": "Count nodes in complete binary tree: 2^8 - 1 = 255",
+          "space": "O(7) not O(255)"
+        }
+      ],
+      "edge_cases": [
+        {
+          "case": "Immediate base case",
+          "input": {
+            "seed": 0,
+            "coalgebra": "\u03bbx. Base x",
+            "algebra": "\u03bbx. x"
+          },
+          "behavior": "No recursion - returns immediately",
+          "expected": "Algebra applied to base",
+          "complexity": "O(1)"
+        },
+        {
+          "case": "Deep recursion",
+          "input": {
+            "seed": 10000,
+            "coalgebra": "countdown",
+            "algebra": "sum"
+          },
+          "behavior": "Requires O(depth) stack - may overflow",
+          "mitigation": "Use continuation-passing style or tail recursion",
+          "space": "O(10000) stack frames"
+        },
+        {
+          "case": "Infinite intermediate structure",
+          "input": {
+            "seed": 1,
+            "coalgebra": "\u03bbn. Cons (n, n+1)",
+            "algebra": "\u03bbx. case x of { Cons h t \u2192 if h > 100 then h else t }"
+          },
+          "behavior": "With lazy evaluation, stops when algebra forces evaluation",
+          "expected": "First element > 100 = 101",
+          "note": "Strict evaluation would diverge"
+        },
+        {
+          "case": "Exponential virtual structure",
+          "input": {
+            "seed": 20,
+            "coalgebra": "binary tree generation",
+            "algebra": "count nodes"
+          },
+          "behavior": "Virtual tree has 2^20 nodes but only O(20) space used",
+          "space_saved": "O(20) vs O(1048576)",
+          "demonstration": "Power of deforestation"
+        }
+      ],
+      "usage_example": {
+        "pseudocode": "// Factorial via hylomorphism\nfact n = hylo\n  (\u03bbx. case x of { Nil \u2192 1; Cons h t \u2192 h * t })  // algebra\n  (\u03bbx. if x == 0 then Nil else Cons (x, x-1))     // coalgebra\n  n\n\n// Merge sort\nmergesort xs = hylo\n  merge_algebra         // fold: merge sorted sublists\n  split_coalgebra       // unfold: split into sublists\n  xs\n\n// Sum of squares 1\u00b2 + 2\u00b2 + ... + n\u00b2\nsum_squares n = hylo\n  (\u03bbx. case x of { Nil \u2192 0; Cons h t \u2192 h*h + t })\n  (\u03bbx. if x == 0 then Nil else Cons (x, x-1))\n  n\n\n// Fibonacci\nfib n = hylo\n  (\u03bbx. case x of { \n    Base n \u2192 n; \n    Rec [a, b] \u2192 a + b \n  })\n  (\u03bbx. if x < 2 then Base x else Rec [x-1, x-2])\n  n\n\n// Digital root (iterated digit sum until single digit)\ndigital_root n = hylo\n  (\u03bbx. case x of { Leaf d \u2192 d; Node ds \u2192 sum ds })\n  (\u03bbx. if x < 10 then Leaf x else Node (digits x))\n  n",
+        "quicksort": "quicksort = hylo flatten partition\n  where\n    partition [] = Nil\n    partition (p:xs) = Node (filter (<p) xs) p (filter (>=p) xs)\n    flatten Nil = []\n    flatten (Node l p r) = l ++ [p] ++ r"
+      },
+      "references": [
+        "Meijer, E. et al. (1991). Functional Programming with Bananas, Lenses, Envelopes and Barbed Wire",
+        "Hinze, R. et al. (2013). Sorting with Bialgebras and Distributive Laws",
+        "Gibbons, J. (2002). Calculating Functional Programs",
+        "Uustalu, T. & Vene, V. (1999). Primitive (Co)recursion and Course-of-Value (Co)iteration",
+        "Wadler, P. (1990). Deforestation: Transforming Programs to Eliminate Trees"
+      ]
+    }
+  ]
+}
