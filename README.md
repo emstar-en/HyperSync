@@ -11,9 +11,7 @@
 
 HyperSync Core is an open-source library providing **281 high-performance geometric operations** for distributed systems, consensus mechanisms, security, and machine learning. Built on rigorous non-Euclidean geometry (hyperbolic and spherical spaces) and general relativity, HyperSync Core enables:
 
-- **1000x faster Byzantine consensus** (Spherical BFT)
 - **Geometric encryption** using hyperbolic distance
-- **10,000x speedup** for Ricci flow approximations
 - **Native geometric operations** with O(n) or O(n log n) complexity
 
 ## ✨ Core Tier Progress
@@ -451,13 +449,6 @@ print(f"Flowed {len(flowed_points)} points")
 
 | Operation | Complexity | Speedup | Accuracy |
 |-----------|-----------|---------|----------|
-| Spherical BFT | O(n) | **1000x vs PBFT** | 98%+ |
-| Hyperbolic Distance | O(n) | - | 1e-12 |
-| Ricci Flow (Ultra-Fast) | O(n) | **10,000x** | 90-95% |
-| Ricci Flow (Standard) | O(n²) | **100x** | 95-98% |
-| Sampling Consensus | O(n) | **500x** | 90-95% |
-| Fast Curvature | O(n) | **1,000x** | 95%+ |
-| Proximity Adversarial | O(n) | **100x** | 92%+ |
 
 ## 🏗️ Architecture
 
@@ -547,7 +538,7 @@ This project is licensed under the **AGPLv3** - see [LICENSE](LICENSE) file for 
 
 ## 🌟 Key Innovations
 
-### 1. Spherical BFT - 1000x Faster Consensus
+### 1. Spherical BFT
 - **Innovation**: Byzantine nodes appear as geometric outliers on sphere
 - **Method**: O(n) consensus via hierarchical pairwise averaging
 - **Impact**: Makes Byzantine consensus practical for large-scale systems
@@ -557,7 +548,7 @@ This project is licensed under the **AGPLv3** - see [LICENSE](LICENSE) file for 
 - **Method**: Exponential expansion in negative curvature space
 - **Impact**: Novel encryption paradigm with geometric properties
 
-### 3. Ultra-Fast Ricci Flow (10,000x speedup)
+### 3. Ultra-Fast Ricci Flow
 - **Innovation**: 5-point local curvature estimation
 - **Method**: O(n) approximation of O(n⁴) full Ricci flow
 - **Impact**: Real-time manifold smoothing and optimization
