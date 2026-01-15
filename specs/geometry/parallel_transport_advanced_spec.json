@@ -1,0 +1,1130 @@
+{
+  "specification_name": "Advanced Parallel Transport Operations",
+  "version": "1.0.0",
+  "category": "Essential Geometry - Parallel Transport",
+  "description": "Advanced parallel transport operations for moving vectors along geodesics while preserving geometric properties. Includes discrete methods (Schild's ladder, Pole ladder), holonomy computation, tensor field transport, and cross-curvature transport. Essential for geometric deep learning, Riemannian optimization, and differential geometry applications.",
+  "mathematical_foundation": {
+    "parallel_transport_definition": "Transport vector v ∈ T_p M along geodesic γ(t) from p to q, preserving: (1) length ||v||, (2) angle with geodesic, (3) covariant derivative ∇_γ'(t) v = 0",
+    "connection_formula": "∇_X Y = ∂Y/∂X + Γ(X,Y) where Γ are Christoffel symbols",
+    "holonomy": "Parallel transport around closed loop measures curvature: v_final ≠ v_initial ⟺ curvature ≠ 0",
+    "applications": [
+      "Riemannian optimization (vector transport)",
+      "Geometric deep learning (feature propagation)",
+      "Computer graphics (frame transport)",
+      "Physics (gauge theory, general relativity)"
+    ]
+  },
+  "operations": [
+    {
+      "name": "parallel_transport_geodesic",
+      "description": "Parallel transport vector along geodesic from base point to target point. Fundamental operation preserving vector length and angle.",
+      "parameters": {
+        "base_point": {
+          "type": "array",
+          "shape": "[n_dims]",
+          "description": "Starting point p on manifold"
+        },
+        "target_point": {
+          "type": "array",
+          "shape": "[n_dims]",
+          "description": "Ending point q on manifold"
+        },
+        "tangent_vector": {
+          "type": "array",
+          "shape": "[n_dims]",
+          "description": "Vector v ∈ T_p M to transport"
+        },
+        "geometry_type": {
+          "type": "string",
+          "enum": ["hyperbolic", "spherical", "euclidean"]
+        },
+        "curvature": {
+          "type": "float",
+          "optional": true
+        }
+      },
+      "returns": {
+        "transported_vector": {
+          "type": "array",
+          "shape": "[n_dims]",
+          "description": "Transported vector w ∈ T_q M"
+        },
+        "length_preserved": {
+          "type": "bool",
+          "description": "True if ||w|| = ||v|| (within tolerance)"
+        },
+        "angle_preserved": {
+          "type": "float",
+          "description": "Angle between w and geodesic at q"
+        }
+      },
+      "complexity": {
+        "time": "O(n_dims)",
+        "space": "O(n_dims)"
+      },
+      "mathematical_formula": {
+        "hyperbolic_poincare": "PT_p→q(v) = gyr[q, -p](v) where gyr is gyration operator",
+        "spherical": "PT_p→q(v) = v - (⟨v,p⟩/(1+⟨p,q⟩))*(p+q)",
+        "euclidean": "PT_p→q(v) = v (trivial - vectors don't change)"
+      },
+      "implementation_notes": [
+        "For hyperbolic: use gyration formula or Lorentz boost",
+        "For spherical: project v onto tangent space at q",
+        "Verify length preservation: ||PT(v)|| = ||v||",
+        "Check angle preservation with geodesic direction",
+        "Handle antipodal points (undefined transport)"
+      ],
+      "test_cases": [
+        {
+          "name": "euclidean_transport",
+          "base_point": [0.0, 0.0],
+          "target_point": [1.0, 1.0],
+          "tangent_vector": [1.0, 0.0],
+          "geometry_type": "euclidean",
+          "expected_transported": [1.0, 0.0],
+          "tolerance": 1e-10
+        },
+        {
+          "name": "hyperbolic_transport",
+          "base_point": [0.0, 0.0],
+          "target_point": [0.5, 0.0],
+          "tangent_vector": [0.0, 0.3],
+          "geometry_type": "hyperbolic",
+          "expected_length_preserved": true,
+          "tolerance": 1e-8
+        },
+        {
+          "name": "spherical_transport",
+          "base_point": [0.0, 0.0, 1.0],
+          "target_point": [1.0, 0.0, 0.0],
+          "tangent_vector": [0.0, 1.0, 0.0],
+          "geometry_type": "spherical",
+          "expected_length_preserved": true,
+          "tolerance": 1e-8
+        },
+        {
+          "name": "length_preservation",
+          "description": "Verify ||PT(v)|| = ||v|| for random vectors",
+          "num_trials": 100,
+          "tolerance": 1e-10
+        },
+        {
+          "name": "angle_preservation",
+          "description": "Angle with geodesic preserved",
+          "tolerance": 1e-8
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "zero_vector",
+          "tangent_vector": [0.0, 0.0],
+          "expected_transported": [0.0, 0.0]
+        },
+        {
+          "name": "identity_transport",
+          "base_point": [0.5, 0.5],
+          "target_point": [0.5, 0.5],
+          "description": "Transport to same point (identity)"
+        },
+        {
+          "name": "antipodal_spherical",
+          "base_point": [0.0, 0.0, 1.0],
+          "target_point": [0.0, 0.0, -1.0],
+          "geometry_type": "spherical",
+          "description": "Undefined transport (multiple geodesics)"
+        }
+      ]
+    },
+    {
+      "name": "batch_parallel_transport",
+      "description": "Vectorized parallel transport for batch of vectors. Efficiently transports multiple vectors simultaneously.",
+      "parameters": {
+        "base_points": {
+          "type": "array",
+          "shape": "[batch_size, n_dims]",
+          "description": "Batch of starting points"
+        },
+        "target_points": {
+          "type": "array",
+          "shape": "[batch_size, n_dims]",
+          "description": "Batch of ending points"
+        },
+        "tangent_vectors": {
+          "type": "array",
+          "shape": "[batch_size, n_dims]",
+          "description": "Batch of vectors to transport"
+        },
+        "geometry_type": {
+          "type": "string",
+          "enum": ["hyperbolic", "spherical", "euclidean"]
+        }
+      },
+      "returns": {
+        "transported_vectors": {
+          "type": "array",
+          "shape": "[batch_size, n_dims]",
+          "description": "Batch of transported vectors"
+        },
+        "lengths_preserved": {
+          "type": "array",
+          "shape": "[batch_size]",
+          "description": "Boolean mask for length preservation"
+        }
+      },
+      "complexity": {
+        "time": "O(batch_size * n_dims) with vectorization",
+        "space": "O(batch_size * n_dims)"
+      },
+      "implementation_notes": [
+        "Use NumPy broadcasting for vectorization",
+        "Compute all transports in parallel",
+        "GPU acceleration for large batches",
+        "Validate all inputs before batch processing"
+      ],
+      "test_cases": [
+        {
+          "name": "batch_consistency",
+          "batch_size": 100,
+          "description": "Batch results match sequential",
+          "tolerance": 1e-10
+        },
+        {
+          "name": "batch_performance",
+          "batch_size": 10000,
+          "description": "Measure speedup vs sequential",
+          "expected_speedup": 10.0
+        },
+        {
+          "name": "mixed_distances",
+          "description": "Batch with varying geodesic distances",
+          "tolerance": 1e-8
+        },
+        {
+          "name": "gpu_batch_transport",
+          "batch_size": 100000,
+          "description": "GPU-accelerated batch transport"
+        },
+        {
+          "name": "batch_length_preservation",
+          "description": "All vectors preserve length",
+          "tolerance": 1e-8
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "single_element_batch",
+          "batch_size": 1
+        },
+        {
+          "name": "large_batch",
+          "batch_size": 1000000
+        },
+        {
+          "name": "some_invalid",
+          "description": "Some inputs invalid (e.g., antipodal)"
+        }
+      ]
+    },
+    {
+      "name": "schilds_ladder",
+      "description": "Schild's ladder: discrete parallel transport using geodesic midpoints. Numerically stable alternative to analytical formulas.",
+      "parameters": {
+        "base_point": {
+          "type": "array",
+          "shape": "[n_dims]"
+        },
+        "target_point": {
+          "type": "array",
+          "shape": "[n_dims]"
+        },
+        "tangent_vector": {
+          "type": "array",
+          "shape": "[n_dims]"
+        },
+        "geometry_type": {
+          "type": "string",
+          "enum": ["hyperbolic", "spherical", "euclidean"]
+        },
+        "num_steps": {
+          "type": "int",
+          "default": 10,
+          "description": "Number of ladder steps (higher = more accurate)"
+        }
+      },
+      "returns": {
+        "transported_vector": {
+          "type": "array",
+          "shape": "[n_dims]",
+          "description": "Transported vector via Schild's ladder"
+        },
+        "intermediate_points": {
+          "type": "array",
+          "shape": "[num_steps+1, n_dims]",
+          "description": "Ladder rungs (intermediate points)"
+        },
+        "error_estimate": {
+          "type": "float",
+          "description": "Estimated error vs analytical transport"
+        }
+      },
+      "complexity": {
+        "time": "O(num_steps * n_dims)",
+        "space": "O(num_steps * n_dims)"
+      },
+      "mathematical_formula": {
+        "algorithm": "1. Divide geodesic p→q into num_steps segments\n2. At each step: construct parallelogram using geodesics\n3. Transport vector along parallelogram diagonal\n4. Iterate to next segment",
+        "convergence": "Error = O(1/num_steps²) for smooth manifolds"
+      },
+      "implementation_notes": [
+        "Construct geodesic parallelograms iteratively",
+        "Use midpoint formula: m = exp_p(0.5 * log_p(q))",
+        "More stable than analytical formulas for some geometries",
+        "Trade accuracy for num_steps",
+        "Useful when analytical formula unavailable"
+      ],
+      "test_cases": [
+        {
+          "name": "schilds_vs_analytical",
+          "num_steps": 20,
+          "description": "Compare with analytical transport",
+          "tolerance": 1e-4
+        },
+        {
+          "name": "convergence_test",
+          "num_steps": [5, 10, 20, 40],
+          "description": "Verify O(1/n²) convergence",
+          "expected_rate": 2.0
+        },
+        {
+          "name": "euclidean_schilds",
+          "geometry_type": "euclidean",
+          "num_steps": 10,
+          "description": "Should match trivial transport",
+          "tolerance": 1e-10
+        },
+        {
+          "name": "hyperbolic_schilds",
+          "geometry_type": "hyperbolic",
+          "num_steps": 15,
+          "tolerance": 1e-6
+        },
+        {
+          "name": "spherical_schilds",
+          "geometry_type": "spherical",
+          "num_steps": 15,
+          "tolerance": 1e-6
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "single_step",
+          "num_steps": 1,
+          "description": "Coarse approximation"
+        },
+        {
+          "name": "many_steps",
+          "num_steps": 100,
+          "description": "High accuracy (slow)"
+        },
+        {
+          "name": "long_geodesic",
+          "description": "Transport along long geodesic"
+        }
+      ]
+    },
+    {
+      "name": "pole_ladder",
+      "description": "Pole ladder: alternative discrete parallel transport method. Dual to Schild's ladder, sometimes more stable.",
+      "parameters": {
+        "base_point": {
+          "type": "array",
+          "shape": "[n_dims]"
+        },
+        "target_point": {
+          "type": "array",
+          "shape": "[n_dims]"
+        },
+        "tangent_vector": {
+          "type": "array",
+          "shape": "[n_dims]"
+        },
+        "geometry_type": {
+          "type": "string",
+          "enum": ["hyperbolic", "spherical", "euclidean"]
+        },
+        "num_steps": {
+          "type": "int",
+          "default": 10
+        }
+      },
+      "returns": {
+        "transported_vector": {
+          "type": "array",
+          "shape": "[n_dims]"
+        },
+        "intermediate_points": {
+          "type": "array",
+          "shape": "[num_steps+1, n_dims]"
+        },
+        "error_estimate": {
+          "type": "float"
+        }
+      },
+      "complexity": {
+        "time": "O(num_steps * n_dims)",
+        "space": "O(num_steps * n_dims)"
+      },
+      "mathematical_formula": {
+        "algorithm": "1. Construct 'pole' point using exp_p(v)\n2. Transport pole along geodesic p→q\n3. Recover transported vector from transported pole\n4. Iterate in steps for accuracy",
+        "relation_to_schilds": "Dual construction: uses exp/log instead of midpoints"
+      },
+      "implementation_notes": [
+        "Construct pole: r = exp_p(v)",
+        "Transport pole along geodesic",
+        "Recover vector: w = log_q(transported_pole)",
+        "Often more stable than Schild's ladder for spherical geometry",
+        "Same O(1/n²) convergence rate"
+      ],
+      "test_cases": [
+        {
+          "name": "pole_vs_analytical",
+          "num_steps": 20,
+          "tolerance": 1e-4
+        },
+        {
+          "name": "pole_vs_schilds",
+          "num_steps": 15,
+          "description": "Compare Pole and Schild's ladder",
+          "tolerance": 1e-5
+        },
+        {
+          "name": "pole_convergence",
+          "num_steps": [5, 10, 20, 40],
+          "expected_rate": 2.0
+        },
+        {
+          "name": "spherical_pole",
+          "geometry_type": "spherical",
+          "num_steps": 15,
+          "description": "Pole ladder often better for spherical",
+          "tolerance": 1e-6
+        },
+        {
+          "name": "hyperbolic_pole",
+          "geometry_type": "hyperbolic",
+          "num_steps": 15,
+          "tolerance": 1e-6
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "large_vector",
+          "tangent_vector": "large magnitude",
+          "description": "Pole far from base point"
+        },
+        {
+          "name": "small_vector",
+          "tangent_vector": "small magnitude",
+          "description": "Pole near base point"
+        },
+        {
+          "name": "comparison_with_schilds",
+          "description": "When is Pole better than Schild's?"
+        }
+      ]
+    },
+    {
+      "name": "parallel_transport_autograd",
+      "description": "Parallel transport with automatic differentiation support. Enables backpropagation through transport operations.",
+      "parameters": {
+        "base_point": {
+          "type": "tensor",
+          "shape": "[n_dims]",
+          "description": "Base point (requires_grad=True)"
+        },
+        "target_point": {
+          "type": "tensor",
+          "shape": "[n_dims]"
+        },
+        "tangent_vector": {
+          "type": "tensor",
+          "shape": "[n_dims]"
+        },
+        "geometry_type": {
+          "type": "string",
+          "enum": ["hyperbolic", "spherical", "euclidean"]
+        },
+        "backend": {
+          "type": "string",
+          "enum": ["pytorch", "jax"],
+          "default": "pytorch"
+        }
+      },
+      "returns": {
+        "transported_vector": {
+          "type": "tensor",
+          "shape": "[n_dims]",
+          "description": "Transported vector with gradient tracking"
+        }
+      },
+      "complexity": {
+        "time": "O(n_dims) forward, O(n_dims²) backward",
+        "space": "O(n_dims) + autograd graph"
+      },
+      "implementation_notes": [
+        "Define custom autograd Function",
+        "Implement forward: parallel transport",
+        "Implement backward: Jacobian-vector product",
+        "Use analytical Jacobian for efficiency",
+        "Support both PyTorch and JAX"
+      ],
+      "test_cases": [
+        {
+          "name": "pytorch_autograd",
+          "backend": "pytorch",
+          "description": "Test PyTorch autograd",
+          "tolerance": 1e-6
+        },
+        {
+          "name": "jax_autograd",
+          "backend": "jax",
+          "description": "Test JAX grad",
+          "tolerance": 1e-6
+        },
+        {
+          "name": "gradient_check",
+          "description": "Verify autograd vs numerical gradient",
+          "tolerance": 1e-5
+        },
+        {
+          "name": "optimization_loop",
+          "description": "Use in Riemannian optimization",
+          "num_iterations": 100
+        },
+        {
+          "name": "double_backward",
+          "description": "Second-order derivatives",
+          "tolerance": 1e-5
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "non_differentiable_point",
+          "description": "Handle singularities"
+        },
+        {
+          "name": "graph_optimization",
+          "description": "Verify efficient autograd graph"
+        },
+        {
+          "name": "mixed_precision",
+          "description": "float32 forward, float64 backward"
+        }
+      ]
+    },
+    {
+      "name": "holonomy_computation",
+      "description": "Compute holonomy: parallel transport around closed loop. Measures curvature via angle deficit.",
+      "parameters": {
+        "loop_points": {
+          "type": "array",
+          "shape": "[num_points, n_dims]",
+          "description": "Points defining closed loop (loop_points[0] = loop_points[-1])"
+        },
+        "tangent_vector": {
+          "type": "array",
+          "shape": "[n_dims]",
+          "description": "Initial vector at loop_points[0]"
+        },
+        "geometry_type": {
+          "type": "string",
+          "enum": ["hyperbolic", "spherical", "euclidean"]
+        }
+      },
+      "returns": {
+        "final_vector": {
+          "type": "array",
+          "shape": "[n_dims]",
+          "description": "Vector after transport around loop"
+        },
+        "holonomy_angle": {
+          "type": "float",
+          "description": "Angle between initial and final vectors (radians)"
+        },
+        "holonomy_matrix": {
+          "type": "array",
+          "shape": "[n_dims, n_dims]",
+          "description": "Holonomy transformation matrix"
+        },
+        "enclosed_area": {
+          "type": "float",
+          "description": "Area enclosed by loop"
+        },
+        "curvature_estimate": {
+          "type": "float",
+          "description": "Estimated curvature from holonomy"
+        }
+      },
+      "complexity": {
+        "time": "O(num_points * n_dims)",
+        "space": "O(n_dims²)"
+      },
+      "mathematical_formula": {
+        "gauss_bonnet": "holonomy_angle = ∫∫_A K dA where K is Gaussian curvature, A is enclosed area",
+        "constant_curvature": "holonomy_angle = κ * area for constant curvature κ"
+      },
+      "implementation_notes": [
+        "Transport vector sequentially around loop",
+        "Compute angle between initial and final vectors",
+        "Estimate enclosed area (e.g., triangulation)",
+        "Verify loop closure: loop_points[0] ≈ loop_points[-1]",
+        "For flat space: holonomy_angle = 0"
+      ],
+      "test_cases": [
+        {
+          "name": "euclidean_holonomy",
+          "geometry_type": "euclidean",
+          "expected_holonomy_angle": 0.0,
+          "tolerance": 1e-10,
+          "note": "Zero holonomy in flat space"
+        },
+        {
+          "name": "spherical_triangle",
+          "geometry_type": "spherical",
+          "loop_points": "spherical triangle",
+          "description": "Holonomy = area of triangle",
+          "tolerance": 1e-6
+        },
+        {
+          "name": "hyperbolic_triangle",
+          "geometry_type": "hyperbolic",
+          "loop_points": "hyperbolic triangle",
+          "description": "Negative holonomy (κ < 0)",
+          "tolerance": 1e-6
+        },
+        {
+          "name": "gauss_bonnet_verification",
+          "description": "Verify Gauss-Bonnet theorem",
+          "tolerance": 1e-5
+        },
+        {
+          "name": "curvature_estimation",
+          "description": "Estimate curvature from holonomy",
+          "tolerance": 0.1
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "small_loop",
+          "description": "Tiny loop (holonomy ≈ 0)"
+        },
+        {
+          "name": "large_loop",
+          "description": "Large loop (significant holonomy)"
+        },
+        {
+          "name": "non_closed_loop",
+          "description": "Error if loop not closed"
+        }
+      ]
+    },
+    {
+      "name": "cross_curvature_parallel_transport",
+      "description": "Parallel transport across different curvatures. Transport vector from one geometry to another.",
+      "parameters": {
+        "base_point_source": {
+          "type": "array",
+          "shape": "[n_dims]",
+          "description": "Base point in source geometry"
+        },
+        "target_point_source": {
+          "type": "array",
+          "shape": "[n_dims]",
+          "description": "Target point in source geometry"
+        },
+        "tangent_vector": {
+          "type": "array",
+          "shape": "[n_dims]"
+        },
+        "source_geometry": {
+          "type": "string",
+          "enum": ["hyperbolic", "spherical", "euclidean"]
+        },
+        "target_geometry": {
+          "type": "string",
+          "enum": ["hyperbolic", "spherical", "euclidean"]
+        },
+        "conversion_method": {
+          "type": "string",
+          "enum": ["stereographic", "conformal"],
+          "default": "stereographic"
+        }
+      },
+      "returns": {
+        "transported_vector_target": {
+          "type": "array",
+          "shape": "[n_dims]",
+          "description": "Transported vector in target geometry"
+        },
+        "base_point_target": {
+          "type": "array",
+          "shape": "[n_dims]",
+          "description": "Base point converted to target geometry"
+        },
+        "target_point_target": {
+          "type": "array",
+          "shape": "[n_dims]",
+          "description": "Target point converted to target geometry"
+        }
+      },
+      "complexity": {
+        "time": "O(n_dims)",
+        "space": "O(n_dims)"
+      },
+      "implementation_notes": [
+        "Convert points from source to target geometry",
+        "Transport vector in source geometry",
+        "Convert transported vector to target geometry",
+        "Use pushforward for vector conversion",
+        "Preserve geometric properties where possible"
+      ],
+      "test_cases": [
+        {
+          "name": "hyp_to_sph_transport",
+          "source_geometry": "hyperbolic",
+          "target_geometry": "spherical",
+          "tolerance": 1e-6
+        },
+        {
+          "name": "sph_to_euc_transport",
+          "source_geometry": "spherical",
+          "target_geometry": "euclidean",
+          "tolerance": 1e-6
+        },
+        {
+          "name": "round_trip_transport",
+          "description": "Source → Target → Source",
+          "tolerance": 1e-8
+        },
+        {
+          "name": "length_scaling",
+          "description": "Verify length scaling across geometries"
+        },
+        {
+          "name": "angle_preservation",
+          "description": "Angles preserved in conformal maps",
+          "tolerance": 1e-6
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "same_geometry",
+          "source_geometry": "hyperbolic",
+          "target_geometry": "hyperbolic",
+          "description": "No conversion needed"
+        },
+        {
+          "name": "dimension_change",
+          "description": "Handle dimension changes (e.g., H^n → S^n ⊂ ℝ^{n+1})"
+        },
+        {
+          "name": "boundary_conversion",
+          "description": "Points near boundary"
+        }
+      ]
+    },
+    {
+      "name": "tensor_field_parallel_transport",
+      "description": "Parallel transport of tensor fields (not just vectors). Transports (p,q)-tensors along geodesics.",
+      "parameters": {
+        "base_point": {
+          "type": "array",
+          "shape": "[n_dims]"
+        },
+        "target_point": {
+          "type": "array",
+          "shape": "[n_dims]"
+        },
+        "tensor_field": {
+          "type": "array",
+          "shape": "[n_dims^(p+q)]",
+          "description": "Tensor of type (p,q) at base point"
+        },
+        "tensor_type": {
+          "type": "tuple",
+          "description": "(p, q) where p = contravariant rank, q = covariant rank"
+        },
+        "geometry_type": {
+          "type": "string",
+          "enum": ["hyperbolic", "spherical", "euclidean"]
+        }
+      },
+      "returns": {
+        "transported_tensor": {
+          "type": "array",
+          "shape": "[n_dims^(p+q)]",
+          "description": "Transported tensor at target point"
+        }
+      },
+      "complexity": {
+        "time": "O(n_dims^(p+q+1))",
+        "space": "O(n_dims^(p+q))"
+      },
+      "mathematical_formula": {
+        "tensor_transport": "PT(T^{i₁...iₚ}_{j₁...jₑ}) = Λ^{i₁}_{k₁} ... Λ^{iₚ}_{kₚ} (Λ⁻¹)^{l₁}_{j₁} ... (Λ⁻¹)^{lₑ}_{jₑ} T^{k₁...kₚ}_{l₁...lₑ}",
+        "vector_case": "(1,0)-tensor = contravariant vector, (0,1)-tensor = covariant vector"
+      },
+      "implementation_notes": [
+        "Compute parallel transport matrix Λ",
+        "Apply Λ to contravariant indices",
+        "Apply Λ⁻¹ to covariant indices",
+        "Handle tensor reshaping carefully",
+        "Special cases: (1,0) = vector, (0,2) = metric tensor"
+      ],
+      "test_cases": [
+        {
+          "name": "vector_transport",
+          "tensor_type": [1, 0],
+          "description": "Reduce to standard vector transport",
+          "tolerance": 1e-10
+        },
+        {
+          "name": "covector_transport",
+          "tensor_type": [0, 1],
+          "description": "Transport covector (1-form)",
+          "tolerance": 1e-8
+        },
+        {
+          "name": "metric_transport",
+          "tensor_type": [0, 2],
+          "description": "Transport metric tensor",
+          "tolerance": 1e-8
+        },
+        {
+          "name": "rank_2_tensor",
+          "tensor_type": [1, 1],
+          "description": "Transport (1,1)-tensor",
+          "tolerance": 1e-8
+        },
+        {
+          "name": "tensor_properties",
+          "description": "Verify tensor properties preserved",
+          "tolerance": 1e-8
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "scalar_transport",
+          "tensor_type": [0, 0],
+          "description": "Scalars don't change"
+        },
+        {
+          "name": "high_rank_tensor",
+          "tensor_type": [2, 2],
+          "description": "High-rank tensor (expensive)"
+        },
+        {
+          "name": "antisymmetric_tensor",
+          "description": "Preserve antisymmetry"
+        }
+      ]
+    },
+    {
+      "name": "parallel_transport_along_curve",
+      "description": "Parallel transport along arbitrary curve (not necessarily geodesic). More general than geodesic transport.",
+      "parameters": {
+        "curve_points": {
+          "type": "array",
+          "shape": "[num_points, n_dims]",
+          "description": "Points defining curve γ(t)"
+        },
+        "tangent_vector": {
+          "type": "array",
+          "shape": "[n_dims]",
+          "description": "Initial vector at curve_points[0]"
+        },
+        "geometry_type": {
+          "type": "string",
+          "enum": ["hyperbolic", "spherical", "euclidean"]
+        },
+        "method": {
+          "type": "string",
+          "enum": ["schild", "pole", "ode"],
+          "default": "ode",
+          "description": "Transport method"
+        }
+      },
+      "returns": {
+        "transported_vector": {
+          "type": "array",
+          "shape": "[n_dims]",
+          "description": "Vector at curve_points[-1]"
+        },
+        "intermediate_vectors": {
+          "type": "array",
+          "shape": "[num_points, n_dims]",
+          "description": "Vectors at each curve point"
+        }
+      },
+      "complexity": {
+        "time": "O(num_points * n_dims)",
+        "space": "O(num_points * n_dims)"
+      },
+      "mathematical_formula": {
+        "parallel_transport_equation": "∇_{γ'(t)} V(t) = 0 where V(t) is transported vector field",
+        "ode_formulation": "dV/dt = -Γ(γ'(t), V(t)) where Γ are Christoffel symbols"
+      },
+      "implementation_notes": [
+        "Discretize curve into segments",
+        "Transport along each segment",
+        "Use ODE solver for smooth curves",
+        "Schild's/Pole ladder for discrete curves",
+        "Accumulate transport transformations"
+      ],
+      "test_cases": [
+        {
+          "name": "geodesic_curve",
+          "description": "Should match geodesic transport",
+          "tolerance": 1e-8
+        },
+        {
+          "name": "circular_curve",
+          "description": "Transport along circle",
+          "tolerance": 1e-6
+        },
+        {
+          "name": "spiral_curve",
+          "description": "Transport along spiral",
+          "tolerance": 1e-6
+        },
+        {
+          "name": "piecewise_geodesic",
+          "description": "Curve made of geodesic segments",
+          "tolerance": 1e-8
+        },
+        {
+          "name": "smooth_vs_discrete",
+          "description": "Compare ODE vs discrete methods",
+          "tolerance": 1e-5
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "straight_line",
+          "description": "Straight line in ambient space (not geodesic)"
+        },
+        {
+          "name": "closed_curve",
+          "description": "Transport around closed curve (holonomy)"
+        },
+        {
+          "name": "high_curvature_curve",
+          "description": "Curve with high curvature"
+        }
+      ]
+    },
+    {
+      "name": "gpu_parallel_transport",
+      "description": "GPU-accelerated parallel transport for massive batches. Achieves 100-1000x speedup.",
+      "parameters": {
+        "base_points": {
+          "type": "array",
+          "shape": "[batch_size, n_dims]"
+        },
+        "target_points": {
+          "type": "array",
+          "shape": "[batch_size, n_dims]"
+        },
+        "tangent_vectors": {
+          "type": "array",
+          "shape": "[batch_size, n_dims]"
+        },
+        "geometry_type": {
+          "type": "string",
+          "enum": ["hyperbolic", "spherical", "euclidean"]
+        },
+        "device": {
+          "type": "string",
+          "default": "cuda:0"
+        }
+      },
+      "returns": {
+        "transported_vectors": {
+          "type": "array",
+          "shape": "[batch_size, n_dims]"
+        },
+        "gpu_time": {
+          "type": "float",
+          "description": "GPU computation time"
+        }
+      },
+      "complexity": {
+        "time": "O(batch_size * n_dims / num_cuda_cores)",
+        "space": "O(batch_size * n_dims) on GPU",
+        "speedup": "100-1000x vs CPU for large batches"
+      },
+      "implementation_notes": [
+        "Use PyTorch/JAX for GPU operations",
+        "Minimize CPU↔GPU transfers",
+        "Batch size should saturate GPU",
+        "Use float32 for speed, float64 for precision"
+      ],
+      "test_cases": [
+        {
+          "name": "gpu_vs_cpu",
+          "batch_size": 100000,
+          "expected_speedup": 100.0,
+          "tolerance": 1e-5
+        },
+        {
+          "name": "massive_batch",
+          "batch_size": 10000000,
+          "description": "10M transports on GPU"
+        },
+        {
+          "name": "gpu_consistency",
+          "description": "GPU matches CPU results",
+          "tolerance": 1e-6
+        },
+        {
+          "name": "multi_gpu",
+          "devices": ["cuda:0", "cuda:1"],
+          "description": "Multi-GPU distribution"
+        },
+        {
+          "name": "gpu_memory_efficiency",
+          "description": "Handle GPU memory limits"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "small_batch_gpu",
+          "batch_size": 10,
+          "description": "GPU overhead may dominate"
+        },
+        {
+          "name": "out_of_memory",
+          "batch_size": 100000000,
+          "description": "Handle GPU OOM"
+        },
+        {
+          "name": "no_gpu_fallback",
+          "description": "Fallback to CPU if no GPU"
+        }
+      ]
+    },
+    {
+      "name": "validated_parallel_transport",
+      "description": "Parallel transport with comprehensive validation. Ensures geometric properties are preserved.",
+      "parameters": {
+        "base_point": {
+          "type": "array",
+          "shape": "[n_dims]"
+        },
+        "target_point": {
+          "type": "array",
+          "shape": "[n_dims]"
+        },
+        "tangent_vector": {
+          "type": "array",
+          "shape": "[n_dims]"
+        },
+        "geometry_type": {
+          "type": "string",
+          "enum": ["hyperbolic", "spherical", "euclidean"]
+        },
+        "validation_level": {
+          "type": "string",
+          "enum": ["basic", "standard", "strict"],
+          "default": "standard"
+        }
+      },
+      "returns": {
+        "transported_vector": {
+          "type": "array",
+          "shape": "[n_dims]"
+        },
+        "validation_passed": {
+          "type": "bool"
+        },
+        "validation_report": {
+          "type": "dict",
+          "description": "Detailed validation results"
+        },
+        "quality_score": {
+          "type": "float",
+          "range": "[0, 1]"
+        }
+      },
+      "complexity": {
+        "time": "O(n_dims) + validation overhead",
+        "space": "O(n_dims)"
+      },
+      "implementation_notes": [
+        "Check length preservation: ||PT(v)|| = ||v||",
+        "Verify tangent space membership",
+        "Check angle preservation with geodesic",
+        "Validate round-trip: PT_{q→p}(PT_{p→q}(v)) = v",
+        "Monitor numerical errors"
+      ],
+      "test_cases": [
+        {
+          "name": "perfect_validation",
+          "expected_validation_passed": true,
+          "expected_quality_score": 1.0
+        },
+        {
+          "name": "length_preservation_check",
+          "description": "Verify ||PT(v)|| = ||v||",
+          "tolerance": 1e-10
+        },
+        {
+          "name": "round_trip_validation",
+          "description": "PT_{q→p}(PT_{p→q}(v)) = v",
+          "tolerance": 1e-8
+        },
+        {
+          "name": "tangent_space_check",
+          "description": "Transported vector in tangent space",
+          "tolerance": 1e-8
+        },
+        {
+          "name": "validation_levels",
+          "validation_levels": ["basic", "standard", "strict"]
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "failed_validation",
+          "description": "Invalid input or numerical error"
+        },
+        {
+          "name": "marginal_quality",
+          "description": "Passes but with warnings"
+        },
+        {
+          "name": "strict_validation",
+          "validation_level": "strict",
+          "description": "Very tight tolerances"
+        }
+      ]
+    }
+  ],
+  "applications": {
+    "riemannian_optimization": "Vector transport in Riemannian gradient descent",
+    "geometric_deep_learning": "Feature propagation on manifolds",
+    "computer_graphics": "Frame transport for animation",
+    "physics": "Gauge theory, general relativity"
+  },
+  "dependencies": [
+    "numpy",
+    "scipy",
+    "torch (for autograd and GPU)",
+    "jax (alternative autograd)"
+  ],
+  "references": [
+    "Absil, P. A., et al. (2008). Optimization Algorithms on Matrix Manifolds. Princeton University Press.",
+    "Lorenzi, M., & Pennec, X. (2014). Efficient Parallel Transport of Deformations in Time Series of Images. IEEE TMI.",
+    "Khesin, B., & Tabachnikov, S. (2022). Differential Geometry and Topology. AMS."
+  ]
+}

@@ -1,0 +1,647 @@
+{
+  "specification_name": "Logarithmic Map Gradients and Jacobians",
+  "version": "1.0.0",
+  "category": "Essential Geometry - Logarithmic Maps - Differentiation",
+  "description": "Gradient and Jacobian computation for logarithmic maps. Essential for optimization, backpropagation, and sensitivity analysis in geometric deep learning. Enables automatic differentiation through logarithmic map operations.",
+  "mathematical_foundation": {
+    "gradient_definition": "∇_p log_p(q) = ∂log_p(q)/∂p - derivative with respect to base point",
+    "jacobian_definition": "J_log = ∂log_p(q)/∂q - derivative with respect to target point",
+    "hessian_definition": "H_log = ∂²log_p(q)/∂p² - second-order derivatives",
+    "chain_rule": "For composition f(log_p(q)): ∇f = (∇f/∂log) · J_log",
+    "applications": [
+      "Gradient-based optimization in hyperbolic space",
+      "Backpropagation through geometric layers",
+      "Sensitivity analysis",
+      "Riemannian optimization algorithms"
+    ]
+  },
+  "operations": [
+    {
+      "name": "log_map_gradient_base",
+      "description": "Compute gradient of logarithmic map with respect to base point: ∇_p log_p(q). Used for optimizing the base point in geometric embeddings.",
+      "parameters": {
+        "base_point": {
+          "type": "array",
+          "shape": "[n_dims]",
+          "description": "Base point p where gradient is computed"
+        },
+        "target_point": {
+          "type": "array",
+          "shape": "[n_dims]",
+          "description": "Target point q"
+        },
+        "geometry_type": {
+          "type": "string",
+          "enum": ["hyperbolic", "spherical", "euclidean"]
+        },
+        "curvature": {
+          "type": "float",
+          "optional": true
+        }
+      },
+      "returns": {
+        "gradient": {
+          "type": "array",
+          "shape": "[n_dims, n_dims]",
+          "description": "Gradient matrix ∂log_p(q)/∂p"
+        },
+        "tangent_vector": {
+          "type": "array",
+          "shape": "[n_dims]",
+          "description": "log_p(q) value (for convenience)"
+        }
+      },
+      "complexity": {
+        "time": "O(n_dims²)",
+        "space": "O(n_dims²)"
+      },
+      "mathematical_formula": {
+        "hyperbolic_poincare": "∇_p log_p(q) = -2/(λ_p²) * (I - 2pp^T/(1-||p||²)) * artanh(||(-p)⊕q||) * ...",
+        "spherical": "∇_p log_p(q) = (I - pp^T)/sin(θ) - θ*cos(θ)/sin²(θ) * (q - cos(θ)p)(q - cos(θ)p)^T",
+        "euclidean": "∇_p log_p(q) = -I (identity matrix)"
+      },
+      "implementation_notes": [
+        "Use automatic differentiation (autograd) for complex geometries",
+        "Analytical formulas available for standard geometries",
+        "Handle singularities (p = q, antipodal points)",
+        "Ensure gradient is in tangent space T_p M",
+        "Use numerical differentiation as fallback"
+      ],
+      "test_cases": [
+        {
+          "name": "euclidean_gradient",
+          "base_point": [1.0, 2.0],
+          "target_point": [4.0, 6.0],
+          "geometry_type": "euclidean",
+          "expected_gradient": [[-1.0, 0.0], [0.0, -1.0]],
+          "tolerance": 1e-10
+        },
+        {
+          "name": "hyperbolic_origin_gradient",
+          "base_point": [0.0, 0.0],
+          "target_point": [0.5, 0.0],
+          "geometry_type": "hyperbolic",
+          "tolerance": 1e-6,
+          "note": "Verify against numerical gradient"
+        },
+        {
+          "name": "spherical_gradient",
+          "base_point": [0.0, 0.0, 1.0],
+          "target_point": [1.0, 0.0, 0.0],
+          "geometry_type": "spherical",
+          "tolerance": 1e-6
+        },
+        {
+          "name": "gradient_symmetry",
+          "description": "Check gradient properties (e.g., tangent space constraint)",
+          "tolerance": 1e-8
+        },
+        {
+          "name": "numerical_vs_analytical",
+          "description": "Compare analytical gradient with numerical approximation",
+          "tolerance": 1e-5
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "identical_points",
+          "base_point": [0.5, 0.5],
+          "target_point": [0.5, 0.5],
+          "description": "Gradient at singularity (p = q)"
+        },
+        {
+          "name": "antipodal_spherical",
+          "base_point": [0.0, 0.0, 1.0],
+          "target_point": [0.0, 0.0, -1.0],
+          "geometry_type": "spherical",
+          "description": "Undefined gradient at antipodal points"
+        },
+        {
+          "name": "near_boundary",
+          "base_point": [0.99, 0.0],
+          "target_point": [0.0, 0.99],
+          "geometry_type": "hyperbolic",
+          "description": "Numerical stability near boundary"
+        }
+      ]
+    },
+    {
+      "name": "log_map_jacobian",
+      "description": "Compute Jacobian of logarithmic map with respect to target point: J = ∂log_p(q)/∂q. Essential for backpropagation through log map layers.",
+      "parameters": {
+        "base_point": {
+          "type": "array",
+          "shape": "[n_dims]"
+        },
+        "target_point": {
+          "type": "array",
+          "shape": "[n_dims]"
+        },
+        "geometry_type": {
+          "type": "string",
+          "enum": ["hyperbolic", "spherical", "euclidean"]
+        },
+        "curvature": {
+          "type": "float",
+          "optional": true
+        }
+      },
+      "returns": {
+        "jacobian": {
+          "type": "array",
+          "shape": "[n_dims, n_dims]",
+          "description": "Jacobian matrix J = ∂log_p(q)/∂q"
+        },
+        "tangent_vector": {
+          "type": "array",
+          "shape": "[n_dims]",
+          "description": "log_p(q) value"
+        }
+      },
+      "complexity": {
+        "time": "O(n_dims²)",
+        "space": "O(n_dims²)"
+      },
+      "mathematical_formula": {
+        "hyperbolic_poincare": "J = (2/λ_p) * [artanh'(||u||) * uu^T/||u||² + artanh(||u||)/||u|| * (I - uu^T/||u||²)] where u = (-p)⊕q",
+        "spherical": "J = (I - pp^T - (q - cos(θ)p)(q - cos(θ)p)^T/sin²(θ))/sin(θ)",
+        "euclidean": "J = I (identity matrix)"
+      },
+      "implementation_notes": [
+        "Jacobian is used in backpropagation: ∂L/∂q = J^T · ∂L/∂v",
+        "For batch operations, compute Jacobian-vector products efficiently",
+        "Use implicit differentiation for complex geometries",
+        "Cache intermediate computations from forward pass",
+        "Ensure numerical stability for small distances"
+      ],
+      "test_cases": [
+        {
+          "name": "euclidean_jacobian",
+          "base_point": [0.0, 0.0],
+          "target_point": [1.0, 1.0],
+          "geometry_type": "euclidean",
+          "expected_jacobian": [[1.0, 0.0], [0.0, 1.0]],
+          "tolerance": 1e-10
+        },
+        {
+          "name": "hyperbolic_jacobian",
+          "base_point": [0.0, 0.0],
+          "target_point": [0.3, 0.4],
+          "geometry_type": "hyperbolic",
+          "tolerance": 1e-6,
+          "note": "Verify against numerical Jacobian"
+        },
+        {
+          "name": "spherical_jacobian",
+          "base_point": [0.0, 0.0, 1.0],
+          "target_point": [0.7071, 0.7071, 0.0],
+          "geometry_type": "spherical",
+          "tolerance": 1e-6
+        },
+        {
+          "name": "jacobian_vector_product",
+          "description": "Test J·v for backpropagation",
+          "tolerance": 1e-8
+        },
+        {
+          "name": "chain_rule_test",
+          "description": "Verify chain rule: ∇f(log_p(q)) = J^T · ∇f",
+          "tolerance": 1e-6
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "small_distance",
+          "base_point": [0.5, 0.5],
+          "target_point": [0.5001, 0.5001],
+          "description": "Jacobian for very small displacement"
+        },
+        {
+          "name": "large_distance",
+          "base_point": [0.0, 0.0],
+          "target_point": [0.95, 0.0],
+          "geometry_type": "hyperbolic",
+          "description": "Jacobian for large hyperbolic distance"
+        },
+        {
+          "name": "jacobian_rank",
+          "description": "Verify Jacobian has full rank (except at singularities)"
+        }
+      ]
+    },
+    {
+      "name": "log_map_hessian",
+      "description": "Compute Hessian (second-order derivatives) of logarithmic map: H = ∂²log_p(q)/∂p². Used for second-order optimization methods.",
+      "parameters": {
+        "base_point": {
+          "type": "array",
+          "shape": "[n_dims]"
+        },
+        "target_point": {
+          "type": "array",
+          "shape": "[n_dims]"
+        },
+        "geometry_type": {
+          "type": "string",
+          "enum": ["hyperbolic", "spherical", "euclidean"]
+        },
+        "direction": {
+          "type": "array",
+          "shape": "[n_dims]",
+          "optional": true,
+          "description": "Direction for Hessian-vector product (if provided)"
+        }
+      },
+      "returns": {
+        "hessian": {
+          "type": "array",
+          "shape": "[n_dims, n_dims, n_dims]",
+          "description": "Hessian tensor H_ijk = ∂²(log_p(q))_i/∂p_j∂p_k"
+        },
+        "hessian_vector_product": {
+          "type": "array",
+          "shape": "[n_dims, n_dims]",
+          "optional": true,
+          "description": "H·v if direction v is provided"
+        }
+      },
+      "complexity": {
+        "time": "O(n_dims³) for full Hessian, O(n_dims²) for Hessian-vector product",
+        "space": "O(n_dims³) for full Hessian, O(n_dims²) for HVP"
+      },
+      "mathematical_formula": {
+        "euclidean": "H = 0 (all second derivatives are zero)",
+        "general": "H_ijk = ∂²(log_p(q))_i/∂p_j∂p_k - computed via automatic differentiation"
+      },
+      "implementation_notes": [
+        "Full Hessian is expensive - prefer Hessian-vector products",
+        "Use forward-mode AD for Hessian-vector products",
+        "Hessian is symmetric: H_ijk = H_ikj",
+        "For Newton's method, only need H·v",
+        "Numerical Hessian as fallback (finite differences)"
+      ],
+      "test_cases": [
+        {
+          "name": "euclidean_hessian",
+          "base_point": [1.0, 2.0],
+          "target_point": [3.0, 4.0],
+          "geometry_type": "euclidean",
+          "expected_hessian": "zeros",
+          "tolerance": 1e-10
+        },
+        {
+          "name": "hyperbolic_hessian",
+          "base_point": [0.0, 0.0],
+          "target_point": [0.5, 0.0],
+          "geometry_type": "hyperbolic",
+          "tolerance": 1e-5,
+          "note": "Verify against numerical Hessian"
+        },
+        {
+          "name": "hessian_symmetry",
+          "description": "Verify H_ijk = H_ikj",
+          "tolerance": 1e-8
+        },
+        {
+          "name": "hessian_vector_product",
+          "direction": [1.0, 0.0],
+          "description": "Test H·v computation",
+          "tolerance": 1e-6
+        },
+        {
+          "name": "newton_step",
+          "description": "Use Hessian for Newton's method step",
+          "tolerance": 1e-6
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "hessian_at_origin",
+          "base_point": [0.0, 0.0],
+          "target_point": [0.1, 0.1],
+          "description": "Hessian at origin (high symmetry)"
+        },
+        {
+          "name": "high_curvature",
+          "curvature": -10.0,
+          "description": "Hessian in high-curvature space"
+        },
+        {
+          "name": "hessian_conditioning",
+          "description": "Check condition number of Hessian"
+        }
+      ]
+    },
+    {
+      "name": "batch_log_map_jacobian",
+      "description": "Compute Jacobians for batch of logarithmic maps. Vectorized computation of ∂log_pᵢ(qᵢ)/∂qᵢ for i=1..batch_size.",
+      "parameters": {
+        "base_points": {
+          "type": "array",
+          "shape": "[batch_size, n_dims]"
+        },
+        "target_points": {
+          "type": "array",
+          "shape": "[batch_size, n_dims]"
+        },
+        "geometry_type": {
+          "type": "string",
+          "enum": ["hyperbolic", "spherical", "euclidean"]
+        }
+      },
+      "returns": {
+        "jacobians": {
+          "type": "array",
+          "shape": "[batch_size, n_dims, n_dims]",
+          "description": "Batch of Jacobian matrices"
+        },
+        "tangent_vectors": {
+          "type": "array",
+          "shape": "[batch_size, n_dims]",
+          "description": "Batch of log map values"
+        }
+      },
+      "complexity": {
+        "time": "O(batch_size * n_dims²) with vectorization",
+        "space": "O(batch_size * n_dims²)"
+      },
+      "implementation_notes": [
+        "Vectorize Jacobian computation across batch",
+        "Use broadcasting for efficiency",
+        "Compute all Jacobians in parallel on GPU",
+        "Cache intermediate values from forward pass",
+        "Handle mixed valid/invalid inputs gracefully"
+      ],
+      "test_cases": [
+        {
+          "name": "batch_euclidean_jacobians",
+          "batch_size": 100,
+          "n_dims": 64,
+          "geometry_type": "euclidean",
+          "expected_jacobians": "identity matrices",
+          "tolerance": 1e-10
+        },
+        {
+          "name": "batch_hyperbolic_jacobians",
+          "batch_size": 50,
+          "n_dims": 32,
+          "geometry_type": "hyperbolic",
+          "tolerance": 1e-6
+        },
+        {
+          "name": "batch_consistency",
+          "description": "Batch results match sequential computation",
+          "batch_size": 20,
+          "tolerance": 1e-10
+        },
+        {
+          "name": "batch_backprop",
+          "description": "Use batch Jacobians for backpropagation",
+          "batch_size": 100,
+          "tolerance": 1e-6
+        },
+        {
+          "name": "gpu_batch_jacobians",
+          "batch_size": 10000,
+          "description": "GPU-accelerated batch Jacobian computation"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "single_element_batch",
+          "batch_size": 1,
+          "description": "Batch of size 1"
+        },
+        {
+          "name": "large_batch_memory",
+          "batch_size": 100000,
+          "description": "Memory-efficient large batch"
+        },
+        {
+          "name": "mixed_valid_invalid",
+          "description": "Some inputs invalid (e.g., antipodal)"
+        }
+      ]
+    },
+    {
+      "name": "log_map_autograd",
+      "description": "Automatic differentiation wrapper for logarithmic map. Integrates with PyTorch/JAX autograd for seamless backpropagation.",
+      "parameters": {
+        "base_point": {
+          "type": "tensor",
+          "shape": "[n_dims]",
+          "description": "Base point (requires_grad=True for PyTorch)"
+        },
+        "target_point": {
+          "type": "tensor",
+          "shape": "[n_dims]",
+          "description": "Target point (requires_grad=True)"
+        },
+        "geometry_type": {
+          "type": "string",
+          "enum": ["hyperbolic", "spherical", "euclidean"]
+        },
+        "backend": {
+          "type": "string",
+          "enum": ["pytorch", "jax", "tensorflow"],
+          "default": "pytorch"
+        }
+      },
+      "returns": {
+        "tangent_vector": {
+          "type": "tensor",
+          "shape": "[n_dims]",
+          "description": "log_p(q) with gradient tracking"
+        },
+        "distance": {
+          "type": "tensor",
+          "shape": "[]",
+          "description": "Geodesic distance (scalar tensor)"
+        }
+      },
+      "complexity": {
+        "time": "O(n_dims) forward, O(n_dims²) backward",
+        "space": "O(n_dims) + autograd graph overhead"
+      },
+      "implementation_notes": [
+        "Define custom autograd Function/vjp for efficiency",
+        "Implement forward and backward passes",
+        "Use analytical gradients (faster than numerical)",
+        "Support both forward and reverse mode AD",
+        "Handle non-differentiable points gracefully"
+      ],
+      "test_cases": [
+        {
+          "name": "pytorch_autograd",
+          "backend": "pytorch",
+          "description": "Test PyTorch autograd integration",
+          "tolerance": 1e-6
+        },
+        {
+          "name": "jax_autograd",
+          "backend": "jax",
+          "description": "Test JAX grad/vjp",
+          "tolerance": 1e-6
+        },
+        {
+          "name": "gradient_check",
+          "description": "Verify autograd gradients match analytical",
+          "tolerance": 1e-5
+        },
+        {
+          "name": "double_backward",
+          "description": "Test second-order derivatives (grad of grad)",
+          "tolerance": 1e-5
+        },
+        {
+          "name": "optimization_loop",
+          "description": "Use in gradient descent optimization",
+          "num_iterations": 100
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "non_differentiable_point",
+          "description": "Handle singularities in autograd"
+        },
+        {
+          "name": "mixed_precision",
+          "description": "float32 forward, float64 backward"
+        },
+        {
+          "name": "graph_optimization",
+          "description": "Verify autograd graph is optimized"
+        }
+      ]
+    },
+    {
+      "name": "log_map_sensitivity_analysis",
+      "description": "Analyze sensitivity of logarithmic map to perturbations in inputs. Computes condition numbers and error bounds.",
+      "parameters": {
+        "base_point": {
+          "type": "array",
+          "shape": "[n_dims]"
+        },
+        "target_point": {
+          "type": "array",
+          "shape": "[n_dims]"
+        },
+        "geometry_type": {
+          "type": "string",
+          "enum": ["hyperbolic", "spherical", "euclidean"]
+        },
+        "perturbation_scale": {
+          "type": "float",
+          "default": 1e-6,
+          "description": "Scale of input perturbations for analysis"
+        }
+      },
+      "returns": {
+        "condition_number": {
+          "type": "float",
+          "description": "Condition number κ = ||J|| * ||J⁻¹||"
+        },
+        "sensitivity_base": {
+          "type": "float",
+          "description": "Sensitivity to base point perturbations"
+        },
+        "sensitivity_target": {
+          "type": "float",
+          "description": "Sensitivity to target point perturbations"
+        },
+        "error_bound": {
+          "type": "float",
+          "description": "Upper bound on output error given input error"
+        },
+        "is_well_conditioned": {
+          "type": "bool",
+          "description": "True if condition number < 100"
+        }
+      },
+      "complexity": {
+        "time": "O(n_dims³) for condition number computation",
+        "space": "O(n_dims²)"
+      },
+      "implementation_notes": [
+        "Compute Jacobian and its singular values",
+        "Condition number = σ_max / σ_min",
+        "Test with random perturbations",
+        "Identify ill-conditioned regions (near singularities)",
+        "Provide recommendations for numerical stability"
+      ],
+      "test_cases": [
+        {
+          "name": "well_conditioned_euclidean",
+          "base_point": [0.0, 0.0],
+          "target_point": [1.0, 1.0],
+          "geometry_type": "euclidean",
+          "expected_condition_number": 1.0,
+          "tolerance": 1e-10
+        },
+        {
+          "name": "hyperbolic_sensitivity",
+          "base_point": [0.0, 0.0],
+          "target_point": [0.5, 0.5],
+          "geometry_type": "hyperbolic",
+          "expected_well_conditioned": true
+        },
+        {
+          "name": "near_singularity",
+          "base_point": [0.5, 0.5],
+          "target_point": [0.5001, 0.5001],
+          "description": "High condition number near p = q",
+          "expected_well_conditioned": false
+        },
+        {
+          "name": "antipodal_sensitivity",
+          "base_point": [0.0, 0.0, 1.0],
+          "target_point": [0.0, 0.0, -0.999],
+          "geometry_type": "spherical",
+          "description": "Very high sensitivity near antipodal points"
+        },
+        {
+          "name": "perturbation_analysis",
+          "description": "Verify error bound holds for random perturbations",
+          "num_trials": 100
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "singular_point",
+          "base_point": [0.5, 0.5],
+          "target_point": [0.5, 0.5],
+          "description": "Infinite condition number at p = q"
+        },
+        {
+          "name": "boundary_sensitivity",
+          "base_point": [0.99, 0.0],
+          "target_point": [0.0, 0.99],
+          "geometry_type": "hyperbolic",
+          "description": "High sensitivity near boundary"
+        },
+        {
+          "name": "high_dimension_conditioning",
+          "n_dims": 1024,
+          "description": "Condition number in high dimensions"
+        }
+      ]
+    }
+  ],
+  "integration_examples": {
+    "pytorch_example": "class LogMapLayer(torch.nn.Module):\n    def forward(self, base, target):\n        return log_map_autograd(base, target, 'hyperbolic', backend='pytorch')",
+    "optimization_example": "optimizer = RiemannianSGD(params)\nfor epoch in range(num_epochs):\n    loss = compute_loss(log_map_autograd(p, q))\n    loss.backward()\n    optimizer.step()",
+    "sensitivity_example": "analysis = log_map_sensitivity_analysis(p, q, 'hyperbolic')\nif not analysis['is_well_conditioned']:\n    print('Warning: Ill-conditioned computation')"
+  },
+  "dependencies": [
+    "numpy",
+    "scipy",
+    "torch (for autograd)",
+    "jax (alternative autograd)",
+    "autograd (lightweight alternative)"
+  ],
+  "references": [
+    "Bécigneul, G., & Ganea, O. (2019). Riemannian Adaptive Optimization Methods. ICLR.",
+    "Griewank, A., & Walther, A. (2008). Evaluating Derivatives: Principles and Techniques of Algorithmic Differentiation.",
+    "Absil, P. A., et al. (2008). Optimization Algorithms on Matrix Manifolds. Princeton University Press."
+  ]
+}

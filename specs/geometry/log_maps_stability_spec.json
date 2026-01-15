@@ -1,0 +1,842 @@
+{
+  "specification_name": "Numerically Stable Logarithmic Maps",
+  "version": "1.0.0",
+  "category": "Essential Geometry - Logarithmic Maps - Numerical Stability",
+  "description": "Numerically stable implementations of logarithmic maps with adaptive precision, error estimation, and robust handling of extreme cases. Ensures reliable computation across the full range of curvatures, distances, and dimensions.",
+  "mathematical_foundation": {
+    "stability_challenges": [
+      "Catastrophic cancellation when p ≈ q",
+      "Loss of precision for large distances (near boundary)",
+      "Singularities at antipodal points",
+      "Numerical overflow/underflow in extreme curvatures",
+      "Accumulation of rounding errors in high dimensions"
+    ],
+    "stability_techniques": [
+      "Taylor series expansions for small distances",
+      "Logarithmic scaling for large distances",
+      "Kahan summation for high-dimensional operations",
+      "Adaptive precision (float32 → float64 → arbitrary precision)",
+      "Iterative refinement methods"
+    ]
+  },
+  "operations": [
+    {
+      "name": "stable_log_map",
+      "description": "Numerically stable logarithmic map with automatic handling of edge cases. Uses Taylor expansions for small distances and stable formulations for large distances.",
+      "parameters": {
+        "base_point": {
+          "type": "array",
+          "shape": "[n_dims]",
+          "description": "Base point p"
+        },
+        "target_point": {
+          "type": "array",
+          "shape": "[n_dims]",
+          "description": "Target point q"
+        },
+        "geometry_type": {
+          "type": "string",
+          "enum": ["hyperbolic", "spherical", "euclidean"]
+        },
+        "curvature": {
+          "type": "float",
+          "optional": true
+        },
+        "stability_threshold": {
+          "type": "float",
+          "default": 1e-7,
+          "description": "Distance threshold for switching to Taylor expansion"
+        }
+      },
+      "returns": {
+        "tangent_vector": {
+          "type": "array",
+          "shape": "[n_dims]",
+          "description": "Stably computed log_p(q)"
+        },
+        "distance": {
+          "type": "float",
+          "description": "Geodesic distance"
+        },
+        "method_used": {
+          "type": "string",
+          "enum": ["standard", "taylor", "iterative"],
+          "description": "Numerical method used"
+        },
+        "estimated_error": {
+          "type": "float",
+          "description": "Estimated numerical error"
+        }
+      },
+      "complexity": {
+        "time": "O(n_dims) standard, O(n_dims * k) for k Taylor terms",
+        "space": "O(n_dims)"
+      },
+      "mathematical_formula": {
+        "small_distance_taylor": "For ||q-p|| < ε: log_p(q) ≈ (q-p) + κ/6 * ||q-p||² * (q-p) + O(||q-p||³)",
+        "hyperbolic_stable": "Use log1p and expm1 for numerical stability: artanh(x) = 0.5 * log1p(2x/(1-x))",
+        "spherical_stable": "For small θ: log_p(q) ≈ (q - ⟨p,q⟩p) * (1 + θ²/6 + ...)"
+      },
+      "implementation_notes": [
+        "Detect small distances: ||q-p|| < stability_threshold",
+        "Use Taylor series: log_p(q) ≈ (q-p) + O(||q-p||²)",
+        "For hyperbolic: use log1p, expm1 instead of log, exp",
+        "For spherical: use atan2 instead of acos for angles",
+        "Kahan summation for high-dimensional dot products",
+        "Monitor condition numbers and switch precision if needed"
+      ],
+      "test_cases": [
+        {
+          "name": "very_small_distance",
+          "base_point": [0.5, 0.5],
+          "target_point": [0.5000001, 0.5000001],
+          "geometry_type": "hyperbolic",
+          "expected_method": "taylor",
+          "tolerance": 1e-12,
+          "note": "Should use Taylor expansion"
+        },
+        {
+          "name": "normal_distance",
+          "base_point": [0.0, 0.0],
+          "target_point": [0.5, 0.0],
+          "geometry_type": "hyperbolic",
+          "expected_method": "standard",
+          "tolerance": 1e-10
+        },
+        {
+          "name": "near_boundary",
+          "base_point": [0.0, 0.0],
+          "target_point": [0.99, 0.0],
+          "geometry_type": "hyperbolic",
+          "expected_method": "standard",
+          "tolerance": 1e-8,
+          "note": "Large distance, but stable"
+        },
+        {
+          "name": "high_precision_required",
+          "base_point": [0.9999, 0.0],
+          "target_point": [0.99991, 0.0],
+          "geometry_type": "hyperbolic",
+          "tolerance": 1e-10,
+          "note": "Near boundary, small displacement"
+        },
+        {
+          "name": "error_estimation",
+          "description": "Verify estimated_error is accurate",
+          "tolerance": 1e-8
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "identical_points",
+          "base_point": [0.5, 0.5],
+          "target_point": [0.5, 0.5],
+          "expected_tangent": [0.0, 0.0],
+          "expected_error": 0.0
+        },
+        {
+          "name": "extreme_curvature",
+          "curvature": -100.0,
+          "description": "Very high curvature"
+        },
+        {
+          "name": "high_dimensional_stability",
+          "n_dims": 1024,
+          "description": "Numerical stability in high dimensions"
+        }
+      ]
+    },
+    {
+      "name": "adaptive_precision_log_map",
+      "description": "Logarithmic map with adaptive precision. Automatically switches from float32 → float64 → arbitrary precision based on condition number and error estimates.",
+      "parameters": {
+        "base_point": {
+          "type": "array",
+          "shape": "[n_dims]"
+        },
+        "target_point": {
+          "type": "array",
+          "shape": "[n_dims]"
+        },
+        "geometry_type": {
+          "type": "string",
+          "enum": ["hyperbolic", "spherical", "euclidean"]
+        },
+        "target_precision": {
+          "type": "float",
+          "default": 1e-10,
+          "description": "Target relative error"
+        },
+        "max_precision": {
+          "type": "string",
+          "enum": ["float32", "float64", "float128", "arbitrary"],
+          "default": "float64",
+          "description": "Maximum precision to use"
+        }
+      },
+      "returns": {
+        "tangent_vector": {
+          "type": "array",
+          "shape": "[n_dims]",
+          "description": "High-precision result"
+        },
+        "distance": {
+          "type": "float"
+        },
+        "precision_used": {
+          "type": "string",
+          "description": "Actual precision used (float32/float64/float128/arbitrary)"
+        },
+        "achieved_precision": {
+          "type": "float",
+          "description": "Achieved relative error"
+        },
+        "iterations": {
+          "type": "int",
+          "description": "Number of precision escalations"
+        }
+      },
+      "complexity": {
+        "time": "O(n_dims) to O(n_dims * log(precision)) depending on precision",
+        "space": "O(n_dims) per precision level"
+      },
+      "implementation_notes": [
+        "Start with float32 for speed",
+        "Estimate error using condition number",
+        "If error > target_precision, escalate to float64",
+        "Use mpmath for arbitrary precision if needed",
+        "Cache intermediate results to avoid recomputation",
+        "Balance precision vs performance"
+      ],
+      "test_cases": [
+        {
+          "name": "float32_sufficient",
+          "base_point": [0.0, 0.0],
+          "target_point": [0.5, 0.0],
+          "target_precision": 1e-6,
+          "expected_precision_used": "float32",
+          "tolerance": 1e-6
+        },
+        {
+          "name": "float64_required",
+          "base_point": [0.9, 0.0],
+          "target_point": [0.9001, 0.0],
+          "target_precision": 1e-12,
+          "expected_precision_used": "float64",
+          "tolerance": 1e-12
+        },
+        {
+          "name": "arbitrary_precision",
+          "base_point": [0.999999, 0.0],
+          "target_point": [0.9999991, 0.0],
+          "target_precision": 1e-15,
+          "max_precision": "arbitrary",
+          "expected_precision_used": "float128",
+          "tolerance": 1e-15
+        },
+        {
+          "name": "precision_escalation",
+          "description": "Track precision escalation process",
+          "expected_iterations": 2
+        },
+        {
+          "name": "performance_vs_precision",
+          "description": "Measure time vs precision tradeoff"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "max_precision_insufficient",
+          "target_precision": 1e-20,
+          "max_precision": "float64",
+          "description": "Cannot achieve target precision"
+        },
+        {
+          "name": "precision_overkill",
+          "target_precision": 1e-3,
+          "description": "Don't use high precision unnecessarily"
+        },
+        {
+          "name": "mixed_precision_batch",
+          "description": "Different precisions for different batch elements"
+        }
+      ]
+    },
+    {
+      "name": "log_map_with_error_bounds",
+      "description": "Compute logarithmic map with rigorous error bounds. Provides guaranteed upper and lower bounds on the result.",
+      "parameters": {
+        "base_point": {
+          "type": "array",
+          "shape": "[n_dims]"
+        },
+        "target_point": {
+          "type": "array",
+          "shape": "[n_dims]"
+        },
+        "geometry_type": {
+          "type": "string",
+          "enum": ["hyperbolic", "spherical", "euclidean"]
+        },
+        "input_error": {
+          "type": "float",
+          "default": 0.0,
+          "description": "Known error in input points"
+        }
+      },
+      "returns": {
+        "tangent_vector": {
+          "type": "array",
+          "shape": "[n_dims]",
+          "description": "Computed log_p(q)"
+        },
+        "distance": {
+          "type": "float"
+        },
+        "error_bound": {
+          "type": "float",
+          "description": "Guaranteed upper bound on ||true_result - computed_result||"
+        },
+        "lower_bound": {
+          "type": "array",
+          "shape": "[n_dims]",
+          "description": "Component-wise lower bounds"
+        },
+        "upper_bound": {
+          "type": "array",
+          "shape": "[n_dims]",
+          "description": "Component-wise upper bounds"
+        }
+      },
+      "complexity": {
+        "time": "O(n_dims) + error analysis overhead",
+        "space": "O(n_dims)"
+      },
+      "mathematical_formula": {
+        "error_propagation": "||δv|| ≤ κ * (||δp|| + ||δq||) where κ is condition number",
+        "interval_arithmetic": "Use interval arithmetic to track error bounds through computation"
+      },
+      "implementation_notes": [
+        "Use interval arithmetic for rigorous bounds",
+        "Propagate input errors through computation",
+        "Account for rounding errors (machine epsilon)",
+        "Compute condition number for error amplification",
+        "Provide conservative but tight bounds"
+      ],
+      "test_cases": [
+        {
+          "name": "zero_input_error",
+          "base_point": [0.0, 0.0],
+          "target_point": [0.5, 0.0],
+          "input_error": 0.0,
+          "expected_error_bound": 1e-15,
+          "note": "Only rounding errors"
+        },
+        {
+          "name": "with_input_error",
+          "base_point": [0.0, 0.0],
+          "target_point": [0.5, 0.0],
+          "input_error": 1e-6,
+          "expected_error_bound": 1e-5,
+          "note": "Error amplification"
+        },
+        {
+          "name": "ill_conditioned",
+          "base_point": [0.5, 0.5],
+          "target_point": [0.5001, 0.5001],
+          "input_error": 1e-8,
+          "description": "Large error amplification",
+          "expected_error_bound": 1e-4
+        },
+        {
+          "name": "bound_tightness",
+          "description": "Verify bounds are tight (not overly conservative)",
+          "tolerance": 2.0
+        },
+        {
+          "name": "bound_validity",
+          "description": "Verify true result is within bounds",
+          "num_trials": 100
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "large_input_error",
+          "input_error": 0.1,
+          "description": "Large input uncertainty"
+        },
+        {
+          "name": "high_curvature_bounds",
+          "curvature": -10.0,
+          "description": "Error bounds in high curvature"
+        },
+        {
+          "name": "boundary_error_bounds",
+          "base_point": [0.95, 0.0],
+          "description": "Error bounds near boundary"
+        }
+      ]
+    },
+    {
+      "name": "iterative_refinement_log_map",
+      "description": "Compute logarithmic map using iterative refinement. Starts with low-precision estimate and refines to high precision.",
+      "parameters": {
+        "base_point": {
+          "type": "array",
+          "shape": "[n_dims]"
+        },
+        "target_point": {
+          "type": "array",
+          "shape": "[n_dims]"
+        },
+        "geometry_type": {
+          "type": "string",
+          "enum": ["hyperbolic", "spherical", "euclidean"]
+        },
+        "tolerance": {
+          "type": "float",
+          "default": 1e-12,
+          "description": "Convergence tolerance"
+        },
+        "max_iterations": {
+          "type": "int",
+          "default": 10,
+          "description": "Maximum refinement iterations"
+        }
+      },
+      "returns": {
+        "tangent_vector": {
+          "type": "array",
+          "shape": "[n_dims]",
+          "description": "Refined result"
+        },
+        "distance": {
+          "type": "float"
+        },
+        "iterations": {
+          "type": "int",
+          "description": "Number of iterations performed"
+        },
+        "residual": {
+          "type": "float",
+          "description": "Final residual ||exp_p(v) - q||"
+        },
+        "converged": {
+          "type": "bool",
+          "description": "True if converged within tolerance"
+        }
+      },
+      "complexity": {
+        "time": "O(n_dims * num_iterations)",
+        "space": "O(n_dims)"
+      },
+      "mathematical_formula": {
+        "refinement": "v_{k+1} = v_k + log_p(exp_p(v_k)^{-1} ⊕ q) where ⊕ is geodesic composition",
+        "convergence": "Quadratic convergence near solution: ||v_{k+1} - v*|| ≤ C * ||v_k - v*||²"
+      },
+      "implementation_notes": [
+        "Initial estimate: standard log map computation",
+        "Refinement: v ← v + correction where correction = log_p(exp_p(v)^{-1} ⊕ q)",
+        "Check convergence: ||exp_p(v) - q|| < tolerance",
+        "Typically converges in 2-3 iterations",
+        "Use for high-precision requirements"
+      ],
+      "test_cases": [
+        {
+          "name": "fast_convergence",
+          "base_point": [0.0, 0.0],
+          "target_point": [0.5, 0.0],
+          "tolerance": 1e-12,
+          "expected_iterations": 2,
+          "tolerance_check": 1e-12
+        },
+        {
+          "name": "difficult_case",
+          "base_point": [0.9, 0.0],
+          "target_point": [0.0, 0.9],
+          "tolerance": 1e-10,
+          "expected_iterations": 4,
+          "tolerance_check": 1e-10
+        },
+        {
+          "name": "convergence_rate",
+          "description": "Verify quadratic convergence",
+          "expected_rate": 2.0
+        },
+        {
+          "name": "high_precision_refinement",
+          "tolerance": 1e-15,
+          "description": "Achieve very high precision"
+        },
+        {
+          "name": "refinement_vs_direct",
+          "description": "Compare refinement with direct high-precision computation"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "no_refinement_needed",
+          "description": "Initial estimate already within tolerance"
+        },
+        {
+          "name": "max_iterations_reached",
+          "max_iterations": 2,
+          "tolerance": 1e-15,
+          "description": "Cannot converge within max_iterations"
+        },
+        {
+          "name": "divergence_detection",
+          "description": "Detect if refinement diverges"
+        }
+      ]
+    },
+    {
+      "name": "condition_number_log_map",
+      "description": "Compute condition number of logarithmic map at given point. Indicates numerical sensitivity and potential instability.",
+      "parameters": {
+        "base_point": {
+          "type": "array",
+          "shape": "[n_dims]"
+        },
+        "target_point": {
+          "type": "array",
+          "shape": "[n_dims]"
+        },
+        "geometry_type": {
+          "type": "string",
+          "enum": ["hyperbolic", "spherical", "euclidean"]
+        }
+      },
+      "returns": {
+        "condition_number": {
+          "type": "float",
+          "description": "κ = ||J|| * ||J⁻¹|| where J is Jacobian"
+        },
+        "is_well_conditioned": {
+          "type": "bool",
+          "description": "True if κ < 100"
+        },
+        "expected_precision_loss": {
+          "type": "float",
+          "description": "Expected digits of precision lost: log10(κ)"
+        },
+        "recommended_precision": {
+          "type": "string",
+          "enum": ["float32", "float64", "float128"],
+          "description": "Recommended precision for reliable computation"
+        }
+      },
+      "complexity": {
+        "time": "O(n_dims²) for Jacobian + O(n_dims³) for SVD",
+        "space": "O(n_dims²)"
+      },
+      "mathematical_formula": {
+        "condition_number": "κ = σ_max / σ_min where σ are singular values of Jacobian",
+        "precision_loss": "Expect to lose log10(κ) digits of precision"
+      },
+      "implementation_notes": [
+        "Compute Jacobian ∂log_p(q)/∂q",
+        "Compute singular values via SVD",
+        "κ = σ_max / σ_min",
+        "Well-conditioned: κ < 100, Ill-conditioned: κ > 10000",
+        "Recommend precision based on κ and machine epsilon"
+      ],
+      "test_cases": [
+        {
+          "name": "euclidean_condition",
+          "base_point": [0.0, 0.0],
+          "target_point": [1.0, 1.0],
+          "geometry_type": "euclidean",
+          "expected_condition_number": 1.0,
+          "expected_well_conditioned": true
+        },
+        {
+          "name": "hyperbolic_normal",
+          "base_point": [0.0, 0.0],
+          "target_point": [0.5, 0.0],
+          "geometry_type": "hyperbolic",
+          "expected_condition_number": 2.0,
+          "expected_well_conditioned": true
+        },
+        {
+          "name": "near_singularity",
+          "base_point": [0.5, 0.5],
+          "target_point": [0.5001, 0.5001],
+          "expected_condition_number": 10000.0,
+          "expected_well_conditioned": false,
+          "expected_recommended_precision": "float128"
+        },
+        {
+          "name": "boundary_condition",
+          "base_point": [0.0, 0.0],
+          "target_point": [0.99, 0.0],
+          "geometry_type": "hyperbolic",
+          "expected_well_conditioned": true
+        },
+        {
+          "name": "precision_recommendation",
+          "description": "Verify precision recommendations are appropriate"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "singular_jacobian",
+          "base_point": [0.5, 0.5],
+          "target_point": [0.5, 0.5],
+          "description": "Infinite condition number"
+        },
+        {
+          "name": "antipodal_condition",
+          "base_point": [0.0, 0.0, 1.0],
+          "target_point": [0.0, 0.0, -1.0],
+          "geometry_type": "spherical",
+          "description": "Undefined condition number"
+        },
+        {
+          "name": "high_dimensional_condition",
+          "n_dims": 1024,
+          "description": "Condition number in high dimensions"
+        }
+      ]
+    },
+    {
+      "name": "robust_log_map_extreme_curvature",
+      "description": "Logarithmic map robust to extreme curvatures (κ → -∞ or κ → +∞). Uses specialized numerical techniques for high-curvature regimes.",
+      "parameters": {
+        "base_point": {
+          "type": "array",
+          "shape": "[n_dims]"
+        },
+        "target_point": {
+          "type": "array",
+          "shape": "[n_dims]"
+        },
+        "geometry_type": {
+          "type": "string",
+          "enum": ["hyperbolic", "spherical"]
+        },
+        "curvature": {
+          "type": "float",
+          "description": "Curvature (can be extreme: |κ| > 100)"
+        }
+      },
+      "returns": {
+        "tangent_vector": {
+          "type": "array",
+          "shape": "[n_dims]"
+        },
+        "distance": {
+          "type": "float"
+        },
+        "scaling_factor": {
+          "type": "float",
+          "description": "Internal scaling factor used for stability"
+        },
+        "numerical_warnings": {
+          "type": "list",
+          "description": "Any numerical warnings encountered"
+        }
+      },
+      "complexity": {
+        "time": "O(n_dims)",
+        "space": "O(n_dims)"
+      },
+      "mathematical_formula": {
+        "scaled_computation": "Work in scaled coordinates: x' = x / sqrt(|κ|) to avoid overflow",
+        "asymptotic_formulas": "For |κ| → ∞, use asymptotic expansions"
+      },
+      "implementation_notes": [
+        "Scale coordinates by 1/sqrt(|κ|) to prevent overflow",
+        "Use logarithmic scaling for intermediate values",
+        "Monitor for overflow/underflow at each step",
+        "Use asymptotic formulas for |κ| > 100",
+        "Validate results with consistency checks"
+      ],
+      "test_cases": [
+        {
+          "name": "high_negative_curvature",
+          "base_point": [0.0, 0.0],
+          "target_point": [0.5, 0.0],
+          "curvature": -100.0,
+          "tolerance": 1e-8
+        },
+        {
+          "name": "high_positive_curvature",
+          "base_point": [0.0, 0.0, 1.0],
+          "target_point": [1.0, 0.0, 0.0],
+          "curvature": 100.0,
+          "tolerance": 1e-8
+        },
+        {
+          "name": "extreme_curvature",
+          "curvature": -1000.0,
+          "tolerance": 1e-6,
+          "description": "Very extreme curvature"
+        },
+        {
+          "name": "curvature_scaling",
+          "description": "Verify results scale correctly with curvature"
+        },
+        {
+          "name": "no_overflow",
+          "curvature": -10000.0,
+          "description": "Ensure no overflow/underflow"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "zero_curvature_limit",
+          "curvature": -1e-10,
+          "description": "Curvature approaching zero (Euclidean limit)"
+        },
+        {
+          "name": "infinite_curvature",
+          "curvature": -1e10,
+          "description": "Effectively infinite curvature"
+        },
+        {
+          "name": "curvature_sign_change",
+          "description": "Handle curvature sign changes gracefully"
+        }
+      ]
+    },
+    {
+      "name": "validated_log_map",
+      "description": "Logarithmic map with comprehensive validation and self-consistency checks. Detects and reports numerical issues.",
+      "parameters": {
+        "base_point": {
+          "type": "array",
+          "shape": "[n_dims]"
+        },
+        "target_point": {
+          "type": "array",
+          "shape": "[n_dims]"
+        },
+        "geometry_type": {
+          "type": "string",
+          "enum": ["hyperbolic", "spherical", "euclidean"]
+        },
+        "validation_level": {
+          "type": "string",
+          "enum": ["basic", "standard", "strict"],
+          "default": "standard"
+        }
+      },
+      "returns": {
+        "tangent_vector": {
+          "type": "array",
+          "shape": "[n_dims]"
+        },
+        "distance": {
+          "type": "float"
+        },
+        "validation_passed": {
+          "type": "bool",
+          "description": "True if all validation checks passed"
+        },
+        "validation_report": {
+          "type": "dict",
+          "description": "Detailed validation results"
+        },
+        "quality_score": {
+          "type": "float",
+          "range": "[0, 1]",
+          "description": "Overall quality score (1 = perfect)"
+        }
+      },
+      "complexity": {
+        "time": "O(n_dims) + validation overhead",
+        "space": "O(n_dims)"
+      },
+      "implementation_notes": [
+        "Check input constraints (manifold membership)",
+        "Verify exp_p(log_p(q)) ≈ q (round-trip consistency)",
+        "Check tangent space constraint: ⟨v, p⟩ = 0 (for spherical)",
+        "Verify distance consistency: ||v|| ≈ d(p,q)",
+        "Monitor for NaN/Inf in intermediate steps",
+        "Compute quality score based on all checks"
+      ],
+      "test_cases": [
+        {
+          "name": "perfect_validation",
+          "base_point": [0.0, 0.0],
+          "target_point": [0.5, 0.0],
+          "geometry_type": "hyperbolic",
+          "expected_validation_passed": true,
+          "expected_quality_score": 1.0
+        },
+        {
+          "name": "marginal_validation",
+          "base_point": [0.99, 0.0],
+          "target_point": [0.0, 0.99],
+          "expected_validation_passed": true,
+          "expected_quality_score": 0.8
+        },
+        {
+          "name": "failed_validation",
+          "base_point": [1.5, 0.0],
+          "target_point": [0.5, 0.0],
+          "geometry_type": "hyperbolic",
+          "expected_validation_passed": false,
+          "note": "Point outside Poincaré disk"
+        },
+        {
+          "name": "round_trip_check",
+          "description": "Verify exp(log(q)) = q",
+          "tolerance": 1e-10
+        },
+        {
+          "name": "validation_levels",
+          "description": "Test different validation levels",
+          "validation_levels": ["basic", "standard", "strict"]
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "nan_input",
+          "base_point": [float('nan'), 0.0],
+          "expected_validation_passed": false
+        },
+        {
+          "name": "inf_input",
+          "target_point": [float('inf'), 0.0],
+          "expected_validation_passed": false
+        },
+        {
+          "name": "constraint_violation",
+          "base_point": [0.0, 0.0, 0.5],
+          "target_point": [1.0, 0.0, 0.0],
+          "geometry_type": "spherical",
+          "expected_validation_passed": false,
+          "note": "Not unit vectors"
+        }
+      ]
+    }
+  ],
+  "stability_guidelines": {
+    "when_to_use_stable_methods": [
+      "Distance ||q-p|| < 1e-6 (use Taylor expansion)",
+      "Near boundary: ||p|| > 0.95 in hyperbolic space",
+      "High dimensions: n > 100",
+      "Extreme curvatures: |κ| > 10",
+      "Ill-conditioned: condition number > 1000"
+    ],
+    "precision_recommendations": {
+      "float32": "General use, condition number < 10",
+      "float64": "High precision, condition number < 1000",
+      "float128": "Very high precision, condition number < 10^6",
+      "arbitrary": "Extreme cases, condition number > 10^6"
+    }
+  },
+  "dependencies": [
+    "numpy",
+    "scipy",
+    "mpmath (for arbitrary precision)",
+    "interval (for interval arithmetic)"
+  ],
+  "references": [
+    "Higham, N. J. (2002). Accuracy and Stability of Numerical Algorithms. SIAM.",
+    "Muller, J. M., et al. (2018). Handbook of Floating-Point Arithmetic. Birkhäuser.",
+    "Goldberg, D. (1991). What Every Computer Scientist Should Know About Floating-Point Arithmetic. ACM Computing Surveys."
+  ]
+}

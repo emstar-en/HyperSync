@@ -1,0 +1,926 @@
+{
+  "specification_name": "Enhanced Multi-Dimensional Logarithmic Maps",
+  "version": "1.0.0",
+  "category": "Essential Geometry - Logarithmic Maps",
+  "description": "Logarithmic maps for multi-dimensional manifolds (2D, 3D, 4D, and higher). The logarithmic map is the inverse of the exponential map, mapping points on a manifold back to tangent vectors at a base point. For a point p (base) and q (target) on manifold M, log_p(q) returns the tangent vector v ∈ T_p M such that exp_p(v) = q.",
+  "mathematical_foundation": {
+    "general_formula": "log_p(q) = v where exp_p(v) = q",
+    "hyperbolic_formula": "log_p(q) = d(p,q) * (q ⊖ p) / ||q ⊖ p||_L where d(p,q) = arcosh(-⟨p,q⟩_L)",
+    "spherical_formula": "log_p(q) = θ * (q - cos(θ)p) / sin(θ) where θ = arccos(⟨p,q⟩)",
+    "euclidean_formula": "log_p(q) = q - p",
+    "properties": [
+      "Inverse of exponential map: exp_p(log_p(q)) = q",
+      "Identity: log_p(p) = 0",
+      "Geodesic direction: log_p(q) points along geodesic from p to q",
+      "Distance encoding: ||log_p(q)|| = d(p,q)"
+    ]
+  },
+  "operations": [
+    {
+      "name": "hyperbolic_log_map_2d",
+      "description": "Compute logarithmic map in 2D hyperbolic space (H²). Maps a target point q back to a tangent vector at base point p in the Poincaré disk or hyperboloid model.",
+      "parameters": {
+        "base_point": {
+          "type": "array",
+          "shape": "[2]",
+          "description": "Base point p ∈ H² (origin of tangent space)"
+        },
+        "target_point": {
+          "type": "array",
+          "shape": "[2]",
+          "description": "Target point q ∈ H² to map to tangent space"
+        },
+        "curvature": {
+          "type": "float",
+          "default": -1.0,
+          "description": "Curvature κ < 0 of hyperbolic space"
+        },
+        "model": {
+          "type": "string",
+          "enum": ["poincare", "hyperboloid", "klein"],
+          "default": "poincare",
+          "description": "Model of hyperbolic geometry"
+        }
+      },
+      "returns": {
+        "tangent_vector": {
+          "type": "array",
+          "shape": "[2]",
+          "description": "Tangent vector v ∈ T_p H² such that exp_p(v) = q"
+        },
+        "distance": {
+          "type": "float",
+          "description": "Hyperbolic distance d(p,q) = ||v||"
+        }
+      },
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      },
+      "mathematical_formula": {
+        "poincare": "log_p(q) = (2/λ_p) * artanh(||(-p) ⊕ q||) * ((-p) ⊕ q) / ||(-p) ⊕ q|| where λ_p = 2/(1-||p||²)",
+        "hyperboloid": "log_p(q) = arcosh(-⟨p,q⟩_L) * (q - ⟨p,q⟩_L * p) / ||q - ⟨p,q⟩_L * p||_L"
+      },
+      "implementation_notes": [
+        "Handle numerical instability when p ≈ q (use Taylor expansion)",
+        "For Poincaré model, ensure ||p|| < 1 and ||q|| < 1",
+        "Use stable artanh implementation: artanh(x) = 0.5 * log((1+x)/(1-x))",
+        "Check for antipodal points (undefined logarithmic map)"
+      ],
+      "test_cases": [
+        {
+          "name": "origin_to_point",
+          "base_point": [0.0, 0.0],
+          "target_point": [0.5, 0.0],
+          "expected_tangent": [0.5493, 0.0],
+          "expected_distance": 0.5493,
+          "tolerance": 1e-4
+        },
+        {
+          "name": "symmetric_points",
+          "base_point": [0.3, 0.0],
+          "target_point": [-0.3, 0.0],
+          "expected_distance": 1.1976,
+          "tolerance": 1e-4
+        },
+        {
+          "name": "identity_map",
+          "base_point": [0.2, 0.3],
+          "target_point": [0.2, 0.3],
+          "expected_tangent": [0.0, 0.0],
+          "expected_distance": 0.0,
+          "tolerance": 1e-10
+        },
+        {
+          "name": "perpendicular_direction",
+          "base_point": [0.0, 0.0],
+          "target_point": [0.0, 0.4],
+          "expected_tangent": [0.0, 0.4236],
+          "tolerance": 1e-4
+        },
+        {
+          "name": "high_curvature",
+          "base_point": [0.0, 0.0],
+          "target_point": [0.3, 0.3],
+          "curvature": -2.0,
+          "expected_distance": 0.4236,
+          "tolerance": 1e-4
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "near_boundary",
+          "base_point": [0.95, 0.0],
+          "target_point": [0.98, 0.0],
+          "description": "Points near Poincaré disk boundary (||p|| → 1)"
+        },
+        {
+          "name": "nearly_identical",
+          "base_point": [0.5, 0.5],
+          "target_point": [0.5000001, 0.5000001],
+          "description": "Numerically challenging case: p ≈ q"
+        },
+        {
+          "name": "opposite_sides",
+          "base_point": [-0.8, 0.0],
+          "target_point": [0.8, 0.0],
+          "description": "Points on opposite sides of origin"
+        }
+      ]
+    },
+    {
+      "name": "hyperbolic_log_map_3d",
+      "description": "Compute logarithmic map in 3D hyperbolic space (H³). Essential for 3D hierarchical embeddings and spatial reasoning.",
+      "parameters": {
+        "base_point": {
+          "type": "array",
+          "shape": "[3]",
+          "description": "Base point p ∈ H³"
+        },
+        "target_point": {
+          "type": "array",
+          "shape": "[3]",
+          "description": "Target point q ∈ H³"
+        },
+        "curvature": {
+          "type": "float",
+          "default": -1.0,
+          "description": "Curvature κ < 0"
+        },
+        "model": {
+          "type": "string",
+          "enum": ["poincare", "hyperboloid"],
+          "default": "poincare"
+        }
+      },
+      "returns": {
+        "tangent_vector": {
+          "type": "array",
+          "shape": "[3]",
+          "description": "Tangent vector v ∈ T_p H³"
+        },
+        "distance": {
+          "type": "float",
+          "description": "Hyperbolic distance d(p,q)"
+        }
+      },
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      },
+      "mathematical_formula": {
+        "poincare": "Same as 2D but in 3D: log_p(q) = (2/λ_p) * artanh(||(-p) ⊕ q||) * ((-p) ⊕ q) / ||(-p) ⊕ q||",
+        "hyperboloid": "log_p(q) = d * (q + ⟨p,q⟩_L * p) / ||q + ⟨p,q⟩_L * p||_L where d = arcosh(-⟨p,q⟩_L)"
+      },
+      "implementation_notes": [
+        "3D requires careful handling of numerical precision",
+        "Use quaternion-based rotations for stability in some cases",
+        "Hyperboloid model: p ∈ ℝ⁴ with ⟨p,p⟩_L = -1",
+        "Poincaré ball: ||p|| < 1 in ℝ³"
+      ],
+      "test_cases": [
+        {
+          "name": "origin_to_3d_point",
+          "base_point": [0.0, 0.0, 0.0],
+          "target_point": [0.3, 0.4, 0.0],
+          "expected_distance": 0.5493,
+          "tolerance": 1e-4
+        },
+        {
+          "name": "diagonal_direction",
+          "base_point": [0.0, 0.0, 0.0],
+          "target_point": [0.2, 0.2, 0.2],
+          "expected_tangent": [0.2041, 0.2041, 0.2041],
+          "tolerance": 1e-4
+        },
+        {
+          "name": "z_axis_transport",
+          "base_point": [0.0, 0.0, 0.0],
+          "target_point": [0.0, 0.0, 0.5],
+          "expected_tangent": [0.0, 0.0, 0.5493],
+          "tolerance": 1e-4
+        },
+        {
+          "name": "3d_identity",
+          "base_point": [0.1, 0.2, 0.3],
+          "target_point": [0.1, 0.2, 0.3],
+          "expected_tangent": [0.0, 0.0, 0.0],
+          "tolerance": 1e-10
+        },
+        {
+          "name": "spherical_coordinates",
+          "base_point": [0.0, 0.0, 0.0],
+          "target_point": [0.3, 0.0, 0.4],
+          "expected_distance": 0.5493,
+          "tolerance": 1e-4
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "near_boundary_3d",
+          "base_point": [0.9, 0.0, 0.0],
+          "target_point": [0.0, 0.9, 0.0],
+          "description": "Points near boundary in different directions"
+        },
+        {
+          "name": "small_displacement",
+          "base_point": [0.5, 0.5, 0.5],
+          "target_point": [0.5001, 0.5001, 0.5001],
+          "description": "Tiny displacement requiring high precision"
+        },
+        {
+          "name": "large_distance",
+          "base_point": [0.0, 0.0, 0.0],
+          "target_point": [0.95, 0.0, 0.0],
+          "description": "Large hyperbolic distance"
+        }
+      ]
+    },
+    {
+      "name": "hyperbolic_log_map_4d",
+      "description": "Compute logarithmic map in 4D hyperbolic space (H⁴). Used for high-dimensional embeddings in NLP and knowledge graphs.",
+      "parameters": {
+        "base_point": {
+          "type": "array",
+          "shape": "[4]",
+          "description": "Base point p ∈ H⁴"
+        },
+        "target_point": {
+          "type": "array",
+          "shape": "[4]",
+          "description": "Target point q ∈ H⁴"
+        },
+        "curvature": {
+          "type": "float",
+          "default": -1.0
+        },
+        "model": {
+          "type": "string",
+          "enum": ["poincare", "hyperboloid"],
+          "default": "hyperboloid"
+        }
+      },
+      "returns": {
+        "tangent_vector": {
+          "type": "array",
+          "shape": "[4]",
+          "description": "Tangent vector v ∈ T_p H⁴"
+        },
+        "distance": {
+          "type": "float",
+          "description": "Hyperbolic distance"
+        }
+      },
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      },
+      "mathematical_formula": {
+        "hyperboloid": "log_p(q) = d * (q + ⟨p,q⟩_L * p) / ||q + ⟨p,q⟩_L * p||_L where d = arcosh(-⟨p,q⟩_L), p,q ∈ ℝ⁵"
+      },
+      "implementation_notes": [
+        "Hyperboloid model preferred for 4D+ (numerical stability)",
+        "Embedding space is ℝ⁵ with Lorentz inner product",
+        "Constraint: ⟨p,p⟩_L = -x₀² + x₁² + x₂² + x₃² + x₄² = -1",
+        "Use SIMD operations for efficiency"
+      ],
+      "test_cases": [
+        {
+          "name": "4d_origin_map",
+          "base_point": [1.0, 0.0, 0.0, 0.0, 0.0],
+          "target_point": [1.0606, 0.25, 0.0, 0.0, 0.0],
+          "expected_distance": 0.25,
+          "tolerance": 1e-4,
+          "note": "Hyperboloid coordinates"
+        },
+        {
+          "name": "4d_diagonal",
+          "base_point": [1.0, 0.0, 0.0, 0.0, 0.0],
+          "target_point": [1.0308, 0.125, 0.125, 0.125, 0.125],
+          "expected_distance": 0.25,
+          "tolerance": 1e-4
+        },
+        {
+          "name": "4d_identity",
+          "base_point": [1.1, 0.1, 0.2, 0.3, 0.1],
+          "target_point": [1.1, 0.1, 0.2, 0.3, 0.1],
+          "expected_tangent": [0.0, 0.0, 0.0, 0.0, 0.0],
+          "tolerance": 1e-10
+        },
+        {
+          "name": "4d_single_axis",
+          "base_point": [1.0, 0.0, 0.0, 0.0, 0.0],
+          "target_point": [1.0, 0.0, 0.0, 0.0, 0.3],
+          "expected_tangent": [0.0, 0.0, 0.0, 0.0, 0.3],
+          "tolerance": 1e-4
+        },
+        {
+          "name": "4d_mixed_coordinates",
+          "base_point": [1.0, 0.0, 0.0, 0.0, 0.0],
+          "target_point": [1.0770, 0.2, 0.2, 0.2, 0.0],
+          "expected_distance": 0.3464,
+          "tolerance": 1e-4
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "high_dimensional_boundary",
+          "base_point": [2.0, 1.7, 0.0, 0.0, 0.0],
+          "target_point": [2.0, 0.0, 1.7, 0.0, 0.0],
+          "description": "Large coordinates in hyperboloid model"
+        },
+        {
+          "name": "numerical_precision_4d",
+          "base_point": [1.0, 0.0, 0.0, 0.0, 0.0],
+          "target_point": [1.0000005, 0.0001, 0.0001, 0.0001, 0.0001],
+          "description": "Very small displacement in 4D"
+        },
+        {
+          "name": "constraint_violation_check",
+          "base_point": [1.0, 0.0, 0.0, 0.0, 0.0],
+          "target_point": [0.9, 0.1, 0.1, 0.1, 0.1],
+          "description": "Ensure constraint ⟨p,p⟩_L = -1 is maintained"
+        }
+      ]
+    },
+    {
+      "name": "spherical_log_map_2d",
+      "description": "Compute logarithmic map on 2D sphere (S²). Maps a point q on the sphere back to a tangent vector at base point p.",
+      "parameters": {
+        "base_point": {
+          "type": "array",
+          "shape": "[3]",
+          "description": "Base point p ∈ S² ⊂ ℝ³ (unit vector)"
+        },
+        "target_point": {
+          "type": "array",
+          "shape": "[3]",
+          "description": "Target point q ∈ S² (unit vector)"
+        },
+        "radius": {
+          "type": "float",
+          "default": 1.0,
+          "description": "Sphere radius R"
+        }
+      },
+      "returns": {
+        "tangent_vector": {
+          "type": "array",
+          "shape": "[3]",
+          "description": "Tangent vector v ∈ T_p S² (orthogonal to p)"
+        },
+        "distance": {
+          "type": "float",
+          "description": "Geodesic distance d(p,q) = R * arccos(⟨p,q⟩)"
+        }
+      },
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      },
+      "mathematical_formula": {
+        "formula": "log_p(q) = θ * (q - cos(θ)p) / sin(θ) where θ = arccos(⟨p,q⟩)",
+        "tangent_constraint": "⟨log_p(q), p⟩ = 0 (tangent vector orthogonal to p)"
+      },
+      "implementation_notes": [
+        "Handle antipodal points: θ = π (logarithmic map undefined)",
+        "For small θ, use Taylor expansion: log_p(q) ≈ q - p",
+        "Ensure ||p|| = ||q|| = 1 (unit vectors)",
+        "Result must satisfy ⟨v, p⟩ = 0"
+      ],
+      "test_cases": [
+        {
+          "name": "north_to_equator",
+          "base_point": [0.0, 0.0, 1.0],
+          "target_point": [1.0, 0.0, 0.0],
+          "expected_distance": 1.5708,
+          "expected_tangent": [1.5708, 0.0, 0.0],
+          "tolerance": 1e-4
+        },
+        {
+          "name": "small_displacement",
+          "base_point": [0.0, 0.0, 1.0],
+          "target_point": [0.1, 0.0, 0.9950],
+          "expected_distance": 0.1002,
+          "tolerance": 1e-4
+        },
+        {
+          "name": "spherical_identity",
+          "base_point": [0.7071, 0.7071, 0.0],
+          "target_point": [0.7071, 0.7071, 0.0],
+          "expected_tangent": [0.0, 0.0, 0.0],
+          "tolerance": 1e-10
+        },
+        {
+          "name": "perpendicular_points",
+          "base_point": [1.0, 0.0, 0.0],
+          "target_point": [0.0, 1.0, 0.0],
+          "expected_distance": 1.5708,
+          "tolerance": 1e-4
+        },
+        {
+          "name": "scaled_sphere",
+          "base_point": [0.0, 0.0, 1.0],
+          "target_point": [1.0, 0.0, 0.0],
+          "radius": 2.0,
+          "expected_distance": 3.1416,
+          "tolerance": 1e-4
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "antipodal_points",
+          "base_point": [0.0, 0.0, 1.0],
+          "target_point": [0.0, 0.0, -1.0],
+          "description": "Antipodal points: logarithmic map undefined (infinite solutions)"
+        },
+        {
+          "name": "nearly_antipodal",
+          "base_point": [0.0, 0.0, 1.0],
+          "target_point": [0.01, 0.0, -0.99995],
+          "description": "Nearly antipodal: numerical instability"
+        },
+        {
+          "name": "non_unit_vectors",
+          "base_point": [0.5, 0.5, 0.7071],
+          "target_point": [0.8, 0.6, 0.0],
+          "description": "Input validation: ensure unit vectors"
+        }
+      ]
+    },
+    {
+      "name": "spherical_log_map_3d",
+      "description": "Compute logarithmic map on 3D sphere (S³). Used for rotations (quaternions) and 4D spatial embeddings.",
+      "parameters": {
+        "base_point": {
+          "type": "array",
+          "shape": "[4]",
+          "description": "Base point p ∈ S³ ⊂ ℝ⁴ (unit quaternion)"
+        },
+        "target_point": {
+          "type": "array",
+          "shape": "[4]",
+          "description": "Target point q ∈ S³ (unit quaternion)"
+        },
+        "radius": {
+          "type": "float",
+          "default": 1.0
+        }
+      },
+      "returns": {
+        "tangent_vector": {
+          "type": "array",
+          "shape": "[4]",
+          "description": "Tangent vector v ∈ T_p S³"
+        },
+        "distance": {
+          "type": "float",
+          "description": "Geodesic distance on S³"
+        }
+      },
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      },
+      "mathematical_formula": {
+        "formula": "log_p(q) = θ * (q - cos(θ)p) / sin(θ) where θ = arccos(⟨p,q⟩)",
+        "quaternion_form": "For quaternions: log_p(q) = 2 * log(q * p⁻¹) where log is quaternion logarithm"
+      },
+      "implementation_notes": [
+        "S³ is double cover of SO(3) rotation group",
+        "Quaternion representation: q = w + xi + yj + zk",
+        "Constraint: w² + x² + y² + z² = 1",
+        "Use quaternion algebra for numerical stability"
+      ],
+      "test_cases": [
+        {
+          "name": "identity_quaternion",
+          "base_point": [1.0, 0.0, 0.0, 0.0],
+          "target_point": [0.9239, 0.3827, 0.0, 0.0],
+          "expected_distance": 0.7854,
+          "tolerance": 1e-4,
+          "note": "45° rotation around x-axis"
+        },
+        {
+          "name": "s3_identity",
+          "base_point": [0.7071, 0.7071, 0.0, 0.0],
+          "target_point": [0.7071, 0.7071, 0.0, 0.0],
+          "expected_tangent": [0.0, 0.0, 0.0, 0.0],
+          "tolerance": 1e-10
+        },
+        {
+          "name": "perpendicular_s3",
+          "base_point": [1.0, 0.0, 0.0, 0.0],
+          "target_point": [0.0, 1.0, 0.0, 0.0],
+          "expected_distance": 1.5708,
+          "tolerance": 1e-4
+        },
+        {
+          "name": "small_rotation",
+          "base_point": [1.0, 0.0, 0.0, 0.0],
+          "target_point": [0.9950, 0.0998, 0.0, 0.0],
+          "expected_distance": 0.2,
+          "tolerance": 1e-4
+        },
+        {
+          "name": "mixed_quaternion",
+          "base_point": [1.0, 0.0, 0.0, 0.0],
+          "target_point": [0.7071, 0.5, 0.5, 0.0],
+          "expected_distance": 1.0472,
+          "tolerance": 1e-4
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "antipodal_quaternions",
+          "base_point": [1.0, 0.0, 0.0, 0.0],
+          "target_point": [-1.0, 0.0, 0.0, 0.0],
+          "description": "Antipodal points on S³ (180° rotation)"
+        },
+        {
+          "name": "double_cover_ambiguity",
+          "base_point": [0.7071, 0.7071, 0.0, 0.0],
+          "target_point": [-0.7071, -0.7071, 0.0, 0.0],
+          "description": "Same rotation, different quaternions"
+        },
+        {
+          "name": "numerical_precision_s3",
+          "base_point": [1.0, 0.0, 0.0, 0.0],
+          "target_point": [0.9999995, 0.0001, 0.0001, 0.0001],
+          "description": "Very small rotation"
+        }
+      ]
+    },
+    {
+      "name": "euclidean_log_map_nd",
+      "description": "Compute logarithmic map in n-dimensional Euclidean space (Eⁿ). Trivial case: log_p(q) = q - p.",
+      "parameters": {
+        "base_point": {
+          "type": "array",
+          "shape": "[n]",
+          "description": "Base point p ∈ Eⁿ"
+        },
+        "target_point": {
+          "type": "array",
+          "shape": "[n]",
+          "description": "Target point q ∈ Eⁿ"
+        },
+        "dimension": {
+          "type": "int",
+          "description": "Dimension n of Euclidean space"
+        }
+      },
+      "returns": {
+        "tangent_vector": {
+          "type": "array",
+          "shape": "[n]",
+          "description": "Tangent vector v = q - p"
+        },
+        "distance": {
+          "type": "float",
+          "description": "Euclidean distance ||q - p||"
+        }
+      },
+      "complexity": {
+        "time": "O(n)",
+        "space": "O(n)"
+      },
+      "mathematical_formula": {
+        "formula": "log_p(q) = q - p",
+        "distance": "d(p,q) = ||q - p|| = sqrt(Σᵢ(qᵢ - pᵢ)²)"
+      },
+      "implementation_notes": [
+        "Simplest case: flat geometry with zero curvature",
+        "Tangent space T_p Eⁿ is isomorphic to Eⁿ itself",
+        "No numerical stability issues",
+        "Use BLAS/SIMD for large dimensions"
+      ],
+      "test_cases": [
+        {
+          "name": "euclidean_2d",
+          "base_point": [1.0, 2.0],
+          "target_point": [4.0, 6.0],
+          "expected_tangent": [3.0, 4.0],
+          "expected_distance": 5.0,
+          "tolerance": 1e-10
+        },
+        {
+          "name": "euclidean_3d",
+          "base_point": [0.0, 0.0, 0.0],
+          "target_point": [1.0, 2.0, 2.0],
+          "expected_tangent": [1.0, 2.0, 2.0],
+          "expected_distance": 3.0,
+          "tolerance": 1e-10
+        },
+        {
+          "name": "euclidean_identity",
+          "base_point": [5.0, 5.0, 5.0],
+          "target_point": [5.0, 5.0, 5.0],
+          "expected_tangent": [0.0, 0.0, 0.0],
+          "expected_distance": 0.0,
+          "tolerance": 1e-10
+        },
+        {
+          "name": "high_dimensional",
+          "base_point": [1.0, 2.0, 3.0, 4.0, 5.0],
+          "target_point": [2.0, 3.0, 4.0, 5.0, 6.0],
+          "expected_tangent": [1.0, 1.0, 1.0, 1.0, 1.0],
+          "expected_distance": 2.2361,
+          "tolerance": 1e-4
+        },
+        {
+          "name": "negative_coordinates",
+          "base_point": [-1.0, -2.0],
+          "target_point": [1.0, 2.0],
+          "expected_tangent": [2.0, 4.0],
+          "expected_distance": 4.4721,
+          "tolerance": 1e-4
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "very_large_dimension",
+          "dimension": 1000,
+          "description": "Test performance with n=1000"
+        },
+        {
+          "name": "zero_vector",
+          "base_point": [0.0, 0.0, 0.0],
+          "target_point": [0.0, 0.0, 0.0],
+          "description": "Zero displacement"
+        },
+        {
+          "name": "numerical_precision",
+          "base_point": [1e10, 1e10],
+          "target_point": [1e10 + 1e-5, 1e10 + 1e-5],
+          "description": "Large coordinates with small displacement"
+        }
+      ]
+    },
+    {
+      "name": "product_manifold_log_map",
+      "description": "Compute logarithmic map on product manifolds M₁ × M₂ × ... × Mₖ. Each component uses its own geometry (e.g., H² × S² × E³).",
+      "parameters": {
+        "base_point": {
+          "type": "array",
+          "shape": "[n_total]",
+          "description": "Base point p = (p₁, p₂, ..., pₖ) on product manifold"
+        },
+        "target_point": {
+          "type": "array",
+          "shape": "[n_total]",
+          "description": "Target point q = (q₁, q₂, ..., qₖ)"
+        },
+        "manifold_specs": {
+          "type": "array",
+          "description": "List of manifold specifications: [{type: 'hyperbolic', dim: 2, curvature: -1}, ...]"
+        }
+      },
+      "returns": {
+        "tangent_vector": {
+          "type": "array",
+          "shape": "[n_total]",
+          "description": "Tangent vector v = (v₁, v₂, ..., vₖ) where vᵢ ∈ T_pᵢ Mᵢ"
+        },
+        "distance": {
+          "type": "float",
+          "description": "Product distance: d(p,q) = sqrt(Σᵢ dᵢ(pᵢ,qᵢ)²)"
+        },
+        "component_distances": {
+          "type": "array",
+          "description": "Individual distances [d₁, d₂, ..., dₖ]"
+        }
+      },
+      "complexity": {
+        "time": "O(k) where k is number of manifolds",
+        "space": "O(n_total)"
+      },
+      "mathematical_formula": {
+        "formula": "log_p(q) = (log_p₁(q₁), log_p₂(q₂), ..., log_pₖ(qₖ))",
+        "distance": "d(p,q) = sqrt(Σᵢ dᵢ(pᵢ,qᵢ)²) (product metric)"
+      },
+      "implementation_notes": [
+        "Decompose input into components based on manifold_specs",
+        "Apply appropriate logarithmic map to each component",
+        "Concatenate results to form product tangent vector",
+        "Handle mixed curvatures (hyperbolic + spherical + Euclidean)"
+      ],
+      "test_cases": [
+        {
+          "name": "h2_times_e2",
+          "base_point": [0.0, 0.0, 1.0, 2.0],
+          "target_point": [0.3, 0.0, 4.0, 6.0],
+          "manifold_specs": [
+            {"type": "hyperbolic", "dim": 2, "curvature": -1.0},
+            {"type": "euclidean", "dim": 2}
+          ],
+          "expected_distance": 5.0099,
+          "tolerance": 1e-4
+        },
+        {
+          "name": "s2_times_h2",
+          "base_point": [0.0, 0.0, 1.0, 0.0, 0.0],
+          "target_point": [1.0, 0.0, 0.0, 0.5, 0.0],
+          "manifold_specs": [
+            {"type": "spherical", "dim": 2, "radius": 1.0},
+            {"type": "hyperbolic", "dim": 2, "curvature": -1.0}
+          ],
+          "expected_distance": 1.6771,
+          "tolerance": 1e-4
+        },
+        {
+          "name": "triple_product",
+          "base_point": [0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 2.0],
+          "target_point": [0.3, 0.0, 1.0, 0.0, 0.0, 4.0, 6.0],
+          "manifold_specs": [
+            {"type": "hyperbolic", "dim": 2, "curvature": -1.0},
+            {"type": "spherical", "dim": 2, "radius": 1.0},
+            {"type": "euclidean", "dim": 2}
+          ],
+          "expected_distance": 5.1478,
+          "tolerance": 1e-4
+        },
+        {
+          "name": "product_identity",
+          "base_point": [0.5, 0.5, 0.0, 0.0, 1.0],
+          "target_point": [0.5, 0.5, 0.0, 0.0, 1.0],
+          "manifold_specs": [
+            {"type": "hyperbolic", "dim": 2, "curvature": -1.0},
+            {"type": "spherical", "dim": 2, "radius": 1.0}
+          ],
+          "expected_tangent": [0.0, 0.0, 0.0, 0.0, 0.0],
+          "tolerance": 1e-10
+        },
+        {
+          "name": "mixed_curvatures",
+          "base_point": [0.0, 0.0, 0.0, 0.0, 1.0, 0.0],
+          "target_point": [0.2, 0.0, 1.0, 0.0, 0.0, 1.0],
+          "manifold_specs": [
+            {"type": "hyperbolic", "dim": 2, "curvature": -1.0},
+            {"type": "spherical", "dim": 2, "radius": 1.0},
+            {"type": "euclidean", "dim": 1}
+          ],
+          "expected_distance": 1.8028,
+          "tolerance": 1e-4
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "many_components",
+          "manifold_specs": [
+            {"type": "hyperbolic", "dim": 2},
+            {"type": "hyperbolic", "dim": 2},
+            {"type": "spherical", "dim": 2},
+            {"type": "euclidean", "dim": 3},
+            {"type": "hyperbolic", "dim": 3}
+          ],
+          "description": "Product of 5 manifolds (14 total dimensions)"
+        },
+        {
+          "name": "dimension_mismatch",
+          "description": "Validate that base_point and target_point dimensions match manifold_specs"
+        },
+        {
+          "name": "invalid_manifold_type",
+          "manifold_specs": [{"type": "unknown", "dim": 2}],
+          "description": "Error handling for unsupported manifold types"
+        }
+      ]
+    },
+    {
+      "name": "adaptive_dimension_log_map",
+      "description": "Automatically select and compute logarithmic map based on input dimension and geometry type. Supports 2D through high-dimensional spaces.",
+      "parameters": {
+        "base_point": {
+          "type": "array",
+          "shape": "[n]",
+          "description": "Base point p (dimension auto-detected)"
+        },
+        "target_point": {
+          "type": "array",
+          "shape": "[n]",
+          "description": "Target point q"
+        },
+        "geometry_type": {
+          "type": "string",
+          "enum": ["hyperbolic", "spherical", "euclidean", "auto"],
+          "default": "auto",
+          "description": "Geometry type (auto-detect if 'auto')"
+        },
+        "curvature": {
+          "type": "float",
+          "optional": true,
+          "description": "Curvature (auto-detect if not provided)"
+        }
+      },
+      "returns": {
+        "tangent_vector": {
+          "type": "array",
+          "shape": "[n]",
+          "description": "Tangent vector in appropriate geometry"
+        },
+        "distance": {
+          "type": "float",
+          "description": "Geodesic distance"
+        },
+        "detected_geometry": {
+          "type": "string",
+          "description": "Detected geometry type"
+        },
+        "dimension": {
+          "type": "int",
+          "description": "Detected dimension"
+        }
+      },
+      "complexity": {
+        "time": "O(n) for dimension detection + O(1) for computation",
+        "space": "O(n)"
+      },
+      "mathematical_formula": {
+        "auto_detection": "Analyze point properties: ||p|| < 1 → hyperbolic, ||p|| = 1 → spherical, else → euclidean"
+      },
+      "implementation_notes": [
+        "Detect dimension from input array length",
+        "Auto-detect geometry from point properties if geometry_type='auto'",
+        "Route to appropriate specialized log map function",
+        "Validate input constraints for detected geometry"
+      ],
+      "test_cases": [
+        {
+          "name": "auto_detect_hyperbolic",
+          "base_point": [0.0, 0.0],
+          "target_point": [0.5, 0.0],
+          "geometry_type": "auto",
+          "expected_geometry": "hyperbolic",
+          "expected_dimension": 2,
+          "tolerance": 1e-4
+        },
+        {
+          "name": "auto_detect_spherical",
+          "base_point": [0.0, 0.0, 1.0],
+          "target_point": [1.0, 0.0, 0.0],
+          "geometry_type": "auto",
+          "expected_geometry": "spherical",
+          "expected_dimension": 2,
+          "tolerance": 1e-4
+        },
+        {
+          "name": "explicit_euclidean",
+          "base_point": [1.0, 2.0, 3.0],
+          "target_point": [4.0, 5.0, 6.0],
+          "geometry_type": "euclidean",
+          "expected_tangent": [3.0, 3.0, 3.0],
+          "tolerance": 1e-10
+        },
+        {
+          "name": "high_dim_hyperbolic",
+          "base_point": [0.0, 0.0, 0.0, 0.0, 0.0],
+          "target_point": [0.1, 0.1, 0.1, 0.1, 0.1],
+          "geometry_type": "hyperbolic",
+          "expected_dimension": 5,
+          "tolerance": 1e-4
+        },
+        {
+          "name": "adaptive_4d_spherical",
+          "base_point": [1.0, 0.0, 0.0, 0.0],
+          "target_point": [0.7071, 0.7071, 0.0, 0.0],
+          "geometry_type": "auto",
+          "expected_geometry": "spherical",
+          "expected_dimension": 3,
+          "tolerance": 1e-4
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "ambiguous_geometry",
+          "base_point": [0.0, 0.0],
+          "target_point": [0.0, 0.0],
+          "description": "Zero vectors: ambiguous geometry detection"
+        },
+        {
+          "name": "dimension_mismatch",
+          "base_point": [0.0, 0.0],
+          "target_point": [0.0, 0.0, 0.0],
+          "description": "Different dimensions for base and target"
+        },
+        {
+          "name": "boundary_case",
+          "base_point": [0.9999, 0.0],
+          "target_point": [0.0, 0.9999],
+          "description": "Near boundary: could be hyperbolic or spherical"
+        }
+      ]
+    }
+  ],
+  "dependencies": [
+    "numpy",
+    "scipy.special (artanh, arcosh)",
+    "torch (optional, for GPU acceleration)"
+  ],
+  "references": [
+    "Lee, J. M. (2018). Introduction to Riemannian Manifolds. Springer.",
+    "Nickel, M., & Kiela, D. (2017). Poincaré Embeddings for Learning Hierarchical Representations. NeurIPS.",
+    "Ganea, O., Bécigneul, G., & Hofmann, T. (2018). Hyperbolic Neural Networks. NeurIPS.",
+    "do Carmo, M. P. (1992). Riemannian Geometry. Birkhäuser."
+  ]
+}
