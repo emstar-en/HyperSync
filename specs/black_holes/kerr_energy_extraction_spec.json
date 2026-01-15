@@ -1,0 +1,553 @@
+{
+  "specification": {
+    "name": "Kerr Energy Extraction Operations",
+    "version": "1.0.0",
+    "description": "Penrose process, Blandford-Znajek mechanism, and superradiance operations for extracting rotational energy from Kerr black holes in HyperSync Core tier.",
+    "language_agnostic": true,
+    "format": "STUNIR",
+    "tier_availability": "Core (Free)",
+    "total_operations": 3,
+    "complexity_target": "O(1)"
+  },
+  "mathematical_foundations": {
+    "penrose_process": "Energy extraction via particle decay in ergosphere where E < 0 possible",
+    "maximum_efficiency": "η_max = 1 - M_irr/M = 1 - 1/√2 ≈ 29.3% for extremal Kerr",
+    "blandford_znajek_power": "P_BZ ≈ (B²a²/M²)·f(a/M) where B is magnetic field strength",
+    "superradiance_condition": "ω < mΩ_H where ω is wave frequency, m is azimuthal number, Ω_H is horizon angular velocity",
+    "superradiance_amplification": "R = |A_out|²/|A_in|² > 1 for waves satisfying condition"
+  },
+  "operations": [
+    {
+      "id": "kerr_015",
+      "name": "compute_penrose_process_energy",
+      "description": "Compute energy extraction efficiency via Penrose process. A particle enters ergosphere, splits into two, with one falling into black hole (negative energy) and other escaping with more energy than original particle.",
+      "category": "energy_extraction",
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      },
+      "parameters": {
+        "M": {
+          "type": "float",
+          "description": "Black hole mass before extraction",
+          "constraints": "M > 0"
+        },
+        "a": {
+          "type": "float",
+          "description": "Spin parameter before extraction",
+          "constraints": "0 < a <= M (must be rotating)"
+        },
+        "particle_energy": {
+          "type": "float",
+          "description": "Energy at infinity of infalling particle",
+          "constraints": "E > 0"
+        },
+        "split_location": {
+          "type": "object",
+          "description": "Location where particle splits (must be in ergosphere)",
+          "properties": {
+            "r": "float (r_+ < r < r_ergo)",
+            "theta": "float (0 ≤ θ ≤ π)"
+          }
+        },
+        "optimal_extraction": {
+          "type": "bool",
+          "description": "If true, compute optimal split for maximum energy extraction",
+          "default": false
+        }
+      },
+      "returns": {
+        "extracted_energy": {
+          "type": "float",
+          "description": "Energy extracted (E_out - E_in)"
+        },
+        "efficiency": {
+          "type": "float",
+          "description": "Extraction efficiency η = (E_out - E_in)/E_in"
+        },
+        "escaping_particle_energy": {
+          "type": "float",
+          "description": "Energy of escaping particle E_2"
+        },
+        "captured_particle_energy": {
+          "type": "float",
+          "description": "Energy of captured particle E_1 (negative in ergosphere)"
+        },
+        "final_M": {
+          "type": "float",
+          "description": "Black hole mass after extraction M_final = M - (E_in - E_out)"
+        },
+        "final_a": {
+          "type": "float",
+          "description": "Spin parameter after extraction"
+        },
+        "max_possible_efficiency": {
+          "type": "float",
+          "description": "Maximum efficiency for this black hole (29.3% for extremal)"
+        }
+      },
+      "mathematical_formula": "E_out > E_in when E_1 < 0 (captured particle has negative energy at infinity). Maximum: E_out/E_in ≈ 1.207 for single extraction.",
+      "implementation_notes": [
+        "Only works in ergosphere (where negative energy states exist)",
+        "Requires retrograde motion for captured particle",
+        "Optimal split: captured particle has maximum negative E and L_z",
+        "Multiple extractions can extract up to 29.3% of mass (extremal → Schwarzschild)",
+        "Process reduces both M and a (eventually black hole spins down)",
+        "Conservation: E_in = E_1 + E_2, L_in = L_1 + L_2"
+      ],
+      "test_cases": [
+        {
+          "input": {
+            "M": 1.0,
+            "a": 0.8,
+            "particle_energy": 1.0,
+            "split_location": {"r": 1.7, "theta": 1.5708},
+            "optimal_extraction": false
+          },
+          "output": {"extracted_energy": ">0", "efficiency": ">0", "escaping_particle_energy": ">1.0", "captured_particle_energy": "<0", "final_M": "<1.0", "final_a": "<0.8", "max_possible_efficiency": "~0.207"},
+          "description": "Typical Penrose extraction in fast-rotating Kerr"
+        },
+        {
+          "input": {
+            "M": 1.0,
+            "a": 0.8,
+            "particle_energy": 1.0,
+            "split_location": {"r": 1.7, "theta": 1.5708},
+            "optimal_extraction": true
+          },
+          "output": {"extracted_energy": "maximize", "efficiency": "~0.207", "escaping_particle_energy": "~1.207", "captured_particle_energy": "~-0.207", "final_M": "verify", "final_a": "verify", "max_possible_efficiency": "~0.207"},
+          "description": "Optimal extraction: maximum efficiency ~20.7% for single extraction"
+        },
+        {
+          "input": {
+            "M": 1.0,
+            "a": 0.5,
+            "particle_energy": 2.0,
+            "split_location": {"r": 1.9, "theta": 1.5708},
+            "optimal_extraction": false
+          },
+          "output": {"extracted_energy": ">0", "efficiency": ">0", "escaping_particle_energy": ">2.0", "captured_particle_energy": "<0", "final_M": "<1.0", "final_a": "<0.5", "max_possible_efficiency": "~0.067"},
+          "description": "Moderate spin: lower efficiency"
+        },
+        {
+          "input": {
+            "M": 1.0,
+            "a": 0.95,
+            "particle_energy": 1.0,
+            "split_location": {"r": 1.2, "theta": 1.5708},
+            "optimal_extraction": true
+          },
+          "output": {"extracted_energy": "large", "efficiency": "~0.25", "escaping_particle_energy": "~1.25", "captured_particle_energy": "verify", "final_M": "verify", "final_a": "verify", "max_possible_efficiency": "~0.274"},
+          "description": "Near-extremal: approaching maximum efficiency"
+        },
+        {
+          "input": {
+            "M": 1.0,
+            "a": 0.8,
+            "particle_energy": 10.0,
+            "split_location": {"r": 1.7, "theta": 0.7854},
+            "optimal_extraction": true
+          },
+          "output": {"extracted_energy": "~2.07", "efficiency": "~0.207", "escaping_particle_energy": "~12.07", "captured_particle_energy": "~-2.07", "final_M": "verify", "final_a": "verify", "max_possible_efficiency": "~0.207"},
+          "description": "High energy particle, off-equatorial"
+        }
+      ],
+      "edge_cases": [
+        {
+          "input": {
+            "M": 1.0,
+            "a": 1.0,
+            "particle_energy": 1.0,
+            "split_location": {"r": 1.5, "theta": 1.5708},
+            "optimal_extraction": true
+          },
+          "output": {"extracted_energy": "maximum", "efficiency": "~0.293", "escaping_particle_energy": "~1.293", "captured_particle_energy": "verify", "final_M": "verify", "final_a": "verify", "max_possible_efficiency": 0.293},
+          "description": "Extremal Kerr: maximum possible efficiency 29.3%"
+        },
+        {
+          "input": {
+            "M": 1.0,
+            "a": 0.01,
+            "particle_energy": 1.0,
+            "split_location": {"r": 1.99, "theta": 1.5708},
+            "optimal_extraction": true
+          },
+          "output": {"extracted_energy": "~0", "efficiency": "~0", "escaping_particle_energy": "~1.0", "captured_particle_energy": "~0", "final_M": "~1.0", "final_a": "~0.01", "max_possible_efficiency": "~0.00005"},
+          "description": "Nearly Schwarzschild: minimal extraction (tiny ergosphere)"
+        },
+        {
+          "input": {
+            "M": 1.0,
+            "a": 0.8,
+            "particle_energy": 1.0,
+            "split_location": {"r": 1.81, "theta": 1.5708},
+            "optimal_extraction": false
+          },
+          "output": "verify_at_ergosphere_boundary",
+          "description": "At ergosphere boundary (r ≈ r_ergo): marginally possible"
+        }
+      ]
+    },
+    {
+      "id": "kerr_016",
+      "name": "compute_blandford_znajek_power",
+      "description": "Compute electromagnetic energy extraction power via Blandford-Znajek (BZ) mechanism. Magnetic field threading spinning black hole acts as unipolar inductor, extracting rotational energy electromagnetically.",
+      "category": "energy_extraction",
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      },
+      "parameters": {
+        "M": {
+          "type": "float",
+          "description": "Black hole mass",
+          "constraints": "M > 0"
+        },
+        "a": {
+          "type": "float",
+          "description": "Spin parameter",
+          "constraints": "0 < a <= M (must be rotating)"
+        },
+        "B_horizon": {
+          "type": "float",
+          "description": "Magnetic field strength at horizon (Gauss or dimensionless)",
+          "constraints": "B_horizon > 0"
+        },
+        "magnetic_field_geometry": {
+          "type": "string",
+          "description": "'monopole', 'dipole', or 'parabolic' (field line geometry)",
+          "enum": ["monopole", "dipole", "parabolic"],
+          "default": "parabolic"
+        },
+        "accretion_rate": {
+          "type": "float",
+          "description": "Matter accretion rate (optional, affects field strength)",
+          "default": 0.0
+        }
+      },
+      "returns": {
+        "P_BZ": {
+          "type": "float",
+          "description": "Blandford-Znajek power (energy per unit time)"
+        },
+        "efficiency_factor": {
+          "type": "float",
+          "description": "Electromagnetic extraction efficiency f(a/M)"
+        },
+        "poynting_flux": {
+          "type": "float",
+          "description": "Electromagnetic energy flux S = (E×B)/(4π)"
+        },
+        "jet_power": {
+          "type": "float",
+          "description": "Power carried by relativistic jet (if applicable)"
+        },
+        "spin_down_timescale": {
+          "type": "float",
+          "description": "Time for black hole to spin down significantly: τ = E_rot/P_BZ"
+        },
+        "maximum_power_possible": {
+          "type": "float",
+          "description": "Maximum BZ power for this black hole (at given B, optimal a)"
+        }
+      },
+      "mathematical_formula": "P_BZ ≈ (κ/32π)(B_H²A_H)(Ω_H/2π)² ≈ (B²a²M²/4π)·f(a/M) where f(a=M) ≈ 1.4, κ ≈ 0.05",
+      "implementation_notes": [
+        "BZ power ∝ a²M²B² (spin-squared dependence)",
+        "Magnetic field must thread horizon (force-free magnetosphere)",
+        "Efficiency function: f(a/M) ≈ 1.4(a/M)² for parabolic field",
+        "Powers active galactic nuclei (AGN) jets and quasar emission",
+        "Requires force-free electrodynamics (GRMHD simulations)",
+        "Maximum power at a=M: P_max ≈ 0.2 L_Edd for stellar-mass BH",
+        "Jet formation: Poynting-dominated outflow along rotation axis"
+      ],
+      "test_cases": [
+        {
+          "input": {
+            "M": 1.0,
+            "a": 0.8,
+            "B_horizon": 1000.0,
+            "magnetic_field_geometry": "parabolic",
+            "accretion_rate": 0.0
+          },
+          "output": {"P_BZ": ">0", "efficiency_factor": "~0.89", "poynting_flux": "verify", "jet_power": "~P_BZ", "spin_down_timescale": "verify", "maximum_power_possible": "verify"},
+          "description": "Fast-rotating Kerr with strong magnetic field"
+        },
+        {
+          "input": {
+            "M": 1.0,
+            "a": 0.5,
+            "B_horizon": 500.0,
+            "magnetic_field_geometry": "dipole",
+            "accretion_rate": 0.1
+          },
+          "output": {"P_BZ": "lower_than_parabolic", "efficiency_factor": "~0.35", "poynting_flux": "verify", "jet_power": "verify", "spin_down_timescale": "longer", "maximum_power_possible": "verify"},
+          "description": "Moderate spin, dipole field, with accretion"
+        },
+        {
+          "input": {
+            "M": 1e9,
+            "a": 0.95,
+            "B_horizon": 100.0,
+            "magnetic_field_geometry": "parabolic",
+            "accretion_rate": 0.01
+          },
+          "output": {"P_BZ": ">>1", "efficiency_factor": "~1.26", "poynting_flux": "verify", "jet_power": "verify_AGN_scale", "spin_down_timescale": "~1e9_years", "maximum_power_possible": "verify"},
+          "description": "Supermassive black hole (AGN/quasar jet)"
+        },
+        {
+          "input": {
+            "M": 10.0,
+            "a": 0.7,
+            "B_horizon": 1e4,
+            "magnetic_field_geometry": "monopole",
+            "accretion_rate": 0.0
+          },
+          "output": {"P_BZ": "verify_monopole", "efficiency_factor": "~0.69", "poynting_flux": "verify", "jet_power": "verify", "spin_down_timescale": "verify", "maximum_power_possible": "verify"},
+          "description": "Monopole field geometry (simplified model)"
+        },
+        {
+          "input": {
+            "M": 1.0,
+            "a": 0.999,
+            "B_horizon": 1000.0,
+            "magnetic_field_geometry": "parabolic",
+            "accretion_rate": 0.0
+          },
+          "output": {"P_BZ": "near_maximum", "efficiency_factor": "~1.39", "poynting_flux": "verify", "jet_power": "verify", "spin_down_timescale": "short", "maximum_power_possible": "~P_BZ"},
+          "description": "Near-extremal: maximum BZ efficiency"
+        }
+      ],
+      "edge_cases": [
+        {
+          "input": {
+            "M": 1.0,
+            "a": 1.0,
+            "B_horizon": 1000.0,
+            "magnetic_field_geometry": "parabolic",
+            "accretion_rate": 0.0
+          },
+          "output": {"P_BZ": "maximum", "efficiency_factor": 1.4, "poynting_flux": "maximum", "jet_power": "maximum", "spin_down_timescale": "minimum", "maximum_power_possible": "P_BZ"},
+          "description": "Extremal Kerr: maximum BZ power P_BZ ≈ 1.4·B²a²M²/(4π)"
+        },
+        {
+          "input": {
+            "M": 1.0,
+            "a": 0.01,
+            "B_horizon": 1000.0,
+            "magnetic_field_geometry": "parabolic",
+            "accretion_rate": 0.0
+          },
+          "output": {"P_BZ": "~0", "efficiency_factor": "~0.00014", "poynting_flux": "~0", "jet_power": "~0", "spin_down_timescale": "~infinity", "maximum_power_possible": ">>P_BZ"},
+          "description": "Nearly Schwarzschild: minimal BZ power (P ∝ a²)"
+        },
+        {
+          "input": {
+            "M": 1.0,
+            "a": 0.8,
+            "B_horizon": 0.0,
+            "magnetic_field_geometry": "parabolic",
+            "accretion_rate": 0.0
+          },
+          "output": {"P_BZ": 0.0, "efficiency_factor": 0.0, "poynting_flux": 0.0, "jet_power": 0.0, "spin_down_timescale": "infinity", "maximum_power_possible": 0.0},
+          "description": "No magnetic field: no BZ power"
+        }
+      ]
+    },
+    {
+      "id": "kerr_032",
+      "name": "compute_superradiance_amplification",
+      "description": "Compute superradiant amplification factor for bosonic waves scattering off rotating black hole. When ω < mΩ_H, waves extract rotational energy and are amplified.",
+      "category": "energy_extraction",
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      },
+      "parameters": {
+        "M": {
+          "type": "float",
+          "description": "Black hole mass",
+          "constraints": "M > 0"
+        },
+        "a": {
+          "type": "float",
+          "description": "Spin parameter",
+          "constraints": "0 < a <= M (must be rotating)"
+        },
+        "omega": {
+          "type": "float",
+          "description": "Wave frequency (angular frequency ω = 2πf)",
+          "constraints": "omega > 0"
+        },
+        "m": {
+          "type": "int",
+          "description": "Azimuthal quantum number (wave angular momentum)",
+          "constraints": "m != 0"
+        },
+        "l": {
+          "type": "int",
+          "description": "Orbital angular momentum quantum number",
+          "constraints": "l >= abs(m)"
+        },
+        "wave_type": {
+          "type": "string",
+          "description": "'scalar', 'electromagnetic', or 'gravitational'",
+          "enum": ["scalar", "electromagnetic", "gravitational"],
+          "default": "scalar"
+        }
+      },
+      "returns": {
+        "amplification_factor": {
+          "type": "float",
+          "description": "R = |A_out|²/|A_in|² (reflected wave amplitude squared ratio)"
+        },
+        "is_superradiant": {
+          "type": "bool",
+          "description": "True if ω < mΩ_H (superradiance condition satisfied)"
+        },
+        "energy_extraction_rate": {
+          "type": "float",
+          "description": "Fractional energy extracted per scattering (R - 1)"
+        },
+        "reflection_coefficient": {
+          "type": "float",
+          "description": "R_coeff = (R - 1)/(R + 1) (normalized)"
+        },
+        "Omega_H": {
+          "type": "float",
+          "description": "Horizon angular velocity"
+        },
+        "superradiance_threshold": {
+          "type": "float",
+          "description": "ω_threshold = mΩ_H (maximum frequency for superradiance)"
+        },
+        "black_hole_bomb_timescale": {
+          "type": "float",
+          "description": "Instability timescale if confined (e.g., by massive boson field)"
+        }
+      },
+      "mathematical_formula": "Superradiance when ω < mΩ_H: R > 1. Peak amplification R ≈ 1 + (4ωM)/(ω² + (mΩ_H - ω)²) for l=m mode.",
+      "implementation_notes": [
+        "Requires rotating black hole (a > 0) and ω < mΩ_H",
+        "Maximum amplification for ω ≈ mΩ_H/2 (resonance)",
+        "Prograde waves (m > 0) superradiant; retrograde (m < 0) not",
+        "Black hole bomb: massive boson creates mirror, exponential growth",
+        "Gravitational waves: l=m=2 mode most important",
+        "Electromagnetic waves: l=m=1 mode dominates",
+        "Effect is small for astrophysical black holes but important for massive bosons"
+      ],
+      "test_cases": [
+        {
+          "input": {
+            "M": 1.0,
+            "a": 0.8,
+            "omega": 0.1,
+            "m": 1,
+            "l": 1,
+            "wave_type": "scalar"
+          },
+          "output": {"amplification_factor": ">1", "is_superradiant": true, "energy_extraction_rate": ">0", "reflection_coefficient": ">0", "Omega_H": "~0.25", "superradiance_threshold": "~0.25", "black_hole_bomb_timescale": "verify"},
+          "description": "Superradiant regime: ω < mΩ_H, amplification occurs"
+        },
+        {
+          "input": {
+            "M": 1.0,
+            "a": 0.8,
+            "omega": 0.3,
+            "m": 1,
+            "l": 1,
+            "wave_type": "scalar"
+          },
+          "output": {"amplification_factor": "<1", "is_superradiant": false, "energy_extraction_rate": "<0", "reflection_coefficient": "<0", "Omega_H": "~0.25", "superradiance_threshold": "~0.25", "black_hole_bomb_timescale": "infinity"},
+          "description": "Non-superradiant: ω > mΩ_H, wave absorbed"
+        },
+        {
+          "input": {
+            "M": 1.0,
+            "a": 0.9,
+            "omega": 0.1,
+            "m": 2,
+            "l": 2,
+            "wave_type": "gravitational"
+          },
+          "output": {"amplification_factor": ">1", "is_superradiant": true, "energy_extraction_rate": ">0", "reflection_coefficient": ">0", "Omega_H": "~0.217", "superradiance_threshold": "~0.434", "black_hole_bomb_timescale": "verify"},
+          "description": "Gravitational wave superradiance (l=m=2)"
+        },
+        {
+          "input": {
+            "M": 1.0,
+            "a": 0.5,
+            "omega": 0.05,
+            "m": 1,
+            "l": 1,
+            "wave_type": "electromagnetic"
+          },
+          "output": {"amplification_factor": ">1", "is_superradiant": true, "energy_extraction_rate": ">0", "reflection_coefficient": ">0", "Omega_H": "~0.134", "superradiance_threshold": "~0.134", "black_hole_bomb_timescale": "verify"},
+          "description": "Electromagnetic wave superradiance"
+        },
+        {
+          "input": {
+            "M": 1.0,
+            "a": 0.8,
+            "omega": 0.125,
+            "m": 1,
+            "l": 2,
+            "wave_type": "scalar"
+          },
+          "output": {"amplification_factor": "maximum", "is_superradiant": true, "energy_extraction_rate": "maximum", "reflection_coefficient": "verify", "Omega_H": "~0.25", "superradiance_threshold": "~0.25", "black_hole_bomb_timescale": "verify"},
+          "description": "Optimal frequency ω ≈ mΩ_H/2 (maximum amplification)"
+        }
+      ],
+      "edge_cases": [
+        {
+          "input": {
+            "M": 1.0,
+            "a": 1.0,
+            "omega": 0.25,
+            "m": 1,
+            "l": 1,
+            "wave_type": "scalar"
+          },
+          "output": {"amplification_factor": ">1", "is_superradiant": true, "energy_extraction_rate": ">0", "reflection_coefficient": ">0", "Omega_H": 0.5, "superradiance_threshold": 0.5, "black_hole_bomb_timescale": "short"},
+          "description": "Extremal Kerr: maximum superradiance window (ω < 0.5)"
+        },
+        {
+          "input": {
+            "M": 1.0,
+            "a": 0.8,
+            "omega": 0.25,
+            "m": 1,
+            "l": 1,
+            "wave_type": "scalar"
+          },
+          "output": {"amplification_factor": 1.0, "is_superradiant": false, "energy_extraction_rate": 0.0, "reflection_coefficient": 0.0, "Omega_H": "~0.25", "superradiance_threshold": "~0.25", "black_hole_bomb_timescale": "infinity"},
+          "description": "At threshold ω = mΩ_H: marginal case (R = 1)"
+        },
+        {
+          "input": {
+            "M": 1.0,
+            "a": 0.01,
+            "omega": 0.001,
+            "m": 1,
+            "l": 1,
+            "wave_type": "scalar"
+          },
+          "output": {"amplification_factor": "~1", "is_superradiant": true, "energy_extraction_rate": "~0", "reflection_coefficient": "~0", "Omega_H": "~0.005", "superradiance_threshold": "~0.005", "black_hole_bomb_timescale": "very_long"},
+          "description": "Nearly Schwarzschild: minimal superradiance (small Ω_H)"
+        },
+        {
+          "input": {
+            "M": 1.0,
+            "a": 0.8,
+            "omega": 0.1,
+            "m": -1,
+            "l": 1,
+            "wave_type": "scalar"
+          },
+          "output": {"amplification_factor": "<1", "is_superradiant": false, "energy_extraction_rate": "<0", "reflection_coefficient": "<0", "Omega_H": "~0.25", "superradiance_threshold": "negative", "black_hole_bomb_timescale": "infinity"},
+          "description": "Retrograde wave (m < 0): no superradiance"
+        }
+      ]
+    }
+  ]
+}

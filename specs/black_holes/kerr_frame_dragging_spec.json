@@ -1,0 +1,564 @@
+{
+  "specification": {
+    "name": "Kerr Frame Dragging and Physical Effects Operations",
+    "version": "1.0.0",
+    "description": "Frame dragging, Lense-Thirring precession, gravitational redshift, and tidal force operations for Kerr rotating black holes in HyperSync Core tier.",
+    "language_agnostic": true,
+    "format": "STUNIR",
+    "tier_availability": "Core (Free)",
+    "total_operations": 4,
+    "complexity_target": "O(1)"
+  },
+  "mathematical_foundations": {
+    "frame_dragging_frequency": "ω(r,θ) = 2Mar/(ρ²Σ) where ρ² = r² + a²cos²θ, Σ = (r²+a²)² - Δa²sin²θ, Δ = r² - 2Mr + a²",
+    "zamo_4velocity": "u^μ_ZAMO = (u^t, 0, 0, ω·u^t) where observer has zero angular momentum",
+    "lense_thirring_precession": "Ω_LT = GJ/(c²r³) = Ga²M/(c²r³) for test gyroscope",
+    "gravitational_redshift": "1+z = (u_observer^μ k_μ)/(u_emitter^ν k_ν) where k_μ is photon 4-momentum",
+    "tidal_force": "F_tidal ∝ R_μ0ν0 (Riemann curvature in observer frame)"
+  },
+  "operations": [
+    {
+      "id": "kerr_006",
+      "name": "compute_zamo_properties",
+      "description": "Compute Zero Angular Momentum Observer (ZAMO) frame properties. ZAMOs are local observers with zero angular momentum who orbit the black hole due to frame dragging.",
+      "category": "frame_dragging_operations",
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      },
+      "parameters": {
+        "r": {
+          "type": "float",
+          "description": "Boyer-Lindquist radial coordinate",
+          "constraints": "r > r_+ (outside event horizon)"
+        },
+        "theta": {
+          "type": "float",
+          "description": "Boyer-Lindquist polar angle",
+          "constraints": "0 <= theta <= pi"
+        },
+        "M": {
+          "type": "float",
+          "description": "Black hole mass",
+          "constraints": "M > 0"
+        },
+        "a": {
+          "type": "float",
+          "description": "Spin parameter",
+          "constraints": "0 <= a <= M"
+        }
+      },
+      "returns": {
+        "omega_ZAMO": {
+          "type": "float",
+          "description": "ZAMO angular velocity dφ/dt (frame dragging rate)"
+        },
+        "u_ZAMO": {
+          "type": "array[float]",
+          "description": "ZAMO 4-velocity (u^t, u^r, u^θ, u^φ) in Boyer-Lindquist coordinates",
+          "length": 4
+        },
+        "gamma_factor": {
+          "type": "float",
+          "description": "Lorentz factor γ = u^t between ZAMO and static observer"
+        },
+        "proper_time_rate": {
+          "type": "float",
+          "description": "dτ_ZAMO/dt (proper time rate relative to coordinate time)"
+        },
+        "is_in_ergosphere": {
+          "type": "bool",
+          "description": "True if ZAMO is in ergosphere (where static observers cannot exist)"
+        }
+      },
+      "mathematical_formula": "ω_ZAMO = g_tφ/g_φφ = 2Mar/[(r²+a²)² - Δa²sin²θ], u^μ = (u^t, 0, 0, ω·u^t) where g_μν u^μ u^ν = -1",
+      "implementation_notes": [
+        "ZAMO has L_z = 0 (zero angular momentum)",
+        "ZAMO co-rotates with spacetime due to frame dragging",
+        "Inside ergosphere, ω_ZAMO > 0 always (must rotate)",
+        "Outside ergosphere, static observers exist (ω can be zero)",
+        "Proper time: dτ/dt = 1/u^t = √(-g_tt - 2ω g_tφ - ω² g_φφ)"
+      ],
+      "test_cases": [
+        {
+          "input": {"r": 10.0, "theta": 1.5708, "M": 1.0, "a": 0.0},
+          "output": {"omega_ZAMO": 0.0, "u_ZAMO": "[verify,0,0,0]", "gamma_factor": 1.0, "proper_time_rate": 1.0, "is_in_ergosphere": false},
+          "description": "Schwarzschild: no frame dragging (ω=0)"
+        },
+        {
+          "input": {"r": 5.0, "theta": 1.5708, "M": 1.0, "a": 0.8},
+          "output": {"omega_ZAMO": ">0", "u_ZAMO": "verify_corotation", "gamma_factor": ">1", "proper_time_rate": "<1", "is_in_ergosphere": false},
+          "description": "Outside ergosphere, equatorial frame dragging"
+        },
+        {
+          "input": {"r": 1.7, "theta": 1.5708, "M": 1.0, "a": 0.8},
+          "output": {"omega_ZAMO": ">>0", "u_ZAMO": "verify_strong_drag", "gamma_factor": ">>1", "proper_time_rate": "<<1", "is_in_ergosphere": true},
+          "description": "Inside ergosphere (forced co-rotation)"
+        },
+        {
+          "input": {"r": 3.0, "theta": 0.7854, "M": 1.0, "a": 0.6},
+          "output": {"omega_ZAMO": ">0", "u_ZAMO": "verify", "gamma_factor": ">1", "proper_time_rate": "<1", "is_in_ergosphere": "verify"},
+          "description": "Intermediate angle θ=45°"
+        },
+        {
+          "input": {"r": 5.0, "theta": 0.0, "M": 1.0, "a": 0.9},
+          "output": {"omega_ZAMO": ">0", "u_ZAMO": "verify_polar", "gamma_factor": ">1", "proper_time_rate": "<1", "is_in_ergosphere": false},
+          "description": "Polar axis (θ=0)"
+        }
+      ],
+      "edge_cases": [
+        {
+          "input": {"r": 1.0, "theta": 1.5708, "M": 1.0, "a": 1.0},
+          "output": {"omega_ZAMO": 0.5, "u_ZAMO": "verify_extremal", "gamma_factor": "infinity", "proper_time_rate": 0.0, "is_in_ergosphere": "at_horizon"},
+          "description": "Extremal Kerr at horizon: ω_ZAMO = Ω_H = 1/(2M)"
+        },
+        {
+          "input": {"r": 1.6, "theta": 1.5708, "M": 1.0, "a": 0.8},
+          "output": {"omega_ZAMO": "verify_at_r_plus", "u_ZAMO": "verify", "gamma_factor": "large", "proper_time_rate": "small", "is_in_ergosphere": true},
+          "description": "At event horizon r=r_+ (boundary case)"
+        },
+        {
+          "input": {"r": 100.0, "theta": 1.5708, "M": 1.0, "a": 0.9},
+          "output": {"omega_ZAMO": "~2*0.9/(100^3)", "u_ZAMO": "verify_weak_field", "gamma_factor": "~1", "proper_time_rate": "~1", "is_in_ergosphere": false},
+          "description": "Far field: ω ∝ 1/r³ (weak frame dragging)"
+        }
+      ]
+    },
+    {
+      "id": "kerr_018",
+      "name": "compute_lense_thirring_precession",
+      "description": "Compute Lense-Thirring precession rate for a test gyroscope orbiting Kerr black hole. Frame dragging causes gyroscope spin axis to precess.",
+      "category": "frame_dragging_operations",
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      },
+      "parameters": {
+        "r": {
+          "type": "float",
+          "description": "Orbital radius (circular orbit assumed)",
+          "constraints": "r > r_ISCO"
+        },
+        "theta": {
+          "type": "float",
+          "description": "Orbital inclination (θ=π/2 for equatorial)",
+          "constraints": "0 <= theta <= pi"
+        },
+        "M": {
+          "type": "float",
+          "description": "Black hole mass",
+          "constraints": "M > 0"
+        },
+        "a": {
+          "type": "float",
+          "description": "Spin parameter",
+          "constraints": "0 <= a <= M"
+        },
+        "orbit_direction": {
+          "type": "string",
+          "description": "'prograde' or 'retrograde'",
+          "enum": ["prograde", "retrograde"],
+          "default": "prograde"
+        }
+      },
+      "returns": {
+        "Omega_LT": {
+          "type": "float",
+          "description": "Lense-Thirring precession frequency (rad/time)"
+        },
+        "precession_period": {
+          "type": "float",
+          "description": "Precession period T_LT = 2π/Ω_LT"
+        },
+        "precession_angle_per_orbit": {
+          "type": "float",
+          "description": "Precession angle accumulated per orbital period (radians)"
+        },
+        "geodetic_precession": {
+          "type": "float",
+          "description": "Geodetic (de Sitter) precession component"
+        },
+        "total_precession": {
+          "type": "float",
+          "description": "Total precession = Lense-Thirring + geodetic"
+        }
+      },
+      "mathematical_formula": "Ω_LT = (GJ)/(c²r³)(1 + (3r²)/(2a²)(1-cos²θ)) ≈ (Ga²M)/(c²r³) for equatorial orbits, J = aM",
+      "implementation_notes": [
+        "Lense-Thirring: frame dragging effect (proportional to J/r³)",
+        "Geodetic precession: curvature effect (proportional to M/r)",
+        "Prograde orbits: positive precession (same direction as BH spin)",
+        "Retrograde orbits: negative precession",
+        "Equatorial orbits: maximum Lense-Thirring effect",
+        "Verified by Gravity Probe B experiment (Earth frame dragging)"
+      ],
+      "test_cases": [
+        {
+          "input": {"r": 10.0, "theta": 1.5708, "M": 1.0, "a": 0.0, "orbit_direction": "prograde"},
+          "output": {"Omega_LT": 0.0, "precession_period": "infinity", "precession_angle_per_orbit": 0.0, "geodetic_precession": ">0", "total_precession": "geodetic_only"},
+          "description": "Schwarzschild: only geodetic precession (no frame dragging)"
+        },
+        {
+          "input": {"r": 10.0, "theta": 1.5708, "M": 1.0, "a": 0.8, "orbit_direction": "prograde"},
+          "output": {"Omega_LT": "~0.0008", "precession_period": "~7854", "precession_angle_per_orbit": "verify", "geodetic_precession": "verify", "total_precession": ">Omega_LT"},
+          "description": "Equatorial prograde orbit, fast rotation"
+        },
+        {
+          "input": {"r": 10.0, "theta": 1.5708, "M": 1.0, "a": 0.8, "orbit_direction": "retrograde"},
+          "output": {"Omega_LT": "~-0.0008", "precession_period": "~-7854", "precession_angle_per_orbit": "negative", "geodetic_precession": "verify", "total_precession": "verify"},
+          "description": "Equatorial retrograde orbit (negative precession)"
+        },
+        {
+          "input": {"r": 5.0, "theta": 1.5708, "M": 1.0, "a": 0.5, "orbit_direction": "prograde"},
+          "output": {"Omega_LT": "~0.002", "precession_period": "~3142", "precession_angle_per_orbit": "verify", "geodetic_precession": "verify", "total_precession": "verify"},
+          "description": "Closer orbit: stronger precession (∝ 1/r³)"
+        },
+        {
+          "input": {"r": 10.0, "theta": 0.7854, "M": 1.0, "a": 0.6, "orbit_direction": "prograde"},
+          "output": {"Omega_LT": "<equatorial_value", "precession_period": ">equatorial_period", "precession_angle_per_orbit": "verify", "geodetic_precession": "verify", "total_precession": "verify"},
+          "description": "Inclined orbit θ=45° (weaker Lense-Thirring)"
+        }
+      ],
+      "edge_cases": [
+        {
+          "input": {"r": 1.0, "theta": 1.5708, "M": 1.0, "a": 1.0, "orbit_direction": "prograde"},
+          "output": {"Omega_LT": ">>0", "precession_period": "small", "precession_angle_per_orbit": "large", "geodetic_precession": "verify", "total_precession": "verify"},
+          "description": "Extremal Kerr at ISCO (r=M): maximum precession"
+        },
+        {
+          "input": {"r": 100.0, "theta": 1.5708, "M": 1.0, "a": 0.9, "orbit_direction": "prograde"},
+          "output": {"Omega_LT": "~8e-7", "precession_period": "~7.85e6", "precession_angle_per_orbit": "<<1", "geodetic_precession": "~0.001", "total_precession": "~0.001"},
+          "description": "Far field: weak precession (∝ 1/r³)"
+        },
+        {
+          "input": {"r": 10.0, "theta": 0.0, "M": 1.0, "a": 0.8, "orbit_direction": "prograde"},
+          "output": {"Omega_LT": "verify_polar", "precession_period": "verify", "precession_angle_per_orbit": "verify", "geodetic_precession": "verify", "total_precession": "verify"},
+          "description": "Polar orbit (θ=0): different geometry factor"
+        }
+      ]
+    },
+    {
+      "id": "kerr_017",
+      "name": "compute_gravitational_redshift_kerr",
+      "description": "Compute gravitational redshift for photons traveling between two points in Kerr geometry. Includes effects of gravitational potential and frame dragging.",
+      "category": "physical_effects",
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      },
+      "parameters": {
+        "emitter": {
+          "type": "object",
+          "description": "Emitter position and 4-velocity",
+          "properties": {
+            "r": "float (r > r_+)",
+            "theta": "float (0 ≤ θ ≤ π)",
+            "phi": "float (0 ≤ φ < 2π)",
+            "u": "array[float] (4-velocity u^μ)"
+          }
+        },
+        "observer": {
+          "type": "object",
+          "description": "Observer position and 4-velocity",
+          "properties": {
+            "r": "float (r > r_+)",
+            "theta": "float (0 ≤ θ ≤ π)",
+            "phi": "float (0 ≤ φ < 2π)",
+            "u": "array[float] (4-velocity u^μ)"
+          }
+        },
+        "M": {
+          "type": "float",
+          "description": "Black hole mass",
+          "constraints": "M > 0"
+        },
+        "a": {
+          "type": "float",
+          "description": "Spin parameter",
+          "constraints": "0 <= a <= M"
+        }
+      },
+      "returns": {
+        "z": {
+          "type": "float",
+          "description": "Redshift parameter z where λ_obs = λ_emit(1+z)"
+        },
+        "frequency_ratio": {
+          "type": "float",
+          "description": "ν_obs/ν_emit = 1/(1+z)"
+        },
+        "gravitational_component": {
+          "type": "float",
+          "description": "Redshift due to gravitational potential"
+        },
+        "doppler_component": {
+          "type": "float",
+          "description": "Redshift due to relative motion"
+        },
+        "frame_dragging_component": {
+          "type": "float",
+          "description": "Additional shift due to frame dragging (Kerr specific)"
+        }
+      },
+      "mathematical_formula": "1+z = (u_obs^μ k_μ)/(u_emit^ν k_ν) where k_μ is photon 4-momentum (null geodesic tangent)",
+      "implementation_notes": [
+        "Compute photon 4-momentum k_μ along null geodesic",
+        "Observer/emitter 4-velocities normalized: g_μν u^μ u^ν = -1",
+        "z > 0: redshift (observer sees lower frequency)",
+        "z < 0: blueshift (observer sees higher frequency)",
+        "Frame dragging affects photon trajectories in Kerr",
+        "For static observers at infinity: z_∞ = E_emit/E_∞ - 1"
+      ],
+      "test_cases": [
+        {
+          "input": {
+            "emitter": {"r": 5.0, "theta": 1.5708, "phi": 0.0, "u": "static_observer"},
+            "observer": {"r": 100.0, "theta": 1.5708, "phi": 0.0, "u": "static_observer"},
+            "M": 1.0,
+            "a": 0.0
+          },
+          "output": {"z": ">0", "frequency_ratio": "<1", "gravitational_component": "dominant", "doppler_component": "~0", "frame_dragging_component": 0.0},
+          "description": "Schwarzschild: pure gravitational redshift"
+        },
+        {
+          "input": {
+            "emitter": {"r": 3.0, "theta": 1.5708, "phi": 0.0, "u": "ZAMO"},
+            "observer": {"r": 50.0, "theta": 1.5708, "phi": 0.0, "u": "static_observer"},
+            "M": 1.0,
+            "a": 0.8
+          },
+          "output": {"z": ">0", "frequency_ratio": "<1", "gravitational_component": "verify", "doppler_component": "verify", "frame_dragging_component": "verify"},
+          "description": "Kerr: ZAMO emitter (includes frame dragging)"
+        },
+        {
+          "input": {
+            "emitter": {"r": 10.0, "theta": 1.5708, "phi": 0.0, "u": "circular_orbit"},
+            "observer": {"r": 10.0, "theta": 1.5708, "phi": 3.14159, "u": "static_observer"},
+            "M": 1.0,
+            "a": 0.5
+          },
+          "output": {"z": "verify_doppler", "frequency_ratio": "verify", "gravitational_component": "~0", "doppler_component": "dominant", "frame_dragging_component": "small"},
+          "description": "Same radius, opposite sides: mainly Doppler"
+        },
+        {
+          "input": {
+            "emitter": {"r": 2.0, "theta": 1.5708, "phi": 0.0, "u": "static_observer"},
+            "observer": {"r": 1000.0, "theta": 1.5708, "phi": 0.0, "u": "static_observer"},
+            "M": 1.0,
+            "a": 0.6
+          },
+          "output": {"z": ">>0", "frequency_ratio": "<<1", "gravitational_component": "large", "doppler_component": "~0", "frame_dragging_component": "small"},
+          "description": "Near horizon to far field: large redshift"
+        },
+        {
+          "input": {
+            "emitter": {"r": 5.0, "theta": 0.7854, "phi": 0.0, "u": "static_observer"},
+            "observer": {"r": 5.0, "theta": 2.3562, "phi": 0.0, "u": "static_observer"},
+            "M": 1.0,
+            "a": 0.7
+          },
+          "output": {"z": "verify_same_r", "frequency_ratio": "verify", "gravitational_component": "small", "doppler_component": "verify", "frame_dragging_component": "verify"},
+          "description": "Same radius, different θ"
+        }
+      ],
+      "edge_cases": [
+        {
+          "input": {
+            "emitter": {"r": 1.6, "theta": 1.5708, "phi": 0.0, "u": "ZAMO"},
+            "observer": {"r": 1000.0, "theta": 1.5708, "phi": 0.0, "u": "static_observer"},
+            "M": 1.0,
+            "a": 0.8
+          },
+          "output": {"z": ">>>0", "frequency_ratio": "<<<1", "gravitational_component": "huge", "doppler_component": "verify", "frame_dragging_component": "significant"},
+          "description": "At event horizon (r=r_+): infinite redshift"
+        },
+        {
+          "input": {
+            "emitter": {"r": 1.0, "theta": 1.5708, "phi": 0.0, "u": "horizon_observer"},
+            "observer": {"r": 100.0, "theta": 1.5708, "phi": 0.0, "u": "static_observer"},
+            "M": 1.0,
+            "a": 1.0
+          },
+          "output": {"z": "infinity", "frequency_ratio": 0.0, "gravitational_component": "infinite", "doppler_component": "verify", "frame_dragging_component": "large"},
+          "description": "Extremal Kerr at horizon: infinite redshift"
+        },
+        {
+          "input": {
+            "emitter": {"r": 100.0, "theta": 1.5708, "phi": 0.0, "u": "static_observer"},
+            "observer": {"r": 100.0, "theta": 1.5708, "phi": 0.0, "u": "static_observer"},
+            "M": 1.0,
+            "a": 0.5
+          },
+          "output": {"z": 0.0, "frequency_ratio": 1.0, "gravitational_component": 0.0, "doppler_component": 0.0, "frame_dragging_component": 0.0},
+          "description": "Same location: no redshift"
+        }
+      ]
+    },
+    {
+      "id": "kerr_025",
+      "name": "compute_tidal_force_kerr",
+      "description": "Compute tidal forces (differential gravitational forces) on extended object in Kerr geometry. Tidal forces arise from spacetime curvature and depend on Riemann tensor.",
+      "category": "physical_effects",
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      },
+      "parameters": {
+        "position": {
+          "type": "object",
+          "description": "Object's center of mass position",
+          "properties": {
+            "r": "float (r > r_+)",
+            "theta": "float (0 ≤ θ ≤ π)",
+            "phi": "float (0 ≤ φ < 2π)"
+          }
+        },
+        "velocity": {
+          "type": "array[float]",
+          "description": "4-velocity u^μ of object's center of mass",
+          "length": 4
+        },
+        "separation_vector": {
+          "type": "array[float]",
+          "description": "Spatial separation vector ξ^i between two parts of object (proper frame)",
+          "length": 3
+        },
+        "M": {
+          "type": "float",
+          "description": "Black hole mass",
+          "constraints": "M > 0"
+        },
+        "a": {
+          "type": "float",
+          "description": "Spin parameter",
+          "constraints": "0 <= a <= M"
+        }
+      },
+      "returns": {
+        "tidal_acceleration": {
+          "type": "array[float]",
+          "description": "Tidal acceleration d²ξ^i/dτ² in observer's proper frame",
+          "length": 3
+        },
+        "tidal_tensor": {
+          "type": "array[array[float]]",
+          "description": "3×3 tidal tensor K^i_j = -R^i_0j0 in observer frame",
+          "shape": [3, 3]
+        },
+        "radial_tidal_strength": {
+          "type": "float",
+          "description": "Tidal force magnitude in radial direction"
+        },
+        "tangential_tidal_strength": {
+          "type": "float",
+          "description": "Tidal force magnitude in tangential directions"
+        },
+        "spaghettification_parameter": {
+          "type": "float",
+          "description": "Relative strength (|K|·L) where L is object size"
+        }
+      },
+      "mathematical_formula": "d²ξ^i/dτ² = -R^i_μνσ u^μ ξ^ν u^σ (geodesic deviation equation), K^i_j = -R^i_0j0 in orthonormal frame",
+      "implementation_notes": [
+        "Tidal forces cause spaghettification (stretching and compression)",
+        "Radial tidal force dominates near black hole",
+        "Rotation (a ≠ 0) adds tangential tidal forces",
+        "Transform Riemann tensor to observer's orthonormal frame",
+        "For object size L: tidal force ~ M·L/r³ (Schwarzschild)",
+        "Tidal disruption occurs when tidal force exceeds object's self-gravity"
+      ],
+      "test_cases": [
+        {
+          "input": {
+            "position": {"r": 10.0, "theta": 1.5708, "phi": 0.0},
+            "velocity": "static_observer",
+            "separation_vector": [1.0, 0.0, 0.0],
+            "M": 1.0,
+            "a": 0.0
+          },
+          "output": {"tidal_acceleration": "radial_dominant", "tidal_tensor": "verify_schwarzschild", "radial_tidal_strength": "~0.002", "tangential_tidal_strength": "~-0.001", "spaghettification_parameter": "verify"},
+          "description": "Schwarzschild: radial stretching, tangential compression"
+        },
+        {
+          "input": {
+            "position": {"r": 5.0, "theta": 1.5708, "phi": 0.0},
+            "velocity": "ZAMO",
+            "separation_vector": [1.0, 0.0, 0.0],
+            "M": 1.0,
+            "a": 0.8
+          },
+          "output": {"tidal_acceleration": "verify_kerr", "tidal_tensor": "asymmetric", "radial_tidal_strength": "~0.016", "tangential_tidal_strength": "verify", "spaghettification_parameter": "verify"},
+          "description": "Kerr: rotation adds asymmetry to tidal forces"
+        },
+        {
+          "input": {
+            "position": {"r": 3.0, "theta": 1.5708, "phi": 0.0},
+            "velocity": "freefall",
+            "separation_vector": [0.0, 1.0, 0.0],
+            "M": 1.0,
+            "a": 0.5
+          },
+          "output": {"tidal_acceleration": "tangential", "tidal_tensor": "verify", "radial_tidal_strength": "small", "tangential_tidal_strength": ">0", "spaghettification_parameter": "verify"},
+          "description": "Tangential separation vector"
+        },
+        {
+          "input": {
+            "position": {"r": 100.0, "theta": 1.5708, "phi": 0.0},
+            "velocity": "static_observer",
+            "separation_vector": [1.0, 0.0, 0.0],
+            "M": 1.0,
+            "a": 0.9
+          },
+          "output": {"tidal_acceleration": "~0", "tidal_tensor": "near_zero", "radial_tidal_strength": "~1e-6", "tangential_tidal_strength": "~-5e-7", "spaghettification_parameter": "~1e-6"},
+          "description": "Far field: weak tidal forces"
+        },
+        {
+          "input": {
+            "position": {"r": 10.0, "theta": 0.7854, "phi": 0.0},
+            "velocity": "circular_orbit",
+            "separation_vector": [0.5, 0.5, 0.0],
+            "M": 1.0,
+            "a": 0.6
+          },
+          "output": {"tidal_acceleration": "verify_mixed", "tidal_tensor": "verify", "radial_tidal_strength": "verify", "tangential_tidal_strength": "verify", "spaghettification_parameter": "verify"},
+          "description": "Off-equatorial, mixed separation vector"
+        }
+      ],
+      "edge_cases": [
+        {
+          "input": {
+            "position": {"r": 1.6, "theta": 1.5708, "phi": 0.0},
+            "velocity": "horizon_observer",
+            "separation_vector": [1.0, 0.0, 0.0],
+            "M": 1.0,
+            "a": 0.8
+          },
+          "output": {"tidal_acceleration": "large", "tidal_tensor": "large_values", "radial_tidal_strength": ">>1", "tangential_tidal_strength": "verify", "spaghettification_parameter": ">>1"},
+          "description": "At event horizon: very strong tidal forces"
+        },
+        {
+          "input": {
+            "position": {"r": 1.0, "theta": 1.5708, "phi": 0.0},
+            "velocity": "horizon_velocity",
+            "separation_vector": [0.1, 0.0, 0.0],
+            "M": 1.0,
+            "a": 1.0
+          },
+          "output": {"tidal_acceleration": "finite", "tidal_tensor": "verify_extremal", "radial_tidal_strength": "finite", "tangential_tidal_strength": "verify", "spaghettification_parameter": "verify"},
+          "description": "Extremal Kerr at horizon: tidal forces finite (unlike Schwarzschild)"
+        },
+        {
+          "input": {
+            "position": {"r": 0.01, "theta": 1.5708, "phi": 0.0},
+            "velocity": "verify",
+            "separation_vector": [0.01, 0.0, 0.0],
+            "M": 1.0,
+            "a": 0.5
+          },
+          "output": "diverge_at_ring_singularity",
+          "description": "Near ring singularity: tidal forces diverge"
+        }
+      ]
+    }
+  ]
+}

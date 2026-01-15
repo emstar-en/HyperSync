@@ -1,0 +1,760 @@
+{
+  "specification": {
+    "name": "Advanced Kerr Metric Operations",
+    "version": "1.0.0",
+    "description": "Advanced metric, curvature, and distance operations for Kerr rotating black hole geometry in HyperSync Core tier.",
+    "language_agnostic": true,
+    "format": "STUNIR",
+    "tier_availability": "Core (Free)",
+    "total_operations": 6,
+    "complexity_target": "O(1) to O(n)"
+  },
+  "mathematical_foundations": {
+    "kerr_metric_boyer_lindquist": "ds² = -(1 - 2Mr/ρ²)dt² - (4Mar sin²θ/ρ²)dtdφ + (ρ²/Δ)dr² + ρ²dθ² + [(r²+a²)²-Δa²sin²θ]/ρ² sin²θ dφ²",
+    "kerr_metric_kerr_schild": "g_μν = η_μν + 2H l_μ l_ν where H = Mr³/(r⁴ + a²z²), l_μ is null vector",
+    "boyer_lindquist_parameters": "ρ² = r² + a²cos²θ, Δ = r² - 2Mr + a²",
+    "riemann_tensor": "R^ρ_σμν = ∂_μΓ^ρ_νσ - ∂_νΓ^ρ_μσ + Γ^ρ_μλΓ^λ_νσ - Γ^ρ_νλΓ^λ_μσ",
+    "kretschmann_scalar": "K = R_μνρσ R^μνρσ (invariant curvature measure)"
+  },
+  "operations": [
+    {
+      "id": "kerr_019",
+      "name": "boyer_lindquist_to_kerr_schild",
+      "description": "Transform coordinates from Boyer-Lindquist (t, r, θ, φ) to Kerr-Schild coordinates (T, X, Y, Z). Kerr-Schild coordinates are regular at the horizon.",
+      "category": "coordinate_transformations",
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      },
+      "parameters": {
+        "t": {
+          "type": "float",
+          "description": "Boyer-Lindquist time coordinate"
+        },
+        "r": {
+          "type": "float",
+          "description": "Boyer-Lindquist radial coordinate (0 < r < ∞)",
+          "constraints": "r > 0"
+        },
+        "theta": {
+          "type": "float",
+          "description": "Boyer-Lindquist polar angle (0 ≤ θ ≤ π)",
+          "constraints": "0 <= theta <= pi"
+        },
+        "phi": {
+          "type": "float",
+          "description": "Boyer-Lindquist azimuthal angle (0 ≤ φ < 2π)",
+          "constraints": "0 <= phi < 2*pi"
+        },
+        "M": {
+          "type": "float",
+          "description": "Black hole mass (M > 0)",
+          "constraints": "M > 0"
+        },
+        "a": {
+          "type": "float",
+          "description": "Spin parameter (angular momentum per unit mass, 0 ≤ a ≤ M)",
+          "constraints": "0 <= a <= M"
+        }
+      },
+      "returns": {
+        "T": {
+          "type": "float",
+          "description": "Kerr-Schild time coordinate"
+        },
+        "X": {
+          "type": "float",
+          "description": "Kerr-Schild X coordinate (Cartesian-like)"
+        },
+        "Y": {
+          "type": "float",
+          "description": "Kerr-Schild Y coordinate (Cartesian-like)"
+        },
+        "Z": {
+          "type": "float",
+          "description": "Kerr-Schild Z coordinate (Cartesian-like)"
+        }
+      },
+      "mathematical_formula": "T = t + ∫(2Mr/(r²-2Mr+a²))dr, X = √(r²+a²)sinθcosφ, Y = √(r²+a²)sinθsinφ, Z = rcosθ",
+      "implementation_notes": [
+        "Kerr-Schild coordinates are regular at event horizon (no coordinate singularity)",
+        "Time coordinate requires integration of lapse function",
+        "Spatial coordinates are oblate spheroidal",
+        "Useful for numerical simulations crossing horizon"
+      ],
+      "test_cases": [
+        {
+          "input": {"t": 0.0, "r": 10.0, "theta": 1.5708, "phi": 0.0, "M": 1.0, "a": 0.5},
+          "output": {"T": "~0.0", "X": "~10.012", "Y": "~0.0", "Z": "~0.0"},
+          "description": "Equatorial point outside horizon"
+        },
+        {
+          "input": {"t": 1.0, "r": 2.0, "theta": 0.7854, "phi": 0.7854, "M": 1.0, "a": 0.9},
+          "output": {"T": "verify_transformation", "X": "check_cartesian", "Y": "check_cartesian", "Z": "check_cartesian"},
+          "description": "Near-extremal Kerr, intermediate angle"
+        },
+        {
+          "input": {"t": 0.0, "r": 1.5, "theta": 1.5708, "phi": 1.5708, "M": 1.0, "a": 0.0},
+          "output": {"T": "~0.0", "X": "~0.0", "Y": "~1.5", "Z": "~0.0"},
+          "description": "Schwarzschild limit (a=0)"
+        },
+        {
+          "input": {"t": 10.0, "r": 100.0, "theta": 0.5236, "phi": 2.618, "M": 1.0, "a": 0.8},
+          "output": {"T": "~10.0", "X": "verify_large_r", "Y": "verify_large_r", "Z": "verify_large_r"},
+          "description": "Far from black hole (weak field)"
+        },
+        {
+          "input": {"t": 0.0, "r": 1.436, "theta": 1.5708, "phi": 0.0, "M": 1.0, "a": 0.9},
+          "output": {"T": "verify_at_horizon", "X": "verify_horizon_regular", "Y": "~0.0", "Z": "~0.0"},
+          "description": "At outer event horizon (r_+ ≈ 1.436 for a=0.9M)"
+        }
+      ],
+      "edge_cases": [
+        {
+          "input": {"t": 0.0, "r": 1.0, "theta": 1.5708, "phi": 0.0, "M": 1.0, "a": 1.0},
+          "output": "valid_at_extremal_horizon",
+          "description": "Extremal Kerr (a=M), at horizon r_+ = M"
+        },
+        {
+          "input": {"t": 0.0, "r": 0.001, "theta": 1.5708, "phi": 0.0, "M": 1.0, "a": 0.5},
+          "output": "handle_ring_singularity",
+          "description": "Very near ring singularity (r→0, θ=π/2)"
+        },
+        {
+          "input": {"t": 0.0, "r": 10.0, "theta": 0.0, "phi": 0.0, "M": 1.0, "a": 0.9},
+          "output": {"T": "~0.0", "X": "~0.0", "Y": "~0.0", "Z": "~10.0"},
+          "description": "Polar axis (θ=0)"
+        }
+      ]
+    },
+    {
+      "id": "kerr_020",
+      "name": "kerr_schild_to_boyer_lindquist",
+      "description": "Transform coordinates from Kerr-Schild (T, X, Y, Z) back to Boyer-Lindquist (t, r, θ, φ). Inverse transformation of kerr_019.",
+      "category": "coordinate_transformations",
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      },
+      "parameters": {
+        "T": {
+          "type": "float",
+          "description": "Kerr-Schild time coordinate"
+        },
+        "X": {
+          "type": "float",
+          "description": "Kerr-Schild X coordinate"
+        },
+        "Y": {
+          "type": "float",
+          "description": "Kerr-Schild Y coordinate"
+        },
+        "Z": {
+          "type": "float",
+          "description": "Kerr-Schild Z coordinate"
+        },
+        "M": {
+          "type": "float",
+          "description": "Black hole mass (M > 0)",
+          "constraints": "M > 0"
+        },
+        "a": {
+          "type": "float",
+          "description": "Spin parameter (0 ≤ a ≤ M)",
+          "constraints": "0 <= a <= M"
+        }
+      },
+      "returns": {
+        "t": {
+          "type": "float",
+          "description": "Boyer-Lindquist time coordinate"
+        },
+        "r": {
+          "type": "float",
+          "description": "Boyer-Lindquist radial coordinate"
+        },
+        "theta": {
+          "type": "float",
+          "description": "Boyer-Lindquist polar angle (0 ≤ θ ≤ π)"
+        },
+        "phi": {
+          "type": "float",
+          "description": "Boyer-Lindquist azimuthal angle (0 ≤ φ < 2π)"
+        }
+      },
+      "mathematical_formula": "r from r⁴ - (X²+Y²+Z²-a²)r² - a²Z² = 0, θ from Z = rcosθ, φ from X/Y = cosφ/sinφ, t from inverse time integral",
+      "implementation_notes": [
+        "Requires solving quartic equation for r coordinate",
+        "Choose physical root: r > 0 and real",
+        "Handle degenerate cases at poles (X=Y=0)",
+        "Time coordinate requires numerical integration or lookup table"
+      ],
+      "test_cases": [
+        {
+          "input": {"T": 0.0, "X": 10.012, "Y": 0.0, "Z": 0.0, "M": 1.0, "a": 0.5},
+          "output": {"t": "~0.0", "r": "~10.0", "theta": "~1.5708", "phi": "~0.0"},
+          "description": "Round-trip from kerr_019 test case 1"
+        },
+        {
+          "input": {"T": 0.0, "X": 0.0, "Y": 1.5, "Z": 0.0, "M": 1.0, "a": 0.0},
+          "output": {"t": "~0.0", "r": "~1.5", "theta": "~1.5708", "phi": "~1.5708"},
+          "description": "Schwarzschild limit round-trip"
+        },
+        {
+          "input": {"T": 0.0, "X": 0.0, "Y": 0.0, "Z": 10.0, "M": 1.0, "a": 0.9},
+          "output": {"t": "~0.0", "r": "~10.0", "theta": "~0.0", "phi": "undefined_at_pole"},
+          "description": "Polar axis (φ undefined)"
+        },
+        {
+          "input": {"T": 10.0, "X": 7.071, "Y": 7.071, "Z": 0.0, "M": 1.0, "a": 0.6},
+          "output": {"t": "verify_inverse", "r": "verify_inverse", "theta": "~1.5708", "phi": "~0.7854"},
+          "description": "Diagonal equatorial point"
+        },
+        {
+          "input": {"T": 0.0, "X": 1.436, "Y": 0.0, "Z": 0.0, "M": 1.0, "a": 0.9},
+          "output": {"t": "verify_time", "r": "~1.436", "theta": "~1.5708", "phi": "~0.0"},
+          "description": "At event horizon"
+        }
+      ],
+      "edge_cases": [
+        {
+          "input": {"T": 0.0, "X": 0.0, "Y": 0.0, "Z": 0.0, "M": 1.0, "a": 0.5},
+          "output": "handle_origin",
+          "description": "At coordinate origin (multiple r solutions)"
+        },
+        {
+          "input": {"T": 0.0, "X": 1e-10, "Y": 1e-10, "Z": 5.0, "M": 1.0, "a": 0.8},
+          "output": "handle_near_pole",
+          "description": "Near polar axis (φ becomes ill-defined)"
+        },
+        {
+          "input": {"T": 0.0, "X": 1.0, "Y": 0.0, "Z": 0.0, "M": 1.0, "a": 1.0},
+          "output": "extremal_kerr_horizon",
+          "description": "Extremal Kerr at horizon"
+        }
+      ]
+    },
+    {
+      "id": "kerr_008",
+      "name": "compute_riemann_tensor",
+      "description": "Compute Riemann curvature tensor R^ρ_σμν for Kerr geometry at given point. Full 4D tensor with 256 components (20 independent due to symmetries).",
+      "category": "curvature_operations",
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(n^4)"
+      },
+      "parameters": {
+        "r": {
+          "type": "float",
+          "description": "Boyer-Lindquist radial coordinate",
+          "constraints": "r > 0"
+        },
+        "theta": {
+          "type": "float",
+          "description": "Boyer-Lindquist polar angle",
+          "constraints": "0 <= theta <= pi"
+        },
+        "M": {
+          "type": "float",
+          "description": "Black hole mass",
+          "constraints": "M > 0"
+        },
+        "a": {
+          "type": "float",
+          "description": "Spin parameter",
+          "constraints": "0 <= a <= M"
+        }
+      },
+      "returns": {
+        "R": {
+          "type": "tensor[4,4,4,4]",
+          "description": "Riemann curvature tensor R^ρ_σμν (contravariant-covariant-covariant-covariant)"
+        },
+        "independent_components": {
+          "type": "array[float]",
+          "description": "20 independent components due to symmetries"
+        }
+      },
+      "mathematical_formula": "R^ρ_σμν = ∂_μΓ^ρ_νσ - ∂_νΓ^ρ_μσ + Γ^ρ_μλΓ^λ_νσ - Γ^ρ_νλΓ^λ_μσ",
+      "implementation_notes": [
+        "Compute from Christoffel symbols and derivatives",
+        "Symmetries: R_αβγδ = -R_βαγδ = -R_αβδγ = R_γδαβ",
+        "First Bianchi identity: R_α[βγδ] = 0",
+        "Ricci tensor should vanish in vacuum: R_μν = 0 (up to numerical precision)",
+        "Store only 20 independent components for efficiency"
+      ],
+      "test_cases": [
+        {
+          "input": {"r": 10.0, "theta": 1.5708, "M": 1.0, "a": 0.0},
+          "output": {"R": "schwarzschild_riemann", "independent_components": "verify_20_components"},
+          "description": "Schwarzschild limit (a=0)"
+        },
+        {
+          "input": {"r": 5.0, "theta": 1.5708, "M": 1.0, "a": 0.8},
+          "output": {"R": "verify_vacuum_einstein", "independent_components": "check_ricci_zero"},
+          "description": "Equatorial plane, moderate spin"
+        },
+        {
+          "input": {"r": 3.0, "theta": 0.5236, "M": 1.0, "a": 0.5},
+          "output": {"R": "verify_symmetries", "independent_components": "20_values"},
+          "description": "Generic point, verify all symmetries"
+        },
+        {
+          "input": {"r": 100.0, "theta": 0.7854, "M": 1.0, "a": 0.9},
+          "output": {"R": "asymptotically_flat", "independent_components": "approach_zero"},
+          "description": "Far field (should approach flat space)"
+        },
+        {
+          "input": {"r": 2.0, "theta": 1.5708, "M": 1.0, "a": 0.6},
+          "output": {"R": "strong_field", "independent_components": "large_curvature"},
+          "description": "Strong field region near horizon"
+        }
+      ],
+      "edge_cases": [
+        {
+          "input": {"r": 1.0, "theta": 1.5708, "M": 1.0, "a": 1.0},
+          "output": "finite_at_extremal_horizon",
+          "description": "Extremal Kerr at horizon (curvature finite)"
+        },
+        {
+          "input": {"r": 0.01, "theta": 1.5708, "M": 1.0, "a": 0.5},
+          "output": "diverge_at_ring_singularity",
+          "description": "Near ring singularity (r→0, θ=π/2) - curvature diverges"
+        },
+        {
+          "input": {"r": 5.0, "theta": 0.0, "M": 1.0, "a": 0.9},
+          "output": "handle_polar_axis",
+          "description": "Polar axis (θ=0)"
+        }
+      ]
+    },
+    {
+      "id": "kerr_009",
+      "name": "compute_kretschmann_scalar_kerr",
+      "description": "Compute Kretschmann scalar K = R_μνρσ R^μνρσ (curvature invariant) for Kerr geometry. Scalar measure of spacetime curvature strength.",
+      "category": "curvature_operations",
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      },
+      "parameters": {
+        "r": {
+          "type": "float",
+          "description": "Boyer-Lindquist radial coordinate",
+          "constraints": "r > 0"
+        },
+        "theta": {
+          "type": "float",
+          "description": "Boyer-Lindquist polar angle",
+          "constraints": "0 <= theta <= pi"
+        },
+        "M": {
+          "type": "float",
+          "description": "Black hole mass",
+          "constraints": "M > 0"
+        },
+        "a": {
+          "type": "float",
+          "description": "Spin parameter",
+          "constraints": "0 <= a <= M"
+        }
+      },
+      "returns": {
+        "K": {
+          "type": "float",
+          "description": "Kretschmann scalar (always non-negative)"
+        },
+        "curvature_strength": {
+          "type": "string",
+          "description": "Classification: 'weak', 'moderate', 'strong', 'extreme'"
+        }
+      },
+      "mathematical_formula": "K = R_μνρσ R^μνρσ = 48M²(r²-a²cos²θ)[(r²-a²cos²θ)² - 16r²a²cos²θ]/(r²+a²cos²θ)⁶",
+      "implementation_notes": [
+        "Coordinate-independent (scalar invariant)",
+        "Diverges at ring singularity (r=0, θ=π/2)",
+        "Finite at event horizon",
+        "K → 48M²/r⁶ as a→0 (Schwarzschild limit)",
+        "K → 0 as r→∞ (flat space)"
+      ],
+      "test_cases": [
+        {
+          "input": {"r": 10.0, "theta": 1.5708, "M": 1.0, "a": 0.0},
+          "output": {"K": 0.000048, "curvature_strength": "weak"},
+          "description": "Schwarzschild limit: K = 48M²/r⁶ = 48/10⁶"
+        },
+        {
+          "input": {"r": 5.0, "theta": 1.5708, "M": 1.0, "a": 0.8},
+          "output": {"K": "compute_exact", "curvature_strength": "moderate"},
+          "description": "Equatorial Kerr, moderate spin"
+        },
+        {
+          "input": {"r": 2.0, "theta": 0.7854, "M": 1.0, "a": 0.5},
+          "output": {"K": ">0.001", "curvature_strength": "strong"},
+          "description": "Near horizon, intermediate angle"
+        },
+        {
+          "input": {"r": 100.0, "theta": 0.5236, "M": 1.0, "a": 0.9},
+          "output": {"K": "<1e-10", "curvature_strength": "weak"},
+          "description": "Far field (asymptotically flat)"
+        },
+        {
+          "input": {"r": 3.0, "theta": 0.0, "M": 1.0, "a": 0.6},
+          "output": {"K": "verify_polar", "curvature_strength": "moderate"},
+          "description": "Polar axis (θ=0)"
+        }
+      ],
+      "edge_cases": [
+        {
+          "input": {"r": 1.0, "theta": 1.5708, "M": 1.0, "a": 1.0},
+          "output": {"K": "finite_large_value", "curvature_strength": "extreme"},
+          "description": "Extremal Kerr at horizon (K finite but large)"
+        },
+        {
+          "input": {"r": 0.001, "theta": 1.5708, "M": 1.0, "a": 0.5},
+          "output": {"K": ">>1", "curvature_strength": "extreme"},
+          "description": "Near ring singularity - K diverges"
+        },
+        {
+          "input": {"r": 5.0, "theta": 0.0, "M": 1.0, "a": 0.9},
+          "output": {"K": "verify_axial_symmetry", "curvature_strength": "verify"},
+          "description": "Polar axis (maximum a²cos²θ term)"
+        }
+      ]
+    },
+    {
+      "id": "kerr_030",
+      "name": "compute_distance_kerr",
+      "description": "Compute proper spacetime interval ds² between two events in Kerr geometry. Can be timelike (ds² < 0), null (ds² = 0), or spacelike (ds² > 0).",
+      "category": "distance_operations",
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      },
+      "parameters": {
+        "event1": {
+          "type": "object",
+          "description": "First event (t1, r1, θ1, φ1) in Boyer-Lindquist coordinates",
+          "properties": {
+            "t": "float",
+            "r": "float (r > 0)",
+            "theta": "float (0 ≤ θ ≤ π)",
+            "phi": "float (0 ≤ φ < 2π)"
+          }
+        },
+        "event2": {
+          "type": "object",
+          "description": "Second event (t2, r2, θ2, φ2) in Boyer-Lindquist coordinates",
+          "properties": {
+            "t": "float",
+            "r": "float (r > 0)",
+            "theta": "float (0 ≤ θ ≤ π)",
+            "phi": "float (0 ≤ φ < 2π)"
+          }
+        },
+        "M": {
+          "type": "float",
+          "description": "Black hole mass",
+          "constraints": "M > 0"
+        },
+        "a": {
+          "type": "float",
+          "description": "Spin parameter",
+          "constraints": "0 <= a <= M"
+        }
+      },
+      "returns": {
+        "ds_squared": {
+          "type": "float",
+          "description": "Spacetime interval squared (can be negative)"
+        },
+        "interval_type": {
+          "type": "string",
+          "description": "'timelike', 'null', or 'spacelike'"
+        },
+        "proper_time": {
+          "type": "float",
+          "description": "Proper time τ = √(-ds²) if timelike, null otherwise"
+        }
+      },
+      "mathematical_formula": "ds² = g_μν dx^μ dx^ν using Kerr metric in Boyer-Lindquist coordinates",
+      "implementation_notes": [
+        "Valid only for infinitesimal separations (linear approximation)",
+        "For finite distances, use geodesic integration (kerr_031)",
+        "Sign convention: (-,+,+,+) signature",
+        "Handle coordinate wrapping for φ (modulo 2π)"
+      ],
+      "test_cases": [
+        {
+          "input": {
+            "event1": {"t": 0.0, "r": 10.0, "theta": 1.5708, "phi": 0.0},
+            "event2": {"t": 0.01, "r": 10.0, "theta": 1.5708, "phi": 0.0},
+            "M": 1.0,
+            "a": 0.0
+          },
+          "output": {"ds_squared": "<0", "interval_type": "timelike", "proper_time": ">0"},
+          "description": "Pure time separation in Schwarzschild"
+        },
+        {
+          "input": {
+            "event1": {"t": 0.0, "r": 5.0, "theta": 1.5708, "phi": 0.0},
+            "event2": {"t": 0.0, "r": 5.1, "theta": 1.5708, "phi": 0.0},
+            "M": 1.0,
+            "a": 0.8
+          },
+          "output": {"ds_squared": ">0", "interval_type": "spacelike", "proper_time": "null"},
+          "description": "Pure radial separation in Kerr"
+        },
+        {
+          "input": {
+            "event1": {"t": 0.0, "r": 10.0, "theta": 1.5708, "phi": 0.0},
+            "event2": {"t": 0.0, "r": 10.0, "theta": 1.5708, "phi": 0.1},
+            "M": 1.0,
+            "a": 0.5
+          },
+          "output": {"ds_squared": ">0", "interval_type": "spacelike", "proper_time": "null"},
+          "description": "Pure angular separation (φ direction)"
+        },
+        {
+          "input": {
+            "event1": {"t": 0.0, "r": 3.0, "theta": 1.5708, "phi": 0.0},
+            "event2": {"t": 0.05, "r": 3.0, "theta": 1.5708, "phi": 0.01},
+            "M": 1.0,
+            "a": 0.9
+          },
+          "output": {"ds_squared": "compute_mixed", "interval_type": "verify", "proper_time": "compute"},
+          "description": "Mixed time and angle (frame dragging important)"
+        },
+        {
+          "input": {
+            "event1": {"t": 0.0, "r": 10.0, "theta": 1.5, "phi": 0.0},
+            "event2": {"t": 0.0, "r": 10.0, "theta": 1.6, "phi": 0.0},
+            "M": 1.0,
+            "a": 0.6
+          },
+          "output": {"ds_squared": ">0", "interval_type": "spacelike", "proper_time": "null"},
+          "description": "Pure θ separation"
+        }
+      ],
+      "edge_cases": [
+        {
+          "input": {
+            "event1": {"t": 0.0, "r": 1.0, "theta": 1.5708, "phi": 0.0},
+            "event2": {"t": 0.01, "r": 1.0, "theta": 1.5708, "phi": 0.0},
+            "M": 1.0,
+            "a": 1.0
+          },
+          "output": "verify_at_extremal_horizon",
+          "description": "At extremal Kerr horizon"
+        },
+        {
+          "input": {
+            "event1": {"t": 0.0, "r": 5.0, "theta": 1.5708, "phi": 0.0},
+            "event2": {"t": 0.0, "r": 5.0, "theta": 1.5708, "phi": 6.28318},
+            "M": 1.0,
+            "a": 0.5
+          },
+          "output": {"ds_squared": "~0", "interval_type": "null", "proper_time": "null"},
+          "description": "Full φ rotation (should give zero due to periodicity)"
+        },
+        {
+          "input": {
+            "event1": {"t": 0.0, "r": 0.01, "theta": 1.5708, "phi": 0.0},
+            "event2": {"t": 0.001, "r": 0.01, "theta": 1.5708, "phi": 0.0},
+            "M": 1.0,
+            "a": 0.5
+          },
+          "output": "handle_near_singularity",
+          "description": "Near ring singularity"
+        }
+      ]
+    },
+    {
+      "id": "kerr_031",
+      "name": "compute_geodesic_distance_kerr",
+      "description": "Compute proper distance/time along geodesic path connecting two points in Kerr geometry. Integrates ds along geodesic curve.",
+      "category": "distance_operations",
+      "complexity": {
+        "time": "O(n)",
+        "space": "O(n)"
+      },
+      "parameters": {
+        "start_point": {
+          "type": "object",
+          "description": "Starting point (t, r, θ, φ) in Boyer-Lindquist coordinates",
+          "properties": {
+            "t": "float",
+            "r": "float (r > 0)",
+            "theta": "float (0 ≤ θ ≤ π)",
+            "phi": "float (0 ≤ φ < 2π)"
+          }
+        },
+        "end_point": {
+          "type": "object",
+          "description": "Ending point (t, r, θ, φ) in Boyer-Lindquist coordinates",
+          "properties": {
+            "t": "float",
+            "r": "float (r > 0)",
+            "theta": "float (0 ≤ θ ≤ π)",
+            "phi": "float (0 ≤ φ < 2π)"
+          }
+        },
+        "M": {
+          "type": "float",
+          "description": "Black hole mass",
+          "constraints": "M > 0"
+        },
+        "a": {
+          "type": "float",
+          "description": "Spin parameter",
+          "constraints": "0 <= a <= M"
+        },
+        "geodesic_type": {
+          "type": "string",
+          "description": "'timelike' for massive particles, 'null' for photons",
+          "enum": ["timelike", "null"]
+        },
+        "initial_velocity": {
+          "type": "array[float]",
+          "description": "Initial 4-velocity (dt/dλ, dr/dλ, dθ/dλ, dφ/dλ) where λ is affine parameter",
+          "length": 4
+        },
+        "integration_steps": {
+          "type": "int",
+          "description": "Number of integration steps (default: 1000)",
+          "default": 1000
+        }
+      },
+      "returns": {
+        "proper_distance": {
+          "type": "float",
+          "description": "Proper distance/time along geodesic"
+        },
+        "geodesic_path": {
+          "type": "array[object]",
+          "description": "Array of points along geodesic path"
+        },
+        "affine_parameter_range": {
+          "type": "object",
+          "description": "Range of affine parameter λ: {lambda_start, lambda_end}"
+        }
+      },
+      "mathematical_formula": "Integrate ds = √(|g_μν dx^μ dx^ν|) along geodesic satisfying d²x^μ/dλ² + Γ^μ_αβ (dx^α/dλ)(dx^β/dλ) = 0",
+      "implementation_notes": [
+        "Use RK4 or adaptive integration for geodesic equations",
+        "Conserve energy E and angular momentum L_z (constants of motion)",
+        "Conserve Carter constant Q for Kerr geodesics",
+        "Monitor normalization: g_μν u^μ u^ν = -1 (timelike) or 0 (null)",
+        "Handle turning points in radial and θ motion"
+      ],
+      "test_cases": [
+        {
+          "input": {
+            "start_point": {"t": 0.0, "r": 10.0, "theta": 1.5708, "phi": 0.0},
+            "end_point": {"t": 1.0, "r": 10.0, "theta": 1.5708, "phi": 0.628},
+            "M": 1.0,
+            "a": 0.0,
+            "geodesic_type": "timelike",
+            "initial_velocity": [1.0, 0.0, 0.0, 0.0628],
+            "integration_steps": 1000
+          },
+          "output": {"proper_distance": "verify_circular_orbit", "geodesic_path": "circular", "affine_parameter_range": "verify"},
+          "description": "Circular orbit in Schwarzschild"
+        },
+        {
+          "input": {
+            "start_point": {"t": 0.0, "r": 10.0, "theta": 1.5708, "phi": 0.0},
+            "end_point": {"t": 0.5, "r": 3.0, "theta": 1.5708, "phi": 1.0},
+            "M": 1.0,
+            "a": 0.8,
+            "geodesic_type": "timelike",
+            "initial_velocity": "compute_plunge",
+            "integration_steps": 2000
+          },
+          "output": {"proper_distance": ">0", "geodesic_path": "plunging", "affine_parameter_range": "verify"},
+          "description": "Plunging orbit in Kerr"
+        },
+        {
+          "input": {
+            "start_point": {"t": 0.0, "r": 100.0, "theta": 1.5708, "phi": 0.0},
+            "end_point": {"t": 10.0, "r": 5.0, "theta": 1.5708, "phi": 3.14159},
+            "M": 1.0,
+            "a": 0.5,
+            "geodesic_type": "null",
+            "initial_velocity": "photon_orbit",
+            "integration_steps": 5000
+          },
+          "output": {"proper_distance": "0", "geodesic_path": "verify_null", "affine_parameter_range": "verify"},
+          "description": "Null geodesic (photon) - proper distance zero"
+        },
+        {
+          "input": {
+            "start_point": {"t": 0.0, "r": 10.0, "theta": 0.7854, "phi": 0.0},
+            "end_point": {"t": 5.0, "r": 10.0, "theta": 2.3562, "phi": 3.14159},
+            "M": 1.0,
+            "a": 0.9,
+            "geodesic_type": "timelike",
+            "initial_velocity": "non_equatorial",
+            "integration_steps": 3000
+          },
+          "output": {"proper_distance": ">0", "geodesic_path": "verify_theta_oscillation", "affine_parameter_range": "verify"},
+          "description": "Non-equatorial orbit (θ oscillates)"
+        },
+        {
+          "input": {
+            "start_point": {"t": 0.0, "r": 20.0, "theta": 1.5708, "phi": 0.0},
+            "end_point": {"t": 30.0, "r": 20.0, "theta": 1.5708, "phi": 6.28318},
+            "M": 1.0,
+            "a": 0.0,
+            "geodesic_type": "timelike",
+            "initial_velocity": "circular",
+            "integration_steps": 1000
+          },
+          "output": {"proper_distance": "verify_period", "geodesic_path": "closed_circular", "affine_parameter_range": "verify"},
+          "description": "Complete circular orbit (one revolution)"
+        }
+      ],
+      "edge_cases": [
+        {
+          "input": {
+            "start_point": {"t": 0.0, "r": 1.436, "theta": 1.5708, "phi": 0.0},
+            "end_point": {"t": 1.0, "r": 0.8, "theta": 1.5708, "phi": 1.0},
+            "M": 1.0,
+            "a": 0.9,
+            "geodesic_type": "timelike",
+            "initial_velocity": "ingoing",
+            "integration_steps": 5000
+          },
+          "output": "cross_horizon",
+          "description": "Geodesic crossing event horizon"
+        },
+        {
+          "input": {
+            "start_point": {"t": 0.0, "r": 10.0, "theta": 1.5708, "phi": 0.0},
+            "end_point": {"t": 0.0, "r": 10.0, "theta": 1.5708, "phi": 0.0},
+            "M": 1.0,
+            "a": 0.5,
+            "geodesic_type": "timelike",
+            "initial_velocity": [0.0, 0.0, 0.0, 0.0],
+            "integration_steps": 100
+          },
+          "output": {"proper_distance": "0", "geodesic_path": "single_point", "affine_parameter_range": "zero"},
+          "description": "Degenerate case: same start and end point"
+        },
+        {
+          "input": {
+            "start_point": {"t": 0.0, "r": 3.0, "theta": 0.0, "phi": 0.0},
+            "end_point": {"t": 2.0, "r": 3.0, "theta": 3.14159, "phi": 0.0},
+            "M": 1.0,
+            "a": 0.8,
+            "geodesic_type": "timelike",
+            "initial_velocity": "polar_orbit",
+            "integration_steps": 2000
+          },
+          "output": "handle_polar_geodesic",
+          "description": "Geodesic passing through polar axis"
+        }
+      ]
+    }
+  ]
+}

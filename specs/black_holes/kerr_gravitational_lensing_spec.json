@@ -1,0 +1,539 @@
+{
+  "specification": {
+    "name": "Kerr Gravitational Lensing Operations",
+    "version": "1.0.0",
+    "description": "Light deflection, black hole shadow, and photon ring operations for Kerr rotating black holes in HyperSync Core tier.",
+    "language_agnostic": true,
+    "format": "STUNIR",
+    "tier_availability": "Core (Free)",
+    "total_operations": 3,
+    "complexity_target": "O(1) to O(n)"
+  },
+  "mathematical_foundations": {
+    "light_deflection": "Δφ = deflection angle for photon passing at impact parameter b",
+    "shadow_boundary": "Critical photon orbits project to shadow boundary on observer's sky",
+    "shadow_size_equatorial": "R_shadow ≈ M(3√3 ± 2a) for face-on view (± for prograde/retrograde)",
+    "shadow_shape": "Oblate circle deformed by rotation (D-shaped for edge-on view)",
+    "photon_ring": "Series of increasingly wound photon orbits around shadow",
+    "carter_constant_photons": "Q_photon determines photon orbit shape (spherical vs plane-crossing)"
+  },
+  "operations": [
+    {
+      "id": "kerr_026",
+      "name": "compute_light_deflection_kerr",
+      "description": "Compute gravitational light deflection angle for photon passing near Kerr black hole. Includes rotational corrections beyond Schwarzschild deflection.",
+      "category": "gravitational_lensing",
+      "complexity": {
+        "time": "O(n)",
+        "space": "O(n)"
+      },
+      "parameters": {
+        "impact_parameter": {
+          "type": "float",
+          "description": "Impact parameter b (perpendicular distance from BH if no deflection)",
+          "constraints": "b > 0"
+        },
+        "inclination": {
+          "type": "float",
+          "description": "Inclination angle of photon trajectory relative to equatorial plane",
+          "constraints": "0 <= inclination <= pi/2"
+        },
+        "M": {
+          "type": "float",
+          "description": "Black hole mass",
+          "constraints": "M > 0"
+        },
+        "a": {
+          "type": "float",
+          "description": "Spin parameter",
+          "constraints": "0 <= a <= M"
+        },
+        "photon_direction": {
+          "type": "string",
+          "description": "'prograde' (co-rotating) or 'retrograde' (counter-rotating)",
+          "enum": ["prograde", "retrograde"],
+          "default": "prograde"
+        },
+        "integration_method": {
+          "type": "string",
+          "description": "'exact' (integrate geodesic) or 'weak_field' (perturbative)",
+          "enum": ["exact", "weak_field"],
+          "default": "exact"
+        }
+      },
+      "returns": {
+        "deflection_angle": {
+          "type": "float",
+          "description": "Total deflection angle Δφ (radians)"
+        },
+        "schwarzschild_deflection": {
+          "type": "float",
+          "description": "Schwarzschild contribution: Δφ_S = 4M/b (weak field)"
+        },
+        "rotation_correction": {
+          "type": "float",
+          "description": "Additional deflection due to frame dragging"
+        },
+        "closest_approach": {
+          "type": "float",
+          "description": "Minimum radial coordinate r_min during photon trajectory"
+        },
+        "is_captured": {
+          "type": "bool",
+          "description": "True if photon falls into black hole (b < b_critical)"
+        },
+        "number_of_orbits": {
+          "type": "float",
+          "description": "Number of orbits around BH before escaping (for near-critical b)"
+        }
+      },
+      "mathematical_formula": "Weak field: Δφ ≈ (4M/b)(1 + (15πM)/(16b) + (2Ma/b²)cos(inclination)). Exact: integrate null geodesic with Carter constant.",
+      "implementation_notes": [
+        "Weak field approximation: valid for b >> M",
+        "Strong field: requires numerical integration of geodesic equations",
+        "Prograde photons deflected more than retrograde",
+        "Frame dragging asymmetry: depends on inclination",
+        "Critical impact parameter b_critical separates capture from escape",
+        "Use Carter constant Q to characterize photon orbit"
+      ],
+      "test_cases": [
+        {
+          "input": {
+            "impact_parameter": 100.0,
+            "inclination": 1.5708,
+            "M": 1.0,
+            "a": 0.0,
+            "photon_direction": "prograde",
+            "integration_method": "weak_field"
+          },
+          "output": {"deflection_angle": "~0.04", "schwarzschild_deflection": "~0.04", "rotation_correction": 0.0, "closest_approach": ">90", "is_captured": false, "number_of_orbits": 0.0},
+          "description": "Schwarzschild weak field: Δφ = 4M/b = 0.04 rad"
+        },
+        {
+          "input": {
+            "impact_parameter": 100.0,
+            "inclination": 1.5708,
+            "M": 1.0,
+            "a": 0.8,
+            "photon_direction": "prograde",
+            "integration_method": "weak_field"
+          },
+          "output": {"deflection_angle": ">0.04", "schwarzschild_deflection": "~0.04", "rotation_correction": ">0", "closest_approach": ">90", "is_captured": false, "number_of_orbits": 0.0},
+          "description": "Kerr weak field: additional deflection from rotation"
+        },
+        {
+          "input": {
+            "impact_parameter": 100.0,
+            "inclination": 1.5708,
+            "M": 1.0,
+            "a": 0.8,
+            "photon_direction": "retrograde",
+            "integration_method": "weak_field"
+          },
+          "output": {"deflection_angle": "<0.04", "schwarzschild_deflection": "~0.04", "rotation_correction": "<0", "closest_approach": ">90", "is_captured": false, "number_of_orbits": 0.0},
+          "description": "Retrograde: less deflection than Schwarzschild"
+        },
+        {
+          "input": {
+            "impact_parameter": 5.2,
+            "inclination": 1.5708,
+            "M": 1.0,
+            "a": 0.5,
+            "photon_direction": "prograde",
+            "integration_method": "exact"
+          },
+          "output": {"deflection_angle": ">π", "schwarzschild_deflection": "~0.77", "rotation_correction": "verify", "closest_approach": "~4", "is_captured": false, "number_of_orbits": ">0.5"},
+          "description": "Strong field: large deflection, multiple windings"
+        },
+        {
+          "input": {
+            "impact_parameter": 10.0,
+            "inclination": 0.7854,
+            "M": 1.0,
+            "a": 0.9,
+            "photon_direction": "prograde",
+            "integration_method": "exact"
+          },
+          "output": {"deflection_angle": "verify_inclined", "schwarzschild_deflection": "~0.4", "rotation_correction": "verify", "closest_approach": "verify", "is_captured": false, "number_of_orbits": "verify"},
+          "description": "Inclined orbit (45°): different Carter constant"
+        }
+      ],
+      "edge_cases": [
+        {
+          "input": {
+            "impact_parameter": 5.196,
+            "inclination": 1.5708,
+            "M": 1.0,
+            "a": 0.0,
+            "photon_direction": "prograde",
+            "integration_method": "exact"
+          },
+          "output": {"deflection_angle": "infinity", "schwarzschild_deflection": "verify", "rotation_correction": 0.0, "closest_approach": "~3", "is_captured": "marginally", "number_of_orbits": "infinity"},
+          "description": "Schwarzschild photon sphere: b = 3√3M ≈ 5.196M (unstable circular orbit)"
+        },
+        {
+          "input": {
+            "impact_parameter": 2.0,
+            "inclination": 1.5708,
+            "M": 1.0,
+            "a": 0.8,
+            "photon_direction": "prograde",
+            "integration_method": "exact"
+          },
+          "output": {"deflection_angle": "undefined", "schwarzschild_deflection": "verify", "rotation_correction": "verify", "closest_approach": "<r_+", "is_captured": true, "number_of_orbits": "N/A"},
+          "description": "Below critical b: photon captured by black hole"
+        },
+        {
+          "input": {
+            "impact_parameter": 4.5,
+            "inclination": 1.5708,
+            "M": 1.0,
+            "a": 1.0,
+            "photon_direction": "prograde",
+            "integration_method": "exact"
+          },
+          "output": {"deflection_angle": "verify_extremal", "schwarzschild_deflection": "verify", "rotation_correction": "large", "closest_approach": "~1", "is_captured": "verify", "number_of_orbits": "verify"},
+          "description": "Extremal Kerr: minimum photon sphere radius ~M (prograde)"
+        }
+      ]
+    },
+    {
+      "id": "kerr_027",
+      "name": "compute_shadow_boundary",
+      "description": "Compute black hole shadow boundary as seen by distant observer. Shadow is the region in observer's sky from which no photons escape (bounded by unstable photon orbits).",
+      "category": "gravitational_lensing",
+      "complexity": {
+        "time": "O(n)",
+        "space": "O(n)"
+      },
+      "parameters": {
+        "M": {
+          "type": "float",
+          "description": "Black hole mass",
+          "constraints": "M > 0"
+        },
+        "a": {
+          "type": "float",
+          "description": "Spin parameter",
+          "constraints": "0 <= a <= M"
+        },
+        "observer_inclination": {
+          "type": "float",
+          "description": "Observer inclination angle (0=face-on/pole, π/2=edge-on/equator)",
+          "constraints": "0 <= observer_inclination <= pi/2"
+        },
+        "observer_distance": {
+          "type": "float",
+          "description": "Observer distance from black hole (default: infinity)",
+          "default": "infinity"
+        },
+        "angular_resolution": {
+          "type": "int",
+          "description": "Number of points to sample on shadow boundary",
+          "default": 360
+        }
+      },
+      "returns": {
+        "shadow_boundary": {
+          "type": "array[object]",
+          "description": "Array of (α, β) coordinates on observer's sky defining shadow boundary"
+        },
+        "shadow_radius_avg": {
+          "type": "float",
+          "description": "Average shadow radius (in units of M at observer distance)"
+        },
+        "shadow_radius_max": {
+          "type": "float",
+          "description": "Maximum shadow radius (along major axis)"
+        },
+        "shadow_radius_min": {
+          "type": "float",
+          "description": "Minimum shadow radius (along minor axis)"
+        },
+        "shadow_area": {
+          "type": "float",
+          "description": "Shadow area on observer's sky"
+        },
+        "shadow_oblateness": {
+          "type": "float",
+          "description": "Oblateness (R_max - R_min)/R_avg (0 for Schwarzschild, >0 for Kerr)"
+        },
+        "shadow_centroid_offset": {
+          "type": "float",
+          "description": "Offset of shadow centroid from black hole projection"
+        }
+      },
+      "mathematical_formula": "Face-on (i=0): R_shadow ≈ M√(27 + 12a/M). Edge-on (i=π/2): Asymmetric D-shape with R_max ≈ M(3√3 + 2a).",
+      "implementation_notes": [
+        "Shadow boundary = critical photon orbit projections",
+        "Face-on: nearly circular (small oblateness)",
+        "Edge-on: D-shaped (one side indented by frame dragging)",
+        "Shadow size increases slightly with spin for face-on",
+        "Prograde side of shadow (right for a>0, i=π/2) appears closer",
+        "Event Horizon Telescope measured M87* shadow (2019)"
+      ],
+      "test_cases": [
+        {
+          "input": {
+            "M": 1.0,
+            "a": 0.0,
+            "observer_inclination": 0.0,
+            "observer_distance": "infinity",
+            "angular_resolution": 360
+          },
+          "output": {"shadow_boundary": "circular", "shadow_radius_avg": "~5.196", "shadow_radius_max": "~5.196", "shadow_radius_min": "~5.196", "shadow_area": "~84.8", "shadow_oblateness": 0.0, "shadow_centroid_offset": 0.0},
+          "description": "Schwarzschild face-on: perfect circle, R = 3√3M ≈ 5.196M"
+        },
+        {
+          "input": {
+            "M": 1.0,
+            "a": 0.8,
+            "observer_inclination": 0.0,
+            "observer_distance": "infinity",
+            "angular_resolution": 360
+          },
+          "output": {"shadow_boundary": "nearly_circular", "shadow_radius_avg": "~5.8", "shadow_radius_max": ">5.8", "shadow_radius_min": "<5.8", "shadow_area": "~105", "shadow_oblateness": "<0.1", "shadow_centroid_offset": "~0"},
+          "description": "Kerr face-on (a=0.8M): slightly larger and oblate circle"
+        },
+        {
+          "input": {
+            "M": 1.0,
+            "a": 0.8,
+            "observer_inclination": 1.5708,
+            "observer_distance": "infinity",
+            "angular_resolution": 360
+          },
+          "output": {"shadow_boundary": "D_shaped", "shadow_radius_avg": "~5.5", "shadow_radius_max": "~6.8", "shadow_radius_min": "~4.5", "shadow_area": "~90", "shadow_oblateness": ">0.3", "shadow_centroid_offset": ">0"},
+          "description": "Kerr edge-on (a=0.8M): D-shape, asymmetric, offset centroid"
+        },
+        {
+          "input": {
+            "M": 1.0,
+            "a": 0.5,
+            "observer_inclination": 0.7854,
+            "observer_distance": "infinity",
+            "angular_resolution": 360
+          },
+          "output": {"shadow_boundary": "elliptical", "shadow_radius_avg": "~5.4", "shadow_radius_max": "~5.9", "shadow_radius_min": "~4.9", "shadow_area": "~91", "shadow_oblateness": "~0.18", "shadow_centroid_offset": "~0.2"},
+          "description": "Kerr 45° inclination: intermediate shape"
+        },
+        {
+          "input": {
+            "M": 1.0,
+            "a": 0.99,
+            "observer_inclination": 1.5708,
+            "observer_distance": "infinity",
+            "angular_resolution": 500
+          },
+          "output": {"shadow_boundary": "strongly_D_shaped", "shadow_radius_avg": "~5.2", "shadow_radius_max": "~7.2", "shadow_radius_min": "~3.8", "shadow_area": "~85", "shadow_oblateness": ">0.5", "shadow_centroid_offset": ">0.5"},
+          "description": "Near-extremal edge-on: extreme D-shape asymmetry"
+        }
+      ],
+      "edge_cases": [
+        {
+          "input": {
+            "M": 1.0,
+            "a": 1.0,
+            "observer_inclination": 1.5708,
+            "observer_distance": "infinity",
+            "angular_resolution": 360
+          },
+          "output": {"shadow_boundary": "maximum_D_shape", "shadow_radius_avg": "~5.0", "shadow_radius_max": "~7.46", "shadow_radius_min": "~3.46", "shadow_area": "~82", "shadow_oblateness": "~0.8", "shadow_centroid_offset": "~1.0"},
+          "description": "Extremal Kerr edge-on: maximum asymmetry, prograde side at r=M"
+        },
+        {
+          "input": {
+            "M": 1.0,
+            "a": 1.0,
+            "observer_inclination": 0.0,
+            "observer_distance": "infinity",
+            "angular_resolution": 360
+          },
+          "output": {"shadow_boundary": "nearly_circular", "shadow_radius_avg": "~6.2", "shadow_radius_max": "~6.3", "shadow_radius_min": "~6.1", "shadow_area": "~120", "shadow_oblateness": "<0.05", "shadow_centroid_offset": 0.0},
+          "description": "Extremal Kerr face-on: largest shadow (R ≈ M√(27+12) = 6.24M)"
+        },
+        {
+          "input": {
+            "M": 1.0,
+            "a": 0.8,
+            "observer_inclination": 1.5708,
+            "observer_distance": 100.0,
+            "angular_resolution": 360
+          },
+          "output": {"shadow_boundary": "finite_distance_corrections", "shadow_radius_avg": "verify", "shadow_radius_max": "verify", "shadow_radius_min": "verify", "shadow_area": "verify", "shadow_oblateness": "verify", "shadow_centroid_offset": "verify"},
+          "description": "Finite observer distance: parallax and aberration effects"
+        }
+      ]
+    },
+    {
+      "id": "kerr_028",
+      "name": "compute_photon_ring_properties",
+      "description": "Compute photon ring structure around black hole shadow. Photon ring consists of multiple sub-rings from photons orbiting n times before reaching observer.",
+      "category": "gravitational_lensing",
+      "complexity": {
+        "time": "O(n)",
+        "space": "O(n)"
+      },
+      "parameters": {
+        "M": {
+          "type": "float",
+          "description": "Black hole mass",
+          "constraints": "M > 0"
+        },
+        "a": {
+          "type": "float",
+          "description": "Spin parameter",
+          "constraints": "0 <= a <= M"
+        },
+        "observer_inclination": {
+          "type": "float",
+          "description": "Observer inclination angle",
+          "constraints": "0 <= observer_inclination <= pi/2"
+        },
+        "max_subrings": {
+          "type": "int",
+          "description": "Maximum number of sub-rings to compute (n=1,2,3,...)",
+          "default": 5
+        },
+        "emission_profile": {
+          "type": "string",
+          "description": "Accretion disk emission model: 'thin_disk', 'thick_disk', or 'uniform'",
+          "enum": ["thin_disk", "thick_disk", "uniform"],
+          "default": "thin_disk"
+        }
+      },
+      "returns": {
+        "photon_ring_structure": {
+          "type": "array[object]",
+          "description": "Array of sub-ring properties (n=1,2,3,...) with positions and intensities"
+        },
+        "critical_curve": {
+          "type": "array[object]",
+          "description": "Critical impact parameters defining photon ring center"
+        },
+        "ring_width": {
+          "type": "float",
+          "description": "Width of photon ring (angular size on sky)"
+        },
+        "subring_spacing": {
+          "type": "float",
+          "description": "Angular spacing between successive sub-rings (exponentially decreasing)"
+        },
+        "lyapunov_exponent": {
+          "type": "float",
+          "description": "Lyapunov exponent γ characterizing exponential spacing: δθ_n ∝ exp(-nγ)"
+        },
+        "ring_asymmetry": {
+          "type": "float",
+          "description": "Asymmetry parameter due to Doppler beaming and frame dragging"
+        },
+        "total_flux": {
+          "type": "float",
+          "description": "Total flux from photon ring (integrated over all sub-rings)"
+        }
+      },
+      "mathematical_formula": "Sub-ring spacing: θ_n - θ_{n+1} ∝ exp(-nγ) where γ is Lyapunov exponent γ ≈ √3/2 for Schwarzschild.",
+      "implementation_notes": [
+        "Photon ring visible in interferometric observations (EHT)",
+        "Each sub-ring: photons with n half-orbits around BH",
+        "Exponential approach to shadow boundary (self-similar)",
+        "Lyapunov exponent γ depends on spin and inclination",
+        "Doppler beaming: prograde side brighter for rotating disk",
+        "Frame dragging: asymmetric brightness distribution",
+        "Higher sub-rings (n>3) typically too faint to observe"
+      ],
+      "test_cases": [
+        {
+          "input": {
+            "M": 1.0,
+            "a": 0.0,
+            "observer_inclination": 0.0,
+            "max_subrings": 5,
+            "emission_profile": "thin_disk"
+          },
+          "output": {"photon_ring_structure": "verify_5_rings", "critical_curve": "circular", "ring_width": "~0.5", "subring_spacing": "exponential_decay", "lyapunov_exponent": "~0.866", "ring_asymmetry": 0.0, "total_flux": "verify"},
+          "description": "Schwarzschild face-on: symmetric photon ring, γ = √3/2"
+        },
+        {
+          "input": {
+            "M": 1.0,
+            "a": 0.8,
+            "observer_inclination": 1.5708,
+            "max_subrings": 5,
+            "emission_profile": "thin_disk"
+          },
+          "output": {"photon_ring_structure": "verify_asymmetric", "critical_curve": "D_shaped", "ring_width": "~0.6", "subring_spacing": "variable", "lyapunov_exponent": "~0.9", "ring_asymmetry": ">0.5", "total_flux": "verify"},
+          "description": "Kerr edge-on: asymmetric photon ring, Doppler beaming"
+        },
+        {
+          "input": {
+            "M": 1.0,
+            "a": 0.5,
+            "observer_inclination": 0.7854,
+            "max_subrings": 3,
+            "emission_profile": "thick_disk"
+          },
+          "output": {"photon_ring_structure": "verify_3_rings", "critical_curve": "elliptical", "ring_width": "~0.55", "subring_spacing": "verify", "lyapunov_exponent": "~0.88", "ring_asymmetry": "~0.3", "total_flux": "verify"},
+          "description": "Moderate spin, 45° inclination, thick disk"
+        },
+        {
+          "input": {
+            "M": 1.0,
+            "a": 0.9,
+            "observer_inclination": 0.0,
+            "max_subrings": 5,
+            "emission_profile": "uniform"
+          },
+          "output": {"photon_ring_structure": "verify_5_rings", "critical_curve": "nearly_circular", "ring_width": "~0.65", "subring_spacing": "exponential", "lyapunov_exponent": "~0.92", "ring_asymmetry": "<0.1", "total_flux": "verify"},
+          "description": "Fast rotation face-on: nearly symmetric, uniform emission"
+        },
+        {
+          "input": {
+            "M": 1.0,
+            "a": 0.0,
+            "observer_inclination": 1.5708,
+            "max_subrings": 10,
+            "emission_profile": "thin_disk"
+          },
+          "output": {"photon_ring_structure": "verify_10_rings", "critical_curve": "circular", "ring_width": "~0.5", "subring_spacing": "rapid_convergence", "lyapunov_exponent": "~0.866", "ring_asymmetry": 0.0, "total_flux": "verify"},
+          "description": "Schwarzschild edge-on: many sub-rings (high resolution)"
+        }
+      ],
+      "edge_cases": [
+        {
+          "input": {
+            "M": 1.0,
+            "a": 1.0,
+            "observer_inclination": 1.5708,
+            "max_subrings": 5,
+            "emission_profile": "thin_disk"
+          },
+          "output": {"photon_ring_structure": "verify_extremal", "critical_curve": "maximum_D_shape", "ring_width": "~0.7", "subring_spacing": "verify", "lyapunov_exponent": "~1.0", "ring_asymmetry": ">>0.5", "total_flux": "verify_doppler_boost"},
+          "description": "Extremal Kerr edge-on: maximum asymmetry, strong Doppler boost"
+        },
+        {
+          "input": {
+            "M": 1.0,
+            "a": 0.998,
+            "observer_inclination": 0.0,
+            "max_subrings": 3,
+            "emission_profile": "thin_disk"
+          },
+          "output": {"photon_ring_structure": "verify_near_extremal", "critical_curve": "nearly_circular_large", "ring_width": "~0.68", "subring_spacing": "verify", "lyapunov_exponent": "~0.99", "ring_asymmetry": "<0.05", "total_flux": "verify"},
+          "description": "Near-extremal face-on: large but nearly symmetric ring"
+        },
+        {
+          "input": {
+            "M": 1.0,
+            "a": 0.5,
+            "observer_inclination": 1.5708,
+            "max_subrings": 1,
+            "emission_profile": "thick_disk"
+          },
+          "output": {"photon_ring_structure": "single_ring_only", "critical_curve": "verify", "ring_width": "verify", "subring_spacing": "N/A", "lyapunov_exponent": "not_computed", "ring_asymmetry": "verify", "total_flux": "verify_n1_only"},
+          "description": "Only primary photon ring (n=1, lowest resolution)"
+        }
+      ]
+    }
+  ]
+}

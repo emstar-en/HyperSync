@@ -1,0 +1,687 @@
+{
+  "specification": {
+    "name": "Advanced Kerr Geodesic Operations",
+    "version": "1.0.0",
+    "description": "Advanced geodesic, orbital mechanics, and perturbation operations for Kerr rotating black holes in HyperSync Core tier.",
+    "language_agnostic": true,
+    "format": "STUNIR",
+    "tier_availability": "Core (Free)",
+    "total_operations": 5,
+    "complexity_target": "O(1) to O(n)"
+  },
+  "mathematical_foundations": {
+    "carter_constant": "Q = p_θ² + cos²θ(a²(m² - E²) + L_z²/sin²θ) (fourth constant of motion)",
+    "geodesic_constants": "E (energy at infinity), L_z (z-component angular momentum), Q (Carter constant), m (rest mass)",
+    "equatorial_orbits": "θ = π/2, Q = 0, motion in equatorial plane",
+    "isco_prograde": "r_ISCO = M{3 + Z₂ - √((3-Z₁)(3+Z₁+2Z₂))} where Z₁ = 1 + (1-a²/M²)^(1/3)[(1+a/M)^(1/3) + (1-a/M)^(1/3)]",
+    "isco_retrograde": "r_ISCO = M{3 + Z₂ + √((3-Z₁)(3+Z₁+2Z₂))}",
+    "photon_sphere": "r_ph depends on inclination and spin; equatorial: r_ph ≈ 2M(1 + cos[(2/3)arccos(∓a/M)])",
+    "quasi_normal_modes": "Complex frequencies ω = ω_R + iω_I describing black hole ringdown"
+  },
+  "operations": [
+    {
+      "id": "kerr_011",
+      "name": "compute_carter_constant",
+      "description": "Compute Carter constant Q, the fourth constant of motion for geodesics in Kerr spacetime. Along with energy E, angular momentum L_z, and rest mass m, this fully determines the geodesic.",
+      "category": "geodesic_operations",
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      },
+      "parameters": {
+        "position": {
+          "type": "object",
+          "description": "Current position (r, θ) in Boyer-Lindquist coordinates",
+          "properties": {
+            "r": "float (r > 0)",
+            "theta": "float (0 ≤ θ ≤ π)"
+          }
+        },
+        "velocity": {
+          "type": "object",
+          "description": "4-velocity components (u^t, u^r, u^θ, u^φ)",
+          "properties": {
+            "u_t": "float",
+            "u_r": "float",
+            "u_theta": "float",
+            "u_phi": "float"
+          }
+        },
+        "M": {
+          "type": "float",
+          "description": "Black hole mass",
+          "constraints": "M > 0"
+        },
+        "a": {
+          "type": "float",
+          "description": "Spin parameter",
+          "constraints": "0 <= a <= M"
+        },
+        "m": {
+          "type": "float",
+          "description": "Particle rest mass (m=0 for photons, m=1 for massive particles)",
+          "default": 1.0
+        }
+      },
+      "returns": {
+        "Q": {
+          "type": "float",
+          "description": "Carter constant (can be positive, negative, or zero)"
+        },
+        "E": {
+          "type": "float",
+          "description": "Energy at infinity (conserved)"
+        },
+        "L_z": {
+          "type": "float",
+          "description": "z-component of angular momentum (conserved)"
+        },
+        "orbit_type": {
+          "type": "string",
+          "description": "'equatorial' if Q≈0, 'polar' if L_z≈0, 'generic' otherwise"
+        }
+      },
+      "mathematical_formula": "Q = p_θ² + cos²θ(a²(m² - E²) + L_z²/sin²θ) where p_θ = ρ² u^θ, E = -u_t, L_z = u_φ",
+      "implementation_notes": [
+        "Carter constant separates geodesic equations",
+        "Q ≥ 0 for bound orbits in many cases",
+        "Q = 0 for equatorial orbits (θ = π/2 constant)",
+        "For Schwarzschild (a=0): Q reduces to (L² - L_z²) where L is total angular momentum",
+        "Numerical precision important: Q can be small for nearly equatorial orbits"
+      ],
+      "test_cases": [
+        {
+          "input": {
+            "position": {"r": 10.0, "theta": 1.5708},
+            "velocity": {"u_t": 1.0, "u_r": 0.0, "u_theta": 0.0, "u_phi": 0.1},
+            "M": 1.0,
+            "a": 0.8,
+            "m": 1.0
+          },
+          "output": {"Q": "~0", "E": "verify_negative_u_t", "L_z": "verify_from_u_phi", "orbit_type": "equatorial"},
+          "description": "Equatorial circular orbit (Q should be ~0)"
+        },
+        {
+          "input": {
+            "position": {"r": 10.0, "theta": 0.7854},
+            "velocity": {"u_t": 1.0, "u_r": 0.0, "u_theta": 0.05, "u_phi": 0.1},
+            "M": 1.0,
+            "a": 0.5,
+            "m": 1.0
+          },
+          "output": {"Q": ">0", "E": "verify", "L_z": "verify", "orbit_type": "generic"},
+          "description": "Non-equatorial orbit with θ oscillation"
+        },
+        {
+          "input": {
+            "position": {"r": 5.0, "theta": 1.5708},
+            "velocity": {"u_t": 1.0, "u_r": 0.0, "u_theta": 0.0, "u_phi": 0.0},
+            "M": 1.0,
+            "a": 0.0,
+            "m": 1.0
+          },
+          "output": {"Q": "~0", "E": "verify", "L_z": "~0", "orbit_type": "equatorial"},
+          "description": "Radial infall in Schwarzschild (Q=0, L_z=0)"
+        },
+        {
+          "input": {
+            "position": {"r": 20.0, "theta": 0.0},
+            "velocity": {"u_t": 1.0, "u_r": 0.0, "u_theta": 0.1, "u_phi": 0.0},
+            "M": 1.0,
+            "a": 0.9,
+            "m": 1.0
+          },
+          "output": {"Q": ">0", "E": "verify", "L_z": "~0", "orbit_type": "polar"},
+          "description": "Polar orbit (L_z ≈ 0, passes through poles)"
+        },
+        {
+          "input": {
+            "position": {"r": 100.0, "theta": 1.5708},
+            "velocity": {"u_t": 1.0, "u_r": -0.1, "u_theta": 0.0, "u_phi": 0.05},
+            "M": 1.0,
+            "a": 0.6,
+            "m": 0.0
+          },
+          "output": {"Q": "verify_photon", "E": "verify", "L_z": "verify", "orbit_type": "equatorial"},
+          "description": "Photon geodesic (m=0)"
+        }
+      ],
+      "edge_cases": [
+        {
+          "input": {
+            "position": {"r": 1.0, "theta": 1.5708},
+            "velocity": {"u_t": 2.0, "u_r": -1.0, "u_theta": 0.0, "u_phi": 0.5},
+            "M": 1.0,
+            "a": 1.0,
+            "m": 1.0
+          },
+          "output": "verify_at_extremal_horizon",
+          "description": "At extremal Kerr horizon"
+        },
+        {
+          "input": {
+            "position": {"r": 10.0, "theta": 1.570796327},
+            "velocity": {"u_t": 1.0, "u_r": 0.0, "u_theta": 1e-10, "u_phi": 0.1},
+            "M": 1.0,
+            "a": 0.5,
+            "m": 1.0
+          },
+          "output": {"Q": "~0_within_precision", "E": "verify", "L_z": "verify", "orbit_type": "equatorial"},
+          "description": "Nearly equatorial (Q very small, numerical precision test)"
+        },
+        {
+          "input": {
+            "position": {"r": 5.0, "theta": 1e-6},
+            "velocity": {"u_t": 1.0, "u_r": 0.0, "u_theta": 0.1, "u_phi": 1e-6},
+            "M": 1.0,
+            "a": 0.8,
+            "m": 1.0
+          },
+          "output": "handle_near_pole_singularity",
+          "description": "Near polar axis (θ≈0, coordinate singularity)"
+        }
+      ]
+    },
+    {
+      "id": "kerr_012",
+      "name": "compute_equatorial_circular_orbit",
+      "description": "Compute properties of stable circular orbits in the equatorial plane (θ=π/2) of Kerr black hole. Includes radius, angular velocity, energy, and angular momentum.",
+      "category": "orbital_mechanics",
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      },
+      "parameters": {
+        "r": {
+          "type": "float",
+          "description": "Orbital radius in Boyer-Lindquist coordinates",
+          "constraints": "r > r_ISCO (must be outside ISCO)"
+        },
+        "M": {
+          "type": "float",
+          "description": "Black hole mass",
+          "constraints": "M > 0"
+        },
+        "a": {
+          "type": "float",
+          "description": "Spin parameter",
+          "constraints": "0 <= a <= M"
+        },
+        "orbit_direction": {
+          "type": "string",
+          "description": "'prograde' (co-rotating with BH) or 'retrograde' (counter-rotating)",
+          "enum": ["prograde", "retrograde"],
+          "default": "prograde"
+        }
+      },
+      "returns": {
+        "Omega_orbit": {
+          "type": "float",
+          "description": "Orbital angular velocity dφ/dt"
+        },
+        "E": {
+          "type": "float",
+          "description": "Specific energy (energy per unit rest mass)"
+        },
+        "L_z": {
+          "type": "float",
+          "description": "Specific angular momentum"
+        },
+        "v_phi": {
+          "type": "float",
+          "description": "Azimuthal velocity v^φ = dφ/dτ (proper time derivative)"
+        },
+        "is_stable": {
+          "type": "bool",
+          "description": "True if orbit is stable (r > r_ISCO)"
+        },
+        "orbital_period": {
+          "type": "float",
+          "description": "Orbital period T = 2π/Ω_orbit (coordinate time)"
+        }
+      },
+      "mathematical_formula": "Ω² = M/(r³ ± a√(Mr)), E = (1 - 2M/r ± a√(M/r³))/√(1 - 3M/r ± 2a√(M/r³)), L_z = ±√(Mr)(r² ∓ 2a√(Mr) + a²)/[r√(r² - 3Mr ± 2a√(Mr))]",
+      "implementation_notes": [
+        "Prograde orbits: + sign, retrograde: - sign in formulas",
+        "Prograde orbits can exist closer to horizon (lower r_ISCO)",
+        "Retrograde orbits have higher r_ISCO, larger energy",
+        "Circular orbits only exist at specific radii (not arbitrary r)",
+        "Check stability: r > r_ISCO for the given direction"
+      ],
+      "test_cases": [
+        {
+          "input": {"r": 10.0, "M": 1.0, "a": 0.0, "orbit_direction": "prograde"},
+          "output": {"Omega_orbit": "~0.0316", "E": "~0.9487", "L_z": "~3.162", "v_phi": "verify", "is_stable": true, "orbital_period": "~199"},
+          "description": "Schwarzschild circular orbit (prograde = retrograde for a=0)"
+        },
+        {
+          "input": {"r": 6.0, "M": 1.0, "a": 0.8, "orbit_direction": "prograde"},
+          "output": {"Omega_orbit": "verify_larger", "E": "<1", "L_z": "verify", "v_phi": "verify", "is_stable": true, "orbital_period": "verify"},
+          "description": "Prograde orbit in fast-rotating Kerr"
+        },
+        {
+          "input": {"r": 6.0, "M": 1.0, "a": 0.8, "orbit_direction": "retrograde"},
+          "output": {"Omega_orbit": "verify_smaller", "E": ">prograde_E", "L_z": "negative", "v_phi": "verify", "is_stable": true, "orbital_period": "verify"},
+          "description": "Retrograde orbit (higher energy, negative L_z)"
+        },
+        {
+          "input": {"r": 4.0, "M": 1.0, "a": 0.5, "orbit_direction": "prograde"},
+          "output": {"Omega_orbit": "verify", "E": "verify", "L_z": "verify", "v_phi": "verify", "is_stable": "verify_vs_ISCO", "orbital_period": "verify"},
+          "description": "Moderate spin, intermediate radius"
+        },
+        {
+          "input": {"r": 20.0, "M": 1.0, "a": 0.9, "orbit_direction": "prograde"},
+          "output": {"Omega_orbit": "~0.0158", "E": "~0.975", "L_z": "verify", "v_phi": "verify", "is_stable": true, "orbital_period": "verify"},
+          "description": "Large radius (weak field limit)"
+        }
+      ],
+      "edge_cases": [
+        {
+          "input": {"r": 1.0, "M": 1.0, "a": 1.0, "orbit_direction": "prograde"},
+          "output": {"Omega_orbit": 0.5, "E": "verify", "L_z": "verify", "v_phi": "verify", "is_stable": false, "orbital_period": "verify"},
+          "description": "Extremal Kerr, orbit at horizon (r_ISCO = r_+ = M for prograde)"
+        },
+        {
+          "input": {"r": 1.5, "M": 1.0, "a": 0.998, "orbit_direction": "prograde"},
+          "output": "verify_near_extremal",
+          "description": "Near-extremal Kerr, very close to ISCO"
+        },
+        {
+          "input": {"r": 3.0, "M": 1.0, "a": 0.0, "orbit_direction": "prograde"},
+          "output": "unstable_below_ISCO",
+          "description": "Schwarzschild r < 6M (unstable, below ISCO)"
+        }
+      ]
+    },
+    {
+      "id": "kerr_013",
+      "name": "compute_isco_radius",
+      "description": "Compute innermost stable circular orbit (ISCO) radius for Kerr black hole. Below ISCO, circular orbits are unstable and particles plunge into the black hole.",
+      "category": "orbital_mechanics",
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      },
+      "parameters": {
+        "M": {
+          "type": "float",
+          "description": "Black hole mass",
+          "constraints": "M > 0"
+        },
+        "a": {
+          "type": "float",
+          "description": "Spin parameter",
+          "constraints": "0 <= a <= M"
+        },
+        "orbit_direction": {
+          "type": "string",
+          "description": "'prograde' or 'retrograde'",
+          "enum": ["prograde", "retrograde"],
+          "default": "prograde"
+        }
+      },
+      "returns": {
+        "r_ISCO": {
+          "type": "float",
+          "description": "ISCO radius in Boyer-Lindquist coordinates"
+        },
+        "E_ISCO": {
+          "type": "float",
+          "description": "Specific energy at ISCO"
+        },
+        "L_ISCO": {
+          "type": "float",
+          "description": "Specific angular momentum at ISCO"
+        },
+        "Omega_ISCO": {
+          "type": "float",
+          "description": "Angular velocity at ISCO"
+        },
+        "binding_energy": {
+          "type": "float",
+          "description": "Binding energy (1 - E_ISCO), fraction of rest mass radiated during inspiral"
+        }
+      },
+      "mathematical_formula": "r_ISCO = M{3 + Z₂ ∓ √((3-Z₁)(3+Z₁+2Z₂))} where Z₁ = 1 + (1-a²/M²)^(1/3)[(1+a/M)^(1/3) + (1-a/M)^(1/3)], Z₂ = √(3a²/M² + Z₁²)",
+      "implementation_notes": [
+        "Prograde: use - sign (smaller r_ISCO), retrograde: use + sign",
+        "Schwarzschild limit (a=0): r_ISCO = 6M for both directions",
+        "Extremal prograde (a=M): r_ISCO = M (at horizon)",
+        "Extremal retrograde (a=M): r_ISCO = 9M",
+        "Binding energy ranges from 5.72% (Schwarzschild) to 42.3% (extremal prograde)"
+      ],
+      "test_cases": [
+        {
+          "input": {"M": 1.0, "a": 0.0, "orbit_direction": "prograde"},
+          "output": {"r_ISCO": 6.0, "E_ISCO": "~0.9428", "L_ISCO": "~3.464", "Omega_ISCO": "~0.0204", "binding_energy": "~0.0572"},
+          "description": "Schwarzschild ISCO: 6M, 5.72% binding energy"
+        },
+        {
+          "input": {"M": 1.0, "a": 0.8, "orbit_direction": "prograde"},
+          "output": {"r_ISCO": "~2.32", "E_ISCO": "<0.95", "L_ISCO": "verify", "Omega_ISCO": "verify", "binding_energy": ">0.05"},
+          "description": "Fast-rotating prograde: ISCO much closer"
+        },
+        {
+          "input": {"M": 1.0, "a": 0.8, "orbit_direction": "retrograde"},
+          "output": {"r_ISCO": "~5.82", "E_ISCO": ">0.94", "L_ISCO": "negative", "Omega_ISCO": "verify", "binding_energy": "<0.06"},
+          "description": "Fast-rotating retrograde: ISCO farther out"
+        },
+        {
+          "input": {"M": 1.0, "a": 0.5, "orbit_direction": "prograde"},
+          "output": {"r_ISCO": "~4.23", "E_ISCO": "verify", "L_ISCO": "verify", "Omega_ISCO": "verify", "binding_energy": "verify"},
+          "description": "Moderate spin prograde"
+        },
+        {
+          "input": {"M": 10.0, "a": 5.0, "orbit_direction": "prograde"},
+          "output": {"r_ISCO": "~42.3", "E_ISCO": "verify", "L_ISCO": "verify", "Omega_ISCO": "verify", "binding_energy": "verify"},
+          "description": "Scaled mass (a = 0.5M)"
+        }
+      ],
+      "edge_cases": [
+        {
+          "input": {"M": 1.0, "a": 1.0, "orbit_direction": "prograde"},
+          "output": {"r_ISCO": 1.0, "E_ISCO": "verify", "L_ISCO": "verify", "Omega_ISCO": 0.5, "binding_energy": "~0.423"},
+          "description": "Extremal prograde: r_ISCO = M, maximum binding energy 42.3%"
+        },
+        {
+          "input": {"M": 1.0, "a": 1.0, "orbit_direction": "retrograde"},
+          "output": {"r_ISCO": 9.0, "E_ISCO": "verify", "L_ISCO": "negative", "Omega_ISCO": "verify", "binding_energy": "verify"},
+          "description": "Extremal retrograde: r_ISCO = 9M (farthest possible)"
+        },
+        {
+          "input": {"M": 1.0, "a": 0.998, "orbit_direction": "prograde"},
+          "output": {"r_ISCO": "~1.024", "E_ISCO": "verify", "L_ISCO": "verify", "Omega_ISCO": "verify", "binding_energy": "~0.42"},
+          "description": "Near-extremal prograde: very close to horizon"
+        }
+      ]
+    },
+    {
+      "id": "kerr_029",
+      "name": "compute_principal_null_geodesics",
+      "description": "Compute principal null geodesics (PNGs) which are generators of event horizons. These are null geodesics tangent to the null Killing vector ξ = ∂_t + Ω_H ∂_φ at the horizon.",
+      "category": "geodesic_operations",
+      "complexity": {
+        "time": "O(n)",
+        "space": "O(n)"
+      },
+      "parameters": {
+        "M": {
+          "type": "float",
+          "description": "Black hole mass",
+          "constraints": "M > 0"
+        },
+        "a": {
+          "type": "float",
+          "description": "Spin parameter",
+          "constraints": "0 <= a <= M"
+        },
+        "initial_theta": {
+          "type": "float",
+          "description": "Initial polar angle at horizon",
+          "constraints": "0 <= initial_theta <= pi"
+        },
+        "initial_phi": {
+          "type": "float",
+          "description": "Initial azimuthal angle",
+          "constraints": "0 <= initial_phi < 2*pi",
+          "default": 0.0
+        },
+        "affine_parameter_range": {
+          "type": "float",
+          "description": "Range of affine parameter to integrate",
+          "default": 10.0
+        },
+        "integration_steps": {
+          "type": "int",
+          "description": "Number of integration steps",
+          "default": 1000
+        }
+      },
+      "returns": {
+        "geodesic_path": {
+          "type": "array[object]",
+          "description": "Array of points (t, r, θ, φ, λ) along PNG"
+        },
+        "Omega_H": {
+          "type": "float",
+          "description": "Horizon angular velocity"
+        },
+        "horizon_expansion": {
+          "type": "float",
+          "description": "Expansion of null geodesics (should be ~0 for Killing horizon)"
+        },
+        "is_future_directed": {
+          "type": "bool",
+          "description": "True if geodesic is future-directed"
+        }
+      },
+      "mathematical_formula": "k^μ = (∂_t + Ω_H ∂_φ)^μ at r = r_+, where Ω_H = a/(2Mr_+), geodesic: dx^μ/dλ = k^μ",
+      "implementation_notes": [
+        "PNGs are null: g_μν k^μ k^ν = 0",
+        "PNGs generate event horizon (tangent vectors to horizon)",
+        "For stationary horizon: expansion = 0 (surface gravity constant)",
+        "Affine parametrization: geodesic equation satisfied",
+        "θ motion on horizon depends on initial conditions"
+      ],
+      "test_cases": [
+        {
+          "input": {
+            "M": 1.0,
+            "a": 0.0,
+            "initial_theta": 1.5708,
+            "initial_phi": 0.0,
+            "affine_parameter_range": 5.0,
+            "integration_steps": 500
+          },
+          "output": {"geodesic_path": "verify_schwarzschild", "Omega_H": 0.0, "horizon_expansion": "~0", "is_future_directed": true},
+          "description": "Schwarzschild: PNGs are radial (Ω_H=0)"
+        },
+        {
+          "input": {
+            "M": 1.0,
+            "a": 0.8,
+            "initial_theta": 1.5708,
+            "initial_phi": 0.0,
+            "affine_parameter_range": 10.0,
+            "integration_steps": 1000
+          },
+          "output": {"geodesic_path": "verify_rotation", "Omega_H": "~0.25", "horizon_expansion": "~0", "is_future_directed": true},
+          "description": "Kerr equatorial PNG (co-rotates with horizon)"
+        },
+        {
+          "input": {
+            "M": 1.0,
+            "a": 0.5,
+            "initial_theta": 0.7854,
+            "initial_phi": 1.5708,
+            "affine_parameter_range": 8.0,
+            "integration_steps": 800
+          },
+          "output": {"geodesic_path": "verify_non_equatorial", "Omega_H": "~0.134", "horizon_expansion": "~0", "is_future_directed": true},
+          "description": "Non-equatorial PNG (θ ≠ π/2)"
+        },
+        {
+          "input": {
+            "M": 1.0,
+            "a": 0.9,
+            "initial_theta": 0.0,
+            "initial_phi": 0.0,
+            "affine_parameter_range": 5.0,
+            "integration_steps": 500
+          },
+          "output": {"geodesic_path": "verify_polar", "Omega_H": "~0.217", "horizon_expansion": "~0", "is_future_directed": true},
+          "description": "Polar PNG (θ=0, on rotation axis)"
+        },
+        {
+          "input": {
+            "M": 1.0,
+            "a": 0.6,
+            "initial_theta": 3.14159,
+            "initial_phi": 0.0,
+            "affine_parameter_range": 5.0,
+            "integration_steps": 500
+          },
+          "output": {"geodesic_path": "verify_south_pole", "Omega_H": "verify", "horizon_expansion": "~0", "is_future_directed": true},
+          "description": "South pole PNG (θ=π)"
+        }
+      ],
+      "edge_cases": [
+        {
+          "input": {
+            "M": 1.0,
+            "a": 1.0,
+            "initial_theta": 1.5708,
+            "initial_phi": 0.0,
+            "affine_parameter_range": 10.0,
+            "integration_steps": 1000
+          },
+          "output": {"geodesic_path": "verify_extremal", "Omega_H": 0.5, "horizon_expansion": "0", "is_future_directed": true},
+          "description": "Extremal Kerr PNG (maximum rotation)"
+        },
+        {
+          "input": {
+            "M": 1.0,
+            "a": 0.999,
+            "initial_theta": 1e-3,
+            "initial_phi": 0.0,
+            "affine_parameter_range": 5.0,
+            "integration_steps": 500
+          },
+          "output": "handle_near_extremal_pole",
+          "description": "Near-extremal, very close to pole"
+        },
+        {
+          "input": {
+            "M": 1.0,
+            "a": 0.5,
+            "initial_theta": 1.5708,
+            "initial_phi": 0.0,
+            "affine_parameter_range": 100.0,
+            "integration_steps": 10000
+          },
+          "output": "verify_long_integration",
+          "description": "Long affine parameter range (test numerical stability)"
+        }
+      ]
+    },
+    {
+      "id": "kerr_033",
+      "name": "compute_quasi_normal_modes",
+      "description": "Compute quasi-normal mode (QNM) frequencies for Kerr black hole perturbations. QNMs characterize the ringdown phase of gravitational wave emission after merger or perturbation.",
+      "category": "perturbations",
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      },
+      "parameters": {
+        "M": {
+          "type": "float",
+          "description": "Black hole mass",
+          "constraints": "M > 0"
+        },
+        "a": {
+          "type": "float",
+          "description": "Spin parameter",
+          "constraints": "0 <= a <= M"
+        },
+        "l": {
+          "type": "int",
+          "description": "Angular momentum quantum number (l ≥ 2 for gravitational waves)",
+          "constraints": "l >= 2"
+        },
+        "m": {
+          "type": "int",
+          "description": "Azimuthal quantum number (|m| ≤ l)",
+          "constraints": "abs(m) <= l"
+        },
+        "n": {
+          "type": "int",
+          "description": "Overtone number (n = 0 is fundamental, n > 0 are overtones)",
+          "constraints": "n >= 0",
+          "default": 0
+        },
+        "perturbation_type": {
+          "type": "string",
+          "description": "'gravitational', 'electromagnetic', or 'scalar'",
+          "enum": ["gravitational", "electromagnetic", "scalar"],
+          "default": "gravitational"
+        }
+      },
+      "returns": {
+        "omega_R": {
+          "type": "float",
+          "description": "Real part of QNM frequency (oscillation frequency)"
+        },
+        "omega_I": {
+          "type": "float",
+          "description": "Imaginary part (damping rate, negative for decay)"
+        },
+        "omega_complex": {
+          "type": "complex",
+          "description": "Complex QNM frequency ω = ω_R + i·ω_I"
+        },
+        "quality_factor": {
+          "type": "float",
+          "description": "Q = ω_R/(2|ω_I|) (number of oscillations before decay)"
+        },
+        "ringdown_time": {
+          "type": "float",
+          "description": "τ = 1/|ω_I| (characteristic decay time)"
+        }
+      },
+      "mathematical_formula": "ω = ω_R + i·ω_I where ω_R > 0, ω_I < 0 (stable), solution to Teukolsky equation with ingoing boundary conditions",
+      "implementation_notes": [
+        "Fundamental mode (n=0) dominates ringdown signal",
+        "Higher overtones (n>0) decay faster (larger |ω_I|)",
+        "Prograde modes (m>0) have higher frequency for rotating BH",
+        "Retrograde modes (m<0) have lower frequency",
+        "Use Leaver's continued fraction method or WKB approximation",
+        "Fits available for l=m=2, n=0 mode: ω_R M ≈ 1.5251 - 1.1568(1-a/M)^0.1292"
+      ],
+      "test_cases": [
+        {
+          "input": {"M": 1.0, "a": 0.0, "l": 2, "m": 2, "n": 0, "perturbation_type": "gravitational"},
+          "output": {"omega_R": "~0.3737", "omega_I": "~-0.0890", "omega_complex": "0.3737-0.0890i", "quality_factor": "~2.10", "ringdown_time": "~11.24"},
+          "description": "Schwarzschild l=m=2 fundamental mode"
+        },
+        {
+          "input": {"M": 1.0, "a": 0.7, "l": 2, "m": 2, "n": 0, "perturbation_type": "gravitational"},
+          "output": {"omega_R": ">0.37", "omega_I": "<-0.089", "omega_complex": "verify", "quality_factor": ">2", "ringdown_time": "verify"},
+          "description": "Moderate spin, l=m=2 (frequency increases with a)"
+        },
+        {
+          "input": {"M": 1.0, "a": 0.5, "l": 2, "m": -2, "n": 0, "perturbation_type": "gravitational"},
+          "output": {"omega_R": "<0.37", "omega_I": "verify", "omega_complex": "verify", "quality_factor": "verify", "ringdown_time": "verify"},
+          "description": "Retrograde mode m=-2 (lower frequency)"
+        },
+        {
+          "input": {"M": 1.0, "a": 0.8, "l": 2, "m": 2, "n": 1, "perturbation_type": "gravitational"},
+          "output": {"omega_R": "verify", "omega_I": "<<-0.089", "omega_complex": "verify", "quality_factor": "<2", "ringdown_time": "<10"},
+          "description": "First overtone (n=1): faster decay"
+        },
+        {
+          "input": {"M": 1.0, "a": 0.6, "l": 3, "m": 3, "n": 0, "perturbation_type": "gravitational"},
+          "output": {"omega_R": ">0.5", "omega_I": "verify", "omega_complex": "verify", "quality_factor": "verify", "ringdown_time": "verify"},
+          "description": "Higher multipole l=3 mode"
+        }
+      ],
+      "edge_cases": [
+        {
+          "input": {"M": 1.0, "a": 1.0, "l": 2, "m": 2, "n": 0, "perturbation_type": "gravitational"},
+          "output": {"omega_R": "~0.5", "omega_I": "verify_extremal", "omega_complex": "verify", "quality_factor": "verify", "ringdown_time": "verify"},
+          "description": "Extremal Kerr (a=M): ω_R approaches Ω_H = 0.5"
+        },
+        {
+          "input": {"M": 1.0, "a": 0.0, "l": 2, "m": 0, "n": 0, "perturbation_type": "gravitational"},
+          "output": {"omega_R": "verify_axisymmetric", "omega_I": "verify", "omega_complex": "verify", "quality_factor": "verify", "ringdown_time": "verify"},
+          "description": "Axisymmetric mode m=0"
+        },
+        {
+          "input": {"M": 1.0, "a": 0.998, "l": 2, "m": 2, "n": 0, "perturbation_type": "gravitational"},
+          "output": {"omega_R": "~0.5", "omega_I": "verify_near_extremal", "omega_complex": "verify", "quality_factor": ">>2", "ringdown_time": ">>11"},
+          "description": "Near-extremal: long ringdown time (small |ω_I|)"
+        }
+      ]
+    }
+  ]
+}
