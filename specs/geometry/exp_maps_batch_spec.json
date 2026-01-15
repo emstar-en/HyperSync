@@ -1,0 +1,588 @@
+{
+  "specification": {
+    "name": "Batch Processing Exponential Maps",
+    "version": "1.0.0",
+    "description": "Vectorized and parallel exponential map operations for batch processing with GPU acceleration, distributed computation, and memory-efficient implementations.",
+    "total_operations": 7,
+    "format": "STUNIR",
+    "tier_availability": "Core (Free)",
+    "complexity_target": "O(n·m) where n=batch_size, m=dimension",
+    "integration": ["HVS", "AGUA", "STUNIR", "Dual-Model System"],
+    "phase": "6A",
+    "category": "Enhanced Exponential Maps - Batch Processing"
+  },
+  "mathematical_foundations": {
+    "batch_exponential_map": {
+      "description": "Apply exponential map to multiple (base_point, tangent_vector) pairs simultaneously",
+      "formula": "batch_exp([x₁,...,xₙ], [v₁,...,vₙ]) = [exp_x₁(v₁), ..., exp_xₙ(vₙ)]",
+      "properties": ["Parallelizable", "Vectorizable", "Memory-efficient"]
+    },
+    "vectorization": {
+      "description": "SIMD operations for simultaneous computation",
+      "benefits": ["Cache efficiency", "Reduced overhead", "Hardware acceleration"]
+    }
+  },
+  "operations": [
+    {
+      "id": "batch_exp_map_vectorized",
+      "name": "Vectorized Batch Exponential Map",
+      "category": "batch_processing",
+      "description": "Compute exponential maps for batch of (base_point, tangent_vector) pairs using vectorized operations (NumPy/PyTorch)",
+      "mathematical_formula": "batch_exp(X, V) = [exp_xᵢ(vᵢ) for i=1..n] computed in parallel",
+      "input": {
+        "base_points": "Array of base points, shape (batch_size, dim+1) for Lorentz",
+        "tangent_vectors": "Array of tangent vectors, shape (batch_size, dim+1)",
+        "manifold_type": "Manifold type ('hyperbolic', 'spherical', 'euclidean')",
+        "model": "Model type ('lorentz', 'poincare', etc.)",
+        "backend": "Computation backend ('numpy', 'torch', 'jax')"
+      },
+      "output": {
+        "result_points": "Array of result points, shape (batch_size, dim+1)",
+        "computation_time": "Total computation time",
+        "throughput": "Points processed per second"
+      },
+      "complexity": {
+        "time": "O(n·m) where n=batch_size, m=dimension",
+        "space": "O(n·m)"
+      },
+      "implementation_notes": [
+        "Use vectorized sinh/cosh operations",
+        "Compute norms for all vectors simultaneously",
+        "Avoid Python loops, use array operations",
+        "Leverage BLAS/LAPACK for linear algebra",
+        "Memory layout: contiguous arrays for cache efficiency",
+        "Support both CPU and GPU backends"
+      ],
+      "test_cases": [
+        {
+          "name": "Small batch (10 points)",
+          "batch_size": 10,
+          "dimension": 3,
+          "verify": "Each result satisfies manifold constraint"
+        },
+        {
+          "name": "Medium batch (1000 points)",
+          "batch_size": 1000,
+          "dimension": 10,
+          "verify": "Speedup vs sequential > 10x"
+        },
+        {
+          "name": "Large batch (100k points)",
+          "batch_size": 100000,
+          "dimension": 5,
+          "verify": "Memory usage < 2GB"
+        },
+        {
+          "name": "Consistency with sequential",
+          "batch_size": 100,
+          "verify": "batch_exp(X,V)[i] = exp(X[i], V[i]) for all i"
+        },
+        {
+          "name": "Mixed tangent vector norms",
+          "tangent_norms": "[1e-10, 1.0, 10.0, 100.0]",
+          "verify": "Stable computation for all norms"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "Batch size = 1",
+          "expected_behavior": "Reduce to single exponential map"
+        },
+        {
+          "name": "Empty batch",
+          "batch_size": 0,
+          "expected_behavior": "Return empty array"
+        },
+        {
+          "name": "Very large batch (1M points)",
+          "batch_size": 1000000,
+          "expected_behavior": "Chunked processing, no memory overflow"
+        }
+      ],
+      "performance_benchmarks": {
+        "target_throughput": "100k points/second on CPU",
+        "target_throughput_gpu": "1M points/second on GPU",
+        "memory_efficiency": "< 100 bytes per point overhead"
+      }
+    },
+    {
+      "id": "batch_exp_map_parallel",
+      "name": "Parallel Batch Exponential Map",
+      "category": "batch_processing",
+      "description": "Compute exponential maps using multi-core CPU parallelization with thread pool or process pool",
+      "mathematical_formula": "Partition batch into chunks, process chunks in parallel threads/processes",
+      "input": {
+        "base_points": "Array of base points",
+        "tangent_vectors": "Array of tangent vectors",
+        "manifold_type": "Manifold type",
+        "num_workers": "Number of parallel workers (default: CPU count)",
+        "chunk_size": "Size of chunks for parallel processing"
+      },
+      "output": {
+        "result_points": "Array of result points",
+        "worker_stats": "Statistics per worker (time, points processed)",
+        "parallel_efficiency": "Speedup / num_workers"
+      },
+      "complexity": {
+        "time": "O(n·m / p) where p=num_workers",
+        "space": "O(n·m)"
+      },
+      "implementation_notes": [
+        "Use multiprocessing.Pool or concurrent.futures",
+        "Optimal chunk_size = batch_size / (num_workers * 4)",
+        "Avoid GIL issues with process-based parallelism",
+        "Load balancing for uneven workloads",
+        "Minimize inter-process communication overhead"
+      ],
+      "test_cases": [
+        {
+          "name": "2 workers vs 1 worker",
+          "batch_size": 10000,
+          "num_workers": [1, 2],
+          "verify": "Speedup ≈ 1.8x"
+        },
+        {
+          "name": "4 workers vs 1 worker",
+          "batch_size": 10000,
+          "num_workers": [1, 4],
+          "verify": "Speedup ≈ 3.5x"
+        },
+        {
+          "name": "Optimal chunk size",
+          "batch_size": 10000,
+          "chunk_sizes": [100, 500, 1000],
+          "verify": "Find optimal chunk size"
+        },
+        {
+          "name": "Consistency with sequential",
+          "verify": "Results identical to sequential processing"
+        },
+        {
+          "name": "Load balancing",
+          "verify": "Worker times within 20% of each other"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "num_workers > batch_size",
+          "expected_behavior": "Some workers idle, no error"
+        },
+        {
+          "name": "num_workers = 1",
+          "expected_behavior": "Sequential processing"
+        },
+        {
+          "name": "Very small chunks",
+          "chunk_size": 1,
+          "expected_behavior": "High overhead, still correct"
+        }
+      ],
+      "performance_benchmarks": {
+        "parallel_efficiency_target": "> 0.85 for 4 workers",
+        "overhead_per_chunk": "< 1ms"
+      }
+    },
+    {
+      "id": "batch_exp_map_gpu",
+      "name": "GPU-Accelerated Batch Exponential Map",
+      "category": "batch_processing",
+      "description": "Compute exponential maps on GPU using CUDA/OpenCL for massive parallelization",
+      "mathematical_formula": "GPU kernel: each thread computes exp_xᵢ(vᵢ) for one (i)",
+      "input": {
+        "base_points": "GPU tensor of base points",
+        "tangent_vectors": "GPU tensor of tangent vectors",
+        "manifold_type": "Manifold type",
+        "device": "GPU device ID",
+        "precision": "Computation precision ('float32', 'float64')"
+      },
+      "output": {
+        "result_points": "GPU tensor of result points",
+        "gpu_time": "GPU kernel execution time",
+        "memory_transfer_time": "CPU↔GPU transfer time"
+      },
+      "complexity": {
+        "time": "O(m) with O(n) parallelism on GPU",
+        "space": "O(n·m) GPU memory"
+      },
+      "implementation_notes": [
+        "Use PyTorch/JAX/CuPy for GPU operations",
+        "Custom CUDA kernels for optimal performance",
+        "Minimize CPU↔GPU memory transfers",
+        "Coalesced memory access patterns",
+        "Shared memory for intermediate results",
+        "Support mixed precision (FP16/FP32/FP64)"
+      ],
+      "test_cases": [
+        {
+          "name": "GPU vs CPU speedup (10k points)",
+          "batch_size": 10000,
+          "dimension": 10,
+          "verify": "GPU speedup > 10x"
+        },
+        {
+          "name": "GPU vs CPU speedup (1M points)",
+          "batch_size": 1000000,
+          "dimension": 10,
+          "verify": "GPU speedup > 50x"
+        },
+        {
+          "name": "Float32 vs Float64 precision",
+          "verify": "Float32 error < 1e-6, Float64 error < 1e-14"
+        },
+        {
+          "name": "Memory transfer overhead",
+          "verify": "Transfer time < 10% of total time for large batches"
+        },
+        {
+          "name": "GPU memory efficiency",
+          "batch_size": 1000000,
+          "verify": "Fit in 8GB GPU memory"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "Batch size exceeds GPU memory",
+          "expected_behavior": "Automatic chunking"
+        },
+        {
+          "name": "No GPU available",
+          "expected_behavior": "Fallback to CPU"
+        },
+        {
+          "name": "Multiple GPUs",
+          "expected_behavior": "Data parallelism across GPUs"
+        }
+      ],
+      "performance_benchmarks": {
+        "target_throughput_gpu": "> 10M points/second on RTX 3090",
+        "memory_bandwidth_utilization": "> 70%"
+      }
+    },
+    {
+      "id": "batch_exp_map_distributed",
+      "name": "Distributed Batch Exponential Map",
+      "category": "batch_processing",
+      "description": "Compute exponential maps across multiple machines using distributed computing (Ray, Dask, MPI)",
+      "mathematical_formula": "Partition batch across N nodes, aggregate results",
+      "input": {
+        "base_points": "Distributed array of base points",
+        "tangent_vectors": "Distributed array of tangent vectors",
+        "manifold_type": "Manifold type",
+        "num_nodes": "Number of compute nodes",
+        "framework": "Distributed framework ('ray', 'dask', 'mpi')"
+      },
+      "output": {
+        "result_points": "Distributed array of result points",
+        "node_stats": "Statistics per node",
+        "network_overhead": "Communication time"
+      },
+      "complexity": {
+        "time": "O(n·m / N) where N=num_nodes",
+        "space": "O(n·m / N) per node"
+      },
+      "implementation_notes": [
+        "Use Ray for Python-native distributed computing",
+        "Dask for distributed arrays",
+        "MPI for HPC environments",
+        "Minimize network communication",
+        "Fault tolerance and task retry",
+        "Load balancing across heterogeneous nodes"
+      ],
+      "test_cases": [
+        {
+          "name": "2 nodes vs 1 node",
+          "batch_size": 100000,
+          "num_nodes": [1, 2],
+          "verify": "Speedup ≈ 1.9x"
+        },
+        {
+          "name": "4 nodes vs 1 node",
+          "batch_size": 1000000,
+          "num_nodes": [1, 4],
+          "verify": "Speedup ≈ 3.7x"
+        },
+        {
+          "name": "Network overhead",
+          "verify": "Communication time < 5% of total time"
+        },
+        {
+          "name": "Fault tolerance",
+          "simulate_node_failure": true,
+          "verify": "Computation completes successfully"
+        },
+        {
+          "name": "Consistency",
+          "verify": "Results identical to single-node processing"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "num_nodes = 1",
+          "expected_behavior": "Single-node processing"
+        },
+        {
+          "name": "num_nodes > batch_size",
+          "expected_behavior": "Some nodes idle"
+        },
+        {
+          "name": "Heterogeneous nodes",
+          "expected_behavior": "Dynamic load balancing"
+        }
+      ],
+      "performance_benchmarks": {
+        "distributed_efficiency_target": "> 0.90 for 4 nodes",
+        "network_overhead_target": "< 5%"
+      }
+    },
+    {
+      "id": "batch_exp_map_memory_efficient",
+      "name": "Memory-Efficient Batch Exponential Map",
+      "category": "batch_processing",
+      "description": "Compute exponential maps with minimal memory footprint using streaming, chunking, and in-place operations",
+      "mathematical_formula": "Process batch in chunks, reuse memory buffers",
+      "input": {
+        "base_points": "Iterator or generator of base points",
+        "tangent_vectors": "Iterator or generator of tangent vectors",
+        "manifold_type": "Manifold type",
+        "chunk_size": "Number of points to process at once",
+        "in_place": "Boolean for in-place operations"
+      },
+      "output": {
+        "result_points": "Iterator of result points (streaming)",
+        "peak_memory_usage": "Maximum memory used",
+        "memory_efficiency": "Memory per point"
+      },
+      "complexity": {
+        "time": "O(n·m)",
+        "space": "O(chunk_size·m) instead of O(n·m)"
+      },
+      "implementation_notes": [
+        "Use generators/iterators for streaming",
+        "Preallocate fixed-size buffers",
+        "In-place operations where possible",
+        "Memory mapping for large datasets",
+        "Avoid intermediate copies",
+        "Garbage collection optimization"
+      ],
+      "test_cases": [
+        {
+          "name": "Streaming 1M points",
+          "batch_size": 1000000,
+          "chunk_size": 1000,
+          "verify": "Peak memory < 100MB"
+        },
+        {
+          "name": "Memory vs chunk size",
+          "chunk_sizes": [100, 1000, 10000],
+          "verify": "Memory scales linearly with chunk_size"
+        },
+        {
+          "name": "In-place vs copy",
+          "verify": "In-place uses 50% less memory"
+        },
+        {
+          "name": "Consistency",
+          "verify": "Results identical to full-batch processing"
+        },
+        {
+          "name": "Large dataset (10M points)",
+          "batch_size": 10000000,
+          "chunk_size": 10000,
+          "verify": "Completes without OOM error"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "chunk_size = 1",
+          "expected_behavior": "Point-by-point processing"
+        },
+        {
+          "name": "chunk_size = batch_size",
+          "expected_behavior": "Full-batch processing"
+        },
+        {
+          "name": "Infinite stream",
+          "expected_behavior": "Process indefinitely with constant memory"
+        }
+      ],
+      "performance_benchmarks": {
+        "memory_per_point_target": "< 100 bytes",
+        "throughput_target": "> 50k points/second"
+      }
+    },
+    {
+      "id": "batch_exp_map_adaptive",
+      "name": "Adaptive Batch Exponential Map",
+      "category": "batch_processing",
+      "description": "Automatically select optimal batch processing strategy based on batch size, hardware, and data characteristics",
+      "mathematical_formula": "Decision tree: batch_size, GPU availability, memory → strategy",
+      "input": {
+        "base_points": "Array of base points",
+        "tangent_vectors": "Array of tangent vectors",
+        "manifold_type": "Manifold type",
+        "auto_optimize": "Boolean for automatic optimization",
+        "constraints": "Resource constraints (memory_limit, time_limit)"
+      },
+      "output": {
+        "result_points": "Array of result points",
+        "strategy_used": "Selected strategy ('vectorized', 'parallel', 'gpu', 'distributed')",
+        "optimization_stats": "Performance metrics"
+      },
+      "complexity": {
+        "time": "Optimal for given constraints",
+        "space": "Optimal for given constraints"
+      },
+      "implementation_notes": [
+        "Detect hardware: CPU cores, GPU availability, memory",
+        "Profile small sample to estimate performance",
+        "Decision rules:",
+        "  - batch_size < 100: sequential",
+        "  - 100 ≤ batch_size < 10k: vectorized",
+        "  - 10k ≤ batch_size < 100k: parallel CPU or GPU",
+        "  - batch_size ≥ 100k: GPU or distributed",
+        "Fallback strategies if primary fails",
+        "Cache optimization decisions"
+      ],
+      "test_cases": [
+        {
+          "name": "Small batch auto-select",
+          "batch_size": 50,
+          "expected_strategy": "sequential or vectorized"
+        },
+        {
+          "name": "Medium batch auto-select",
+          "batch_size": 5000,
+          "expected_strategy": "vectorized or parallel"
+        },
+        {
+          "name": "Large batch auto-select (GPU available)",
+          "batch_size": 100000,
+          "gpu_available": true,
+          "expected_strategy": "gpu"
+        },
+        {
+          "name": "Large batch auto-select (no GPU)",
+          "batch_size": 100000,
+          "gpu_available": false,
+          "expected_strategy": "parallel"
+        },
+        {
+          "name": "Memory constraint",
+          "batch_size": 1000000,
+          "memory_limit": "1GB",
+          "expected_strategy": "memory_efficient"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "No GPU, limited CPU",
+          "expected_behavior": "Fallback to memory-efficient"
+        },
+        {
+          "name": "Extremely large batch",
+          "batch_size": 100000000,
+          "expected_behavior": "Distributed or chunked processing"
+        },
+        {
+          "name": "Heterogeneous tangent vectors",
+          "tangent_norms_range": [1e-10, 100],
+          "expected_behavior": "Adaptive precision per point"
+        }
+      ],
+      "performance_benchmarks": {
+        "overhead_target": "< 5% vs optimal manual selection",
+        "decision_time_target": "< 100ms"
+      }
+    },
+    {
+      "id": "batch_exp_map_mixed_manifolds",
+      "name": "Mixed-Manifold Batch Exponential Map",
+      "category": "batch_processing",
+      "description": "Batch exponential map where each point may be on a different manifold type (hyperbolic, spherical, euclidean)",
+      "mathematical_formula": "batch_exp(X, V, types) = [exp_xᵢ(vᵢ) using types[i]]",
+      "input": {
+        "base_points": "Array of base points",
+        "tangent_vectors": "Array of tangent vectors",
+        "manifold_types": "Array of manifold types per point",
+        "models": "Array of model types per point (optional)"
+      },
+      "output": {
+        "result_points": "Array of result points",
+        "type_statistics": "Count per manifold type processed"
+      },
+      "complexity": {
+        "time": "O(n·m)",
+        "space": "O(n·m)"
+      },
+      "implementation_notes": [
+        "Group points by manifold type for efficiency",
+        "Process each group with specialized kernel",
+        "Maintain original ordering in output",
+        "Support mixed precision per manifold type",
+        "Optimize for common case (all same type)"
+      ],
+      "test_cases": [
+        {
+          "name": "All hyperbolic",
+          "manifold_types": "['hyperbolic'] * 1000",
+          "verify": "Equivalent to single-type batch"
+        },
+        {
+          "name": "Mixed H/S/E (equal distribution)",
+          "manifold_types": "['hyperbolic', 'spherical', 'euclidean'] * 333",
+          "verify": "Correct exponential map per type"
+        },
+        {
+          "name": "Rare type optimization",
+          "manifold_types": "['hyperbolic'] * 999 + ['spherical']",
+          "verify": "Efficient handling of rare types"
+        },
+        {
+          "name": "Ordering preservation",
+          "verify": "result[i] corresponds to input[i]"
+        },
+        {
+          "name": "Type statistics",
+          "verify": "Counts match input distribution"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "Single type in batch",
+          "expected_behavior": "Optimize to single-type processing"
+        },
+        {
+          "name": "Each point different type",
+          "expected_behavior": "Grouping overhead minimal"
+        },
+        {
+          "name": "Unknown manifold type",
+          "expected_behavior": "Error with clear message"
+        }
+      ],
+      "performance_benchmarks": {
+        "overhead_vs_single_type": "< 10%",
+        "grouping_time": "< 1% of total time"
+      }
+    }
+  ],
+  "integration_notes": {
+    "hvs_integration": "Batch processing enables efficient embedding of large datasets",
+    "agua_integration": "GPU acceleration for real-time geometric computations",
+    "dual_model_system": "Batch conversion between Lorentz and Poincaré models",
+    "performance": "10-100x speedup for large batches vs sequential processing"
+  },
+  "performance_summary": {
+    "vectorized": "10-50x speedup vs sequential",
+    "parallel_cpu": "2-4x speedup (4 cores)",
+    "gpu": "50-200x speedup vs CPU",
+    "distributed": "Near-linear scaling with nodes",
+    "memory_efficient": "Constant memory regardless of batch size"
+  },
+  "references": [
+    "Harris, C. R., et al. (2020). Array programming with NumPy. Nature.",
+    "Paszke, A., et al. (2019). PyTorch: An Imperative Style, High-Performance Deep Learning Library. NeurIPS.",
+    "Moritz, P., et al. (2018). Ray: A Distributed Framework for Emerging AI Applications. OSDI.",
+    "Rocklin, M. (2015). Dask: Parallel Computation with Blocked algorithms and Task Scheduling. SciPy."
+  ]
+}

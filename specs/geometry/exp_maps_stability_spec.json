@@ -1,0 +1,494 @@
+{
+  "specification": {
+    "name": "Numerical Stability and Precision for Exponential Maps",
+    "version": "1.0.0",
+    "description": "Numerically stable exponential map operations with adaptive precision, error estimation, condition number analysis, and iterative refinement for extreme curvatures and edge cases.",
+    "total_operations": 6,
+    "format": "STUNIR",
+    "tier_availability": "Core (Free)",
+    "complexity_target": "O(n) to O(n·k) where k is refinement iterations",
+    "integration": ["HVS", "AGUA", "STUNIR", "Dual-Model System"],
+    "phase": "6A",
+    "category": "Enhanced Exponential Maps - Numerical Stability"
+  },
+  "mathematical_foundations": {
+    "numerical_stability": {
+      "description": "Algorithms that minimize error propagation and maintain accuracy",
+      "challenges": ["Catastrophic cancellation", "Overflow/underflow", "Loss of significance"],
+      "solutions": ["Taylor expansions", "Compensated summation", "Arbitrary precision"]
+    },
+    "error_analysis": {
+      "description": "Quantify numerical errors in exponential map computation",
+      "forward_error": "||exp_computed(v) - exp_exact(v)||",
+      "backward_error": "||v_computed - v_exact|| such that exp_exact(v_computed) = exp_computed(v)",
+      "condition_number": "κ = ||J|| · ||J^{-1}|| measures sensitivity to perturbations"
+    },
+    "adaptive_precision": {
+      "description": "Dynamically adjust precision based on problem characteristics",
+      "strategies": ["Float32 → Float64 → arbitrary precision", "Taylor series for small ||v||", "Logarithmic scaling for large ||v||"]
+    }
+  },
+  "operations": [
+    {
+      "id": "exp_map_adaptive_precision",
+      "name": "Adaptive Precision Exponential Map",
+      "category": "precision_control",
+      "description": "Exponential map with automatic precision adjustment based on tangent vector norm, curvature, and error estimates",
+      "mathematical_formula": "exp_x(v) with precision ∈ {float32, float64, float128, arbitrary}",
+      "input": {
+        "base_point": "Point on manifold",
+        "tangent_vector": "Tangent vector",
+        "manifold_type": "Manifold type",
+        "target_error": "Target relative error (default: 1e-12)",
+        "max_precision": "Maximum precision level ('float64', 'float128', 'mpfr')"
+      },
+      "output": {
+        "result_point": "Point on manifold",
+        "precision_used": "Precision level used",
+        "estimated_error": "Estimated relative error",
+        "computation_time": "Time taken"
+      },
+      "complexity": {
+        "time": "O(n) to O(n·log(1/ε)) for arbitrary precision",
+        "space": "O(n)"
+      },
+      "implementation_notes": [
+        "Start with float32, upgrade if error estimate > target",
+        "Use mpmath for arbitrary precision",
+        "Error estimation via backward error analysis",
+        "Taylor series for ||v|| < 1e-6",
+        "Logarithmic scaling for ||v|| > 100",
+        "Cache precision decisions for similar inputs"
+      ],
+      "test_cases": [
+        {
+          "name": "Small tangent vector (float32 sufficient)",
+          "tangent_vector_norm": 1e-3,
+          "target_error": 1e-6,
+          "expected_precision": "float32"
+        },
+        {
+          "name": "Medium tangent vector (float64 needed)",
+          "tangent_vector_norm": 10.0,
+          "target_error": 1e-12,
+          "expected_precision": "float64"
+        },
+        {
+          "name": "Large tangent vector (float128 needed)",
+          "tangent_vector_norm": 100.0,
+          "target_error": 1e-15,
+          "expected_precision": "float128"
+        },
+        {
+          "name": "Extreme precision requirement",
+          "target_error": 1e-30,
+          "expected_precision": "mpfr",
+          "verify": "Error < target_error"
+        },
+        {
+          "name": "Precision upgrade path",
+          "verify": "float32 → float64 → float128 as needed"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "Tangent vector norm near machine epsilon",
+          "tangent_vector_norm": 1e-15,
+          "expected_behavior": "Use Taylor expansion, float64"
+        },
+        {
+          "name": "Tangent vector norm = 1000",
+          "expected_behavior": "Automatic precision upgrade"
+        },
+        {
+          "name": "Impossible precision target",
+          "target_error": 1e-100,
+          "max_precision": "float64",
+          "expected_behavior": "Warning, use max available precision"
+        }
+      ]
+    },
+    {
+      "id": "exp_map_stable_extreme_curvature",
+      "name": "Stable Exponential Map for Extreme Curvatures",
+      "category": "stability",
+      "description": "Numerically stable exponential map for manifolds with extreme positive or negative curvature",
+      "mathematical_formula": "exp_x(v) with curvature κ ∈ [-∞, +∞], using rescaling and compensated arithmetic",
+      "input": {
+        "base_point": "Point on manifold",
+        "tangent_vector": "Tangent vector",
+        "curvature": "Curvature κ (can be extreme)",
+        "manifold_type": "Manifold type",
+        "stability_mode": "Stability mode ('standard', 'compensated', 'rescaled')"
+      },
+      "output": {
+        "result_point": "Point on manifold",
+        "stability_metrics": "Condition number, error bounds",
+        "rescaling_factor": "Rescaling factor used (if any)"
+      },
+      "complexity": {
+        "time": "O(n)",
+        "space": "O(n)"
+      },
+      "implementation_notes": [
+        "For |κ| → ∞: rescale to unit curvature, compute, rescale back",
+        "For κ → 0: use Euclidean approximation with correction terms",
+        "Kahan summation for compensated arithmetic",
+        "Avoid sinh/cosh for large arguments: use exp directly",
+        "Monitor condition number of intermediate computations",
+        "Special handling for κ ∈ [-1e-10, 1e-10] (nearly flat)"
+      ],
+      "test_cases": [
+        {
+          "name": "Very negative curvature (κ = -1000)",
+          "curvature": -1000,
+          "verify": "Stable computation, no overflow"
+        },
+        {
+          "name": "Very positive curvature (κ = +1000)",
+          "curvature": 1000,
+          "verify": "Stable computation, no overflow"
+        },
+        {
+          "name": "Near-zero curvature (κ = 1e-10)",
+          "curvature": 1e-10,
+          "verify": "Smooth transition to Euclidean"
+        },
+        {
+          "name": "Curvature sign change",
+          "curvatures": [-100, -1, 0, 1, 100],
+          "verify": "Consistent behavior across curvatures"
+        },
+        {
+          "name": "Rescaling correctness",
+          "verify": "exp_κ(v) = rescale(exp_1(rescale(v)))"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "Curvature = 0 exactly",
+          "expected_behavior": "Euclidean exponential map"
+        },
+        {
+          "name": "Curvature = ±∞",
+          "expected_behavior": "Limiting behavior (point or sphere)"
+        },
+        {
+          "name": "Curvature changes during computation",
+          "expected_behavior": "Adaptive handling"
+        }
+      ]
+    },
+    {
+      "id": "exp_map_error_estimation",
+      "name": "Exponential Map Error Estimation",
+      "category": "error_analysis",
+      "description": "Estimate forward and backward errors in exponential map computation with rigorous bounds",
+      "mathematical_formula": "ε_forward = ||exp_computed - exp_exact||, ε_backward = min ||v' - v|| s.t. exp_exact(v') = exp_computed(v)",
+      "input": {
+        "base_point": "Point on manifold",
+        "tangent_vector": "Tangent vector",
+        "manifold_type": "Manifold type",
+        "error_type": "Error type ('forward', 'backward', 'both')",
+        "method": "Estimation method ('analytical', 'interval_arithmetic', 'monte_carlo')"
+      },
+      "output": {
+        "forward_error_bound": "Upper bound on forward error",
+        "backward_error_bound": "Upper bound on backward error",
+        "condition_number": "Condition number of exponential map",
+        "confidence_level": "Confidence level for bounds (if Monte Carlo)"
+      },
+      "complexity": {
+        "time": "O(n) analytical, O(n·k) Monte Carlo",
+        "space": "O(n)"
+      },
+      "implementation_notes": [
+        "Analytical bounds using Taylor series remainder",
+        "Interval arithmetic for rigorous bounds (mpmath.iv)",
+        "Monte Carlo: perturb inputs, measure output variation",
+        "Condition number: κ = ||J|| · ||J^{-1}||",
+        "Account for floating-point rounding errors",
+        "Provide both a priori and a posteriori error estimates"
+      ],
+      "test_cases": [
+        {
+          "name": "Small tangent vector error",
+          "tangent_vector_norm": 1e-6,
+          "verify": "Forward error < 1e-14 (float64)"
+        },
+        {
+          "name": "Medium tangent vector error",
+          "tangent_vector_norm": 1.0,
+          "verify": "Forward error < 1e-12"
+        },
+        {
+          "name": "Large tangent vector error",
+          "tangent_vector_norm": 100.0,
+          "verify": "Error bounds are tight"
+        },
+        {
+          "name": "Backward error analysis",
+          "verify": "Backward error < forward error / condition_number"
+        },
+        {
+          "name": "Interval arithmetic bounds",
+          "method": "interval_arithmetic",
+          "verify": "Rigorous bounds contain true error"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "Ill-conditioned exponential map",
+          "condition_number": 1e10,
+          "expected_behavior": "Large error bounds reported"
+        },
+        {
+          "name": "Well-conditioned exponential map",
+          "condition_number": 1.5,
+          "expected_behavior": "Tight error bounds"
+        },
+        {
+          "name": "Zero tangent vector",
+          "expected_behavior": "Zero error"
+        }
+      ]
+    },
+    {
+      "id": "exp_map_condition_number",
+      "name": "Exponential Map Condition Number",
+      "category": "sensitivity_analysis",
+      "description": "Compute condition number of exponential map to assess sensitivity to input perturbations",
+      "mathematical_formula": "κ(exp_x) = ||J|| · ||J^{-1}|| where J is Jacobian of exp_x",
+      "input": {
+        "base_point": "Point on manifold",
+        "tangent_vector": "Tangent vector",
+        "manifold_type": "Manifold type",
+        "norm_type": "Norm type ('2', 'fro', 'inf')"
+      },
+      "output": {
+        "condition_number": "Condition number κ",
+        "jacobian_norm": "||J||",
+        "inverse_jacobian_norm": "||J^{-1}||",
+        "sensitivity_classification": "Classification ('well-conditioned', 'ill-conditioned')"
+      },
+      "complexity": {
+        "time": "O(n³) for matrix inversion",
+        "space": "O(n²)"
+      },
+      "implementation_notes": [
+        "Compute Jacobian J = d(exp_x)_v",
+        "Compute J^{-1} via LU decomposition or SVD",
+        "κ = ||J|| · ||J^{-1}|| in specified norm",
+        "Use SVD for numerical stability: κ = σ_max / σ_min",
+        "Threshold: κ < 100 (well-conditioned), κ > 1e6 (ill-conditioned)",
+        "Warn user if κ is large"
+      ],
+      "test_cases": [
+        {
+          "name": "Euclidean exponential map",
+          "manifold_type": "euclidean",
+          "expected_condition_number": 1.0,
+          "tolerance": 1e-10
+        },
+        {
+          "name": "Small tangent vector (hyperbolic)",
+          "tangent_vector_norm": 1e-6,
+          "expected_condition_number": "≈ 1.0"
+        },
+        {
+          "name": "Large tangent vector (hyperbolic)",
+          "tangent_vector_norm": 100.0,
+          "verify": "Condition number increases with ||v||"
+        },
+        {
+          "name": "Spherical near antipodal",
+          "tangent_vector_norm": "π - 1e-6",
+          "verify": "Condition number → ∞"
+        },
+        {
+          "name": "Condition number vs norm",
+          "tangent_vector_norms": [0.1, 1, 10, 100],
+          "verify": "κ increases with ||v||"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "Zero tangent vector",
+          "expected_condition_number": 1.0
+        },
+        {
+          "name": "Singular Jacobian",
+          "expected_behavior": "κ = ∞, report singularity"
+        },
+        {
+          "name": "Nearly singular Jacobian",
+          "expected_behavior": "Large κ, warning issued"
+        }
+      ]
+    },
+    {
+      "id": "exp_map_iterative_refinement",
+      "name": "Iterative Refinement for Exponential Map",
+      "category": "refinement",
+      "description": "Improve accuracy of exponential map computation using iterative refinement (Newton's method on manifold)",
+      "mathematical_formula": "v_{k+1} = v_k - J^{-1}(exp_x(v_k) - y) where y is target point",
+      "input": {
+        "base_point": "Point on manifold",
+        "initial_tangent_vector": "Initial guess for tangent vector",
+        "target_point": "Target point (for inverse exponential map)",
+        "manifold_type": "Manifold type",
+        "max_iterations": "Maximum refinement iterations (default: 10)",
+        "tolerance": "Convergence tolerance (default: 1e-12)"
+      },
+      "output": {
+        "refined_tangent_vector": "Refined tangent vector",
+        "refined_point": "Refined point exp_x(v_refined)",
+        "num_iterations": "Number of iterations used",
+        "final_residual": "||exp_x(v_refined) - target||",
+        "convergence_rate": "Convergence rate (quadratic expected)"
+      },
+      "complexity": {
+        "time": "O(n³ · k) where k is num_iterations",
+        "space": "O(n²)"
+      },
+      "implementation_notes": [
+        "Newton's method: v_{k+1} = v_k - J^{-1} · residual",
+        "Compute Jacobian at each iteration",
+        "Use line search for robustness",
+        "Monitor convergence: ||residual_k|| / ||residual_{k-1}||",
+        "Quadratic convergence near solution",
+        "Applications: high-precision inverse exponential map"
+      ],
+      "test_cases": [
+        {
+          "name": "Refinement from good initial guess",
+          "initial_error": 1e-6,
+          "tolerance": 1e-12,
+          "verify": "Converges in < 5 iterations"
+        },
+        {
+          "name": "Refinement from poor initial guess",
+          "initial_error": 0.1,
+          "tolerance": 1e-12,
+          "verify": "Converges in < 10 iterations"
+        },
+        {
+          "name": "Quadratic convergence",
+          "verify": "||residual_{k+1}|| ≈ C · ||residual_k||²"
+        },
+        {
+          "name": "High-precision refinement",
+          "tolerance": 1e-20,
+          "verify": "Achieves target tolerance"
+        },
+        {
+          "name": "Refinement on different manifolds",
+          "manifold_types": ["hyperbolic", "spherical", "euclidean"],
+          "verify": "Consistent convergence"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "Initial guess = solution",
+          "expected_behavior": "Converges in 1 iteration"
+        },
+        {
+          "name": "No convergence in max_iterations",
+          "expected_behavior": "Return best result, issue warning"
+        },
+        {
+          "name": "Singular Jacobian during iteration",
+          "expected_behavior": "Switch to gradient descent step"
+        }
+      ]
+    },
+    {
+      "id": "exp_map_compensated_arithmetic",
+      "name": "Compensated Arithmetic Exponential Map",
+      "category": "stability",
+      "description": "Exponential map using compensated summation (Kahan, Neumaier) to minimize rounding errors",
+      "mathematical_formula": "exp_x(v) with Kahan summation for all accumulations",
+      "input": {
+        "base_point": "Point on manifold",
+        "tangent_vector": "Tangent vector",
+        "manifold_type": "Manifold type",
+        "compensation_method": "Method ('kahan', 'neumaier', 'priest')"
+      },
+      "output": {
+        "result_point": "Point on manifold",
+        "rounding_error_estimate": "Estimated rounding error",
+        "compensation_benefit": "Error reduction vs standard arithmetic"
+      },
+      "complexity": {
+        "time": "O(n) with small constant overhead",
+        "space": "O(n)"
+      },
+      "implementation_notes": [
+        "Kahan summation: track and compensate for rounding errors",
+        "Neumaier variant: improved for ill-conditioned sums",
+        "Apply to all vector additions in exp computation",
+        "Particularly important for high-dimensional manifolds",
+        "Overhead: ~2x operations, but much better accuracy",
+        "Use for critical applications requiring high precision"
+      ],
+      "test_cases": [
+        {
+          "name": "High-dimensional summation (n=1000)",
+          "dimension": 1000,
+          "verify": "Compensated error < standard error / 100"
+        },
+        {
+          "name": "Ill-conditioned summation",
+          "values": "Mix of large and small numbers",
+          "verify": "Compensated preserves small values"
+        },
+        {
+          "name": "Kahan vs Neumaier",
+          "verify": "Both reduce error significantly"
+        },
+        {
+          "name": "Overhead measurement",
+          "verify": "Computation time < 3x standard"
+        },
+        {
+          "name": "Error reduction factor",
+          "verify": "Error reduced by factor > 10"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "All values same magnitude",
+          "expected_behavior": "Minimal benefit from compensation"
+        },
+        {
+          "name": "Extreme magnitude differences",
+          "value_range": [1e-15, 1e15],
+          "expected_behavior": "Significant benefit from compensation"
+        },
+        {
+          "name": "Single value",
+          "expected_behavior": "No compensation needed"
+        }
+      ]
+    }
+  ],
+  "integration_notes": {
+    "hvs_integration": "Stable exponential maps ensure reliable embeddings in extreme cases",
+    "agua_integration": "Error estimation guides adaptive precision in geometric computations",
+    "dual_model_system": "Condition number analysis helps select optimal model (Lorentz vs Poincaré)",
+    "performance": "Adaptive precision balances accuracy and speed"
+  },
+  "stability_guidelines": {
+    "small_tangent_vectors": "Use Taylor expansion for ||v|| < 1e-6",
+    "large_tangent_vectors": "Use logarithmic scaling for ||v|| > 100",
+    "extreme_curvatures": "Rescale to unit curvature, compute, rescale back",
+    "high_dimensions": "Use compensated arithmetic for n > 100",
+    "critical_applications": "Enable iterative refinement and error estimation"
+  },
+  "references": [
+    "Higham, N. J. (2002). Accuracy and Stability of Numerical Algorithms. SIAM.",
+    "Goldberg, D. (1991). What Every Computer Scientist Should Know About Floating-Point Arithmetic. ACM Computing Surveys.",
+    "Kahan, W. (1965). Pracniques: Further Remarks on Reducing Truncation Errors. Communications of the ACM.",
+    "Neumaier, A. (1974). Rundungsfehleranalyse einiger Verfahren zur Summation endlicher Summen. ZAMM."
+  ]
+}
