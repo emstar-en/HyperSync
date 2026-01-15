@@ -1,0 +1,624 @@
+{
+  "specification": {
+    "name": "Multi-Dimensional Exponential Maps",
+    "version": "1.0.0",
+    "description": "Exponential map operations for 2D, 3D, 4D, and higher-dimensional manifolds across hyperbolic, spherical, and Euclidean geometries with product manifold support.",
+    "total_operations": 8,
+    "format": "STUNIR",
+    "tier_availability": "Core (Free)",
+    "complexity_target": "O(n) where n is dimension",
+    "integration": ["HVS", "AGUA", "STUNIR", "Dual-Model System"],
+    "phase": "6A",
+    "category": "Enhanced Exponential Maps"
+  },
+  "mathematical_foundations": {
+    "exponential_map_general": {
+      "description": "Maps tangent vectors to manifold points via geodesic flow",
+      "formula": "exp_p(v) = γ_v(1) where γ_v is the geodesic with γ_v(0) = p, γ'_v(0) = v",
+      "properties": ["Smooth", "Geodesic flow", "Dimension-independent definition"]
+    },
+    "hyperbolic_exponential": {
+      "formula_lorentz": "exp_x(v) = cosh(||v||_L)x + sinh(||v||_L)(v/||v||_L)",
+      "formula_poincare": "exp_x(v) = (x + v + (||v||²/(1+√(1+||v||²)))·x)/(1 + 2⟨x,v⟩ + ||v||²)",
+      "curvature": "κ = -1"
+    },
+    "spherical_exponential": {
+      "formula": "exp_x(v) = cos(||v||)x + sin(||v||)(v/||v||)",
+      "curvature": "κ = +1",
+      "injectivity_radius": "π"
+    },
+    "euclidean_exponential": {
+      "formula": "exp_x(v) = x + v",
+      "curvature": "κ = 0",
+      "properties": ["Linear", "Global isometry"]
+    }
+  },
+  "operations": [
+    {
+      "id": "exp_map_hyperbolic_2d",
+      "name": "Hyperbolic Exponential Map (2D)",
+      "category": "hyperbolic_multidim",
+      "description": "Exponential map for 2D hyperbolic space (H²) with optimized formulas for planar geometry",
+      "mathematical_formula": "exp_x(v) = cosh(||v||)x + sinh(||v||)(v/||v||) in Lorentz model",
+      "input": {
+        "base_point": "Point in H² (3D Lorentz vector with ⟨x,x⟩_L = -1)",
+        "tangent_vector": "Tangent vector at base_point (⟨x,v⟩_L = 0)",
+        "model": "Model type ('lorentz', 'poincare', 'klein')"
+      },
+      "output": {
+        "result_point": "Point in H²",
+        "geodesic_distance": "Distance traveled along geodesic (||v||)"
+      },
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      },
+      "implementation_notes": [
+        "Use hyperbolic trigonometric functions (cosh, sinh)",
+        "Handle zero tangent vector: exp_x(0) = x",
+        "Normalize tangent vector for numerical stability",
+        "Special case for Poincaré disk: use Möbius addition"
+      ],
+      "test_cases": [
+        {
+          "name": "Origin to point",
+          "base_point": "[1, 0, 0]",
+          "tangent_vector": "[0, 1, 0]",
+          "expected_distance": 1.0,
+          "tolerance": 1e-12
+        },
+        {
+          "name": "Zero tangent vector",
+          "base_point": "[1, 0, 0]",
+          "tangent_vector": "[0, 0, 0]",
+          "expected_result": "[1, 0, 0]",
+          "tolerance": 1e-15
+        },
+        {
+          "name": "Large distance",
+          "base_point": "[1, 0, 0]",
+          "tangent_vector": "[0, 10, 0]",
+          "expected_distance": 10.0,
+          "tolerance": 1e-10
+        },
+        {
+          "name": "Poincaré disk boundary approach",
+          "base_point": "[0, 0]",
+          "tangent_vector": "[0.9, 0]",
+          "model": "poincare",
+          "expected_norm_less_than": 1.0
+        },
+        {
+          "name": "Roundtrip consistency",
+          "base_point": "[1, 0.5, 0.5]",
+          "tangent_vector": "[0.5, 0.3, 0.4]",
+          "verify": "log(exp(v)) ≈ v"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "Tangent vector near zero",
+          "tangent_vector_norm": 1e-15,
+          "expected_behavior": "Return base_point with high precision"
+        },
+        {
+          "name": "Very large tangent vector",
+          "tangent_vector_norm": 100.0,
+          "expected_behavior": "Stable computation, no overflow"
+        },
+        {
+          "name": "Boundary approach in Poincaré",
+          "poincare_norm": 0.9999,
+          "expected_behavior": "Graceful handling, no singularity"
+        }
+      ]
+    },
+    {
+      "id": "exp_map_hyperbolic_3d",
+      "name": "Hyperbolic Exponential Map (3D)",
+      "category": "hyperbolic_multidim",
+      "description": "Exponential map for 3D hyperbolic space (H³) with applications to 3D visualization and spatial reasoning",
+      "mathematical_formula": "exp_x(v) = cosh(||v||)x + sinh(||v||)(v/||v||) in 4D Lorentz embedding",
+      "input": {
+        "base_point": "Point in H³ (4D Lorentz vector)",
+        "tangent_vector": "Tangent vector at base_point (3D in tangent space)",
+        "model": "Model type ('lorentz', 'poincare', 'upper_half_space')"
+      },
+      "output": {
+        "result_point": "Point in H³",
+        "geodesic_distance": "Distance traveled"
+      },
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      },
+      "implementation_notes": [
+        "4D Lorentz embedding: ⟨x,x⟩_L = -x₀² + x₁² + x₂² + x₃² = -1",
+        "Tangent space constraint: ⟨x,v⟩_L = 0",
+        "Upper half-space model: z > 0 coordinate",
+        "Optimize for 3D spatial applications"
+      ],
+      "test_cases": [
+        {
+          "name": "Origin exponential",
+          "base_point": "[1, 0, 0, 0]",
+          "tangent_vector": "[0, 1, 0, 0]",
+          "expected_distance": 1.0
+        },
+        {
+          "name": "3D diagonal direction",
+          "base_point": "[1, 0, 0, 0]",
+          "tangent_vector": "[0, 1, 1, 1]",
+          "expected_distance": "sqrt(3)"
+        },
+        {
+          "name": "Upper half-space model",
+          "base_point": "[0, 0, 1]",
+          "tangent_vector": "[1, 0, 0]",
+          "model": "upper_half_space",
+          "verify": "z-coordinate > 0"
+        },
+        {
+          "name": "Geodesic in 3D",
+          "base_point": "[cosh(1), sinh(1), 0, 0]",
+          "tangent_vector": "[sinh(1), cosh(1), 0, 0]",
+          "expected_distance": 1.0
+        },
+        {
+          "name": "Isometry preservation",
+          "verify": "⟨exp_x(v), exp_x(v)⟩_L = -1"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "Tangent vector in single coordinate",
+          "tangent_vector": "[0, 0, 0, 5]",
+          "expected_behavior": "Geodesic along single axis"
+        },
+        {
+          "name": "Near-boundary in Poincaré ball",
+          "poincare_radius": 0.999,
+          "expected_behavior": "Stable computation"
+        },
+        {
+          "name": "Extreme curvature region",
+          "distance": 50.0,
+          "expected_behavior": "No numerical overflow"
+        }
+      ]
+    },
+    {
+      "id": "exp_map_hyperbolic_4d",
+      "name": "Hyperbolic Exponential Map (4D)",
+      "category": "hyperbolic_multidim",
+      "description": "Exponential map for 4D hyperbolic space (H⁴) for high-dimensional embeddings and spacetime applications",
+      "mathematical_formula": "exp_x(v) = cosh(||v||)x + sinh(||v||)(v/||v||) in 5D Lorentz embedding",
+      "input": {
+        "base_point": "Point in H⁴ (5D Lorentz vector)",
+        "tangent_vector": "Tangent vector at base_point (4D in tangent space)",
+        "model": "Model type ('lorentz', 'poincare')"
+      },
+      "output": {
+        "result_point": "Point in H⁴",
+        "geodesic_distance": "Distance traveled"
+      },
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      },
+      "implementation_notes": [
+        "5D Lorentz embedding: ⟨x,x⟩_L = -x₀² + x₁² + x₂² + x₃² + x₄² = -1",
+        "Efficient vector operations for 5D",
+        "Cache sinh/cosh computations",
+        "Useful for spacetime + extra dimension models"
+      ],
+      "test_cases": [
+        {
+          "name": "4D origin exponential",
+          "base_point": "[1, 0, 0, 0, 0]",
+          "tangent_vector": "[0, 1, 1, 1, 1]",
+          "expected_distance": 2.0
+        },
+        {
+          "name": "Single coordinate direction",
+          "base_point": "[1, 0, 0, 0, 0]",
+          "tangent_vector": "[0, 0, 0, 0, 3]",
+          "expected_distance": 3.0
+        },
+        {
+          "name": "High-dimensional roundtrip",
+          "verify": "||log(exp(v)) - v|| < 1e-12"
+        },
+        {
+          "name": "Lorentz constraint preservation",
+          "verify": "⟨exp_x(v), exp_x(v)⟩_L = -1"
+        },
+        {
+          "name": "Orthogonality preservation",
+          "verify": "⟨exp_x(v), v⟩_L = 0 for small ||v||"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "Zero in all but one dimension",
+          "expected_behavior": "Reduce to 1D geodesic"
+        },
+        {
+          "name": "Uniform tangent vector",
+          "tangent_vector": "[0, 1, 1, 1, 1]",
+          "expected_behavior": "Diagonal geodesic"
+        },
+        {
+          "name": "Large distance in 4D",
+          "distance": 100.0,
+          "expected_behavior": "Numerically stable"
+        }
+      ]
+    },
+    {
+      "id": "exp_map_spherical_2d",
+      "name": "Spherical Exponential Map (2D)",
+      "category": "spherical_multidim",
+      "description": "Exponential map for 2-sphere (S²) embedded in R³ with great circle geodesics",
+      "mathematical_formula": "exp_x(v) = cos(||v||)x + sin(||v||)(v/||v||)",
+      "input": {
+        "base_point": "Point on S² (3D unit vector)",
+        "tangent_vector": "Tangent vector at base_point (⟨x,v⟩ = 0)",
+        "handle_antipodal": "Boolean for antipodal point handling"
+      },
+      "output": {
+        "result_point": "Point on S²",
+        "geodesic_distance": "Arc length traveled"
+      },
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      },
+      "implementation_notes": [
+        "Use spherical trigonometry (cos, sin)",
+        "Handle antipodal points (distance = π)",
+        "Injectivity radius = π",
+        "Great circle computation",
+        "Normalize result to unit sphere"
+      ],
+      "test_cases": [
+        {
+          "name": "North pole to equator",
+          "base_point": "[0, 0, 1]",
+          "tangent_vector": "[π/2, 0, 0]",
+          "expected_result": "[1, 0, 0]",
+          "tolerance": 1e-12
+        },
+        {
+          "name": "Quarter circle",
+          "base_point": "[1, 0, 0]",
+          "tangent_vector": "[0, π/2, 0]",
+          "expected_result": "[0, 1, 0]"
+        },
+        {
+          "name": "Antipodal point",
+          "base_point": "[1, 0, 0]",
+          "tangent_vector": "[0, π, 0]",
+          "expected_result": "[-1, 0, 0]"
+        },
+        {
+          "name": "Small angle approximation",
+          "tangent_vector_norm": 1e-6,
+          "verify": "exp_x(v) ≈ x + v"
+        },
+        {
+          "name": "Unit sphere constraint",
+          "verify": "||exp_x(v)|| = 1"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "Zero tangent vector",
+          "expected_result": "base_point"
+        },
+        {
+          "name": "Tangent vector norm = π",
+          "expected_behavior": "Antipodal point"
+        },
+        {
+          "name": "Tangent vector norm > π",
+          "expected_behavior": "Wrap around sphere"
+        }
+      ]
+    },
+    {
+      "id": "exp_map_spherical_3d",
+      "name": "Spherical Exponential Map (3D)",
+      "category": "spherical_multidim",
+      "description": "Exponential map for 3-sphere (S³) embedded in R⁴ with applications to rotations and quaternions",
+      "mathematical_formula": "exp_x(v) = cos(||v||)x + sin(||v||)(v/||v||) in R⁴",
+      "input": {
+        "base_point": "Point on S³ (4D unit vector)",
+        "tangent_vector": "Tangent vector at base_point (3D in tangent space)",
+        "quaternion_mode": "Boolean for quaternion representation"
+      },
+      "output": {
+        "result_point": "Point on S³",
+        "quaternion": "Quaternion representation (if requested)"
+      },
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      },
+      "implementation_notes": [
+        "4D unit sphere: ||x|| = 1",
+        "Tangent space: ⟨x,v⟩ = 0",
+        "Quaternion connection: S³ ≅ unit quaternions",
+        "Rotation group SO(3) double cover",
+        "Optimize for quaternion operations"
+      ],
+      "test_cases": [
+        {
+          "name": "Identity quaternion exponential",
+          "base_point": "[1, 0, 0, 0]",
+          "tangent_vector": "[0, π/2, 0, 0]",
+          "quaternion_mode": true
+        },
+        {
+          "name": "3D rotation via S³",
+          "verify": "Rotation composition via quaternion multiplication"
+        },
+        {
+          "name": "Unit sphere constraint",
+          "verify": "||exp_x(v)|| = 1"
+        },
+        {
+          "name": "Geodesic distance",
+          "base_point": "[1, 0, 0, 0]",
+          "tangent_vector": "[0, 1, 0, 0]",
+          "expected_distance": 1.0
+        },
+        {
+          "name": "Antipodal point in S³",
+          "tangent_vector_norm": "π",
+          "verify": "exp_x(πv/||v||) = -x"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "Small tangent vector",
+          "tangent_vector_norm": 1e-10,
+          "expected_behavior": "Linear approximation"
+        },
+        {
+          "name": "Large tangent vector",
+          "tangent_vector_norm": 10.0,
+          "expected_behavior": "Multiple wraps around S³"
+        },
+        {
+          "name": "Quaternion normalization",
+          "expected_behavior": "Maintain unit quaternion"
+        }
+      ]
+    },
+    {
+      "id": "exp_map_euclidean_nd",
+      "name": "Euclidean Exponential Map (N-Dimensional)",
+      "category": "euclidean_multidim",
+      "description": "Exponential map for N-dimensional Euclidean space (trivial but essential for mixed-curvature products)",
+      "mathematical_formula": "exp_x(v) = x + v",
+      "input": {
+        "base_point": "Point in R^n",
+        "tangent_vector": "Vector in R^n",
+        "dimension": "Dimension n"
+      },
+      "output": {
+        "result_point": "Point in R^n"
+      },
+      "complexity": {
+        "time": "O(n)",
+        "space": "O(n)"
+      },
+      "implementation_notes": [
+        "Trivial exponential map (vector addition)",
+        "No curvature effects",
+        "Useful for product manifolds",
+        "Efficient vectorized implementation",
+        "No numerical stability issues"
+      ],
+      "test_cases": [
+        {
+          "name": "1D Euclidean",
+          "base_point": "[5.0]",
+          "tangent_vector": "[3.0]",
+          "expected_result": "[8.0]"
+        },
+        {
+          "name": "2D Euclidean",
+          "base_point": "[1.0, 2.0]",
+          "tangent_vector": "[3.0, 4.0]",
+          "expected_result": "[4.0, 6.0]"
+        },
+        {
+          "name": "High-dimensional",
+          "dimension": 1000,
+          "verify": "exp_x(v) = x + v component-wise"
+        },
+        {
+          "name": "Zero tangent vector",
+          "tangent_vector": "[0, 0, 0]",
+          "expected_result": "base_point"
+        },
+        {
+          "name": "Inverse property",
+          "verify": "log_x(exp_x(v)) = v exactly"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "Very large vectors",
+          "tangent_vector_norm": 1e10,
+          "expected_behavior": "Exact addition, no overflow"
+        },
+        {
+          "name": "Very small vectors",
+          "tangent_vector_norm": 1e-15,
+          "expected_behavior": "Exact addition, no underflow"
+        },
+        {
+          "name": "Dimension = 1",
+          "expected_behavior": "Reduce to scalar addition"
+        }
+      ]
+    },
+    {
+      "id": "exp_map_product_manifold",
+      "name": "Product Manifold Exponential Map",
+      "category": "product_manifolds",
+      "description": "Exponential map for product manifolds M₁ × M₂ × ... × Mₖ with mixed curvatures",
+      "mathematical_formula": "exp_(x₁,...,xₖ)((v₁,...,vₖ)) = (exp_x₁(v₁), ..., exp_xₖ(vₖ))",
+      "input": {
+        "base_points": "List of base points [x₁, x₂, ..., xₖ]",
+        "tangent_vectors": "List of tangent vectors [v₁, v₂, ..., vₖ]",
+        "manifold_types": "List of manifold types ['hyperbolic', 'spherical', 'euclidean', ...]",
+        "dimensions": "List of dimensions for each component"
+      },
+      "output": {
+        "result_points": "List of result points on product manifold",
+        "component_distances": "Geodesic distances in each component"
+      },
+      "complexity": {
+        "time": "O(Σ nᵢ) where nᵢ are component dimensions",
+        "space": "O(Σ nᵢ)"
+      },
+      "implementation_notes": [
+        "Apply exponential map independently to each component",
+        "Support mixed curvatures (H × S × E)",
+        "Efficient parallel computation possible",
+        "Preserve product structure",
+        "Handle different models per component"
+      ],
+      "test_cases": [
+        {
+          "name": "H² × S² product",
+          "manifold_types": ["hyperbolic", "spherical"],
+          "dimensions": [2, 2],
+          "verify": "Independent exponential maps"
+        },
+        {
+          "name": "H³ × E² product",
+          "manifold_types": ["hyperbolic", "euclidean"],
+          "dimensions": [3, 2],
+          "verify": "Mixed curvature handling"
+        },
+        {
+          "name": "Triple product H × S × E",
+          "manifold_types": ["hyperbolic", "spherical", "euclidean"],
+          "verify": "Three-component product"
+        },
+        {
+          "name": "Distance decomposition",
+          "verify": "d²(exp(v), x) = Σ d²ᵢ(exp_xᵢ(vᵢ), xᵢ)"
+        },
+        {
+          "name": "Component independence",
+          "verify": "Changing v₁ doesn't affect exp_x₂(v₂)"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "Single component product",
+          "manifold_types": ["hyperbolic"],
+          "expected_behavior": "Reduce to single manifold exp"
+        },
+        {
+          "name": "All Euclidean components",
+          "manifold_types": ["euclidean", "euclidean"],
+          "expected_behavior": "Vector addition in each component"
+        },
+        {
+          "name": "High-dimensional product",
+          "num_components": 10,
+          "expected_behavior": "Efficient parallel computation"
+        }
+      ]
+    },
+    {
+      "id": "exp_map_hyperbolic_nd",
+      "name": "Hyperbolic Exponential Map (N-Dimensional)",
+      "category": "hyperbolic_multidim",
+      "description": "General exponential map for N-dimensional hyperbolic space (Hⁿ) with arbitrary dimension support",
+      "mathematical_formula": "exp_x(v) = cosh(||v||_L)x + sinh(||v||_L)(v/||v||_L) in (n+1)D Lorentz",
+      "input": {
+        "base_point": "Point in Hⁿ ((n+1)D Lorentz vector)",
+        "tangent_vector": "Tangent vector at base_point (nD in tangent space)",
+        "dimension": "Dimension n",
+        "model": "Model type ('lorentz', 'poincare', 'klein')"
+      },
+      "output": {
+        "result_point": "Point in Hⁿ",
+        "geodesic_distance": "Distance traveled"
+      },
+      "complexity": {
+        "time": "O(n)",
+        "space": "O(n)"
+      },
+      "implementation_notes": [
+        "(n+1)D Lorentz embedding: ⟨x,x⟩_L = -x₀² + Σxᵢ² = -1",
+        "Tangent space: ⟨x,v⟩_L = 0",
+        "Vectorized operations for efficiency",
+        "Support arbitrary dimensions (tested up to n=1000)",
+        "Numerical stability for high dimensions"
+      ],
+      "test_cases": [
+        {
+          "name": "10D hyperbolic exponential",
+          "dimension": 10,
+          "verify": "⟨exp_x(v), exp_x(v)⟩_L = -1"
+        },
+        {
+          "name": "100D hyperbolic exponential",
+          "dimension": 100,
+          "verify": "Numerical stability"
+        },
+        {
+          "name": "Dimension scaling",
+          "dimensions": [2, 5, 10, 50, 100],
+          "verify": "Consistent behavior across dimensions"
+        },
+        {
+          "name": "High-dimensional roundtrip",
+          "dimension": 50,
+          "verify": "||log(exp(v)) - v|| < 1e-10"
+        },
+        {
+          "name": "Sparse tangent vector",
+          "dimension": 100,
+          "nonzero_components": 5,
+          "verify": "Efficient computation"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "Dimension = 1",
+          "expected_behavior": "Reduce to 1D hyperbolic geometry"
+        },
+        {
+          "name": "Very high dimension (n=1000)",
+          "expected_behavior": "Stable computation, no overflow"
+        },
+        {
+          "name": "Dense vs sparse tangent vectors",
+          "expected_behavior": "Consistent results"
+        }
+      ]
+    }
+  ],
+  "integration_notes": {
+    "hvs_integration": "Multi-dimensional exponential maps enable hierarchical embeddings with dimension-specific curvature",
+    "agua_integration": "Product manifolds support mixed-curvature representations for complex data",
+    "dual_model_system": "Seamless switching between Lorentz and Poincaré models per dimension",
+    "performance": "Vectorized operations for batch processing across dimensions"
+  },
+  "references": [
+    "Lee, J. M. (2018). Introduction to Riemannian Manifolds. Springer.",
+    "Cannon, J. W., et al. (1997). Hyperbolic Geometry. MSRI Publications.",
+    "Nickel, M., & Kiela, D. (2017). Poincaré Embeddings for Learning Hierarchical Representations. NeurIPS.",
+    "Gu, A., et al. (2018). Learning Mixed-Curvature Representations in Product Spaces. ICLR."
+  ]
+}

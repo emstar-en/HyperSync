@@ -1,0 +1,474 @@
+{
+  "specification": {
+    "name": "Exponential Map Gradients and Jacobians",
+    "version": "1.0.0",
+    "description": "Gradient and Jacobian computation for exponential maps with automatic differentiation support, enabling optimization on manifolds and backpropagation through geometric operations.",
+    "total_operations": 6,
+    "format": "STUNIR",
+    "tier_availability": "Core (Free)",
+    "complexity_target": "O(n²) for Jacobian, O(n) for gradient",
+    "integration": ["HVS", "AGUA", "STUNIR", "Dual-Model System", "PyTorch", "JAX"],
+    "phase": "6A",
+    "category": "Enhanced Exponential Maps - Gradients"
+  },
+  "mathematical_foundations": {
+    "differential_exponential_map": {
+      "description": "Differential of exponential map (pushforward)",
+      "formula": "d(exp_x)_v: T_v(T_xM) → T_{exp_x(v)}M",
+      "properties": ["Linear map", "Relates tangent spaces", "Essential for optimization"]
+    },
+    "jacobian_matrix": {
+      "description": "Matrix representation of differential",
+      "formula": "J_ij = ∂(exp_x(v))_i / ∂v_j",
+      "dimensions": "n×n for n-dimensional manifold"
+    },
+    "gradient_computation": {
+      "description": "Gradient for optimization on manifolds",
+      "formula": "∇_v f(exp_x(v)) via chain rule",
+      "applications": ["Riemannian optimization", "Geodesic regression", "Manifold learning"]
+    }
+  },
+  "operations": [
+    {
+      "id": "exp_map_gradient_hyperbolic",
+      "name": "Hyperbolic Exponential Map Gradient",
+      "category": "gradients",
+      "description": "Compute gradient ∂exp_x(v)/∂v for hyperbolic exponential map, essential for Riemannian optimization",
+      "mathematical_formula": "∂exp_x(v)/∂v = cosh(||v||)I + sinh(||v||)/||v|| · (I - vv^T/||v||²) + (cosh(||v||) - sinh(||v||)/||v||) · vv^T/||v||²",
+      "input": {
+        "base_point": "Point in hyperbolic space",
+        "tangent_vector": "Tangent vector at base_point",
+        "model": "Model type ('lorentz', 'poincare')",
+        "output_format": "Format ('matrix', 'function', 'autograd')"
+      },
+      "output": {
+        "gradient": "Gradient matrix (n×n) or function",
+        "gradient_norm": "Frobenius norm of gradient",
+        "condition_number": "Condition number of gradient matrix"
+      },
+      "complexity": {
+        "time": "O(n²)",
+        "space": "O(n²)"
+      },
+      "implementation_notes": [
+        "Use automatic differentiation when available (PyTorch, JAX)",
+        "Analytical formula for efficiency",
+        "Handle ||v|| → 0 limit: gradient → I (identity)",
+        "Lorentz metric in gradient computation",
+        "Numerical stability for small/large ||v||"
+      ],
+      "test_cases": [
+        {
+          "name": "Zero tangent vector limit",
+          "tangent_vector": "[0, 0, 0]",
+          "expected_gradient": "Identity matrix",
+          "tolerance": 1e-15
+        },
+        {
+          "name": "Small tangent vector",
+          "tangent_vector_norm": 1e-6,
+          "verify": "gradient ≈ I + O(||v||²)"
+        },
+        {
+          "name": "Unit tangent vector",
+          "tangent_vector_norm": 1.0,
+          "verify": "Analytical formula matches autograd"
+        },
+        {
+          "name": "Large tangent vector",
+          "tangent_vector_norm": 10.0,
+          "verify": "Numerical stability, no overflow"
+        },
+        {
+          "name": "Gradient chain rule",
+          "verify": "∇f(exp(v)) = J^T · ∇f(exp(v))"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "Tangent vector norm near zero",
+          "tangent_vector_norm": 1e-15,
+          "expected_behavior": "Return identity matrix"
+        },
+        {
+          "name": "Very large tangent vector",
+          "tangent_vector_norm": 100.0,
+          "expected_behavior": "Stable computation"
+        },
+        {
+          "name": "Ill-conditioned gradient",
+          "expected_behavior": "Report high condition number"
+        }
+      ]
+    },
+    {
+      "id": "exp_map_jacobian_matrix",
+      "name": "Exponential Map Jacobian Matrix",
+      "category": "jacobians",
+      "description": "Compute full Jacobian matrix J_ij = ∂(exp_x(v))_i/∂v_j for any manifold type",
+      "mathematical_formula": "J = d(exp_x)_v, Jacobian matrix of exponential map",
+      "input": {
+        "base_point": "Point on manifold",
+        "tangent_vector": "Tangent vector",
+        "manifold_type": "Manifold type ('hyperbolic', 'spherical', 'euclidean')",
+        "method": "Computation method ('analytical', 'finite_diff', 'autograd')"
+      },
+      "output": {
+        "jacobian": "Jacobian matrix (n×n)",
+        "determinant": "Determinant of Jacobian",
+        "singular_values": "Singular values of Jacobian"
+      },
+      "complexity": {
+        "time": "O(n²) analytical, O(n³) finite difference",
+        "space": "O(n²)"
+      },
+      "implementation_notes": [
+        "Analytical formulas for hyperbolic, spherical, Euclidean",
+        "Finite differences as fallback: J_ij ≈ (exp(v+εe_j) - exp(v))/ε",
+        "Automatic differentiation for complex manifolds",
+        "Sparse Jacobian optimization when applicable",
+        "Condition number monitoring"
+      ],
+      "test_cases": [
+        {
+          "name": "Euclidean Jacobian",
+          "manifold_type": "euclidean",
+          "expected_jacobian": "Identity matrix",
+          "tolerance": 1e-15
+        },
+        {
+          "name": "Hyperbolic Jacobian",
+          "manifold_type": "hyperbolic",
+          "verify": "Analytical = autograd = finite_diff"
+        },
+        {
+          "name": "Spherical Jacobian",
+          "manifold_type": "spherical",
+          "verify": "det(J) > 0 for ||v|| < π"
+        },
+        {
+          "name": "Jacobian determinant",
+          "verify": "det(J) = volume_scaling_factor"
+        },
+        {
+          "name": "Singular value bounds",
+          "verify": "σ_min, σ_max within expected range"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "Zero tangent vector",
+          "expected_jacobian": "Identity matrix"
+        },
+        {
+          "name": "Antipodal point (spherical)",
+          "tangent_vector_norm": "π",
+          "expected_behavior": "Singular Jacobian"
+        },
+        {
+          "name": "High dimension (n=100)",
+          "expected_behavior": "Efficient computation"
+        }
+      ]
+    },
+    {
+      "id": "exp_map_hessian",
+      "name": "Exponential Map Hessian",
+      "category": "second_order",
+      "description": "Compute Hessian (second derivative) of exponential map for second-order optimization methods",
+      "mathematical_formula": "H_ijk = ∂²(exp_x(v))_i / ∂v_j∂v_k",
+      "input": {
+        "base_point": "Point on manifold",
+        "tangent_vector": "Tangent vector",
+        "manifold_type": "Manifold type",
+        "method": "Computation method ('analytical', 'autograd')"
+      },
+      "output": {
+        "hessian": "Hessian tensor (n×n×n)",
+        "hessian_norm": "Frobenius norm of Hessian"
+      },
+      "complexity": {
+        "time": "O(n³)",
+        "space": "O(n³)"
+      },
+      "implementation_notes": [
+        "Use automatic differentiation (torch.autograd.functional.hessian)",
+        "Analytical formulas for simple manifolds",
+        "Sparse representation when possible",
+        "Memory-efficient computation for large n",
+        "Applications: Newton's method on manifolds"
+      ],
+      "test_cases": [
+        {
+          "name": "Euclidean Hessian",
+          "manifold_type": "euclidean",
+          "expected_hessian": "Zero tensor",
+          "tolerance": 1e-15
+        },
+        {
+          "name": "Hyperbolic Hessian",
+          "manifold_type": "hyperbolic",
+          "verify": "Analytical = autograd"
+        },
+        {
+          "name": "Hessian symmetry",
+          "verify": "H_ijk = H_ikj (symmetry in last two indices)"
+        },
+        {
+          "name": "Small tangent vector limit",
+          "tangent_vector_norm": 1e-6,
+          "verify": "Hessian bounded"
+        },
+        {
+          "name": "Newton step computation",
+          "verify": "Use Hessian for second-order optimization"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "Zero tangent vector",
+          "expected_behavior": "Well-defined Hessian"
+        },
+        {
+          "name": "High dimension (n=50)",
+          "expected_behavior": "Memory-efficient computation"
+        },
+        {
+          "name": "Sparse Hessian",
+          "expected_behavior": "Exploit sparsity"
+        }
+      ]
+    },
+    {
+      "id": "exp_map_autograd_integration",
+      "name": "Exponential Map Automatic Differentiation",
+      "category": "autograd",
+      "description": "Integrate exponential map with PyTorch/JAX autograd for seamless backpropagation in neural networks",
+      "mathematical_formula": "Custom autograd function with forward exp_x(v) and backward ∇_v L",
+      "input": {
+        "base_point": "PyTorch/JAX tensor",
+        "tangent_vector": "PyTorch/JAX tensor (requires_grad=True)",
+        "manifold_type": "Manifold type",
+        "backend": "Backend ('torch', 'jax')"
+      },
+      "output": {
+        "result_point": "Tensor with gradient tracking",
+        "grad_fn": "Gradient function for backpropagation"
+      },
+      "complexity": {
+        "time": "O(n) forward, O(n²) backward",
+        "space": "O(n²) for gradient storage"
+      },
+      "implementation_notes": [
+        "PyTorch: Implement torch.autograd.Function",
+        "JAX: Use jax.custom_vjp or jax.custom_jvp",
+        "Forward pass: compute exp_x(v)",
+        "Backward pass: compute vector-Jacobian product",
+        "Support higher-order derivatives",
+        "Efficient memory usage in backward pass"
+      ],
+      "test_cases": [
+        {
+          "name": "PyTorch gradient check",
+          "backend": "torch",
+          "verify": "torch.autograd.gradcheck passes"
+        },
+        {
+          "name": "JAX gradient check",
+          "backend": "jax",
+          "verify": "jax.test_util.check_grads passes"
+        },
+        {
+          "name": "Backpropagation through exp",
+          "verify": "Loss gradient flows correctly"
+        },
+        {
+          "name": "Higher-order derivatives",
+          "verify": "Second derivative via autograd"
+        },
+        {
+          "name": "Batch gradient computation",
+          "batch_size": 100,
+          "verify": "Efficient batched gradients"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "No gradient required",
+          "requires_grad": false,
+          "expected_behavior": "Skip gradient computation"
+        },
+        {
+          "name": "In-place operations",
+          "expected_behavior": "Avoid in-place, maintain gradient"
+        },
+        {
+          "name": "Mixed precision",
+          "dtype": "float16",
+          "expected_behavior": "Stable gradients"
+        }
+      ]
+    },
+    {
+      "id": "exp_map_riemannian_gradient",
+      "name": "Riemannian Gradient of Exponential Map",
+      "category": "riemannian_optimization",
+      "description": "Compute Riemannian gradient for optimization on manifolds using exponential map",
+      "mathematical_formula": "grad_R f = g^{-1} · ∇_E f where g is metric tensor",
+      "input": {
+        "base_point": "Point on manifold",
+        "tangent_vector": "Tangent vector",
+        "loss_function": "Scalar loss function f: M → R",
+        "manifold_type": "Manifold type"
+      },
+      "output": {
+        "riemannian_gradient": "Riemannian gradient in tangent space",
+        "euclidean_gradient": "Euclidean gradient for comparison",
+        "gradient_norm": "Riemannian norm of gradient"
+      },
+      "complexity": {
+        "time": "O(n²)",
+        "space": "O(n²)"
+      },
+      "implementation_notes": [
+        "Compute Euclidean gradient first",
+        "Project to tangent space: grad_R = P_x(grad_E)",
+        "Use metric tensor for Riemannian gradient",
+        "Applications: Riemannian SGD, Adam on manifolds",
+        "Retraction via exponential map"
+      ],
+      "test_cases": [
+        {
+          "name": "Euclidean manifold",
+          "manifold_type": "euclidean",
+          "verify": "Riemannian gradient = Euclidean gradient"
+        },
+        {
+          "name": "Hyperbolic gradient descent",
+          "manifold_type": "hyperbolic",
+          "verify": "Gradient descent converges"
+        },
+        {
+          "name": "Spherical gradient descent",
+          "manifold_type": "spherical",
+          "verify": "Gradient stays in tangent space"
+        },
+        {
+          "name": "Gradient norm consistency",
+          "verify": "||grad_R||_g = ||grad_E||_E after projection"
+        },
+        {
+          "name": "Optimization convergence",
+          "verify": "Riemannian SGD converges faster than Euclidean"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "Zero gradient",
+          "expected_behavior": "Critical point detected"
+        },
+        {
+          "name": "Large gradient",
+          "expected_behavior": "Gradient clipping in tangent space"
+        },
+        {
+          "name": "Boundary of manifold",
+          "expected_behavior": "Projection to tangent space"
+        }
+      ]
+    },
+    {
+      "id": "exp_map_parallel_transport_derivative",
+      "name": "Parallel Transport of Derivative",
+      "category": "advanced_gradients",
+      "description": "Compute derivative of exponential map with parallel transport for vector field differentiation",
+      "mathematical_formula": "∇_γ'(t) V(t) where γ(t) = exp_x(tv), V is vector field",
+      "input": {
+        "base_point": "Point on manifold",
+        "tangent_vector": "Tangent vector (geodesic direction)",
+        "vector_field": "Vector field along geodesic",
+        "manifold_type": "Manifold type",
+        "num_steps": "Discretization steps"
+      },
+      "output": {
+        "covariant_derivative": "Covariant derivative ∇_γ' V",
+        "parallel_transported_vectors": "Vectors along geodesic",
+        "connection_coefficients": "Christoffel symbols used"
+      },
+      "complexity": {
+        "time": "O(n² · num_steps)",
+        "space": "O(n · num_steps)"
+      },
+      "implementation_notes": [
+        "Use Christoffel symbols for connection",
+        "Parallel transport equation: ∇_γ' V = 0 for parallel vector",
+        "Numerical integration along geodesic",
+        "Applications: Geodesic regression, shape analysis",
+        "Schild's ladder for discrete parallel transport"
+      ],
+      "test_cases": [
+        {
+          "name": "Parallel vector field",
+          "vector_field": "Parallel along geodesic",
+          "expected_derivative": "Zero",
+          "tolerance": 1e-10
+        },
+        {
+          "name": "Euclidean parallel transport",
+          "manifold_type": "euclidean",
+          "verify": "Covariant derivative = ordinary derivative"
+        },
+        {
+          "name": "Hyperbolic parallel transport",
+          "manifold_type": "hyperbolic",
+          "verify": "Parallel transport preserves inner product"
+        },
+        {
+          "name": "Spherical parallel transport",
+          "manifold_type": "spherical",
+          "verify": "Vectors stay in tangent space"
+        },
+        {
+          "name": "Convergence with num_steps",
+          "num_steps": [10, 50, 100],
+          "verify": "Error decreases with more steps"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "Zero tangent vector",
+          "expected_behavior": "Trivial parallel transport"
+        },
+        {
+          "name": "Closed geodesic (spherical)",
+          "expected_behavior": "Holonomy computation"
+        },
+        {
+          "name": "Long geodesic",
+          "geodesic_length": 100.0,
+          "expected_behavior": "Stable parallel transport"
+        }
+      ]
+    }
+  ],
+  "integration_notes": {
+    "hvs_integration": "Gradients enable Riemannian optimization for embedding learning",
+    "agua_integration": "Automatic differentiation through geometric layers",
+    "pytorch_integration": "Custom autograd functions for exponential maps",
+    "jax_integration": "JIT-compiled gradients for high performance",
+    "optimization": "Riemannian SGD, Adam, LBFGS on manifolds"
+  },
+  "applications": {
+    "manifold_learning": "Optimize embeddings on hyperbolic/spherical manifolds",
+    "geometric_deep_learning": "Backpropagation through geometric layers",
+    "riemannian_optimization": "First and second-order methods on manifolds",
+    "geodesic_regression": "Fit geodesics to data points",
+    "shape_analysis": "Gradient-based shape matching"
+  },
+  "references": [
+    "Absil, P.-A., et al. (2008). Optimization Algorithms on Matrix Manifolds. Princeton University Press.",
+    "Boumal, N. (2020). An Introduction to Optimization on Smooth Manifolds. Cambridge University Press.",
+    "Bécigneul, G., & Ganea, O.-E. (2019). Riemannian Adaptive Optimization Methods. ICLR.",
+    "Paszke, A., et al. (2017). Automatic differentiation in PyTorch. NIPS Autodiff Workshop."
+  ]
+}

@@ -1,0 +1,514 @@
+{
+  "specification": {
+    "name": "Cross-Curvature Exponential Maps",
+    "version": "1.0.0",
+    "description": "Exponential map operations across different curvatures with conversion between hyperbolic, spherical, and Euclidean geometries, curvature-adaptive algorithms, and mixed-curvature manifold support.",
+    "total_operations": 6,
+    "format": "STUNIR",
+    "tier_availability": "Core (Free)",
+    "complexity_target": "O(n) for conversions, O(n²) for adaptive selection",
+    "integration": ["HVS", "AGUA", "STUNIR", "Dual-Model System"],
+    "phase": "6A",
+    "category": "Enhanced Exponential Maps - Cross-Curvature"
+  },
+  "mathematical_foundations": {
+    "curvature_spectrum": {
+      "description": "Continuous spectrum of constant curvature geometries",
+      "hyperbolic": "κ < 0 (negative curvature)",
+      "euclidean": "κ = 0 (zero curvature)",
+      "spherical": "κ > 0 (positive curvature)",
+      "limiting_behavior": "Hyperbolic → Euclidean → Spherical as κ: -∞ → 0 → +∞"
+    },
+    "exponential_map_unification": {
+      "description": "Unified exponential map formula across curvatures",
+      "formula_hyperbolic": "exp_x(v) = cosh(√|κ|·||v||)x + sinh(√|κ|·||v||)/(√|κ|·||v||)·v",
+      "formula_euclidean": "exp_x(v) = x + v",
+      "formula_spherical": "exp_x(v) = cos(√κ·||v||)x + sin(√κ·||v||)/(√κ·||v||)·v",
+      "unified_formula": "exp_x(v) = f_κ(||v||)x + g_κ(||v||)/||v||·v where f_κ, g_κ depend on sign(κ)"
+    },
+    "curvature_conversion": {
+      "description": "Map points and vectors between different curvature spaces",
+      "challenges": ["Non-isometric", "Distortion", "Boundary handling"],
+      "methods": ["Conformal maps", "Quasi-isometric embeddings", "Optimal transport"]
+    }
+  },
+  "operations": [
+    {
+      "id": "exp_map_cross_curvature_conversion",
+      "name": "Cross-Curvature Exponential Map Conversion",
+      "category": "curvature_conversion",
+      "description": "Convert exponential map computation from one curvature to another (e.g., hyperbolic to spherical)",
+      "mathematical_formula": "exp_x^{κ₂}(v) ≈ convert_{κ₁→κ₂}(exp_x^{κ₁}(convert_{κ₂→κ₁}(v)))",
+      "input": {
+        "base_point": "Point on source manifold",
+        "tangent_vector": "Tangent vector at base_point",
+        "source_curvature": "Source curvature κ₁",
+        "target_curvature": "Target curvature κ₂",
+        "conversion_method": "Method ('conformal', 'quasi_isometric', 'optimal_transport')"
+      },
+      "output": {
+        "result_point": "Point on target manifold",
+        "conversion_distortion": "Distortion measure",
+        "conversion_jacobian": "Jacobian of conversion map"
+      },
+      "complexity": {
+        "time": "O(n)",
+        "space": "O(n)"
+      },
+      "implementation_notes": [
+        "Conformal maps preserve angles but not distances",
+        "Quasi-isometric embeddings minimize distortion",
+        "Handle sign change in curvature carefully",
+        "Special case: κ₁ → 0 or κ₂ → 0 (Euclidean limit)",
+        "Rescaling: exp_x^{cκ}(v) = exp_x^κ(√c·v) for c > 0",
+        "Boundary handling for spherical (injectivity radius = π/√κ)"
+      ],
+      "test_cases": [
+        {
+          "name": "Hyperbolic to Euclidean (κ → 0)",
+          "source_curvature": -1.0,
+          "target_curvature": 0.0,
+          "verify": "Smooth limit as κ → 0"
+        },
+        {
+          "name": "Euclidean to Spherical",
+          "source_curvature": 0.0,
+          "target_curvature": 1.0,
+          "verify": "Conformal map properties"
+        },
+        {
+          "name": "Hyperbolic to Spherical",
+          "source_curvature": -1.0,
+          "target_curvature": 1.0,
+          "verify": "Distortion quantified"
+        },
+        {
+          "name": "Curvature rescaling",
+          "source_curvature": -1.0,
+          "target_curvature": -4.0,
+          "verify": "exp_x^{-4}(v) = exp_x^{-1}(2v)"
+        },
+        {
+          "name": "Roundtrip conversion",
+          "verify": "convert_{κ₁→κ₂}(convert_{κ₂→κ₁}(x)) ≈ x"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "Source curvature = target curvature",
+          "expected_behavior": "Identity conversion"
+        },
+        {
+          "name": "Curvature sign change",
+          "source_curvature": -1.0,
+          "target_curvature": 1.0,
+          "expected_behavior": "Handle topology change"
+        },
+        {
+          "name": "Extreme curvature ratio",
+          "source_curvature": -1000,
+          "target_curvature": -0.001,
+          "expected_behavior": "Stable rescaling"
+        }
+      ]
+    },
+    {
+      "id": "exp_map_curvature_adaptive",
+      "name": "Curvature-Adaptive Exponential Map",
+      "category": "adaptive_algorithms",
+      "description": "Automatically select optimal curvature and exponential map algorithm based on data characteristics",
+      "mathematical_formula": "κ_optimal = argmin_κ distortion(data, exp_x^κ)",
+      "input": {
+        "base_point": "Point on manifold",
+        "tangent_vector": "Tangent vector",
+        "data_points": "Sample data points for curvature estimation (optional)",
+        "curvature_range": "Range of curvatures to consider [κ_min, κ_max]",
+        "optimization_criterion": "Criterion ('distortion', 'embedding_quality', 'likelihood')"
+      },
+      "output": {
+        "result_point": "Point on manifold with optimal curvature",
+        "optimal_curvature": "Selected curvature κ_optimal",
+        "curvature_confidence": "Confidence in curvature selection",
+        "alternative_curvatures": "Top-k alternative curvatures"
+      },
+      "complexity": {
+        "time": "O(n·k) where k is number of curvature candidates",
+        "space": "O(n)"
+      },
+      "implementation_notes": [
+        "Estimate curvature from data using maximum likelihood",
+        "Grid search over curvature range",
+        "Bayesian optimization for efficient search",
+        "Cross-validation for curvature selection",
+        "Default curvatures: [-1, 0, 1] if no data provided",
+        "Cache curvature decisions for similar data"
+      ],
+      "test_cases": [
+        {
+          "name": "Hierarchical data (tree-like)",
+          "data_structure": "tree",
+          "expected_curvature": "< 0 (hyperbolic)"
+        },
+        {
+          "name": "Cyclic data",
+          "data_structure": "cycle",
+          "expected_curvature": "> 0 (spherical)"
+        },
+        {
+          "name": "Grid-like data",
+          "data_structure": "grid",
+          "expected_curvature": "≈ 0 (Euclidean)"
+        },
+        {
+          "name": "Mixed-structure data",
+          "data_structure": "mixed",
+          "verify": "Selects intermediate curvature"
+        },
+        {
+          "name": "Curvature estimation accuracy",
+          "true_curvature": -0.5,
+          "verify": "|κ_optimal - κ_true| < 0.1"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "No data provided",
+          "expected_behavior": "Default to κ = -1 (hyperbolic)"
+        },
+        {
+          "name": "Insufficient data",
+          "data_points": 5,
+          "expected_behavior": "Low confidence, use default"
+        },
+        {
+          "name": "Conflicting data",
+          "expected_behavior": "Report low confidence, multiple candidates"
+        }
+      ]
+    },
+    {
+      "id": "exp_map_mixed_curvature_manifold",
+      "name": "Mixed-Curvature Manifold Exponential Map",
+      "category": "mixed_curvature",
+      "description": "Exponential map on product manifolds with different curvatures per component (H^n × S^m × E^k)",
+      "mathematical_formula": "exp_{(x₁,x₂,x₃)}((v₁,v₂,v₃)) = (exp_x₁^{κ₁}(v₁), exp_x₂^{κ₂}(v₂), exp_x₃^{κ₃}(v₃))",
+      "input": {
+        "base_points": "List of base points [(x₁, κ₁), (x₂, κ₂), ...]",
+        "tangent_vectors": "List of tangent vectors [v₁, v₂, ...]",
+        "curvatures": "List of curvatures [κ₁, κ₂, ...]",
+        "dimensions": "List of dimensions [n₁, n₂, ...]"
+      },
+      "output": {
+        "result_points": "List of result points on product manifold",
+        "component_distances": "Geodesic distances per component",
+        "total_distance": "Product manifold distance"
+      },
+      "complexity": {
+        "time": "O(Σ nᵢ)",
+        "space": "O(Σ nᵢ)"
+      },
+      "implementation_notes": [
+        "Apply exponential map independently to each component",
+        "Support arbitrary number of components",
+        "Each component can have different curvature",
+        "Product metric: d²((x₁,x₂), (y₁,y₂)) = d₁²(x₁,y₁) + d₂²(x₂,y₂)",
+        "Efficient parallel computation across components",
+        "Applications: mixed-curvature embeddings (Gu et al., 2018)"
+      ],
+      "test_cases": [
+        {
+          "name": "H² × S² product",
+          "curvatures": [-1, 1],
+          "dimensions": [2, 2],
+          "verify": "Independent exponential maps"
+        },
+        {
+          "name": "H³ × E² × S¹ product",
+          "curvatures": [-1, 0, 1],
+          "dimensions": [3, 2, 1],
+          "verify": "Three-component product"
+        },
+        {
+          "name": "Distance decomposition",
+          "verify": "d² = d₁² + d₂² + d₃²"
+        },
+        {
+          "name": "Component independence",
+          "verify": "Changing v₁ doesn't affect exp_x₂(v₂)"
+        },
+        {
+          "name": "High-dimensional product",
+          "num_components": 10,
+          "verify": "Efficient computation"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "Single component",
+          "num_components": 1,
+          "expected_behavior": "Reduce to single manifold"
+        },
+        {
+          "name": "All same curvature",
+          "curvatures": [-1, -1, -1],
+          "expected_behavior": "Equivalent to single high-dim manifold"
+        },
+        {
+          "name": "Zero-dimensional component",
+          "dimensions": [3, 0, 2],
+          "expected_behavior": "Skip zero-dim component"
+        }
+      ]
+    },
+    {
+      "id": "exp_map_curvature_interpolation",
+      "name": "Curvature Interpolation Exponential Map",
+      "category": "interpolation",
+      "description": "Smoothly interpolate exponential map between two curvatures κ₁ and κ₂ using parameter t ∈ [0,1]",
+      "mathematical_formula": "exp_x^{κ(t)}(v) where κ(t) = (1-t)κ₁ + t·κ₂",
+      "input": {
+        "base_point": "Point on manifold",
+        "tangent_vector": "Tangent vector",
+        "curvature_start": "Starting curvature κ₁",
+        "curvature_end": "Ending curvature κ₂",
+        "interpolation_parameter": "Parameter t ∈ [0,1]",
+        "interpolation_method": "Method ('linear', 'geometric', 'harmonic')"
+      },
+      "output": {
+        "result_point": "Point on manifold with interpolated curvature",
+        "interpolated_curvature": "κ(t)",
+        "interpolation_path": "Path of points for t ∈ [0,1] (if requested)"
+      },
+      "complexity": {
+        "time": "O(n)",
+        "space": "O(n)"
+      },
+      "implementation_notes": [
+        "Linear interpolation: κ(t) = (1-t)κ₁ + t·κ₂",
+        "Geometric interpolation: κ(t) = κ₁^{1-t} · κ₂^t (for κ₁, κ₂ > 0)",
+        "Harmonic interpolation: 1/κ(t) = (1-t)/κ₁ + t/κ₂",
+        "Handle sign change: κ₁ < 0 < κ₂",
+        "Smooth transition through κ = 0 (Euclidean)",
+        "Applications: curvature annealing, morphing between geometries"
+      ],
+      "test_cases": [
+        {
+          "name": "Interpolation endpoints",
+          "t": [0.0, 1.0],
+          "verify": "κ(0) = κ₁, κ(1) = κ₂"
+        },
+        {
+          "name": "Midpoint interpolation",
+          "t": 0.5,
+          "curvature_start": -1.0,
+          "curvature_end": 1.0,
+          "expected_curvature": 0.0
+        },
+        {
+          "name": "Smooth path",
+          "t_values": [0, 0.25, 0.5, 0.75, 1.0],
+          "verify": "Continuous path in manifold"
+        },
+        {
+          "name": "Linear vs geometric interpolation",
+          "verify": "Different paths for different methods"
+        },
+        {
+          "name": "Sign change handling",
+          "curvature_start": -1.0,
+          "curvature_end": 1.0,
+          "verify": "Smooth transition through κ = 0"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "Same curvature (κ₁ = κ₂)",
+          "expected_behavior": "Constant curvature path"
+        },
+        {
+          "name": "t outside [0,1]",
+          "t": 1.5,
+          "expected_behavior": "Extrapolation or clamp to [0,1]"
+        },
+        {
+          "name": "Curvature passes through zero",
+          "curvature_start": -1.0,
+          "curvature_end": 1.0,
+          "expected_behavior": "Handle Euclidean limit"
+        }
+      ]
+    },
+    {
+      "id": "exp_map_automatic_curvature_detection",
+      "name": "Automatic Curvature Detection for Exponential Map",
+      "category": "curvature_estimation",
+      "description": "Automatically detect optimal curvature from data using statistical methods and geometric analysis",
+      "mathematical_formula": "κ_MLE = argmax_κ P(data | κ) (maximum likelihood estimation)",
+      "input": {
+        "data_points": "Sample data points",
+        "base_point": "Base point for exponential map (optional)",
+        "curvature_candidates": "List of candidate curvatures (default: [-10, -1, 0, 1, 10])",
+        "detection_method": "Method ('mle', 'cross_validation', 'bic', 'stress')"
+      },
+      "output": {
+        "detected_curvature": "Detected curvature κ",
+        "confidence_score": "Confidence in detection (0-1)",
+        "curvature_distribution": "Posterior distribution over curvatures",
+        "detection_metrics": "Metrics used for detection (likelihood, BIC, stress, etc.)"
+      },
+      "complexity": {
+        "time": "O(n·m·k) where n=data_size, m=dimension, k=num_candidates",
+        "space": "O(n·m)"
+      },
+      "implementation_notes": [
+        "Maximum Likelihood Estimation (MLE) for curvature",
+        "Bayesian Information Criterion (BIC) for model selection",
+        "Cross-validation: split data, test embedding quality",
+        "Stress minimization: Σ(d_data - d_embedding)²",
+        "Geometric tests: triangle comparison, parallel transport",
+        "Bootstrap for confidence intervals",
+        "Default to hyperbolic (κ = -1) if uncertain"
+      ],
+      "test_cases": [
+        {
+          "name": "Tree-structured data",
+          "data_structure": "binary_tree",
+          "depth": 5,
+          "expected_curvature": "< 0",
+          "confidence": "> 0.9"
+        },
+        {
+          "name": "Spherical data (points on sphere)",
+          "data_structure": "sphere",
+          "expected_curvature": "> 0",
+          "confidence": "> 0.9"
+        },
+        {
+          "name": "Grid data",
+          "data_structure": "2d_grid",
+          "expected_curvature": "≈ 0",
+          "confidence": "> 0.8"
+        },
+        {
+          "name": "Noisy data",
+          "noise_level": 0.1,
+          "verify": "Robust detection despite noise"
+        },
+        {
+          "name": "Multi-modal curvature",
+          "data_structure": "mixed",
+          "verify": "Detect dominant curvature or report uncertainty"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "Insufficient data",
+          "data_points": 10,
+          "expected_behavior": "Low confidence, default curvature"
+        },
+        {
+          "name": "Uniform random data",
+          "expected_behavior": "Low confidence, no clear curvature"
+        },
+        {
+          "name": "High-dimensional data",
+          "dimension": 100,
+          "expected_behavior": "Efficient detection"
+        }
+      ]
+    },
+    {
+      "id": "exp_map_curvature_annealing",
+      "name": "Curvature Annealing Exponential Map",
+      "category": "optimization",
+      "description": "Gradually change curvature during optimization (annealing) to escape local minima and improve convergence",
+      "mathematical_formula": "κ(iter) = κ_start · decay^iter, optimize using exp_x^{κ(iter)}",
+      "input": {
+        "base_point": "Initial point on manifold",
+        "tangent_vector": "Initial tangent vector",
+        "curvature_start": "Starting curvature κ_start",
+        "curvature_end": "Ending curvature κ_end",
+        "num_iterations": "Number of annealing iterations",
+        "annealing_schedule": "Schedule ('linear', 'exponential', 'cosine')",
+        "optimization_objective": "Objective function to minimize"
+      },
+      "output": {
+        "optimized_point": "Optimized point on manifold",
+        "curvature_trajectory": "Curvature values over iterations",
+        "objective_trajectory": "Objective values over iterations",
+        "final_curvature": "Final curvature used"
+      },
+      "complexity": {
+        "time": "O(n·num_iterations)",
+        "space": "O(n)"
+      },
+      "implementation_notes": [
+        "Linear schedule: κ(t) = (1-t)κ_start + t·κ_end",
+        "Exponential schedule: κ(t) = κ_start · (κ_end/κ_start)^t",
+        "Cosine schedule: κ(t) = κ_end + 0.5(κ_start - κ_end)(1 + cos(πt))",
+        "Start with high |κ| for exploration, anneal to low |κ| for refinement",
+        "Applications: embedding optimization, manifold learning",
+        "Monitor objective function for convergence"
+      ],
+      "test_cases": [
+        {
+          "name": "Annealing from hyperbolic to Euclidean",
+          "curvature_start": -10.0,
+          "curvature_end": 0.0,
+          "verify": "Smooth convergence"
+        },
+        {
+          "name": "Annealing improves optimization",
+          "verify": "Final objective < objective without annealing"
+        },
+        {
+          "name": "Different schedules comparison",
+          "schedules": ["linear", "exponential", "cosine"],
+          "verify": "All converge, different trajectories"
+        },
+        {
+          "name": "Curvature trajectory smoothness",
+          "verify": "κ(t) is continuous and monotonic"
+        },
+        {
+          "name": "Escape local minimum",
+          "verify": "Annealing finds better solution than fixed curvature"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "No annealing (κ_start = κ_end)",
+          "expected_behavior": "Fixed curvature optimization"
+        },
+        {
+          "name": "Reverse annealing (κ_start < κ_end)",
+          "expected_behavior": "Valid, different exploration pattern"
+        },
+        {
+          "name": "Very fast annealing (few iterations)",
+          "num_iterations": 5,
+          "expected_behavior": "May not converge fully"
+        }
+      ]
+    }
+  ],
+  "integration_notes": {
+    "hvs_integration": "Cross-curvature operations enable flexible geometry selection for embeddings",
+    "agua_integration": "Automatic curvature detection optimizes representation quality",
+    "dual_model_system": "Curvature-adaptive algorithms select best model per data",
+    "mixed_curvature_embeddings": "Product manifolds with different curvatures per component"
+  },
+  "applications": {
+    "manifold_learning": "Learn optimal curvature from data",
+    "transfer_learning": "Transfer embeddings between different curvature spaces",
+    "multi_modal_data": "Different curvatures for different data modalities",
+    "curriculum_learning": "Curvature annealing for progressive training",
+    "geometry_morphing": "Smooth transitions between geometric spaces"
+  },
+  "references": [
+    "Gu, A., et al. (2018). Learning Mixed-Curvature Representations in Product Spaces. ICLR.",
+    "Sala, F., et al. (2018). Representation Tradeoffs for Hyperbolic Embeddings. ICML.",
+    "Chami, I., et al. (2019). Hyperbolic Graph Convolutional Neural Networks. NeurIPS.",
+    "Skopek, O., et al. (2020). Mixed-curvature Variational Autoencoders. ICLR."
+  ]
+}
