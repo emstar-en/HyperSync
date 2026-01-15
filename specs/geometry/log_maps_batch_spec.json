@@ -1,0 +1,914 @@
+{
+  "specification_name": "Batch Processing Logarithmic Maps",
+  "version": "1.0.0",
+  "category": "Essential Geometry - Logarithmic Maps - Performance",
+  "description": "High-performance batch processing operations for logarithmic maps. Enables vectorized computation of log maps for multiple point pairs simultaneously, with support for parallel processing, GPU acceleration, and memory-efficient streaming.",
+  "mathematical_foundation": {
+    "batch_formula": "log_P(Q) = [log_p₁(q₁), log_p₂(q₂), ..., log_pₙ(qₙ)] where P = [p₁,...,pₙ], Q = [q₁,...,qₙ]",
+    "vectorization": "Exploit SIMD/GPU parallelism for independent log map computations",
+    "memory_efficiency": "Stream processing for datasets larger than memory"
+  },
+  "operations": [
+    {
+      "name": "batch_log_map",
+      "description": "Compute logarithmic maps for multiple point pairs simultaneously using vectorized operations. Significantly faster than sequential computation.",
+      "parameters": {
+        "base_points": {
+          "type": "array",
+          "shape": "[batch_size, n_dims]",
+          "description": "Batch of base points P = [p₁, p₂, ..., p_batch]"
+        },
+        "target_points": {
+          "type": "array",
+          "shape": "[batch_size, n_dims]",
+          "description": "Batch of target points Q = [q₁, q₂, ..., q_batch]"
+        },
+        "geometry_type": {
+          "type": "string",
+          "enum": ["hyperbolic", "spherical", "euclidean"],
+          "description": "Geometry type for all computations"
+        },
+        "curvature": {
+          "type": "float",
+          "optional": true,
+          "description": "Curvature parameter (if applicable)"
+        },
+        "backend": {
+          "type": "string",
+          "enum": ["numpy", "torch", "jax", "auto"],
+          "default": "auto",
+          "description": "Computation backend"
+        }
+      },
+      "returns": {
+        "tangent_vectors": {
+          "type": "array",
+          "shape": "[batch_size, n_dims]",
+          "description": "Batch of tangent vectors V = [v₁, v₂, ..., v_batch]"
+        },
+        "distances": {
+          "type": "array",
+          "shape": "[batch_size]",
+          "description": "Geodesic distances for each pair"
+        },
+        "computation_time": {
+          "type": "float",
+          "description": "Total computation time in seconds"
+        }
+      },
+      "complexity": {
+        "time": "O(batch_size * n_dims) with vectorization, vs O(batch_size * n_dims) sequential",
+        "space": "O(batch_size * n_dims)",
+        "speedup": "5-50x faster than sequential depending on batch size and hardware"
+      },
+      "implementation_notes": [
+        "Use NumPy broadcasting for element-wise operations",
+        "Leverage BLAS/LAPACK for matrix operations",
+        "Avoid Python loops - use vectorized operations",
+        "Pre-allocate output arrays for memory efficiency",
+        "Handle mixed precision (float32/float64) appropriately"
+      ],
+      "test_cases": [
+        {
+          "name": "small_batch_hyperbolic",
+          "batch_size": 10,
+          "n_dims": 2,
+          "geometry_type": "hyperbolic",
+          "expected_speedup": 5.0,
+          "tolerance": 1e-4
+        },
+        {
+          "name": "large_batch_euclidean",
+          "batch_size": 1000,
+          "n_dims": 128,
+          "geometry_type": "euclidean",
+          "expected_speedup": 20.0,
+          "tolerance": 1e-6
+        },
+        {
+          "name": "spherical_batch",
+          "batch_size": 100,
+          "n_dims": 3,
+          "geometry_type": "spherical",
+          "expected_speedup": 10.0,
+          "tolerance": 1e-4
+        },
+        {
+          "name": "consistency_check",
+          "description": "Verify batch results match sequential computation",
+          "batch_size": 50,
+          "n_dims": 5,
+          "tolerance": 1e-10
+        },
+        {
+          "name": "mixed_distances",
+          "description": "Batch with varying distances (near, medium, far)",
+          "batch_size": 30,
+          "n_dims": 4,
+          "tolerance": 1e-4
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "single_element_batch",
+          "batch_size": 1,
+          "description": "Batch size of 1 should still work"
+        },
+        {
+          "name": "very_large_batch",
+          "batch_size": 100000,
+          "description": "Test memory efficiency with large batches"
+        },
+        {
+          "name": "high_dimensional",
+          "batch_size": 100,
+          "n_dims": 1024,
+          "description": "High-dimensional embeddings"
+        }
+      ]
+    },
+    {
+      "name": "parallel_log_map",
+      "description": "Compute logarithmic maps using multi-core CPU parallelization. Distributes batch across available CPU cores.",
+      "parameters": {
+        "base_points": {
+          "type": "array",
+          "shape": "[batch_size, n_dims]"
+        },
+        "target_points": {
+          "type": "array",
+          "shape": "[batch_size, n_dims]"
+        },
+        "geometry_type": {
+          "type": "string",
+          "enum": ["hyperbolic", "spherical", "euclidean"]
+        },
+        "num_workers": {
+          "type": "int",
+          "default": -1,
+          "description": "Number of parallel workers (-1 = all available cores)"
+        },
+        "chunk_size": {
+          "type": "int",
+          "optional": true,
+          "description": "Size of chunks for parallel processing (auto if not specified)"
+        }
+      },
+      "returns": {
+        "tangent_vectors": {
+          "type": "array",
+          "shape": "[batch_size, n_dims]"
+        },
+        "distances": {
+          "type": "array",
+          "shape": "[batch_size]"
+        },
+        "parallel_efficiency": {
+          "type": "float",
+          "description": "Parallel efficiency: speedup / num_workers"
+        }
+      },
+      "complexity": {
+        "time": "O(batch_size * n_dims / num_workers) with good load balancing",
+        "space": "O(batch_size * n_dims + num_workers * chunk_size * n_dims)",
+        "speedup": "Near-linear with num_workers for large batches"
+      },
+      "implementation_notes": [
+        "Use multiprocessing.Pool or joblib.Parallel",
+        "Optimal chunk_size ≈ batch_size / (4 * num_workers)",
+        "Avoid overhead for small batches (use sequential)",
+        "Handle shared memory efficiently",
+        "Use process pool (not thread pool) to avoid GIL"
+      ],
+      "test_cases": [
+        {
+          "name": "parallel_vs_sequential",
+          "batch_size": 10000,
+          "n_dims": 64,
+          "num_workers": 4,
+          "expected_speedup": 3.5,
+          "tolerance": 1e-6
+        },
+        {
+          "name": "scaling_test",
+          "batch_size": 5000,
+          "num_workers": [1, 2, 4, 8],
+          "description": "Test parallel scaling efficiency"
+        },
+        {
+          "name": "small_batch_overhead",
+          "batch_size": 10,
+          "num_workers": 4,
+          "description": "Verify no slowdown for small batches"
+        },
+        {
+          "name": "load_balancing",
+          "batch_size": 1000,
+          "num_workers": 8,
+          "description": "Check even distribution across workers"
+        },
+        {
+          "name": "consistency_parallel",
+          "batch_size": 500,
+          "description": "Results match sequential computation",
+          "tolerance": 1e-10
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "single_worker",
+          "num_workers": 1,
+          "description": "Should behave like sequential"
+        },
+        {
+          "name": "more_workers_than_data",
+          "batch_size": 10,
+          "num_workers": 16,
+          "description": "More workers than data points"
+        },
+        {
+          "name": "uneven_chunk_size",
+          "batch_size": 1001,
+          "num_workers": 4,
+          "description": "Batch size not divisible by num_workers"
+        }
+      ]
+    },
+    {
+      "name": "gpu_log_map",
+      "description": "GPU-accelerated logarithmic map computation using CUDA/ROCm. Achieves massive speedups for large batches.",
+      "parameters": {
+        "base_points": {
+          "type": "array",
+          "shape": "[batch_size, n_dims]",
+          "description": "Base points (automatically transferred to GPU)"
+        },
+        "target_points": {
+          "type": "array",
+          "shape": "[batch_size, n_dims]"
+        },
+        "geometry_type": {
+          "type": "string",
+          "enum": ["hyperbolic", "spherical", "euclidean"]
+        },
+        "device": {
+          "type": "string",
+          "default": "cuda:0",
+          "description": "GPU device (cuda:0, cuda:1, etc.)"
+        },
+        "precision": {
+          "type": "string",
+          "enum": ["float32", "float64"],
+          "default": "float32",
+          "description": "Computation precision"
+        }
+      },
+      "returns": {
+        "tangent_vectors": {
+          "type": "array",
+          "shape": "[batch_size, n_dims]",
+          "description": "Results (transferred back to CPU)"
+        },
+        "distances": {
+          "type": "array",
+          "shape": "[batch_size]"
+        },
+        "gpu_time": {
+          "type": "float",
+          "description": "GPU computation time (excluding transfers)"
+        },
+        "transfer_time": {
+          "type": "float",
+          "description": "CPU↔GPU transfer time"
+        }
+      },
+      "complexity": {
+        "time": "O(batch_size * n_dims / num_cuda_cores) - massive parallelism",
+        "space": "O(batch_size * n_dims) on GPU memory",
+        "speedup": "100-1000x faster than CPU for large batches"
+      },
+      "implementation_notes": [
+        "Use PyTorch or JAX for GPU operations",
+        "Minimize CPU↔GPU transfers (keep data on GPU if possible)",
+        "Use float32 for speed, float64 for precision",
+        "Batch size should be large enough to saturate GPU",
+        "Handle out-of-memory errors gracefully"
+      ],
+      "test_cases": [
+        {
+          "name": "gpu_vs_cpu",
+          "batch_size": 10000,
+          "n_dims": 128,
+          "expected_speedup": 100.0,
+          "tolerance": 1e-4
+        },
+        {
+          "name": "large_batch_gpu",
+          "batch_size": 1000000,
+          "n_dims": 64,
+          "precision": "float32",
+          "expected_time": 0.1,
+          "tolerance": 1e-4
+        },
+        {
+          "name": "gpu_precision_test",
+          "batch_size": 1000,
+          "n_dims": 32,
+          "precision": "float64",
+          "tolerance": 1e-10
+        },
+        {
+          "name": "multi_gpu",
+          "batch_size": 100000,
+          "devices": ["cuda:0", "cuda:1"],
+          "description": "Test multi-GPU distribution"
+        },
+        {
+          "name": "gpu_consistency",
+          "batch_size": 5000,
+          "description": "GPU results match CPU",
+          "tolerance": 1e-5
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "small_batch_gpu",
+          "batch_size": 10,
+          "description": "GPU overhead may dominate for tiny batches"
+        },
+        {
+          "name": "out_of_memory",
+          "batch_size": 10000000,
+          "description": "Handle GPU OOM gracefully"
+        },
+        {
+          "name": "no_gpu_available",
+          "description": "Fallback to CPU if no GPU"
+        }
+      ]
+    },
+    {
+      "name": "streaming_log_map",
+      "description": "Memory-efficient streaming computation for datasets larger than RAM. Processes data in chunks without loading entire dataset.",
+      "parameters": {
+        "base_points_iterator": {
+          "type": "iterator",
+          "description": "Iterator yielding base point batches"
+        },
+        "target_points_iterator": {
+          "type": "iterator",
+          "description": "Iterator yielding target point batches"
+        },
+        "geometry_type": {
+          "type": "string",
+          "enum": ["hyperbolic", "spherical", "euclidean"]
+        },
+        "chunk_size": {
+          "type": "int",
+          "default": 1000,
+          "description": "Number of points per chunk"
+        },
+        "output_file": {
+          "type": "string",
+          "optional": true,
+          "description": "Path to save results (HDF5 or NPZ format)"
+        }
+      },
+      "returns": {
+        "tangent_vectors_iterator": {
+          "type": "iterator",
+          "description": "Iterator yielding tangent vector batches"
+        },
+        "total_processed": {
+          "type": "int",
+          "description": "Total number of point pairs processed"
+        },
+        "peak_memory": {
+          "type": "float",
+          "description": "Peak memory usage in MB"
+        }
+      },
+      "complexity": {
+        "time": "O(total_size * n_dims) - same as batch, but streaming",
+        "space": "O(chunk_size * n_dims) - constant memory regardless of dataset size",
+        "memory_efficiency": "Can process datasets 100x larger than RAM"
+      },
+      "implementation_notes": [
+        "Use generators/iterators to avoid loading full dataset",
+        "Process one chunk at a time",
+        "Write results to disk incrementally if needed",
+        "Use HDF5 for efficient disk I/O",
+        "Monitor memory usage to prevent OOM"
+      ],
+      "test_cases": [
+        {
+          "name": "large_dataset_streaming",
+          "total_size": 1000000,
+          "chunk_size": 1000,
+          "n_dims": 64,
+          "expected_peak_memory": 100.0,
+          "tolerance": 1e-4
+        },
+        {
+          "name": "streaming_consistency",
+          "total_size": 10000,
+          "chunk_size": 100,
+          "description": "Results match non-streaming",
+          "tolerance": 1e-10
+        },
+        {
+          "name": "disk_output",
+          "total_size": 50000,
+          "output_file": "/tmp/log_maps.h5",
+          "description": "Save results to HDF5"
+        },
+        {
+          "name": "variable_chunk_sizes",
+          "total_size": 10000,
+          "chunk_sizes": [100, 500, 1000],
+          "description": "Test different chunk sizes"
+        },
+        {
+          "name": "streaming_performance",
+          "total_size": 100000,
+          "chunk_size": 1000,
+          "description": "Measure throughput (points/sec)"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "single_chunk",
+          "total_size": 500,
+          "chunk_size": 1000,
+          "description": "Dataset smaller than chunk size"
+        },
+        {
+          "name": "uneven_chunks",
+          "total_size": 10001,
+          "chunk_size": 1000,
+          "description": "Last chunk has different size"
+        },
+        {
+          "name": "empty_iterator",
+          "total_size": 0,
+          "description": "Handle empty input"
+        }
+      ]
+    },
+    {
+      "name": "distributed_log_map",
+      "description": "Distributed computation across multiple machines using MPI or Ray. For massive-scale datasets.",
+      "parameters": {
+        "base_points": {
+          "type": "array",
+          "shape": "[total_size, n_dims]",
+          "description": "Full dataset (distributed across nodes)"
+        },
+        "target_points": {
+          "type": "array",
+          "shape": "[total_size, n_dims]"
+        },
+        "geometry_type": {
+          "type": "string",
+          "enum": ["hyperbolic", "spherical", "euclidean"]
+        },
+        "num_nodes": {
+          "type": "int",
+          "description": "Number of compute nodes"
+        },
+        "backend": {
+          "type": "string",
+          "enum": ["mpi", "ray", "dask"],
+          "default": "ray",
+          "description": "Distributed computing backend"
+        }
+      },
+      "returns": {
+        "tangent_vectors": {
+          "type": "array",
+          "shape": "[total_size, n_dims]",
+          "description": "Gathered results from all nodes"
+        },
+        "distances": {
+          "type": "array",
+          "shape": "[total_size]"
+        },
+        "node_times": {
+          "type": "array",
+          "shape": "[num_nodes]",
+          "description": "Computation time per node"
+        },
+        "communication_overhead": {
+          "type": "float",
+          "description": "Time spent on inter-node communication"
+        }
+      },
+      "complexity": {
+        "time": "O(total_size * n_dims / num_nodes) + communication overhead",
+        "space": "O(total_size * n_dims / num_nodes) per node",
+        "speedup": "Near-linear with num_nodes for large datasets"
+      },
+      "implementation_notes": [
+        "Use Ray for Python-native distributed computing",
+        "MPI for HPC environments",
+        "Minimize data transfer between nodes",
+        "Use collective operations (scatter/gather) efficiently",
+        "Handle node failures gracefully"
+      ],
+      "test_cases": [
+        {
+          "name": "distributed_scaling",
+          "total_size": 1000000,
+          "num_nodes": [1, 2, 4, 8],
+          "description": "Test scaling efficiency"
+        },
+        {
+          "name": "distributed_consistency",
+          "total_size": 10000,
+          "num_nodes": 4,
+          "description": "Results match single-node",
+          "tolerance": 1e-10
+        },
+        {
+          "name": "load_balancing_distributed",
+          "total_size": 100000,
+          "num_nodes": 8,
+          "description": "Check even load distribution"
+        },
+        {
+          "name": "communication_overhead",
+          "total_size": 50000,
+          "num_nodes": 4,
+          "description": "Measure communication vs computation time"
+        },
+        {
+          "name": "massive_scale",
+          "total_size": 10000000,
+          "num_nodes": 16,
+          "description": "10M point pairs across 16 nodes"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "single_node_distributed",
+          "num_nodes": 1,
+          "description": "Should work with 1 node"
+        },
+        {
+          "name": "uneven_distribution",
+          "total_size": 10001,
+          "num_nodes": 4,
+          "description": "Data not evenly divisible"
+        },
+        {
+          "name": "node_failure",
+          "description": "Handle node failure during computation"
+        }
+      ]
+    },
+    {
+      "name": "adaptive_batch_log_map",
+      "description": "Automatically select optimal batch processing strategy based on data size, hardware, and geometry. Chooses between sequential, vectorized, parallel, GPU, or distributed.",
+      "parameters": {
+        "base_points": {
+          "type": "array",
+          "shape": "[batch_size, n_dims]"
+        },
+        "target_points": {
+          "type": "array",
+          "shape": "[batch_size, n_dims]"
+        },
+        "geometry_type": {
+          "type": "string",
+          "enum": ["hyperbolic", "spherical", "euclidean"]
+        },
+        "optimization_target": {
+          "type": "string",
+          "enum": ["speed", "memory", "balanced"],
+          "default": "balanced",
+          "description": "Optimization objective"
+        }
+      },
+      "returns": {
+        "tangent_vectors": {
+          "type": "array",
+          "shape": "[batch_size, n_dims]"
+        },
+        "distances": {
+          "type": "array",
+          "shape": "[batch_size]"
+        },
+        "selected_strategy": {
+          "type": "string",
+          "description": "Chosen processing strategy"
+        },
+        "performance_metrics": {
+          "type": "dict",
+          "description": "Timing and resource usage"
+        }
+      },
+      "complexity": {
+        "time": "Optimal for given hardware and data size",
+        "space": "Adaptive based on available memory"
+      },
+      "implementation_notes": [
+        "Profile hardware capabilities at initialization",
+        "Decision tree: batch_size < 100 → sequential, < 10000 → vectorized, < 100000 → parallel/GPU, > 100000 → distributed",
+        "Check GPU availability and memory",
+        "Consider geometry complexity (hyperbolic > spherical > euclidean)",
+        "Cache strategy decisions for similar inputs"
+      ],
+      "test_cases": [
+        {
+          "name": "small_batch_adaptive",
+          "batch_size": 10,
+          "expected_strategy": "sequential",
+          "tolerance": 1e-10
+        },
+        {
+          "name": "medium_batch_adaptive",
+          "batch_size": 5000,
+          "expected_strategy": "vectorized",
+          "tolerance": 1e-6
+        },
+        {
+          "name": "large_batch_adaptive",
+          "batch_size": 100000,
+          "expected_strategy": "gpu",
+          "tolerance": 1e-4
+        },
+        {
+          "name": "memory_constrained",
+          "batch_size": 1000000,
+          "optimization_target": "memory",
+          "expected_strategy": "streaming",
+          "tolerance": 1e-4
+        },
+        {
+          "name": "speed_optimized",
+          "batch_size": 50000,
+          "optimization_target": "speed",
+          "expected_strategy": "gpu",
+          "tolerance": 1e-4
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "no_gpu_fallback",
+          "batch_size": 100000,
+          "description": "Fallback to parallel CPU if no GPU"
+        },
+        {
+          "name": "limited_memory",
+          "batch_size": 1000000,
+          "available_memory": "1GB",
+          "description": "Force streaming mode"
+        },
+        {
+          "name": "strategy_override",
+          "batch_size": 1000,
+          "force_strategy": "gpu",
+          "description": "Allow manual strategy override"
+        }
+      ]
+    },
+    {
+      "name": "mixed_geometry_batch_log_map",
+      "description": "Batch logarithmic map computation where each point pair can have different geometry type. Useful for heterogeneous datasets.",
+      "parameters": {
+        "base_points": {
+          "type": "array",
+          "shape": "[batch_size, n_dims]"
+        },
+        "target_points": {
+          "type": "array",
+          "shape": "[batch_size, n_dims]"
+        },
+        "geometry_types": {
+          "type": "array",
+          "shape": "[batch_size]",
+          "description": "Geometry type for each pair: ['hyperbolic', 'spherical', ...]"
+        },
+        "curvatures": {
+          "type": "array",
+          "shape": "[batch_size]",
+          "optional": true,
+          "description": "Curvature for each pair (if applicable)"
+        }
+      },
+      "returns": {
+        "tangent_vectors": {
+          "type": "array",
+          "shape": "[batch_size, n_dims]"
+        },
+        "distances": {
+          "type": "array",
+          "shape": "[batch_size]"
+        },
+        "geometry_counts": {
+          "type": "dict",
+          "description": "Count of each geometry type in batch"
+        }
+      },
+      "complexity": {
+        "time": "O(batch_size * n_dims) - grouped by geometry for efficiency",
+        "space": "O(batch_size * n_dims)"
+      },
+      "implementation_notes": [
+        "Group point pairs by geometry type",
+        "Process each group with specialized function",
+        "Reassemble results in original order",
+        "Use indexing to avoid data copying",
+        "Cache geometry-specific computations"
+      ],
+      "test_cases": [
+        {
+          "name": "mixed_hyp_sph",
+          "batch_size": 100,
+          "geometry_types": ["hyperbolic"] * 50 + ["spherical"] * 50,
+          "tolerance": 1e-4
+        },
+        {
+          "name": "all_three_geometries",
+          "batch_size": 90,
+          "geometry_types": ["hyperbolic"] * 30 + ["spherical"] * 30 + ["euclidean"] * 30,
+          "tolerance": 1e-6
+        },
+        {
+          "name": "single_geometry_mixed",
+          "batch_size": 50,
+          "geometry_types": ["hyperbolic"] * 50,
+          "description": "All same geometry (should be efficient)",
+          "tolerance": 1e-10
+        },
+        {
+          "name": "random_geometries",
+          "batch_size": 200,
+          "description": "Randomly mixed geometries",
+          "tolerance": 1e-4
+        },
+        {
+          "name": "varying_curvatures",
+          "batch_size": 100,
+          "geometry_types": ["hyperbolic"] * 100,
+          "curvatures": "random",
+          "tolerance": 1e-4
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "single_point_each_geometry",
+          "batch_size": 3,
+          "geometry_types": ["hyperbolic", "spherical", "euclidean"],
+          "description": "Minimal batch with all geometries"
+        },
+        {
+          "name": "invalid_geometry",
+          "geometry_types": ["hyperbolic", "unknown", "spherical"],
+          "description": "Handle invalid geometry type"
+        },
+        {
+          "name": "geometry_mismatch",
+          "description": "Validate geometry_types length matches batch_size"
+        }
+      ]
+    },
+    {
+      "name": "batch_log_map_with_validation",
+      "description": "Batch logarithmic map with comprehensive input validation and error handling. Returns valid results and flags invalid inputs.",
+      "parameters": {
+        "base_points": {
+          "type": "array",
+          "shape": "[batch_size, n_dims]"
+        },
+        "target_points": {
+          "type": "array",
+          "shape": "[batch_size, n_dims]"
+        },
+        "geometry_type": {
+          "type": "string",
+          "enum": ["hyperbolic", "spherical", "euclidean"]
+        },
+        "validation_level": {
+          "type": "string",
+          "enum": ["none", "basic", "strict"],
+          "default": "basic",
+          "description": "Level of input validation"
+        },
+        "handle_invalid": {
+          "type": "string",
+          "enum": ["skip", "nan", "error"],
+          "default": "nan",
+          "description": "How to handle invalid inputs"
+        }
+      },
+      "returns": {
+        "tangent_vectors": {
+          "type": "array",
+          "shape": "[batch_size, n_dims]",
+          "description": "Results (NaN for invalid inputs if handle_invalid='nan')"
+        },
+        "distances": {
+          "type": "array",
+          "shape": "[batch_size]"
+        },
+        "valid_mask": {
+          "type": "array",
+          "shape": "[batch_size]",
+          "description": "Boolean mask: True for valid results"
+        },
+        "validation_errors": {
+          "type": "list",
+          "description": "List of validation errors with indices"
+        }
+      },
+      "complexity": {
+        "time": "O(batch_size * n_dims) + O(batch_size) for validation",
+        "space": "O(batch_size * n_dims)"
+      },
+      "implementation_notes": [
+        "Check manifold constraints (||p|| < 1 for hyperbolic, ||p|| = 1 for spherical)",
+        "Detect antipodal points (undefined log map)",
+        "Check for NaN/Inf in inputs",
+        "Validate dimension consistency",
+        "Provide detailed error messages with indices"
+      ],
+      "test_cases": [
+        {
+          "name": "all_valid_inputs",
+          "batch_size": 100,
+          "geometry_type": "hyperbolic",
+          "expected_valid_count": 100,
+          "tolerance": 1e-4
+        },
+        {
+          "name": "some_invalid_hyperbolic",
+          "batch_size": 50,
+          "geometry_type": "hyperbolic",
+          "invalid_indices": [10, 20, 30],
+          "description": "Some points outside Poincaré disk",
+          "expected_valid_count": 47
+        },
+        {
+          "name": "antipodal_spherical",
+          "batch_size": 20,
+          "geometry_type": "spherical",
+          "antipodal_indices": [5, 15],
+          "expected_valid_count": 18
+        },
+        {
+          "name": "nan_inputs",
+          "batch_size": 30,
+          "nan_indices": [0, 10, 20],
+          "expected_valid_count": 27
+        },
+        {
+          "name": "strict_validation",
+          "batch_size": 100,
+          "validation_level": "strict",
+          "description": "Strict validation catches more issues"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "all_invalid",
+          "batch_size": 10,
+          "description": "All inputs invalid",
+          "expected_valid_count": 0
+        },
+        {
+          "name": "dimension_mismatch",
+          "base_points_shape": "[10, 3]",
+          "target_points_shape": "[10, 4]",
+          "description": "Dimension mismatch error"
+        },
+        {
+          "name": "error_mode",
+          "handle_invalid": "error",
+          "description": "Raise exception on first invalid input"
+        }
+      ]
+    }
+  ],
+  "performance_benchmarks": {
+    "sequential_baseline": "1000 point pairs, 128D, hyperbolic: ~100ms",
+    "vectorized_speedup": "5-10x faster than sequential",
+    "parallel_speedup": "3-7x with 8 cores",
+    "gpu_speedup": "100-1000x for large batches (>10000)",
+    "streaming_memory": "Constant O(chunk_size) regardless of dataset size"
+  },
+  "dependencies": [
+    "numpy",
+    "scipy",
+    "torch (for GPU)",
+    "jax (alternative GPU backend)",
+    "ray (for distributed)",
+    "h5py (for streaming I/O)",
+    "joblib (for parallel)"
+  ],
+  "references": [
+    "Harris, C. R., et al. (2020). Array programming with NumPy. Nature.",
+    "Paszke, A., et al. (2019). PyTorch: An Imperative Style, High-Performance Deep Learning Library. NeurIPS.",
+    "Moritz, P., et al. (2018). Ray: A Distributed Framework for Emerging AI Applications. OSDI."
+  ]
+}

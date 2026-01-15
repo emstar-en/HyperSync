@@ -1,0 +1,715 @@
+{
+  "specification_name": "Cross-Curvature Logarithmic Maps",
+  "version": "1.0.0",
+  "category": "Essential Geometry - Logarithmic Maps - Mixed Geometries",
+  "description": "Logarithmic maps across different curvatures and mixed-curvature manifolds. Enables seamless transitions between hyperbolic, spherical, and Euclidean geometries, essential for adaptive geometric embeddings and multi-scale representations.",
+  "mathematical_foundation": {
+    "curvature_spectrum": "κ ∈ (-∞, +∞): κ < 0 (hyperbolic), κ = 0 (Euclidean), κ > 0 (spherical)",
+    "unified_framework": "Treat all geometries in a unified framework using sectional curvature",
+    "conversion_principle": "Map points between geometries via ambient space embeddings",
+    "applications": [
+      "Adaptive curvature learning",
+      "Multi-scale hierarchical embeddings",
+      "Geometry-agnostic neural networks",
+      "Cross-domain transfer learning"
+    ]
+  },
+  "operations": [
+    {
+      "name": "curvature_adaptive_log_map",
+      "description": "Logarithmic map that automatically adapts to local curvature. Detects optimal curvature from data and computes log map accordingly.",
+      "parameters": {
+        "base_point": {
+          "type": "array",
+          "shape": "[n_dims]",
+          "description": "Base point p"
+        },
+        "target_point": {
+          "type": "array",
+          "shape": "[n_dims]",
+          "description": "Target point q"
+        },
+        "curvature_range": {
+          "type": "array",
+          "shape": "[2]",
+          "default": [-10.0, 10.0],
+          "description": "[min_curvature, max_curvature] to search"
+        },
+        "auto_detect": {
+          "type": "bool",
+          "default": true,
+          "description": "Automatically detect optimal curvature"
+        }
+      },
+      "returns": {
+        "tangent_vector": {
+          "type": "array",
+          "shape": "[n_dims]",
+          "description": "log_p(q) in optimal geometry"
+        },
+        "distance": {
+          "type": "float",
+          "description": "Geodesic distance"
+        },
+        "detected_curvature": {
+          "type": "float",
+          "description": "Optimal curvature κ"
+        },
+        "geometry_type": {
+          "type": "string",
+          "enum": ["hyperbolic", "spherical", "euclidean"],
+          "description": "Detected geometry type"
+        },
+        "confidence": {
+          "type": "float",
+          "range": "[0, 1]",
+          "description": "Confidence in curvature detection"
+        }
+      },
+      "complexity": {
+        "time": "O(n_dims * log(curvature_range)) for binary search",
+        "space": "O(n_dims)"
+      },
+      "mathematical_formula": {
+        "curvature_detection": "Minimize distortion: κ* = argmin_κ Σᵢⱼ |d_κ(pᵢ,pⱼ) - d_true(pᵢ,pⱼ)|²",
+        "adaptive_formula": "log_p^κ(q) = f(κ) * log_p(q) where f(κ) is curvature-dependent scaling"
+      },
+      "implementation_notes": [
+        "Estimate curvature from local point distribution",
+        "Use maximum likelihood estimation for κ",
+        "Binary search over curvature_range",
+        "Cache curvature estimates for nearby points",
+        "Smooth transitions between curvature regimes"
+      ],
+      "test_cases": [
+        {
+          "name": "detect_hyperbolic",
+          "base_point": [0.0, 0.0],
+          "target_point": [0.5, 0.0],
+          "expected_geometry": "hyperbolic",
+          "expected_curvature": -1.0,
+          "tolerance": 0.1
+        },
+        {
+          "name": "detect_spherical",
+          "base_point": [0.0, 0.0, 1.0],
+          "target_point": [1.0, 0.0, 0.0],
+          "expected_geometry": "spherical",
+          "expected_curvature": 1.0,
+          "tolerance": 0.1
+        },
+        {
+          "name": "detect_euclidean",
+          "base_point": [1.0, 2.0],
+          "target_point": [4.0, 6.0],
+          "expected_geometry": "euclidean",
+          "expected_curvature": 0.0,
+          "tolerance": 0.01
+        },
+        {
+          "name": "adaptive_confidence",
+          "description": "High confidence for clear geometries",
+          "expected_confidence": 0.95
+        },
+        {
+          "name": "curvature_range_search",
+          "curvature_range": [-5.0, 5.0],
+          "description": "Search within specified range"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "ambiguous_geometry",
+          "description": "Data could fit multiple curvatures",
+          "expected_confidence": 0.5
+        },
+        {
+          "name": "extreme_curvature",
+          "curvature_range": [-100.0, 100.0],
+          "description": "Very large curvature range"
+        },
+        {
+          "name": "insufficient_data",
+          "description": "Single point pair - cannot reliably detect curvature"
+        }
+      ]
+    },
+    {
+      "name": "hyperbolic_to_spherical_log_map",
+      "description": "Convert logarithmic map from hyperbolic to spherical geometry. Maps tangent vectors between H^n and S^n.",
+      "parameters": {
+        "base_point_hyp": {
+          "type": "array",
+          "shape": "[n_dims]",
+          "description": "Base point in hyperbolic space"
+        },
+        "target_point_hyp": {
+          "type": "array",
+          "shape": "[n_dims]",
+          "description": "Target point in hyperbolic space"
+        },
+        "curvature_hyp": {
+          "type": "float",
+          "default": -1.0,
+          "description": "Hyperbolic curvature κ < 0"
+        },
+        "curvature_sph": {
+          "type": "float",
+          "default": 1.0,
+          "description": "Target spherical curvature κ > 0"
+        },
+        "conversion_method": {
+          "type": "string",
+          "enum": ["stereographic", "conformal", "isometric"],
+          "default": "stereographic",
+          "description": "Conversion method"
+        }
+      },
+      "returns": {
+        "base_point_sph": {
+          "type": "array",
+          "shape": "[n_dims+1]",
+          "description": "Base point mapped to S^n ⊂ ℝ^{n+1}"
+        },
+        "target_point_sph": {
+          "type": "array",
+          "shape": "[n_dims+1]",
+          "description": "Target point mapped to S^n"
+        },
+        "tangent_vector_sph": {
+          "type": "array",
+          "shape": "[n_dims+1]",
+          "description": "log map in spherical geometry"
+        },
+        "distance_hyp": {
+          "type": "float",
+          "description": "Original hyperbolic distance"
+        },
+        "distance_sph": {
+          "type": "float",
+          "description": "Converted spherical distance"
+        }
+      },
+      "complexity": {
+        "time": "O(n_dims)",
+        "space": "O(n_dims)"
+      },
+      "mathematical_formula": {
+        "stereographic_projection": "S: H^n → S^n via x ↦ (2x/(1+||x||²), (1-||x||²)/(1+||x||²))",
+        "distance_scaling": "d_sph = 2 * arctan(tanh(d_hyp/2)) for κ_hyp = -1, κ_sph = 1"
+      },
+      "implementation_notes": [
+        "Use stereographic projection for point conversion",
+        "Adjust for different curvature scales",
+        "Preserve angles (conformal mapping)",
+        "Handle boundary cases (infinity in H^n → point on S^n)",
+        "Tangent vectors transform via pushforward"
+      ],
+      "test_cases": [
+        {
+          "name": "origin_conversion",
+          "base_point_hyp": [0.0, 0.0],
+          "target_point_hyp": [0.5, 0.0],
+          "tolerance": 1e-6
+        },
+        {
+          "name": "distance_preservation",
+          "description": "Verify distance scaling formula",
+          "tolerance": 1e-6
+        },
+        {
+          "name": "angle_preservation",
+          "description": "Conformal mapping preserves angles",
+          "tolerance": 1e-6
+        },
+        {
+          "name": "round_trip",
+          "description": "H^n → S^n → H^n should be identity",
+          "tolerance": 1e-8
+        },
+        {
+          "name": "curvature_scaling",
+          "curvature_hyp": -2.0,
+          "curvature_sph": 2.0,
+          "description": "Non-unit curvatures"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "boundary_to_pole",
+          "base_point_hyp": [0.99, 0.0],
+          "description": "Near boundary maps to near pole"
+        },
+        {
+          "name": "dimension_increase",
+          "description": "H^n embeds in S^n ⊂ ℝ^{n+1}"
+        },
+        {
+          "name": "antipodal_image",
+          "description": "Check antipodal points in S^n"
+        }
+      ]
+    },
+    {
+      "name": "spherical_to_hyperbolic_log_map",
+      "description": "Convert logarithmic map from spherical to hyperbolic geometry. Inverse of hyperbolic_to_spherical_log_map.",
+      "parameters": {
+        "base_point_sph": {
+          "type": "array",
+          "shape": "[n_dims+1]",
+          "description": "Base point on S^n ⊂ ℝ^{n+1}"
+        },
+        "target_point_sph": {
+          "type": "array",
+          "shape": "[n_dims+1]",
+          "description": "Target point on S^n"
+        },
+        "curvature_sph": {
+          "type": "float",
+          "default": 1.0
+        },
+        "curvature_hyp": {
+          "type": "float",
+          "default": -1.0
+        },
+        "conversion_method": {
+          "type": "string",
+          "enum": ["inverse_stereographic", "conformal", "isometric"],
+          "default": "inverse_stereographic"
+        }
+      },
+      "returns": {
+        "base_point_hyp": {
+          "type": "array",
+          "shape": "[n_dims]",
+          "description": "Base point in H^n"
+        },
+        "target_point_hyp": {
+          "type": "array",
+          "shape": "[n_dims]",
+          "description": "Target point in H^n"
+        },
+        "tangent_vector_hyp": {
+          "type": "array",
+          "shape": "[n_dims]",
+          "description": "log map in hyperbolic geometry"
+        },
+        "distance_sph": {
+          "type": "float"
+        },
+        "distance_hyp": {
+          "type": "float"
+        }
+      },
+      "complexity": {
+        "time": "O(n_dims)",
+        "space": "O(n_dims)"
+      },
+      "mathematical_formula": {
+        "inverse_stereographic": "S^{-1}: S^n → H^n via (x₁,...,xₙ,xₙ₊₁) ↦ (x₁,...,xₙ)/(1+xₙ₊₁)",
+        "distance_scaling": "d_hyp = 2 * artanh(tan(d_sph/2))"
+      },
+      "implementation_notes": [
+        "Inverse stereographic projection",
+        "Handle poles (xₙ₊₁ = ±1) carefully",
+        "Dimension reduction: ℝ^{n+1} → ℝ^n",
+        "Preserve conformal structure",
+        "Tangent vectors via pullback"
+      ],
+      "test_cases": [
+        {
+          "name": "pole_conversion",
+          "base_point_sph": [0.0, 0.0, 1.0],
+          "target_point_sph": [1.0, 0.0, 0.0],
+          "tolerance": 1e-6
+        },
+        {
+          "name": "inverse_distance_scaling",
+          "description": "Verify inverse distance formula",
+          "tolerance": 1e-6
+        },
+        {
+          "name": "round_trip_inverse",
+          "description": "S^n → H^n → S^n should be identity",
+          "tolerance": 1e-8
+        },
+        {
+          "name": "equator_to_origin",
+          "base_point_sph": [1.0, 0.0, 0.0],
+          "description": "Equator maps to finite points in H^n"
+        },
+        {
+          "name": "dimension_reduction",
+          "description": "Verify dimension n+1 → n"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "south_pole",
+          "base_point_sph": [0.0, 0.0, -1.0],
+          "description": "South pole maps to infinity (handle carefully)"
+        },
+        {
+          "name": "near_pole",
+          "base_point_sph": [0.0, 0.0, 0.99],
+          "description": "Near pole → large hyperbolic coordinates"
+        },
+        {
+          "name": "antipodal_handling",
+          "description": "Antipodal points on S^n"
+        }
+      ]
+    },
+    {
+      "name": "mixed_curvature_log_map",
+      "description": "Logarithmic map on mixed-curvature manifolds where different regions have different curvatures. Essential for product spaces and adaptive embeddings.",
+      "parameters": {
+        "base_point": {
+          "type": "array",
+          "shape": "[n_total]",
+          "description": "Base point on mixed manifold"
+        },
+        "target_point": {
+          "type": "array",
+          "shape": "[n_total]",
+          "description": "Target point"
+        },
+        "curvature_partition": {
+          "type": "array",
+          "description": "List of {start_dim, end_dim, curvature, geometry_type}"
+        }
+      },
+      "returns": {
+        "tangent_vector": {
+          "type": "array",
+          "shape": "[n_total]",
+          "description": "Tangent vector in mixed geometry"
+        },
+        "distance": {
+          "type": "float",
+          "description": "Total distance (product metric)"
+        },
+        "component_distances": {
+          "type": "array",
+          "description": "Distances in each curvature region"
+        },
+        "component_tangents": {
+          "type": "array",
+          "description": "Tangent vectors for each region"
+        }
+      },
+      "complexity": {
+        "time": "O(n_total) - linear in total dimension",
+        "space": "O(n_total)"
+      },
+      "mathematical_formula": {
+        "product_metric": "d²(p,q) = Σᵢ dᵢ²(pᵢ,qᵢ) where i indexes curvature regions",
+        "mixed_log": "log_p(q) = (log_p₁(q₁), log_p₂(q₂), ..., log_pₖ(qₖ))"
+      },
+      "implementation_notes": [
+        "Partition input into curvature regions",
+        "Apply appropriate log map to each region",
+        "Concatenate results",
+        "Use product metric for distance",
+        "Handle transitions between regions smoothly"
+      ],
+      "test_cases": [
+        {
+          "name": "hyp_sph_euclidean",
+          "curvature_partition": [
+            {"start_dim": 0, "end_dim": 2, "curvature": -1.0, "geometry_type": "hyperbolic"},
+            {"start_dim": 2, "end_dim": 5, "curvature": 1.0, "geometry_type": "spherical"},
+            {"start_dim": 5, "end_dim": 8, "curvature": 0.0, "geometry_type": "euclidean"}
+          ],
+          "tolerance": 1e-6
+        },
+        {
+          "name": "varying_curvatures",
+          "curvature_partition": [
+            {"start_dim": 0, "end_dim": 3, "curvature": -2.0, "geometry_type": "hyperbolic"},
+            {"start_dim": 3, "end_dim": 6, "curvature": 0.5, "geometry_type": "spherical"}
+          ],
+          "tolerance": 1e-6
+        },
+        {
+          "name": "product_distance",
+          "description": "Verify product metric formula",
+          "tolerance": 1e-8
+        },
+        {
+          "name": "component_independence",
+          "description": "Changes in one region don't affect others",
+          "tolerance": 1e-10
+        },
+        {
+          "name": "high_dimensional_mixed",
+          "n_total": 128,
+          "num_regions": 4,
+          "description": "High-dimensional mixed manifold"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "single_region",
+          "curvature_partition": [{"start_dim": 0, "end_dim": 5, "curvature": -1.0, "geometry_type": "hyperbolic"}],
+          "description": "Degenerate case: single curvature"
+        },
+        {
+          "name": "many_regions",
+          "num_regions": 20,
+          "description": "Many small curvature regions"
+        },
+        {
+          "name": "overlapping_regions",
+          "description": "Error handling for invalid partitions"
+        }
+      ]
+    },
+    {
+      "name": "curvature_interpolation_log_map",
+      "description": "Logarithmic map with smooth interpolation between curvatures. Enables continuous transitions in adaptive curvature learning.",
+      "parameters": {
+        "base_point": {
+          "type": "array",
+          "shape": "[n_dims]"
+        },
+        "target_point": {
+          "type": "array",
+          "shape": "[n_dims]"
+        },
+        "curvature_start": {
+          "type": "float",
+          "description": "Starting curvature κ₀"
+        },
+        "curvature_end": {
+          "type": "float",
+          "description": "Ending curvature κ₁"
+        },
+        "interpolation_param": {
+          "type": "float",
+          "range": "[0, 1]",
+          "description": "Interpolation parameter t: κ(t) = (1-t)κ₀ + tκ₁"
+        },
+        "interpolation_method": {
+          "type": "string",
+          "enum": ["linear", "geodesic", "exponential"],
+          "default": "geodesic",
+          "description": "Curvature interpolation method"
+        }
+      },
+      "returns": {
+        "tangent_vector": {
+          "type": "array",
+          "shape": "[n_dims]",
+          "description": "log map at interpolated curvature"
+        },
+        "distance": {
+          "type": "float"
+        },
+        "interpolated_curvature": {
+          "type": "float",
+          "description": "κ(t)"
+        },
+        "geometry_type": {
+          "type": "string",
+          "description": "Geometry at interpolated curvature"
+        }
+      },
+      "complexity": {
+        "time": "O(n_dims)",
+        "space": "O(n_dims)"
+      },
+      "mathematical_formula": {
+        "linear_interpolation": "κ(t) = (1-t)κ₀ + tκ₁",
+        "geodesic_interpolation": "κ(t) = κ₀ * (κ₁/κ₀)^t (in log space)",
+        "smooth_transition": "log_p^{κ(t)}(q) smoothly varies with t"
+      },
+      "implementation_notes": [
+        "Compute interpolated curvature κ(t)",
+        "Determine geometry type from sign of κ(t)",
+        "Apply log map with κ(t)",
+        "Ensure smooth derivatives ∂log/∂t",
+        "Handle sign changes (κ crosses zero)"
+      ],
+      "test_cases": [
+        {
+          "name": "hyperbolic_to_euclidean",
+          "curvature_start": -1.0,
+          "curvature_end": 0.0,
+          "interpolation_param": 0.5,
+          "expected_curvature": -0.5,
+          "tolerance": 1e-6
+        },
+        {
+          "name": "euclidean_to_spherical",
+          "curvature_start": 0.0,
+          "curvature_end": 1.0,
+          "interpolation_param": 0.5,
+          "expected_curvature": 0.5,
+          "tolerance": 1e-6
+        },
+        {
+          "name": "full_interpolation",
+          "curvature_start": -2.0,
+          "curvature_end": 2.0,
+          "interpolation_param": 0.5,
+          "expected_curvature": 0.0,
+          "tolerance": 1e-6
+        },
+        {
+          "name": "smoothness_check",
+          "description": "Verify smooth variation with t",
+          "num_steps": 100
+        },
+        {
+          "name": "boundary_values",
+          "description": "t=0 gives κ₀, t=1 gives κ₁",
+          "tolerance": 1e-10
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "zero_crossing",
+          "curvature_start": -1.0,
+          "curvature_end": 1.0,
+          "interpolation_param": 0.5,
+          "description": "Interpolation crosses κ=0"
+        },
+        {
+          "name": "same_curvature",
+          "curvature_start": -1.0,
+          "curvature_end": -1.0,
+          "description": "No interpolation needed"
+        },
+        {
+          "name": "extreme_curvatures",
+          "curvature_start": -100.0,
+          "curvature_end": 100.0,
+          "description": "Large curvature range"
+        }
+      ]
+    },
+    {
+      "name": "universal_log_map",
+      "description": "Universal logarithmic map that works across all curvatures in a unified framework. Single implementation for κ ∈ (-∞, +∞).",
+      "parameters": {
+        "base_point": {
+          "type": "array",
+          "shape": "[n_dims]",
+          "description": "Base point (representation depends on curvature)"
+        },
+        "target_point": {
+          "type": "array",
+          "shape": "[n_dims]",
+          "description": "Target point"
+        },
+        "curvature": {
+          "type": "float",
+          "description": "Curvature κ (any real value)"
+        },
+        "representation": {
+          "type": "string",
+          "enum": ["poincare", "hyperboloid", "klein", "stereographic", "ambient"],
+          "default": "ambient",
+          "description": "Point representation"
+        }
+      },
+      "returns": {
+        "tangent_vector": {
+          "type": "array",
+          "shape": "[n_dims]",
+          "description": "Universal tangent vector"
+        },
+        "distance": {
+          "type": "float",
+          "description": "Geodesic distance"
+        },
+        "effective_geometry": {
+          "type": "string",
+          "description": "Effective geometry (hyperbolic/spherical/euclidean)"
+        }
+      },
+      "complexity": {
+        "time": "O(n_dims)",
+        "space": "O(n_dims)"
+      },
+      "mathematical_formula": {
+        "unified_formula": "log_p(q) = (1/√|κ|) * f(√|κ| * d(p,q)) * (q ⊖_κ p) where f depends on sign(κ)",
+        "hyperbolic": "f(x) = sinh(x)/x for κ < 0",
+        "euclidean": "f(x) = 1 for κ = 0",
+        "spherical": "f(x) = sin(x)/x for κ > 0"
+      },
+      "implementation_notes": [
+        "Use unified formulation with curvature parameter",
+        "Handle κ → 0 limit (Euclidean) carefully",
+        "Scale coordinates by 1/√|κ| for numerical stability",
+        "Single code path for all curvatures",
+        "Automatic geometry detection from sign(κ)"
+      ],
+      "test_cases": [
+        {
+          "name": "universal_hyperbolic",
+          "curvature": -1.0,
+          "base_point": [0.0, 0.0],
+          "target_point": [0.5, 0.0],
+          "tolerance": 1e-8
+        },
+        {
+          "name": "universal_euclidean",
+          "curvature": 0.0,
+          "base_point": [1.0, 2.0],
+          "target_point": [4.0, 6.0],
+          "tolerance": 1e-10
+        },
+        {
+          "name": "universal_spherical",
+          "curvature": 1.0,
+          "base_point": [0.0, 0.0, 1.0],
+          "target_point": [1.0, 0.0, 0.0],
+          "tolerance": 1e-8
+        },
+        {
+          "name": "curvature_continuity",
+          "description": "Smooth transition as κ varies",
+          "curvatures": [-2.0, -1.0, -0.1, 0.0, 0.1, 1.0, 2.0]
+        },
+        {
+          "name": "consistency_check",
+          "description": "Universal matches specialized implementations",
+          "tolerance": 1e-10
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "near_zero_curvature",
+          "curvature": 1e-10,
+          "description": "κ ≈ 0 (Euclidean limit)"
+        },
+        {
+          "name": "large_curvature",
+          "curvature": 100.0,
+          "description": "Very large |κ|"
+        },
+        {
+          "name": "curvature_sign_change",
+          "description": "Behavior across κ = 0"
+        }
+      ]
+    }
+  ],
+  "conversion_utilities": {
+    "curvature_scaling": "Scale between different curvature magnitudes: κ₁ → κ₂",
+    "geometry_detection": "Automatically detect geometry from point properties",
+    "smooth_transitions": "Ensure C^∞ smoothness in curvature interpolation"
+  },
+  "dependencies": [
+    "numpy",
+    "scipy",
+    "torch (for differentiable curvature)"
+  ],
+  "references": [
+    "Gu, A., et al. (2019). Learning Mixed-Curvature Representations in Product Spaces. ICLR.",
+    "Skopek, O., et al. (2020). Mixed-Curvature Variational Autoencoders. ICLR.",
+    "Bachmann, G., et al. (2020). Constant Curvature Graph Convolutional Networks. ICML."
+  ]
+}
