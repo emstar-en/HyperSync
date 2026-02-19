@@ -1,0 +1,92 @@
+{
+  "agua": {
+    "tier": "full",
+    "full_name": "Adaptive Unified Geometric Architecture",
+    "rationale": "Foundation for geometric computing - fully open source"
+  },
+  "pct": {
+    "tier": "full",
+    "full_name": "Pathfinder Cartographer Trailblazer",
+    "rationale": "Workflow and lifecycle management - essential for orchestration"
+  },
+  "sdl": {
+    "tier": "full",
+    "full_name": "Semantic Data Lake",
+    "rationale": "Basic semantic indexing and search - core functionality"
+  },
+  "hvs-nvm": {
+    "tier": "full",
+    "full_name": "HyperVisor System - Node Virtual Machine",
+    "rationale": "Core runtime substrate - fully open source"
+  },
+  "vnes": {
+    "tier": "full",
+    "full_name": "Versatile Namespace Extension System",
+    "rationale": "Plugin architecture - fully open source"
+  },
+  "mom": {
+    "tier": "full",
+    "full_name": "Machine Orchestration Manager",
+    "rationale": "CRITICAL: Core to model orchestration - must be open for autonomous agent development and local execution",
+    "core_features": [
+      "model_orchestration",
+      "resource_management",
+      "task_distribution",
+      "agent_coordination",
+      "local_execution"
+    ],
+    "proprietary_extensions": [
+      "enterprise_scaling",
+      "distributed_consensus",
+      "global_load_balancing"
+    ]
+  },
+  "haw": {
+    "tier": "full",
+    "full_name": "Human Agent Workspace",
+    "rationale": "CRITICAL: Core to human-AI interaction - must be open for community development and local use",
+    "core_features": [
+      "workspace_management",
+      "agent_interface",
+      "user_interaction",
+      "local_workspace"
+    ],
+    "proprietary_extensions": [
+      "enterprise_collaboration",
+      "multi_tenant_workspaces",
+      "cloud_sync"
+    ]
+  },
+  "ascif": {
+    "tier": "full",
+    "full_name": "Adaptive Safety Cognition and Intelligence Framework",
+    "rationale": "CRITICAL: Ethics and safety must be open source - transparency essential for trust and community oversight",
+    "core_features": [
+      "safety_constraints",
+      "ethical_guidelines",
+      "alignment_checks",
+      "basic_oversight"
+    ],
+    "proprietary_extensions": [
+      "ml_safety_models",
+      "advanced_monitoring",
+      "enterprise_compliance"
+    ]
+  },
+  "mxfy": {
+    "tier": "full",
+    "full_name": "Make X For Y",
+    "rationale": "CRITICAL: Intent analysis and synthesis core to autonomous operation - must be open for smaller model development",
+    "core_features": [
+      "intent_parsing",
+      "basic_synthesis",
+      "template_fabrication",
+      "local_generation"
+    ],
+    "proprietary_extensions": [
+      "ml_enhanced_synthesis",
+      "advanced_optimization",
+      "enterprise_templates"
+    ]
+  }
+}

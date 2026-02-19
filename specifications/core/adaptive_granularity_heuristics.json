@@ -1,0 +1,628 @@
+{
+  "spec_name": "adaptive_granularity_heuristics",
+  "version": "1.0.0",
+  "description": "Adaptive granularity and heuristic operations for HyperSync multi-scale geometric processing",
+  "sections": {
+    "multi_scale_granularity_control": {
+      "description": "Operations for dynamic precision adjustment based on geometric properties",
+      "operations": [
+        {
+          "name": "precision_adapt_curvature",
+          "description": "Adjust numerical precision based on local curvature magnitude to maintain accuracy in high-curvature regions",
+          "params": {
+            "point": {"type": "array", "description": "Point coordinates in product manifold"},
+            "curvature_tensor": {"type": "object", "description": "Local curvature tensor at point"},
+            "base_precision": {"type": "integer", "description": "Base precision bits (16-128)"},
+            "sensitivity": {"type": "number", "description": "Curvature sensitivity factor (0.1-10.0)"}
+          },
+          "returns": {
+            "adapted_precision": {"type": "integer", "description": "Adjusted precision bits"},
+            "curvature_magnitude": {"type": "number", "description": "Computed curvature magnitude"},
+            "precision_delta": {"type": "integer", "description": "Change from base precision"}
+          },
+          "complexity": "O(1)",
+          "tier_access": ["standard", "professional", "enterprise"],
+          "test_cases": [
+            {"input": {"point": [0.5, 0.3, 0.2], "curvature_tensor": {"scalar": 0.1}, "base_precision": 32, "sensitivity": 1.0}, "expected": {"adapted_precision": 32, "precision_delta": 0}},
+            {"input": {"point": [0.9, 0.8, 0.7], "curvature_tensor": {"scalar": 5.0}, "base_precision": 32, "sensitivity": 2.0}, "expected": {"adapted_precision": 64, "precision_delta": 32}}
+          ],
+          "edge_cases": [
+            {"input": {"point": [1.0, 1.0, 1.0], "curvature_tensor": {"scalar": "Infinity"}, "base_precision": 32, "sensitivity": 1.0}, "expected": {"error": "CURVATURE_SINGULARITY", "fallback_precision": 128}}
+          ]
+        },
+        {
+          "name": "precision_scale_set",
+          "description": "Set precision scale for a defined geometric region with boundary handling",
+          "params": {
+            "region_bounds": {"type": "object", "description": "Bounding box of region {min: [], max: []}"},
+            "precision_level": {"type": "integer", "description": "Target precision bits (16-128)"},
+            "interpolation_width": {"type": "number", "description": "Boundary interpolation width"}
+          },
+          "returns": {
+            "region_id": {"type": "string", "description": "Unique region identifier"},
+            "effective_precision": {"type": "integer", "description": "Applied precision level"},
+            "boundary_zones": {"type": "array", "description": "Interpolation boundary definitions"}
+          },
+          "complexity": "O(1)",
+          "tier_access": ["professional", "enterprise"],
+          "test_cases": [
+            {"input": {"region_bounds": {"min": [0, 0, 0], "max": [1, 1, 1]}, "precision_level": 64, "interpolation_width": 0.1}, "expected": {"effective_precision": 64, "boundary_zones": 6}},
+            {"input": {"region_bounds": {"min": [-1, -1], "max": [1, 1]}, "precision_level": 32, "interpolation_width": 0.0}, "expected": {"effective_precision": 32, "boundary_zones": 0}}
+          ],
+          "edge_cases": [
+            {"input": {"region_bounds": {"min": [0, 0], "max": [0, 0]}, "precision_level": 64, "interpolation_width": 0.1}, "expected": {"error": "ZERO_VOLUME_REGION"}}
+          ]
+        },
+        {
+          "name": "precision_interpolate",
+          "description": "Smoothly interpolate precision between adjacent regions to avoid numerical discontinuities",
+          "params": {
+            "region_a_precision": {"type": "integer", "description": "Precision of first region"},
+            "region_b_precision": {"type": "integer", "description": "Precision of second region"},
+            "position": {"type": "number", "description": "Interpolation position (0.0-1.0)"},
+            "interpolation_method": {"type": "string", "description": "Method: linear, smoothstep, cubic"}
+          },
+          "returns": {
+            "interpolated_precision": {"type": "integer", "description": "Resulting precision bits"},
+            "blend_factor": {"type": "number", "description": "Applied blend factor"}
+          },
+          "complexity": "O(1)",
+          "tier_access": ["standard", "professional", "enterprise"],
+          "test_cases": [
+            {"input": {"region_a_precision": 32, "region_b_precision": 64, "position": 0.5, "interpolation_method": "linear"}, "expected": {"interpolated_precision": 48, "blend_factor": 0.5}},
+            {"input": {"region_a_precision": 16, "region_b_precision": 128, "position": 0.0, "interpolation_method": "smoothstep"}, "expected": {"interpolated_precision": 16, "blend_factor": 0.0}}
+          ],
+          "edge_cases": [
+            {"input": {"region_a_precision": 32, "region_b_precision": 64, "position": 1.5, "interpolation_method": "linear"}, "expected": {"error": "POSITION_OUT_OF_RANGE", "clamped_result": 64}}
+          ]
+        },
+        {
+          "name": "precision_budget_allocate",
+          "description": "Allocate precision budget across multiple operations to optimize accuracy within computational constraints",
+          "params": {
+            "total_budget": {"type": "integer", "description": "Total precision budget in bits"},
+            "operations": {"type": "array", "description": "List of operations with priority weights"},
+            "min_precision": {"type": "integer", "description": "Minimum precision per operation"},
+            "allocation_strategy": {"type": "string", "description": "Strategy: proportional, priority, uniform"}
+          },
+          "returns": {
+            "allocations": {"type": "object", "description": "Map of operation_id to allocated precision"},
+            "total_allocated": {"type": "integer", "description": "Total bits allocated"},
+            "budget_utilization": {"type": "number", "description": "Fraction of budget used"}
+          },
+          "complexity": "O(n)",
+          "tier_access": ["professional", "enterprise"],
+          "test_cases": [
+            {"input": {"total_budget": 256, "operations": [{"id": "op1", "weight": 2}, {"id": "op2", "weight": 1}], "min_precision": 16, "allocation_strategy": "proportional"}, "expected": {"allocations": {"op1": 170, "op2": 86}, "budget_utilization": 1.0}},
+            {"input": {"total_budget": 128, "operations": [{"id": "a", "weight": 1}, {"id": "b", "weight": 1}], "min_precision": 32, "allocation_strategy": "uniform"}, "expected": {"allocations": {"a": 64, "b": 64}, "budget_utilization": 1.0}}
+          ],
+          "edge_cases": [
+            {"input": {"total_budget": 32, "operations": [{"id": "op1", "weight": 1}, {"id": "op2", "weight": 1}, {"id": "op3", "weight": 1}], "min_precision": 16, "allocation_strategy": "proportional"}, "expected": {"error": "INSUFFICIENT_BUDGET", "minimum_required": 48}}
+          ]
+        },
+        {
+          "name": "precision_auto_tune",
+          "description": "Automatically tune precision to achieve target accuracy with minimal computational cost",
+          "params": {
+            "target_accuracy": {"type": "number", "description": "Target relative accuracy (e.g., 1e-6)"},
+            "sample_points": {"type": "array", "description": "Representative sample points for tuning"},
+            "max_precision": {"type": "integer", "description": "Maximum allowed precision bits"},
+            "max_iterations": {"type": "integer", "description": "Maximum tuning iterations"}
+          },
+          "returns": {
+            "optimal_precision": {"type": "integer", "description": "Determined optimal precision"},
+            "achieved_accuracy": {"type": "number", "description": "Accuracy achieved at optimal precision"},
+            "iterations_used": {"type": "integer", "description": "Number of tuning iterations"},
+            "convergence_status": {"type": "string", "description": "converged, max_iterations, max_precision"}
+          },
+          "complexity": "O(n)",
+          "tier_access": ["enterprise"],
+          "test_cases": [
+            {"input": {"target_accuracy": 1e-6, "sample_points": [[0.1, 0.2], [0.3, 0.4]], "max_precision": 128, "max_iterations": 10}, "expected": {"optimal_precision": 64, "convergence_status": "converged"}},
+            {"input": {"target_accuracy": 1e-3, "sample_points": [[0.5, 0.5]], "max_precision": 64, "max_iterations": 5}, "expected": {"optimal_precision": 32, "convergence_status": "converged"}}
+          ],
+          "edge_cases": [
+            {"input": {"target_accuracy": 1e-20, "sample_points": [[0.1, 0.2]], "max_precision": 64, "max_iterations": 100}, "expected": {"optimal_precision": 64, "achieved_accuracy": 1e-12, "convergence_status": "max_precision"}}
+          ]
+        }
+      ]
+    },
+    "subspace_query_engine": {
+      "description": "Operations for querying within specific geometric subspaces of the H⁴×S³×E⁵ product manifold",
+      "operations": [
+        {
+          "name": "subspace_query_h4",
+          "description": "Execute query within the H⁴ hyperbolic component using native hyperbolic distance metrics",
+          "params": {
+            "query_point": {"type": "array", "description": "4D query point in hyperbolic coordinates"},
+            "radius": {"type": "number", "description": "Hyperbolic search radius"},
+            "curvature": {"type": "number", "description": "Hyperbolic curvature parameter (negative)"},
+            "max_results": {"type": "integer", "description": "Maximum results to return"}
+          },
+          "returns": {
+            "results": {"type": "array", "description": "Matching points with hyperbolic distances"},
+            "search_volume": {"type": "number", "description": "Hyperbolic volume searched"},
+            "boundary_intersections": {"type": "integer", "description": "Number of boundary crossings"}
+          },
+          "complexity": "O(log n)",
+          "tier_access": ["standard", "professional", "enterprise"],
+          "test_cases": [
+            {"input": {"query_point": [0.0, 0.0, 0.0, 0.1], "radius": 1.0, "curvature": -1.0, "max_results": 10}, "expected": {"results_count_lte": 10, "search_volume_gt": 0}},
+            {"input": {"query_point": [0.5, 0.5, 0.5, 0.5], "radius": 0.5, "curvature": -0.5, "max_results": 5}, "expected": {"results_count_lte": 5}}
+          ],
+          "edge_cases": [
+            {"input": {"query_point": [0.99, 0.0, 0.0, 0.0], "radius": 2.0, "curvature": -1.0, "max_results": 10}, "expected": {"warning": "NEAR_BOUNDARY", "results": [], "boundary_intersections_gt": 0}}
+          ]
+        },
+        {
+          "name": "subspace_query_s3",
+          "description": "Execute query within the S³ spherical component using great circle distances",
+          "params": {
+            "query_point": {"type": "array", "description": "4D unit quaternion representing S³ point"},
+            "angular_radius": {"type": "number", "description": "Search radius in radians (0-π)"},
+            "max_results": {"type": "integer", "description": "Maximum results to return"}
+          },
+          "returns": {
+            "results": {"type": "array", "description": "Matching points with angular distances"},
+            "solid_angle": {"type": "number", "description": "Solid angle of search region"},
+            "antipodal_included": {"type": "boolean", "description": "Whether antipodal region was searched"}
+          },
+          "complexity": "O(log n)",
+          "tier_access": ["standard", "professional", "enterprise"],
+          "test_cases": [
+            {"input": {"query_point": [1.0, 0.0, 0.0, 0.0], "angular_radius": 0.5, "max_results": 20}, "expected": {"results_count_lte": 20, "antipodal_included": false}},
+            {"input": {"query_point": [0.707, 0.707, 0.0, 0.0], "angular_radius": 3.14159, "max_results": 100}, "expected": {"antipodal_included": true}}
+          ],
+          "edge_cases": [
+            {"input": {"query_point": [0.5, 0.5, 0.5, 0.5], "angular_radius": 4.0, "max_results": 10}, "expected": {"error": "ANGULAR_RADIUS_EXCEEDS_PI", "clamped_radius": 3.14159}}
+          ]
+        },
+        {
+          "name": "subspace_query_e5",
+          "description": "Execute query within the E⁵ Euclidean component using standard L2 distance",
+          "params": {
+            "query_point": {"type": "array", "description": "5D Euclidean query point"},
+            "radius": {"type": "number", "description": "Euclidean search radius"},
+            "max_results": {"type": "integer", "description": "Maximum results to return"},
+            "use_approximate": {"type": "boolean", "description": "Use approximate nearest neighbor"}
+          },
+          "returns": {
+            "results": {"type": "array", "description": "Matching points with Euclidean distances"},
+            "search_volume": {"type": "number", "description": "5D ball volume searched"},
+            "exact_search": {"type": "boolean", "description": "Whether exact search was performed"}
+          },
+          "complexity": "O(log n)",
+          "tier_access": ["standard", "professional", "enterprise"],
+          "test_cases": [
+            {"input": {"query_point": [0.0, 0.0, 0.0, 0.0, 0.0], "radius": 1.0, "max_results": 50, "use_approximate": false}, "expected": {"exact_search": true, "search_volume": 5.264}},
+            {"input": {"query_point": [1.0, 2.0, 3.0, 4.0, 5.0], "radius": 0.1, "max_results": 10, "use_approximate": true}, "expected": {"exact_search": false}}
+          ],
+          "edge_cases": [
+            {"input": {"query_point": [1e10, 0, 0, 0, 0], "radius": 1.0, "max_results": 10, "use_approximate": false}, "expected": {"warning": "FAR_FROM_DATA_CENTROID", "results": []}}
+          ]
+        },
+        {
+          "name": "subspace_project",
+          "description": "Project a full product manifold query to a specific target subspace",
+          "params": {
+            "full_point": {"type": "array", "description": "12D point in full H⁴×S³×E⁵ space"},
+            "target_subspace": {"type": "string", "description": "Target: H4, S3, E5, H4xS3, S3xE5, H4xE5"},
+            "projection_method": {"type": "string", "description": "Method: orthogonal, geodesic, metric_preserving"}
+          },
+          "returns": {
+            "projected_point": {"type": "array", "description": "Point in target subspace"},
+            "projection_error": {"type": "number", "description": "Information loss from projection"},
+            "subspace_dimension": {"type": "integer", "description": "Dimension of target subspace"}
+          },
+          "complexity": "O(1)",
+          "tier_access": ["standard", "professional", "enterprise"],
+          "test_cases": [
+            {"input": {"full_point": [0.1, 0.2, 0.3, 0.4, 0.5, 0.5, 0.5, 0.5, 1, 2, 3, 4, 5], "target_subspace": "H4", "projection_method": "orthogonal"}, "expected": {"subspace_dimension": 4, "projected_point_length": 4}},
+            {"input": {"full_point": [0, 0, 0, 0.1, 1, 0, 0, 0, 0, 0, 0, 0, 0], "target_subspace": "S3xE5", "projection_method": "geodesic"}, "expected": {"subspace_dimension": 8}}
+          ],
+          "edge_cases": [
+            {"input": {"full_point": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "target_subspace": "INVALID", "projection_method": "orthogonal"}, "expected": {"error": "UNKNOWN_SUBSPACE"}}
+          ]
+        },
+        {
+          "name": "subspace_combine_results",
+          "description": "Combine and rank results from multiple subspace queries using weighted fusion",
+          "params": {
+            "subspace_results": {"type": "object", "description": "Map of subspace_id to result arrays"},
+            "weights": {"type": "object", "description": "Map of subspace_id to importance weights"},
+            "fusion_method": {"type": "string", "description": "Method: weighted_sum, rank_fusion, pareto"},
+            "top_k": {"type": "integer", "description": "Number of final results to return"}
+          },
+          "returns": {
+            "combined_results": {"type": "array", "description": "Fused and ranked results"},
+            "subspace_contributions": {"type": "object", "description": "Contribution of each subspace to final results"},
+            "fusion_quality": {"type": "number", "description": "Quality metric of fusion (0-1)"}
+          },
+          "complexity": "O(n log n)",
+          "tier_access": ["professional", "enterprise"],
+          "test_cases": [
+            {"input": {"subspace_results": {"H4": [{"id": 1, "score": 0.9}], "S3": [{"id": 2, "score": 0.8}]}, "weights": {"H4": 0.6, "S3": 0.4}, "fusion_method": "weighted_sum", "top_k": 5}, "expected": {"combined_results_length": 2}},
+            {"input": {"subspace_results": {"E5": [{"id": 1, "score": 0.5}, {"id": 2, "score": 0.4}]}, "weights": {"E5": 1.0}, "fusion_method": "rank_fusion", "top_k": 1}, "expected": {"combined_results_length": 1}}
+          ],
+          "edge_cases": [
+            {"input": {"subspace_results": {}, "weights": {}, "fusion_method": "weighted_sum", "top_k": 10}, "expected": {"combined_results": [], "fusion_quality": 0.0}}
+          ]
+        }
+      ]
+    },
+    "distribution_adaptive_routing": {
+      "description": "Operations for routing queries based on local data distribution characteristics",
+      "operations": [
+        {
+          "name": "density_estimate_local",
+          "description": "Estimate local data density at a point using kernel density estimation",
+          "params": {
+            "point": {"type": "array", "description": "Query point for density estimation"},
+            "bandwidth": {"type": "number", "description": "Kernel bandwidth parameter"},
+            "kernel_type": {"type": "string", "description": "Kernel: gaussian, epanechnikov, uniform"},
+            "sample_size": {"type": "integer", "description": "Number of nearby points to sample"}
+          },
+          "returns": {
+            "density": {"type": "number", "description": "Estimated density value"},
+            "confidence": {"type": "number", "description": "Confidence interval width"},
+            "effective_samples": {"type": "integer", "description": "Number of samples used"}
+          },
+          "complexity": "O(n)",
+          "tier_access": ["standard", "professional", "enterprise"],
+          "test_cases": [
+            {"input": {"point": [0.5, 0.5, 0.5], "bandwidth": 0.1, "kernel_type": "gaussian", "sample_size": 100}, "expected": {"density_gt": 0, "effective_samples_lte": 100}},
+            {"input": {"point": [0.0, 0.0, 0.0], "bandwidth": 0.5, "kernel_type": "uniform", "sample_size": 50}, "expected": {"density_gt": 0}}
+          ],
+          "edge_cases": [
+            {"input": {"point": [100, 100, 100], "bandwidth": 0.01, "kernel_type": "gaussian", "sample_size": 100}, "expected": {"density": 0.0, "effective_samples": 0, "warning": "NO_NEARBY_DATA"}}
+          ]
+        },
+        {
+          "name": "route_sparse_region",
+          "description": "Determine optimal routing strategy for queries in sparse data regions",
+          "params": {
+            "query": {"type": "object", "description": "Query specification"},
+            "density_threshold": {"type": "number", "description": "Threshold below which region is sparse"},
+            "fallback_strategies": {"type": "array", "description": "Ordered list of fallback strategies"}
+          },
+          "returns": {
+            "selected_strategy": {"type": "string", "description": "Chosen routing strategy"},
+            "estimated_cost": {"type": "number", "description": "Estimated computational cost"},
+            "coverage_radius": {"type": "number", "description": "Expanded search radius for sparse region"}
+          },
+          "complexity": "O(1)",
+          "tier_access": ["professional", "enterprise"],
+          "test_cases": [
+            {"input": {"query": {"point": [0, 0, 0], "k": 5}, "density_threshold": 0.01, "fallback_strategies": ["expand_radius", "approximate", "exact"]}, "expected": {"selected_strategy": "expand_radius"}},
+            {"input": {"query": {"point": [1, 1, 1], "k": 10}, "density_threshold": 0.001, "fallback_strategies": ["exact"]}, "expected": {"selected_strategy": "exact"}}
+          ],
+          "edge_cases": [
+            {"input": {"query": {"point": [0, 0, 0], "k": 5}, "density_threshold": 0.01, "fallback_strategies": []}, "expected": {"error": "NO_FALLBACK_STRATEGIES"}}
+          ]
+        },
+        {
+          "name": "route_dense_region",
+          "description": "Determine optimal routing strategy for queries in dense data regions",
+          "params": {
+            "query": {"type": "object", "description": "Query specification"},
+            "density_threshold": {"type": "number", "description": "Threshold above which region is dense"},
+            "pruning_strategies": {"type": "array", "description": "Available pruning strategies"}
+          },
+          "returns": {
+            "selected_strategy": {"type": "string", "description": "Chosen routing strategy"},
+            "estimated_cost": {"type": "number", "description": "Estimated computational cost"},
+            "pruning_factor": {"type": "number", "description": "Expected data reduction factor"}
+          },
+          "complexity": "O(1)",
+          "tier_access": ["professional", "enterprise"],
+          "test_cases": [
+            {"input": {"query": {"point": [0.5, 0.5], "k": 10}, "density_threshold": 0.5, "pruning_strategies": ["spatial_hash", "vp_tree", "lsh"]}, "expected": {"selected_strategy": "spatial_hash", "pruning_factor_gt": 1}},
+            {"input": {"query": {"point": [0, 0], "k": 100}, "density_threshold": 0.1, "pruning_strategies": ["lsh"]}, "expected": {"selected_strategy": "lsh"}}
+          ],
+          "edge_cases": [
+            {"input": {"query": {"point": [0, 0], "k": 1000000}, "density_threshold": 0.5, "pruning_strategies": ["spatial_hash"]}, "expected": {"warning": "HIGH_K_VALUE", "selected_strategy": "spatial_hash", "estimated_cost_high": true}}
+          ]
+        },
+        {
+          "name": "density_map_build",
+          "description": "Build a density map of the data space for efficient routing decisions",
+          "params": {
+            "data_sample": {"type": "array", "description": "Sample of data points for density estimation"},
+            "grid_resolution": {"type": "array", "description": "Resolution per dimension"},
+            "smoothing_factor": {"type": "number", "description": "Smoothing factor for density interpolation"}
+          },
+          "returns": {
+            "density_map_id": {"type": "string", "description": "Identifier for stored density map"},
+            "grid_cells": {"type": "integer", "description": "Total number of grid cells"},
+            "density_range": {"type": "object", "description": "{min, max, mean, std} of densities"},
+            "sparse_fraction": {"type": "number", "description": "Fraction of cells below sparse threshold"}
+          },
+          "complexity": "O(n)",
+          "tier_access": ["enterprise"],
+          "test_cases": [
+            {"input": {"data_sample": [[0, 0], [1, 1], [0.5, 0.5]], "grid_resolution": [10, 10], "smoothing_factor": 0.1}, "expected": {"grid_cells": 100, "density_range": {"min_gte": 0}}},
+            {"input": {"data_sample": [[0, 0, 0]], "grid_resolution": [5, 5, 5], "smoothing_factor": 0.5}, "expected": {"grid_cells": 125}}
+          ],
+          "edge_cases": [
+            {"input": {"data_sample": [], "grid_resolution": [10, 10], "smoothing_factor": 0.1}, "expected": {"error": "EMPTY_DATA_SAMPLE"}}
+          ]
+        },
+        {
+          "name": "route_adaptive_select",
+          "description": "Select optimal route based on precomputed density map and query characteristics",
+          "params": {
+            "query": {"type": "object", "description": "Query specification with point and parameters"},
+            "density_map_id": {"type": "string", "description": "Reference to precomputed density map"},
+            "optimization_target": {"type": "string", "description": "Target: latency, accuracy, cost"}
+          },
+          "returns": {
+            "selected_route": {"type": "string", "description": "Chosen routing path"},
+            "density_at_query": {"type": "number", "description": "Density at query location"},
+            "expected_performance": {"type": "object", "description": "Expected latency, accuracy, cost"}
+          },
+          "complexity": "O(1)",
+          "tier_access": ["professional", "enterprise"],
+          "test_cases": [
+            {"input": {"query": {"point": [0.5, 0.5], "k": 10}, "density_map_id": "dm_001", "optimization_target": "latency"}, "expected": {"selected_route_not_null": true}},
+            {"input": {"query": {"point": [0, 0], "k": 5}, "density_map_id": "dm_002", "optimization_target": "accuracy"}, "expected": {"selected_route_not_null": true}}
+          ],
+          "edge_cases": [
+            {"input": {"query": {"point": [0, 0], "k": 5}, "density_map_id": "nonexistent", "optimization_target": "latency"}, "expected": {"error": "DENSITY_MAP_NOT_FOUND"}}
+          ]
+        }
+      ]
+    },
+    "geometric_anomaly_detection": {
+      "description": "Operations for detecting anomalies in geometric structures and embeddings",
+      "operations": [
+        {
+          "name": "constraint_violation_detect",
+          "description": "Detect violations of manifold constraints (e.g., points outside valid regions)",
+          "params": {
+            "points": {"type": "array", "description": "Array of points to check"},
+            "manifold_type": {"type": "string", "description": "Manifold: H4, S3, E5, product"},
+            "tolerance": {"type": "number", "description": "Tolerance for constraint violations"}
+          },
+          "returns": {
+            "violations": {"type": "array", "description": "List of {point_index, violation_type, magnitude}"},
+            "violation_rate": {"type": "number", "description": "Fraction of points with violations"},
+            "max_violation": {"type": "number", "description": "Maximum violation magnitude"}
+          },
+          "complexity": "O(n)",
+          "tier_access": ["standard", "professional", "enterprise"],
+          "test_cases": [
+            {"input": {"points": [[0.1, 0.2, 0.3, 0.4], [0.5, 0.5, 0.5, 0.5]], "manifold_type": "H4", "tolerance": 1e-6}, "expected": {"violation_rate_lte": 1.0}},
+            {"input": {"points": [[1, 0, 0, 0], [0, 1, 0, 0]], "manifold_type": "S3", "tolerance": 1e-6}, "expected": {"violation_rate": 0.0}}
+          ],
+          "edge_cases": [
+            {"input": {"points": [[2, 0, 0, 0]], "manifold_type": "S3", "tolerance": 1e-6}, "expected": {"violations": [{"point_index": 0, "violation_type": "NORM_CONSTRAINT", "magnitude": 1.0}]}}
+          ]
+        },
+        {
+          "name": "curvature_anomaly_detect",
+          "description": "Detect anomalous curvature values that deviate from expected manifold curvature",
+          "params": {
+            "curvature_samples": {"type": "array", "description": "Sampled curvature values at points"},
+            "expected_curvature": {"type": "number", "description": "Expected curvature for manifold"},
+            "anomaly_threshold": {"type": "number", "description": "Standard deviations for anomaly"}
+          },
+          "returns": {
+            "anomalies": {"type": "array", "description": "List of {index, curvature, deviation}"},
+            "anomaly_rate": {"type": "number", "description": "Fraction of anomalous samples"},
+            "curvature_stats": {"type": "object", "description": "{mean, std, min, max} of curvatures"}
+          },
+          "complexity": "O(n)",
+          "tier_access": ["professional", "enterprise"],
+          "test_cases": [
+            {"input": {"curvature_samples": [-1.0, -1.01, -0.99, -1.0], "expected_curvature": -1.0, "anomaly_threshold": 3.0}, "expected": {"anomaly_rate": 0.0}},
+            {"input": {"curvature_samples": [-1.0, -1.0, 0.5], "expected_curvature": -1.0, "anomaly_threshold": 2.0}, "expected": {"anomaly_rate_gt": 0}}
+          ],
+          "edge_cases": [
+            {"input": {"curvature_samples": [], "expected_curvature": -1.0, "anomaly_threshold": 3.0}, "expected": {"error": "EMPTY_SAMPLES"}}
+          ]
+        },
+        {
+          "name": "geodesic_deviation_detect",
+          "description": "Detect deviations from expected geodesic paths indicating embedding errors",
+          "params": {
+            "path_points": {"type": "array", "description": "Points along supposed geodesic"},
+            "manifold_type": {"type": "string", "description": "Manifold type for geodesic computation"},
+            "max_deviation": {"type": "number", "description": "Maximum allowed deviation from true geodesic"}
+          },
+          "returns": {
+            "deviations": {"type": "array", "description": "Deviation at each point from true geodesic"},
+            "max_observed_deviation": {"type": "number", "description": "Maximum deviation found"},
+            "is_valid_geodesic": {"type": "boolean", "description": "Whether path is valid geodesic within tolerance"}
+          },
+          "complexity": "O(n)",
+          "tier_access": ["professional", "enterprise"],
+          "test_cases": [
+            {"input": {"path_points": [[0, 0], [0.5, 0.5], [1, 1]], "manifold_type": "E5", "max_deviation": 0.01}, "expected": {"is_valid_geodesic": true}},
+            {"input": {"path_points": [[0, 0], [0.5, 0.8], [1, 1]], "manifold_type": "E5", "max_deviation": 0.01}, "expected": {"is_valid_geodesic": false}}
+          ],
+          "edge_cases": [
+            {"input": {"path_points": [[0, 0]], "manifold_type": "E5", "max_deviation": 0.01}, "expected": {"error": "INSUFFICIENT_PATH_POINTS", "minimum_required": 2}}
+          ]
+        },
+        {
+          "name": "embedding_distortion_detect",
+          "description": "Detect distortions in embeddings by comparing pairwise distances",
+          "params": {
+            "original_distances": {"type": "array", "description": "Pairwise distances in original space"},
+            "embedded_distances": {"type": "array", "description": "Pairwise distances in embedded space"},
+            "distortion_threshold": {"type": "number", "description": "Maximum allowed distortion ratio"}
+          },
+          "returns": {
+            "distortions": {"type": "array", "description": "Distortion ratio for each pair"},
+            "max_distortion": {"type": "number", "description": "Maximum distortion ratio"},
+            "mean_distortion": {"type": "number", "description": "Mean distortion ratio"},
+            "distorted_pairs": {"type": "integer", "description": "Count of pairs exceeding threshold"}
+          },
+          "complexity": "O(n)",
+          "tier_access": ["standard", "professional", "enterprise"],
+          "test_cases": [
+            {"input": {"original_distances": [1.0, 2.0, 3.0], "embedded_distances": [1.0, 2.0, 3.0], "distortion_threshold": 1.1}, "expected": {"max_distortion": 1.0, "distorted_pairs": 0}},
+            {"input": {"original_distances": [1.0, 2.0], "embedded_distances": [1.5, 2.5], "distortion_threshold": 1.2}, "expected": {"distorted_pairs_gt": 0}}
+          ],
+          "edge_cases": [
+            {"input": {"original_distances": [0.0, 1.0], "embedded_distances": [0.0, 1.0], "distortion_threshold": 1.1}, "expected": {"warning": "ZERO_DISTANCE_PAIR", "distortions": [null, 1.0]}}
+          ]
+        },
+        {
+          "name": "anomaly_classify",
+          "description": "Classify detected anomalies into categories for targeted remediation",
+          "params": {
+            "anomaly_data": {"type": "object", "description": "Anomaly detection results from other operations"},
+            "classification_model": {"type": "string", "description": "Model: rule_based, ml_classifier, hybrid"},
+            "confidence_threshold": {"type": "number", "description": "Minimum confidence for classification"}
+          },
+          "returns": {
+            "classifications": {"type": "array", "description": "List of {anomaly_id, class, confidence, remediation}"},
+            "class_distribution": {"type": "object", "description": "Count per anomaly class"},
+            "unclassified_count": {"type": "integer", "description": "Anomalies below confidence threshold"}
+          },
+          "complexity": "O(n)",
+          "tier_access": ["enterprise"],
+          "test_cases": [
+            {"input": {"anomaly_data": {"violations": [{"type": "NORM_CONSTRAINT"}]}, "classification_model": "rule_based", "confidence_threshold": 0.8}, "expected": {"classifications_length": 1}},
+            {"input": {"anomaly_data": {"violations": []}, "classification_model": "ml_classifier", "confidence_threshold": 0.9}, "expected": {"classifications": [], "unclassified_count": 0}}
+          ],
+          "edge_cases": [
+            {"input": {"anomaly_data": {"violations": [{"type": "UNKNOWN_TYPE"}]}, "classification_model": "rule_based", "confidence_threshold": 0.8}, "expected": {"unclassified_count": 1, "warning": "UNKNOWN_ANOMALY_TYPE"}}
+          ]
+        }
+      ]
+    },
+    "task_granularity_optimization": {
+      "description": "Operations for optimizing task decomposition and parallel execution granularity",
+      "operations": [
+        {
+          "name": "parallel_chunk_optimize",
+          "description": "Optimize chunk size for parallel geodesic computations based on hardware and data characteristics",
+          "params": {
+            "total_geodesics": {"type": "integer", "description": "Total number of geodesics to compute"},
+            "available_workers": {"type": "integer", "description": "Number of parallel workers"},
+            "geodesic_complexity": {"type": "number", "description": "Average complexity per geodesic"},
+            "memory_per_worker": {"type": "integer", "description": "Available memory per worker in MB"}
+          },
+          "returns": {
+            "optimal_chunk_size": {"type": "integer", "description": "Recommended chunk size"},
+            "estimated_chunks": {"type": "integer", "description": "Total number of chunks"},
+            "load_balance_score": {"type": "number", "description": "Expected load balance (0-1)"},
+            "memory_utilization": {"type": "number", "description": "Expected memory utilization"}
+          },
+          "complexity": "O(1)",
+          "tier_access": ["professional", "enterprise"],
+          "test_cases": [
+            {"input": {"total_geodesics": 10000, "available_workers": 8, "geodesic_complexity": 1.0, "memory_per_worker": 1024}, "expected": {"optimal_chunk_size_gt": 0, "load_balance_score_gt": 0.8}},
+            {"input": {"total_geodesics": 100, "available_workers": 4, "geodesic_complexity": 0.5, "memory_per_worker": 512}, "expected": {"estimated_chunks_lte": 100}}
+          ],
+          "edge_cases": [
+            {"input": {"total_geodesics": 10000, "available_workers": 0, "geodesic_complexity": 1.0, "memory_per_worker": 1024}, "expected": {"error": "NO_WORKERS_AVAILABLE"}}
+          ]
+        },
+        {
+          "name": "workload_balance_geometric",
+          "description": "Balance geometric workloads across workers considering varying computational costs",
+          "params": {
+            "tasks": {"type": "array", "description": "List of tasks with estimated costs"},
+            "worker_capacities": {"type": "array", "description": "Relative capacity of each worker"},
+            "balancing_strategy": {"type": "string", "description": "Strategy: greedy, optimal, adaptive"}
+          },
+          "returns": {
+            "assignments": {"type": "object", "description": "Map of worker_id to assigned task indices"},
+            "balance_metric": {"type": "number", "description": "Load balance quality (0-1)"},
+            "max_worker_load": {"type": "number", "description": "Maximum load on any worker"},
+            "min_worker_load": {"type": "number", "description": "Minimum load on any worker"}
+          },
+          "complexity": "O(n log n)",
+          "tier_access": ["professional", "enterprise"],
+          "test_cases": [
+            {"input": {"tasks": [{"id": 1, "cost": 10}, {"id": 2, "cost": 20}, {"id": 3, "cost": 10}], "worker_capacities": [1.0, 1.0], "balancing_strategy": "greedy"}, "expected": {"balance_metric_gt": 0.7}},
+            {"input": {"tasks": [{"id": 1, "cost": 5}], "worker_capacities": [1.0, 1.0, 1.0], "balancing_strategy": "optimal"}, "expected": {"balance_metric": 1.0}}
+          ],
+          "edge_cases": [
+            {"input": {"tasks": [], "worker_capacities": [1.0, 1.0], "balancing_strategy": "greedy"}, "expected": {"assignments": {"0": [], "1": []}, "balance_metric": 1.0}}
+          ]
+        },
+        {
+          "name": "task_split_curvature",
+          "description": "Split tasks by curvature regions to group similar computational requirements",
+          "params": {
+            "tasks": {"type": "array", "description": "Tasks with associated curvature values"},
+            "curvature_bins": {"type": "array", "description": "Bin boundaries for curvature ranges"},
+            "min_tasks_per_bin": {"type": "integer", "description": "Minimum tasks to form a bin"}
+          },
+          "returns": {
+            "binned_tasks": {"type": "object", "description": "Map of bin_id to task lists"},
+            "bin_statistics": {"type": "array", "description": "Statistics per bin {count, mean_curvature, std}"},
+            "unbinned_tasks": {"type": "array", "description": "Tasks not fitting any bin"}
+          },
+          "complexity": "O(n)",
+          "tier_access": ["enterprise"],
+          "test_cases": [
+            {"input": {"tasks": [{"id": 1, "curvature": -0.5}, {"id": 2, "curvature": -1.5}, {"id": 3, "curvature": -0.6}], "curvature_bins": [-2, -1, 0], "min_tasks_per_bin": 1}, "expected": {"binned_tasks_keys": ["bin_0", "bin_1"]}},
+            {"input": {"tasks": [{"id": 1, "curvature": 0.0}], "curvature_bins": [-1, 0, 1], "min_tasks_per_bin": 1}, "expected": {"unbinned_tasks": []}}
+          ],
+          "edge_cases": [
+            {"input": {"tasks": [{"id": 1, "curvature": 5.0}], "curvature_bins": [-1, 0, 1], "min_tasks_per_bin": 1}, "expected": {"unbinned_tasks": [{"id": 1, "curvature": 5.0}], "warning": "CURVATURE_OUT_OF_RANGE"}}
+          ]
+        },
+        {
+          "name": "task_merge_similar",
+          "description": "Merge similar geometric tasks to reduce overhead and improve cache efficiency",
+          "params": {
+            "tasks": {"type": "array", "description": "List of tasks with geometric properties"},
+            "similarity_threshold": {"type": "number", "description": "Threshold for considering tasks similar"},
+            "max_merge_size": {"type": "integer", "description": "Maximum tasks to merge into one"}
+          },
+          "returns": {
+            "merged_tasks": {"type": "array", "description": "List of merged task groups"},
+            "merge_count": {"type": "integer", "description": "Number of merges performed"},
+            "efficiency_gain": {"type": "number", "description": "Estimated efficiency improvement"}
+          },
+          "complexity": "O(n²)",
+          "tier_access": ["professional", "enterprise"],
+          "test_cases": [
+            {"input": {"tasks": [{"id": 1, "region": [0, 0]}, {"id": 2, "region": [0.01, 0.01]}, {"id": 3, "region": [5, 5]}], "similarity_threshold": 0.1, "max_merge_size": 5}, "expected": {"merge_count": 1, "merged_tasks_length": 2}},
+            {"input": {"tasks": [{"id": 1, "region": [0, 0]}], "similarity_threshold": 0.5, "max_merge_size": 10}, "expected": {"merge_count": 0}}
+          ],
+          "edge_cases": [
+            {"input": {"tasks": [{"id": 1, "region": [0, 0]}, {"id": 2, "region": [0, 0]}, {"id": 3, "region": [0, 0]}], "similarity_threshold": 0.1, "max_merge_size": 2}, "expected": {"merged_tasks_length": 2, "warning": "MERGE_SIZE_LIMIT_REACHED"}}
+          ]
+        },
+        {
+          "name": "granularity_auto_tune",
+          "description": "Automatically tune task granularity based on runtime performance feedback",
+          "params": {
+            "performance_history": {"type": "array", "description": "Historical performance metrics"},
+            "current_granularity": {"type": "integer", "description": "Current granularity setting"},
+            "optimization_target": {"type": "string", "description": "Target: throughput, latency, efficiency"},
+            "adjustment_rate": {"type": "number", "description": "Maximum adjustment per iteration (0-1)"}
+          },
+          "returns": {
+            "recommended_granularity": {"type": "integer", "description": "New recommended granularity"},
+            "adjustment_direction": {"type": "string", "description": "increase, decrease, maintain"},
+            "confidence": {"type": "number", "description": "Confidence in recommendation"},
+            "projected_improvement": {"type": "number", "description": "Expected performance improvement"}
+          },
+          "complexity": "O(n)",
+          "tier_access": ["enterprise"],
+          "test_cases": [
+            {"input": {"performance_history": [{"granularity": 100, "throughput": 1000}, {"granularity": 200, "throughput": 1500}], "current_granularity": 200, "optimization_target": "throughput", "adjustment_rate": 0.2}, "expected": {"adjustment_direction": "increase"}},
+            {"input": {"performance_history": [{"granularity": 50, "latency": 10}], "current_granularity": 50, "optimization_target": "latency", "adjustment_rate": 0.1}, "expected": {"confidence_lt": 0.9}}
+          ],
+          "edge_cases": [
+            {"input": {"performance_history": [], "current_granularity": 100, "optimization_target": "throughput", "adjustment_rate": 0.2}, "expected": {"adjustment_direction": "maintain", "confidence": 0.0, "warning": "INSUFFICIENT_HISTORY"}}
+          ]
+        }
+      ]
+    }
+  },
+  "metadata": {
+    "total_operations": 25,
+    "created_at": "2026-01-15",
+    "format": "STUNIR",
+    "manifold": "H4xS3xE5"
+  }
+}

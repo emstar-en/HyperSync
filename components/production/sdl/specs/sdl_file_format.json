@@ -1,0 +1,671 @@
+{
+  "name": "sdl_file_format",
+  "version": "3.1.0",
+  "description": "SDL File Format specification - SDL file structure, serialization format, packaging for distribution, and OS-agnostic design",
+  "license": {
+    "type": "AGPLv3",
+    "text": "This specification is licensed under the GNU Affero General Public License v3.0. See https://www.gnu.org/licenses/agpl-3.0.html for full license text.",
+    "copyright": "Copyright (c) 2024-2026 HyperSync Project"
+  },
+  "subsystem": "SDL",
+  "category": "file_format",
+  "stunir_compatible": true,
+  "dependencies": [
+    "sdl_core_infrastructure@3.1.0"
+  ],
+  "file_format_overview": {
+    "design_principles": {
+      "os_agnostic": "SDL files work identically across Linux, macOS, Windows",
+      "self_contained": "All necessary information included in the file",
+      "streamable": "Can be processed without loading entirely into memory",
+      "extensible": "Format supports future additions without breaking compatibility",
+      "verifiable": "Includes checksums and signatures for integrity verification"
+    },
+    "file_types": {
+      "sdl_shard_file": {
+        "extension": ".sdl",
+        "description": "Single shard package",
+        "use_case": "Individual code, data, model, or config shard"
+      },
+      "sdl_lake_export": {
+        "extension": ".sdlx",
+        "description": "Full lake export (multiple shards + indices)",
+        "use_case": "Backup, migration, distribution"
+      },
+      "sdl_manifest": {
+        "extension": ".sdl.json",
+        "description": "Manifest file describing SDL contents",
+        "use_case": "Metadata without content, for catalogs"
+      },
+      "sdl_collection": {
+        "extension": ".sdlc",
+        "description": "Collection of related shards",
+        "use_case": "Library distribution, themed collections"
+      }
+    }
+  },
+  "shard_file_format": {
+    "file_extension": ".sdl",
+    "mime_type": "application/x-sdl-shard",
+    "structure": {
+      "overview": "Binary format with header, metadata, content, and trailer",
+      "layout": [
+        {
+          "section": "Magic Number",
+          "offset": "0",
+          "size": "8 bytes",
+          "value": "0x53444C5348415244 ('SDLSHARD')",
+          "description": "File type identifier"
+        },
+        {
+          "section": "Version",
+          "offset": "8",
+          "size": "4 bytes",
+          "value": "uint32 (current: 1)",
+          "description": "Format version"
+        },
+        {
+          "section": "Flags",
+          "offset": "12",
+          "size": "4 bytes",
+          "value": "uint32 bitfield",
+          "description": "Compression, encryption, signature flags"
+        },
+        {
+          "section": "Header Length",
+          "offset": "16",
+          "size": "4 bytes",
+          "value": "uint32",
+          "description": "Length of metadata header in bytes"
+        },
+        {
+          "section": "Content Length",
+          "offset": "20",
+          "size": "8 bytes",
+          "value": "uint64",
+          "description": "Length of content section in bytes"
+        },
+        {
+          "section": "Vector Length",
+          "offset": "28",
+          "size": "4 bytes",
+          "value": "uint32",
+          "description": "Length of vector section in bytes"
+        },
+        {
+          "section": "Metadata Header",
+          "offset": "32",
+          "size": "variable",
+          "value": "JSON",
+          "description": "Shard metadata as JSON"
+        },
+        {
+          "section": "Content",
+          "offset": "32 + header_length",
+          "size": "variable",
+          "value": "bytes",
+          "description": "Actual shard content (may be compressed)"
+        },
+        {
+          "section": "Vector",
+          "offset": "32 + header_length + content_length",
+          "size": "variable",
+          "value": "float64 array",
+          "description": "Semantic embedding vector"
+        },
+        {
+          "section": "Checksum",
+          "offset": "end - 32",
+          "size": "32 bytes",
+          "value": "SHA-256",
+          "description": "Content integrity checksum"
+        }
+      ]
+    },
+    "flags_bitfield": {
+      "bit_0": "COMPRESSED - Content is compressed (zstd by default)",
+      "bit_1": "ENCRYPTED - Content is encrypted",
+      "bit_2": "SIGNED - File includes digital signature",
+      "bit_3": "CHUNKED - Large file, content in chunks",
+      "bit_4_7": "Reserved for future use",
+      "bit_8_15": "COMPRESSION_TYPE - 0=none, 1=zstd, 2=lz4, 3=gzip",
+      "bit_16_31": "Reserved"
+    },
+    "metadata_schema": {
+      "type": "object",
+      "required": ["id", "name", "type", "version", "created_at"],
+      "properties": {
+        "id": { "type": "string", "format": "uuid" },
+        "name": { "type": "string" },
+        "type": { "type": "string", "enum": ["code", "data", "model", "config"] },
+        "version": { "type": "string", "description": "Shard version (semantic versioning)" },
+        "created_at": { "type": "string", "format": "date-time" },
+        "updated_at": { "type": "string", "format": "date-time" },
+        "author": { "type": "string" },
+        "description": { "type": "string" },
+        "tags": { "type": "array", "items": { "type": "string" } },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "type": { "type": "string" },
+              "interface": { "type": "object" }
+            }
+          }
+        },
+        "dependencies": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "version": { "type": "string" },
+              "shard_id": { "type": "string", "format": "uuid", "optional": true }
+            }
+          }
+        },
+        "content_metadata": {
+          "type": "object",
+          "properties": {
+            "size_bytes": { "type": "integer" },
+            "content_type": { "type": "string" },
+            "encoding": { "type": "string" },
+            "language": { "type": "string" }
+          }
+        },
+        "vector_metadata": {
+          "type": "object",
+          "properties": {
+            "dimension": { "type": "integer" },
+            "model": { "type": "string" },
+            "manifold_component": { "type": "string", "enum": ["H4", "S3", "E5"] }
+          }
+        },
+        "custom": { "type": "object", "description": "User-defined metadata" }
+      }
+    }
+  },
+  "lake_export_format": {
+    "file_extension": ".sdlx",
+    "mime_type": "application/x-sdl-lake-export",
+    "structure": {
+      "format": "TAR archive with specific structure",
+      "layout": {
+        "manifest.json": "Lake metadata and shard index",
+        "shards/": "Directory containing individual .sdl files",
+        "indices/": "Pre-built index files for quick import",
+        "capabilities.json": "Capability registry export",
+        "dependencies.json": "Dependency graph export",
+        "checksums.sha256": "Checksums for all files"
+      }
+    },
+    "manifest_schema": {
+      "type": "object",
+      "properties": {
+        "format_version": { "type": "integer", "const": 1 },
+        "lake_id": { "type": "string", "format": "uuid" },
+        "lake_name": { "type": "string" },
+        "created_at": { "type": "string", "format": "date-time" },
+        "hypersync_version": { "type": "string" },
+        "shard_count": { "type": "integer" },
+        "total_size_bytes": { "type": "integer" },
+        "shards": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "name": { "type": "string" },
+              "type": { "type": "string" },
+              "file": { "type": "string", "description": "Relative path to .sdl file" }
+            }
+          }
+        },
+        "index_files": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "export_config": {
+          "type": "object",
+          "properties": {
+            "include_indices": { "type": "boolean" },
+            "include_vectors": { "type": "boolean" },
+            "compression": { "type": "string" }
+          }
+        }
+      }
+    }
+  },
+  "collection_format": {
+    "file_extension": ".sdlc",
+    "mime_type": "application/x-sdl-collection",
+    "description": "Curated collection of related shards for distribution",
+    "structure": {
+      "format": "TAR archive",
+      "layout": {
+        "collection.json": "Collection metadata",
+        "shards/": "Individual .sdl files",
+        "README.md": "Human-readable documentation",
+        "LICENSE": "License file"
+      }
+    },
+    "collection_schema": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "version": { "type": "string" },
+        "description": { "type": "string" },
+        "author": { "type": "string" },
+        "license": { "type": "string" },
+        "homepage": { "type": "string", "format": "uri" },
+        "tags": { "type": "array", "items": { "type": "string" } },
+        "shards": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "file": { "type": "string" },
+              "description": { "type": "string" }
+            }
+          }
+        },
+        "dependencies": {
+          "type": "array",
+          "description": "External dependencies not included in collection"
+        }
+      }
+    }
+  },
+  "serialization": {
+    "compression": {
+      "default": "zstd",
+      "supported": ["none", "zstd", "lz4", "gzip"],
+      "zstd_config": {
+        "compression_level": 3,
+        "description": "Good balance of speed and ratio"
+      },
+      "lz4_config": {
+        "description": "Fastest compression, lower ratio"
+      }
+    },
+    "encryption": {
+      "algorithm": "AES-256-GCM",
+      "key_derivation": "PBKDF2 with 100,000 iterations",
+      "usage": "Optional, for sensitive shards"
+    },
+    "signing": {
+      "algorithm": "Ed25519",
+      "usage": "Optional, for verified distributions"
+    },
+    "vector_serialization": {
+      "format": "Little-endian float64 array",
+      "optimization": "Can use float16 for storage with minimal quality loss"
+    }
+  },
+  "portability": {
+    "os_agnostic_design": {
+      "path_handling": "Always use forward slashes, no drive letters",
+      "line_endings": "LF (Unix-style) for text content",
+      "encoding": "UTF-8 for all text",
+      "timestamps": "UTC ISO 8601 format"
+    },
+    "endianness": "Little-endian for all binary data",
+    "byte_order_mark": "No BOM for UTF-8 files"
+  },
+  "operations": [
+    {
+      "operation_id": "SDL-FILE-001",
+      "name": "sdl_export_shard",
+      "category": "File Operations",
+      "description": "Export a shard to .sdl file",
+      "signature": {
+        "inputs": {
+          "shard_id": { "type": "UUID" },
+          "output_path": { "type": "string" },
+          "options": {
+            "type": "object",
+            "properties": {
+              "compression": { "type": "string", "default": "zstd" },
+              "include_vector": { "type": "bool", "default": true },
+              "encrypt": { "type": "bool", "default": false },
+              "encryption_key": { "type": "string", "optional": true }
+            }
+          }
+        },
+        "outputs": {
+          "success": { "type": "bool" },
+          "file_path": { "type": "string" },
+          "file_size": { "type": "int" }
+        }
+      },
+      "implementation": {
+        "steps": [
+          "1. Retrieve shard from SDL",
+          "2. Build metadata JSON",
+          "3. Optionally compress content",
+          "4. Optionally encrypt",
+          "5. Write header",
+          "6. Write metadata",
+          "7. Write content",
+          "8. Write vector",
+          "9. Compute and write checksum"
+        ]
+      },
+      "test_cases": [
+        {
+          "test_id": "SDL-FILE-001-T01",
+          "description": "Export shard with compression",
+          "input": { "shard_id": "uuid", "options": { "compression": "zstd" } },
+          "expected": { "success": true, "file_size": "< uncompressed size" }
+        },
+        {
+          "test_id": "SDL-FILE-001-T02",
+          "description": "Export shard without vector",
+          "input": { "shard_id": "uuid", "options": { "include_vector": false } },
+          "expected": { "success": true }
+        }
+      ]
+    },
+    {
+      "operation_id": "SDL-FILE-002",
+      "name": "sdl_import_shard",
+      "category": "File Operations",
+      "description": "Import a shard from .sdl file",
+      "signature": {
+        "inputs": {
+          "file_path": { "type": "string" },
+          "options": {
+            "type": "object",
+            "properties": {
+              "decryption_key": { "type": "string", "optional": true },
+              "merge_strategy": {
+                "type": "enum",
+                "values": ["replace", "version", "skip"],
+                "default": "version"
+              },
+              "regenerate_vector": { "type": "bool", "default": false }
+            }
+          }
+        },
+        "outputs": {
+          "success": { "type": "bool" },
+          "shard_id": { "type": "UUID" },
+          "warnings": { "type": "array[string]" }
+        }
+      },
+      "implementation": {
+        "steps": [
+          "1. Validate magic number and version",
+          "2. Read header and metadata",
+          "3. Verify checksum",
+          "4. Optionally decrypt",
+          "5. Decompress if needed",
+          "6. Check for duplicate (by ID or content hash)",
+          "7. Apply merge strategy",
+          "8. Import into SDL",
+          "9. Optionally regenerate vector"
+        ]
+      },
+      "test_cases": [
+        {
+          "test_id": "SDL-FILE-002-T01",
+          "description": "Import valid shard file",
+          "input": { "file_path": "test.sdl" },
+          "expected": { "success": true, "shard_id": "UUID" }
+        },
+        {
+          "test_id": "SDL-FILE-002-T02",
+          "description": "Import with checksum mismatch",
+          "setup": "Corrupt file content",
+          "expected": { "success": false, "error": "CHECKSUM_MISMATCH" }
+        }
+      ]
+    },
+    {
+      "operation_id": "SDL-FILE-003",
+      "name": "sdl_export_lake",
+      "category": "File Operations",
+      "description": "Export entire lake to .sdlx archive",
+      "signature": {
+        "inputs": {
+          "lake_id": { "type": "UUID", "optional": true },
+          "output_path": { "type": "string" },
+          "options": {
+            "type": "object",
+            "properties": {
+              "include_indices": { "type": "bool", "default": true },
+              "include_vectors": { "type": "bool", "default": true },
+              "compression": { "type": "string", "default": "zstd" },
+              "filters": {
+                "type": "object",
+                "description": "Export only matching shards"
+              }
+            }
+          }
+        },
+        "outputs": {
+          "success": { "type": "bool" },
+          "file_path": { "type": "string" },
+          "exported_count": { "type": "int" },
+          "file_size": { "type": "int" }
+        }
+      },
+      "implementation": {
+        "steps": [
+          "1. Create TAR archive",
+          "2. Export each shard as .sdl to shards/",
+          "3. Export indices to indices/",
+          "4. Generate manifest.json",
+          "5. Export capability registry",
+          "6. Export dependency graph",
+          "7. Generate checksums file",
+          "8. Close and optionally compress archive"
+        ]
+      },
+      "test_cases": [
+        {
+          "test_id": "SDL-FILE-003-T01",
+          "description": "Export full lake",
+          "setup": "Lake with 100 shards",
+          "expected": { "success": true, "exported_count": 100 }
+        },
+        {
+          "test_id": "SDL-FILE-003-T02",
+          "description": "Export filtered lake",
+          "input": { "options": { "filters": { "type": "code" } } },
+          "expected": { "exported_count": "only code shards" }
+        }
+      ]
+    },
+    {
+      "operation_id": "SDL-FILE-004",
+      "name": "sdl_import_lake",
+      "category": "File Operations",
+      "description": "Import lake from .sdlx archive",
+      "signature": {
+        "inputs": {
+          "file_path": { "type": "string" },
+          "options": {
+            "type": "object",
+            "properties": {
+              "merge_strategy": {
+                "type": "enum",
+                "values": ["replace", "merge", "skip"],
+                "default": "merge"
+              },
+              "use_prebuilt_indices": { "type": "bool", "default": true },
+              "validate_checksums": { "type": "bool", "default": true }
+            }
+          }
+        },
+        "outputs": {
+          "success": { "type": "bool" },
+          "imported_count": { "type": "int" },
+          "skipped_count": { "type": "int" },
+          "errors": { "type": "array[object]" }
+        }
+      },
+      "implementation": {
+        "steps": [
+          "1. Open TAR archive",
+          "2. Read and validate manifest",
+          "3. Optionally validate all checksums",
+          "4. Import shards one by one",
+          "5. Apply merge strategy for conflicts",
+          "6. Optionally use prebuilt indices",
+          "7. Import capability registry",
+          "8. Import dependency graph",
+          "9. Rebuild indices if needed"
+        ]
+      },
+      "test_cases": [
+        {
+          "test_id": "SDL-FILE-004-T01",
+          "description": "Import lake into empty SDL",
+          "expected": { "success": true, "imported_count": "all shards" }
+        },
+        {
+          "test_id": "SDL-FILE-004-T02",
+          "description": "Import with merge strategy",
+          "setup": "Existing lake with some duplicate shards",
+          "input": { "options": { "merge_strategy": "merge" } },
+          "expected": { "skipped_count": "duplicate count" }
+        }
+      ]
+    },
+    {
+      "operation_id": "SDL-FILE-005",
+      "name": "sdl_create_collection",
+      "category": "File Operations",
+      "description": "Create a curated collection of shards",
+      "signature": {
+        "inputs": {
+          "name": { "type": "string" },
+          "version": { "type": "string" },
+          "shard_ids": { "type": "array[UUID]" },
+          "output_path": { "type": "string" },
+          "metadata": {
+            "type": "object",
+            "properties": {
+              "description": { "type": "string" },
+              "author": { "type": "string" },
+              "license": { "type": "string" },
+              "tags": { "type": "array[string]" }
+            }
+          }
+        },
+        "outputs": {
+          "success": { "type": "bool" },
+          "file_path": { "type": "string" },
+          "collection_size": { "type": "int" }
+        }
+      },
+      "implementation": {
+        "steps": [
+          "1. Validate all shard IDs exist",
+          "2. Create TAR archive",
+          "3. Export each shard to shards/",
+          "4. Generate collection.json",
+          "5. Generate README.md from description",
+          "6. Add LICENSE file",
+          "7. Close archive"
+        ]
+      },
+      "test_cases": [
+        {
+          "test_id": "SDL-FILE-005-T01",
+          "description": "Create collection",
+          "input": {
+            "name": "json-utilities",
+            "version": "1.0.0",
+            "shard_ids": ["id1", "id2", "id3"]
+          },
+          "expected": { "success": true }
+        }
+      ]
+    },
+    {
+      "operation_id": "SDL-FILE-006",
+      "name": "sdl_validate_file",
+      "category": "File Operations",
+      "description": "Validate SDL file integrity",
+      "signature": {
+        "inputs": {
+          "file_path": { "type": "string" },
+          "options": {
+            "type": "object",
+            "properties": {
+              "verify_checksum": { "type": "bool", "default": true },
+              "verify_signature": { "type": "bool", "default": false },
+              "public_key": { "type": "string", "optional": true }
+            }
+          }
+        },
+        "outputs": {
+          "valid": { "type": "bool" },
+          "format": { "type": "string", "description": "sdl, sdlx, or sdlc" },
+          "version": { "type": "int" },
+          "checksum_valid": { "type": "bool" },
+          "signature_valid": { "type": "bool", "optional": true },
+          "errors": { "type": "array[string]" }
+        }
+      },
+      "test_cases": [
+        {
+          "test_id": "SDL-FILE-006-T01",
+          "description": "Validate valid shard file",
+          "expected": { "valid": true, "checksum_valid": true }
+        },
+        {
+          "test_id": "SDL-FILE-006-T02",
+          "description": "Detect corrupt file",
+          "setup": "Corrupt file bytes",
+          "expected": { "valid": false, "checksum_valid": false }
+        }
+      ]
+    }
+  ],
+  "stunir_integration": {
+    "description": "SDL files integrate with STUNIR process",
+    "during_stunir": {
+      "prepackaged_sdls": "Copied directly to runtime directory",
+      "index_generation": "Can pre-generate indices for faster startup"
+    },
+    "runtime_loading": {
+      "description": "SDL files loaded at runtime",
+      "steps": [
+        "1. Detect .sdl, .sdlx, .sdlc files in SDL directory",
+        "2. Validate file integrity",
+        "3. Import shards into active SDL",
+        "4. Build or load indices"
+      ]
+    },
+    "user_generated_sdls": {
+      "description": "Users can create SDLs with HyperSync",
+      "workflow": [
+        "1. User ingests content via sdl_ingest_shard",
+        "2. User exports via sdl_export_shard or sdl_create_collection",
+        "3. SDL file can be shared and imported elsewhere"
+      ]
+    }
+  },
+  "distribution": {
+    "package_registry": {
+      "description": "Future: SDL package registry for sharing",
+      "features": [
+        "Publish SDL collections",
+        "Version management",
+        "Dependency resolution",
+        "Signature verification"
+      ]
+    },
+    "bundling_with_hypersync": {
+      "description": "SDL files can be bundled with HyperSync distributions",
+      "location": "hypersync/sdl/prepackaged/",
+      "auto_load": true
+    }
+  }
+}

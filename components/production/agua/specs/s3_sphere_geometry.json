@@ -1,0 +1,596 @@
+{
+  "specification_name": "S\u00b3 Sphere Geometry",
+  "version": "1.0.0",
+  "description": "Complete specification for 3-sphere (S\u00b3) manifold operations, realized as unit quaternions",
+  "domain": "Abstract/Conceptual",
+  "dimension": 3,
+  "curvature": 1.0,
+  "curvature_type": "constant_positive",
+  "lie_group": "SU(2)",
+  "geometric_representation": "Unit quaternions in \u211d\u2074",
+  "types": [
+    {
+      "name": "S3Point",
+      "description": "Point on S\u00b3 manifold (unit quaternion)",
+      "base_type": "array",
+      "shape": [
+        4
+      ],
+      "constraints": [
+        "q\u2080\u00b2 + q\u2081\u00b2 + q\u2082\u00b2 + q\u2083\u00b2 = 1",
+        "All components real"
+      ],
+      "representation": "q = q\u2080 + q\u2081i + q\u2082j + q\u2083k"
+    },
+    {
+      "name": "S3TangentVector",
+      "description": "Tangent vector at point on S\u00b3",
+      "base_type": "array",
+      "shape": [
+        4
+      ],
+      "constraints": [
+        "Orthogonal to base point: \u27e8p, v\u27e9 = 0"
+      ]
+    }
+  ],
+  "operations": [
+    {
+      "name": "s3_inner_product",
+      "description": "Inner product on tangent space T_p(S\u00b3)",
+      "inputs": [
+        {
+          "name": "p",
+          "type": "S3Point",
+          "description": "Base point on S\u00b3"
+        },
+        {
+          "name": "v",
+          "type": "S3TangentVector",
+          "description": "First tangent vector"
+        },
+        {
+          "name": "w",
+          "type": "S3TangentVector",
+          "description": "Second tangent vector"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "float",
+          "description": "Inner product value"
+        }
+      ],
+      "formula": "\u27e8v, w\u27e9_p = v\u2080w\u2080 + v\u2081w\u2081 + v\u2082w\u2082 + v\u2083w\u2083 (standard Euclidean inner product on tangent space)",
+      "properties": [
+        "Symmetric: \u27e8v, w\u27e9 = \u27e8w, v\u27e9",
+        "Bilinear",
+        "Positive definite: \u27e8v, v\u27e9 > 0 for v \u2260 0"
+      ],
+      "complexity": "O(1)",
+      "precision": 1e-14,
+      "edge_cases": [
+        "Zero vector: \u27e80, w\u27e9 = 0",
+        "Orthogonal vectors: \u27e8v, w\u27e9 = 0"
+      ],
+      "tests": [
+        {
+          "name": "test_symmetry",
+          "input": {
+            "p": [
+              1,
+              0,
+              0,
+              0
+            ],
+            "v": [
+              0,
+              1,
+              0,
+              0
+            ],
+            "w": [
+              0,
+              0,
+              1,
+              0
+            ]
+          },
+          "expected_output": 0.0,
+          "tolerance": 1e-14
+        }
+      ]
+    },
+    {
+      "name": "s3_distance",
+      "description": "Geodesic distance on S\u00b3 (arc length)",
+      "inputs": [
+        {
+          "name": "p",
+          "type": "S3Point",
+          "description": "First point"
+        },
+        {
+          "name": "q",
+          "type": "S3Point",
+          "description": "Second point"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "distance",
+          "type": "float",
+          "description": "Geodesic distance in radians"
+        }
+      ],
+      "formula": "d(p, q) = arccos(|\u27e8p, q\u27e9|) where \u27e8p, q\u27e9 = p\u2080q\u2080 + p\u2081q\u2081 + p\u2082q\u2082 + p\u2083q\u2083",
+      "properties": [
+        "Metric: d(p, q) \u2265 0",
+        "Symmetric: d(p, q) = d(q, p)",
+        "Triangle inequality: d(p, r) \u2264 d(p, q) + d(q, r)",
+        "Range: [0, \u03c0]"
+      ],
+      "complexity": "O(1)",
+      "precision": 1e-14,
+      "edge_cases": [
+        "Same point: d(p, p) = 0",
+        "Antipodal points: d(p, -p) = \u03c0",
+        "Orthogonal: d(p, q) = \u03c0/2 when \u27e8p, q\u27e9 = 0"
+      ],
+      "tests": [
+        {
+          "name": "test_same_point",
+          "input": {
+            "p": [
+              1,
+              0,
+              0,
+              0
+            ],
+            "q": [
+              1,
+              0,
+              0,
+              0
+            ]
+          },
+          "expected_output": 0.0,
+          "tolerance": 1e-14
+        },
+        {
+          "name": "test_antipodal",
+          "input": {
+            "p": [
+              1,
+              0,
+              0,
+              0
+            ],
+            "q": [
+              -1,
+              0,
+              0,
+              0
+            ]
+          },
+          "expected_output": 3.141592653589793,
+          "tolerance": 1e-12
+        }
+      ]
+    },
+    {
+      "name": "s3_exponential_map",
+      "description": "Exponential map from tangent space to manifold",
+      "inputs": [
+        {
+          "name": "p",
+          "type": "S3Point",
+          "description": "Base point"
+        },
+        {
+          "name": "v",
+          "type": "S3TangentVector",
+          "description": "Tangent vector"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "q",
+          "type": "S3Point",
+          "description": "Point on manifold"
+        }
+      ],
+      "formula": "exp_p(v) = cos(\u2016v\u2016)\u00b7p + sin(\u2016v\u2016)\u00b7(v/\u2016v\u2016) if \u2016v\u2016 > 0, else p",
+      "properties": [
+        "exp_p(0) = p",
+        "exp_p is a diffeomorphism from ball B(0, \u03c0) to S\u00b3 \\ {-p}",
+        "Preserves geodesics"
+      ],
+      "complexity": "O(1)",
+      "precision": 1e-14,
+      "edge_cases": [
+        "Zero vector: exp_p(0) = p",
+        "Norm = \u03c0: reaches antipodal point"
+      ],
+      "tests": [
+        {
+          "name": "test_zero_vector",
+          "input": {
+            "p": [
+              1,
+              0,
+              0,
+              0
+            ],
+            "v": [
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "expected_output": [
+            1,
+            0,
+            0,
+            0
+          ],
+          "tolerance": 1e-14
+        }
+      ]
+    },
+    {
+      "name": "s3_logarithmic_map",
+      "description": "Logarithmic map (inverse of exponential map)",
+      "inputs": [
+        {
+          "name": "p",
+          "type": "S3Point",
+          "description": "Base point"
+        },
+        {
+          "name": "q",
+          "type": "S3Point",
+          "description": "Target point"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "v",
+          "type": "S3TangentVector",
+          "description": "Tangent vector"
+        }
+      ],
+      "formula": "log_p(q) = (d(p,q)/sin(d(p,q)))\u00b7(q - \u27e8p,q\u27e9\u00b7p) if q \u2260 \u00b1p",
+      "properties": [
+        "Inverse of exp_p",
+        "log_p(p) = 0",
+        "Undefined at antipodal point"
+      ],
+      "complexity": "O(1)",
+      "precision": 1e-14,
+      "edge_cases": [
+        "Same point: log_p(p) = 0",
+        "Antipodal point: undefined (multiple geodesics)"
+      ],
+      "tests": [
+        {
+          "name": "test_same_point",
+          "input": {
+            "p": [
+              1,
+              0,
+              0,
+              0
+            ],
+            "q": [
+              1,
+              0,
+              0,
+              0
+            ]
+          },
+          "expected_output": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "tolerance": 1e-14
+        }
+      ]
+    },
+    {
+      "name": "s3_parallel_transport",
+      "description": "Parallel transport of vector along geodesic",
+      "inputs": [
+        {
+          "name": "p",
+          "type": "S3Point",
+          "description": "Start point"
+        },
+        {
+          "name": "q",
+          "type": "S3Point",
+          "description": "End point"
+        },
+        {
+          "name": "v",
+          "type": "S3TangentVector",
+          "description": "Vector at p"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "w",
+          "type": "S3TangentVector",
+          "description": "Parallel transported vector at q"
+        }
+      ],
+      "formula": "w = v - (v\u00b7\u03b3'(0) + v\u00b7\u03b3'(1))/(1 + \u27e8p,q\u27e9) where \u03b3 is geodesic from p to q",
+      "properties": [
+        "Preserves inner product: \u27e8v, v\u27e9_p = \u27e8w, w\u27e9_q",
+        "Preserves angles",
+        "Path-independent (sphere has zero torsion)"
+      ],
+      "complexity": "O(1)",
+      "precision": 1e-14,
+      "edge_cases": [
+        "Same point: PT_p\u2192p(v) = v",
+        "Antipodal point: non-unique (depends on path)"
+      ]
+    },
+    {
+      "name": "s3_geodesic",
+      "description": "Compute geodesic curve between two points",
+      "inputs": [
+        {
+          "name": "p",
+          "type": "S3Point",
+          "description": "Start point"
+        },
+        {
+          "name": "q",
+          "type": "S3Point",
+          "description": "End point"
+        },
+        {
+          "name": "t",
+          "type": "float",
+          "description": "Parameter in [0, 1]"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "point",
+          "type": "S3Point",
+          "description": "Point on geodesic at parameter t"
+        }
+      ],
+      "formula": "\u03b3(t) = (sin((1-t)\u03b8)/sin(\u03b8))\u00b7p + (sin(t\u03b8)/sin(\u03b8))\u00b7q where \u03b8 = d(p, q)",
+      "properties": [
+        "\u03b3(0) = p",
+        "\u03b3(1) = q",
+        "Constant speed: \u2016\u03b3'(t)\u2016 = d(p, q)",
+        "Shortest path"
+      ],
+      "complexity": "O(1)",
+      "precision": 1e-14
+    },
+    {
+      "name": "s3_projection",
+      "description": "Project point from \u211d\u2074 to S\u00b3",
+      "inputs": [
+        {
+          "name": "x",
+          "type": "array[4]",
+          "description": "Point in \u211d\u2074"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "p",
+          "type": "S3Point",
+          "description": "Projected point on S\u00b3"
+        }
+      ],
+      "formula": "proj(x) = x / \u2016x\u2016",
+      "properties": [
+        "\u2016proj(x)\u2016 = 1",
+        "proj(\u03bbx) = proj(x) for \u03bb > 0"
+      ],
+      "complexity": "O(1)",
+      "precision": 1e-14,
+      "edge_cases": [
+        "Zero vector: undefined"
+      ]
+    },
+    {
+      "name": "s3_tangent_space",
+      "description": "Compute orthonormal basis for tangent space",
+      "inputs": [
+        {
+          "name": "p",
+          "type": "S3Point",
+          "description": "Base point"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "basis",
+          "type": "array[3][4]",
+          "description": "Orthonormal basis vectors"
+        }
+      ],
+      "formula": "Find 3 orthonormal vectors perpendicular to p using Gram-Schmidt",
+      "properties": [
+        "All basis vectors orthogonal to p",
+        "Basis vectors orthonormal",
+        "span(basis) = T_p(S\u00b3)"
+      ],
+      "complexity": "O(1)",
+      "precision": 1e-14
+    },
+    {
+      "name": "s3_curvature",
+      "description": "Sectional curvature of S\u00b3 (constant +1)",
+      "inputs": [
+        {
+          "name": "p",
+          "type": "S3Point",
+          "description": "Base point"
+        },
+        {
+          "name": "v",
+          "type": "S3TangentVector",
+          "description": "First tangent vector"
+        },
+        {
+          "name": "w",
+          "type": "S3TangentVector",
+          "description": "Second tangent vector"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "curvature",
+          "type": "float",
+          "description": "Sectional curvature"
+        }
+      ],
+      "formula": "K(v, w) = +1 for all v, w (constant positive curvature)",
+      "properties": [
+        "K = +1 everywhere",
+        "Independent of point and plane"
+      ],
+      "complexity": "O(1)",
+      "precision": 1e-14
+    },
+    {
+      "name": "s3_quaternion_multiplication",
+      "description": "Quaternion multiplication (Lie group operation)",
+      "inputs": [
+        {
+          "name": "p",
+          "type": "S3Point",
+          "description": "First quaternion"
+        },
+        {
+          "name": "q",
+          "type": "S3Point",
+          "description": "Second quaternion"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "r",
+          "type": "S3Point",
+          "description": "Product quaternion"
+        }
+      ],
+      "formula": "p * q = (p\u2080q\u2080 - p\u20d7\u00b7q\u20d7, p\u2080q\u20d7 + q\u2080p\u20d7 + p\u20d7\u00d7q\u20d7)",
+      "properties": [
+        "Associative: (pq)r = p(qr)",
+        "Non-commutative: pq \u2260 qp generally",
+        "Identity: 1 = (1,0,0,0)",
+        "Inverse: p\u207b\u00b9 = (p\u2080, -p\u2081, -p\u2082, -p\u2083)"
+      ],
+      "complexity": "O(1)",
+      "precision": 1e-14
+    },
+    {
+      "name": "s3_rotation",
+      "description": "Rotate vector in \u211d\u00b3 using quaternion",
+      "inputs": [
+        {
+          "name": "q",
+          "type": "S3Point",
+          "description": "Unit quaternion (rotation)"
+        },
+        {
+          "name": "v",
+          "type": "array[3]",
+          "description": "Vector to rotate"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "w",
+          "type": "array[3]",
+          "description": "Rotated vector"
+        }
+      ],
+      "formula": "w = q * (0, v) * q\u207b\u00b9 (sandwich product)",
+      "properties": [
+        "Preserves norm: \u2016w\u2016 = \u2016v\u2016",
+        "Double cover: q and -q give same rotation",
+        "2:1 map from S\u00b3 to SO(3)"
+      ],
+      "complexity": "O(1)",
+      "precision": 1e-14
+    },
+    {
+      "name": "s3_antipodal_map",
+      "description": "Map point to its antipodal point",
+      "inputs": [
+        {
+          "name": "p",
+          "type": "S3Point",
+          "description": "Point on S\u00b3"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "q",
+          "type": "S3Point",
+          "description": "Antipodal point"
+        }
+      ],
+      "formula": "antipodal(p) = -p",
+      "properties": [
+        "antipodal(antipodal(p)) = p",
+        "d(p, antipodal(p)) = \u03c0",
+        "Isometry: preserves distances"
+      ],
+      "complexity": "O(1)",
+      "precision": 1e-14
+    }
+  ],
+  "integration_points": [
+    {
+      "target": "H\u2074 \u00d7 S\u00b3 \u00d7 E\u2075 Product Manifold",
+      "operations": [
+        "s3_embedding",
+        "s3_projection"
+      ],
+      "description": "Embed S\u00b3 into 12D product manifold"
+    },
+    {
+      "target": "Geometric Synchronization",
+      "operations": [
+        "s3_parallel_transport",
+        "s3_geodesic"
+      ],
+      "description": "Use S\u00b3 for abstract concept synchronization"
+    }
+  ],
+  "examples": [
+    {
+      "name": "quaternion_rotation_example",
+      "description": "Rotate vector 90\u00b0 around z-axis",
+      "code": "q = [cos(\u03c0/4), 0, 0, sin(\u03c0/4)]  # 90\u00b0 rotation\nv = [1, 0, 0]\nw = s3_rotation(q, v)  # Result: [0, 1, 0]"
+    }
+  ],
+  "references": [
+    "John M. Lee - Introduction to Smooth Manifolds (2012)",
+    "Do Carmo - Riemannian Geometry (1992)",
+    "Quaternions and Rotation Sequences - Kuipers (1999)"
+  ],
+  "implementation_notes": [
+    "Use numerically stable arccos with clamping to [-1, 1]",
+    "Handle antipodal points specially in logarithmic map",
+    "Quaternion multiplication requires careful sign handling",
+    "Parallel transport needs path specification for antipodal points"
+  ]
+}

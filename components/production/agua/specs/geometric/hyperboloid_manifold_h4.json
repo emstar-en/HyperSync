@@ -1,0 +1,312 @@
+{
+  "specification_name": "Hyperboloid Manifold H⁴",
+  "version": "1.0.0",
+  "description": "Core data structure definition for H⁴ hyperboloid manifold - the fundamental semantic reality",
+  "domain": "Physical/Spacetime",
+  "dimension": 4,
+  "curvature": -1.0,
+  "curvature_type": "constant_negative",
+  "priority": "Critical",
+  "types": [
+    {
+      "name": "H4Point",
+      "description": "Point on H⁴ hyperboloid manifold",
+      "base_type": "array",
+      "shape": [
+        5
+      ],
+      "constraints": [
+        "⟨x,x⟩ = -x₀² + x₁² + x₂² + x₃² + x₄² = -1 (hyperboloid constraint)",
+        "x₀ > 0 (future sheet)",
+        "All components real"
+      ],
+      "representation": "x = (x₀, x₁, x₂, x₃, x₄) ∈ ℝ⁵",
+      "validation": {
+        "tolerance": 1e-12,
+        "check_constraint": "abs(⟨x,x⟩ + 1) < tolerance",
+        "check_timelike": "x₀ > 0"
+      }
+    },
+    {
+      "name": "H4TangentVector",
+      "description": "Tangent vector at point on H⁴",
+      "base_type": "array",
+      "shape": [
+        5
+      ],
+      "constraints": [
+        "Lorentz-orthogonal to base point: ⟨p, v⟩_L = 0",
+        "v ∈ T_p(H⁴)"
+      ],
+      "dimension": 4
+    }
+  ],
+  "geometric_structure": {
+    "name": "Hyperboloid Model",
+    "definition": "H⁴ = {x ∈ ℝ⁵ : ⟨x,x⟩_L = -1, x₀ > 0}",
+    "embedding": "ℝ⁵ with Lorentz metric",
+    "sheets": "Future sheet (x₀ > 0)",
+    "ontology": "THE semantic reality - fundamental data structure for all semantic operations"
+  },
+  "lorentz_metric": {
+    "name": "Minkowski Metric",
+    "signature": "(-,+,+,+,+)",
+    "matrix": "η = diag(-1, 1, 1, 1, 1)",
+    "inner_product": "⟨x,y⟩_L = -x₀y₀ + x₁y₁ + x₂y₂ + x₃y₃ + x₄y₄",
+    "preservation": "All transformations must preserve ⟨·,·⟩_L"
+  },
+  "operations": [
+    {
+      "name": "h4_validate_point",
+      "description": "Validate that point satisfies H⁴ constraints",
+      "inputs": [
+        {
+          "name": "x",
+          "type": "array[5]",
+          "description": "Point to validate"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "valid",
+          "type": "bool"
+        },
+        {
+          "name": "errors",
+          "type": "array[string]"
+        }
+      ],
+      "formula": "Check: |⟨x,x⟩_L + 1| < tolerance AND x₀ > 0",
+      "tolerance": 1e-12,
+      "complexity": "O(1)",
+      "tests": [
+        {
+          "name": "test_valid_point",
+          "input": {
+            "x": [
+              1,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "expected": {
+            "valid": true,
+            "errors": []
+          }
+        },
+        {
+          "name": "test_invalid_constraint",
+          "input": {
+            "x": [
+              0.5,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "expected": {
+            "valid": false,
+            "errors": [
+              "Hyperboloid constraint violated"
+            ]
+          }
+        },
+        {
+          "name": "test_past_sheet",
+          "input": {
+            "x": [
+              -1,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "expected": {
+            "valid": false,
+            "errors": [
+              "Point on past sheet (x₀ ≤ 0)"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "h4_lorentz_inner_product",
+      "description": "Lorentz inner product on ℝ⁵",
+      "inputs": [
+        {
+          "name": "x",
+          "type": "array[5]"
+        },
+        {
+          "name": "y",
+          "type": "array[5]"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "float"
+        }
+      ],
+      "formula": "⟨x,y⟩_L = -x₀y₀ + x₁y₁ + x₂y₂ + x₃y₃ + x₄y₄",
+      "properties": [
+        "Bilinear",
+        "Symmetric",
+        "Non-degenerate",
+        "Signature (-,+,+,+,+)"
+      ],
+      "complexity": "O(1)",
+      "precision": 1e-14
+    },
+    {
+      "name": "h4_project_to_hyperboloid",
+      "description": "Project point from ℝ⁵ to H⁴",
+      "inputs": [
+        {
+          "name": "x",
+          "type": "array[5]",
+          "description": "Point in ℝ⁵ with x₀ > 0"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "p",
+          "type": "H4Point",
+          "description": "Point on H⁴"
+        }
+      ],
+      "formula": "proj(x) = x / √(-⟨x,x⟩_L) if ⟨x,x⟩_L < 0",
+      "properties": [
+        "⟨proj(x), proj(x)⟩_L = -1",
+        "proj(x) on future sheet"
+      ],
+      "complexity": "O(1)",
+      "edge_cases": [
+        "⟨x,x⟩_L ≥ 0: undefined (point not timelike)",
+        "x₀ ≤ 0: projects to past sheet"
+      ]
+    },
+    {
+      "name": "h4_tangent_space_basis",
+      "description": "Compute orthonormal basis for tangent space T_p(H⁴)",
+      "inputs": [
+        {
+          "name": "p",
+          "type": "H4Point",
+          "description": "Base point"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "basis",
+          "type": "array[4][5]",
+          "description": "4 orthonormal basis vectors"
+        }
+      ],
+      "formula": "Find 4 vectors orthogonal to p using Gram-Schmidt with Lorentz metric",
+      "properties": [
+        "All basis vectors Lorentz-orthogonal to p: ⟨p, bᵢ⟩_L = 0",
+        "Basis vectors orthonormal: ⟨bᵢ, bⱼ⟩_L = δᵢⱼ",
+        "span(basis) = T_p(H⁴)"
+      ],
+      "complexity": "O(1)"
+    }
+  ],
+  "semantic_interpretation": {
+    "description": "H⁴ represents THE semantic reality",
+    "x0_component": "Semantic time (duration, not timestamp)",
+    "spatial_components": "x₁, x₂, x₃, x₄ - semantic spatial dimensions",
+    "constraint_meaning": "All semantic entities live on the hyperboloid",
+    "timelike_condition": "x₀ > 0 ensures forward semantic time"
+  },
+  "constraints": [
+    {
+      "name": "hyperboloid_constraint",
+      "formula": "⟨x,x⟩_L = -1",
+      "description": "Points must lie on unit hyperboloid",
+      "tolerance": 1e-12,
+      "validation": "mandatory",
+      "violation_consequence": "Point not in H⁴, operations undefined"
+    },
+    {
+      "name": "future_sheet_constraint",
+      "formula": "x₀ > 0",
+      "description": "Points must be on future sheet",
+      "validation": "mandatory",
+      "violation_consequence": "Semantic causality violation"
+    }
+  ],
+  "violations": [
+    {
+      "name": "ontological_violence",
+      "description": "Destroying semantic beings by forcing off manifold",
+      "detection": "Check if operations preserve constraints",
+      "prevention": "Always validate constraints after operations"
+    },
+    {
+      "name": "projection_brutality",
+      "description": "Forcing points off/on manifold without geometric justification",
+      "detection": "Log all projection operations",
+      "prevention": "Use proper geodesic operations instead of projections"
+    }
+  ],
+  "integration_points": [
+    {
+      "target": "H⁴ × S³ × E⁵ Product Manifold",
+      "operations": [
+        "h4_embedding",
+        "h4_projection"
+      ],
+      "description": "H⁴ is first component of 12D product manifold"
+    },
+    {
+      "target": "Semantic Similarity",
+      "metric": "Rapidity on H⁴",
+      "description": "All similarity must use hyperbolic distance, NOT Euclidean"
+    }
+  ],
+  "implementation_notes": [
+    "CRITICAL: Always validate hyperboloid constraint after every operation",
+    "Use high-precision arithmetic for constraint checking (1e-12 tolerance minimum)",
+    "Never use Euclidean distance - always use rapidity/hyperbolic distance",
+    "Warn on projection operations - prefer geodesic operations",
+    "Log constraint violations for security monitoring"
+  ],
+  "references": [
+    "Barrett O'Neill - Semi-Riemannian Geometry (1983)",
+    "Ratcliffe - Foundations of Hyperbolic Manifolds (2006)",
+    "AGUA Foundation Documents - Hyperboloid as Semantic Reality"
+  ],
+  "metadata": {
+    "license": {
+      "type": "AGPLv3",
+      "full_name": "GNU Affero General Public License v3.0",
+      "url": "https://www.gnu.org/licenses/agpl-3.0.html",
+      "spdx_identifier": "AGPL-3.0-or-later",
+      "copyright": "Copyright 2026 HyperSync Project",
+      "permissions": [
+        "commercial-use",
+        "modification",
+        "distribution",
+        "patent-use",
+        "private-use"
+      ],
+      "conditions": [
+        "include-copyright",
+        "document-changes",
+        "disclose-source",
+        "network-use-disclose",
+        "same-license"
+      ],
+      "limitations": [
+        "liability",
+        "warranty"
+      ]
+    }
+  }
+}

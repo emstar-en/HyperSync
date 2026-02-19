@@ -1,0 +1,91 @@
+{
+  "workspace": {
+    "description": "Live development workspace for iterative component development",
+    "updated": "2026-02-19",
+    "workflow": "Build → Assemble → Use → Analyze → Iterate"
+  },
+  
+  "subdirectories": {
+    "active": {
+      "path": "./active",
+      "description": "Currently being developed components",
+      "structure": {
+        "component-name": {
+          "iteration-001": "First iteration",
+          "iteration-002": "Second iteration",
+          "current": "Symlink to latest iteration"
+        }
+      },
+      "usage": "Store work-in-progress component iterations here"
+    },
+    "assembly": {
+      "path": "./assembly",
+      "description": "Component integration testing builds",
+      "structure": {
+        "build-001": "First integration build",
+        "build-002": "Second integration build"
+      },
+      "usage": "Assemble multiple components for integration testing"
+    },
+    "analysis": {
+      "path": "./analysis",
+      "description": "Analysis results from live-analyzer tool",
+      "subdirs": {
+        "component-analysis": "Per-component analysis results",
+        "integration-analysis": "Integration test analysis",
+        "performance-reports": "Performance benchmarking reports"
+      }
+    }
+  },
+  
+  "workflow_phases": {
+    "1_build": {
+      "description": "Create or modify component",
+      "location": "./active/<component-name>/iteration-NNN/",
+      "activities": [
+        "Edit specifications",
+        "Create reference implementations",
+        "Document approach"
+      ]
+    },
+    "2_assemble": {
+      "description": "Integrate with other components",
+      "location": "./assembly/build-NNN/",
+      "activities": [
+        "Combine multiple components",
+        "Run STUNIR pipeline",
+        "Create integration build"
+      ]
+    },
+    "3_use": {
+      "description": "Execute in test environment",
+      "activities": [
+        "Run component tests",
+        "Track usage with live-analyzer",
+        "Log performance metrics"
+      ]
+    },
+    "4_analyze": {
+      "description": "Analyze performance and usage",
+      "location": "./analysis/",
+      "tools": ["../tools/live-analyzer/analyze.py"],
+      "activities": [
+        "Generate analysis reports",
+        "Review performance metrics",
+        "Collect AI feedback"
+      ]
+    },
+    "5_iterate": {
+      "description": "Apply improvements",
+      "location": "./active/<component-name>/iteration-NNN+1/",
+      "activities": [
+        "Address issues from analysis",
+        "Implement suggestions",
+        "Create new iteration"
+      ]
+    }
+  },
+  
+  "current_builds": [],
+  "active_iterations": []
+}

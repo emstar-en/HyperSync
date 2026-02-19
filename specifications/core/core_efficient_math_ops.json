@@ -1,0 +1,4044 @@
+{
+  "specification_type": "STUNIR",
+  "tier": "CORE",
+  "category": "efficient_math_operations",
+  "description": "O(n) or faster mathematical operations promoted from Basic Phase 7B",
+  "total_operations": 118,
+  "complexity_criteria": "O(n) or faster (O(1), O(log n), O(n))",
+  "operations": [
+    {
+      "id": "no_id",
+      "name": "window_function",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "numerical",
+      "file": "signal_processing_spec.json",
+      "description": "Generate a window function for spectral analysis or filter design",
+      "parameters": [
+        {
+          "name": "length",
+          "type": "integer",
+          "description": "Window length"
+        },
+        {
+          "name": "window_type",
+          "type": "string",
+          "description": "Window type (hamming, hanning, blackman, kaiser, rectangular)"
+        },
+        {
+          "name": "beta",
+          "type": "float",
+          "description": "Shape parameter for Kaiser window",
+          "optional": true
+        }
+      ],
+      "returns": {
+        "type": "array<float>",
+        "description": "Window coefficients"
+      },
+      "mathematical_formula": "Hamming: w[n] = 0.54 - 0.46*cos(2\u03c0n/(N-1)), Hanning: w[n] = 0.5*(1 - cos(2\u03c0n/(N-1)))",
+      "implementation_notes": "Trade-off between main lobe width and side lobe level. Kaiser allows continuous adjustment via beta."
+    },
+    {
+      "id": "no_id",
+      "name": "find_peaks",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "numerical",
+      "file": "signal_processing_spec.json",
+      "description": "Find local maxima (peaks) in a signal",
+      "parameters": [
+        {
+          "name": "input",
+          "type": "array<float>",
+          "description": "Input signal"
+        },
+        {
+          "name": "height",
+          "type": "float",
+          "description": "Minimum peak height",
+          "optional": true
+        },
+        {
+          "name": "distance",
+          "type": "integer",
+          "description": "Minimum distance between peaks",
+          "optional": true
+        },
+        {
+          "name": "prominence",
+          "type": "float",
+          "description": "Minimum peak prominence",
+          "optional": true
+        }
+      ],
+      "returns": {
+        "type": "object",
+        "description": "Peak information",
+        "properties": {
+          "indices": "array<integer>",
+          "heights": "array<float>",
+          "prominences": "array<float>"
+        }
+      },
+      "mathematical_formula": "Peak at i if x[i-1] < x[i] > x[i+1]",
+      "implementation_notes": "Prominence measures how much a peak stands out. Distance constraint useful for periodic signals."
+    },
+    {
+      "id": "no_id",
+      "name": "fft_frequency_bins",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "numerical",
+      "file": "fourier_spec.json",
+      "description": "Return the frequency bin centers for FFT output",
+      "parameters": [
+        {
+          "name": "n",
+          "type": "integer",
+          "description": "Number of FFT points"
+        },
+        {
+          "name": "sample_rate",
+          "type": "float",
+          "description": "Sampling frequency in Hz",
+          "default": 1.0
+        }
+      ],
+      "returns": {
+        "type": "array<float>",
+        "description": "Array of frequency values for each bin"
+      },
+      "mathematical_formula": "f[k] = k * fs / N for k = 0..N/2, then negative frequencies",
+      "implementation_notes": "Returns frequencies in standard FFT order (0 to fs/2, then -fs/2 to 0). Use fftshift for centered spectrum."
+    },
+    {
+      "id": "no_id",
+      "name": "fft_shift",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "numerical",
+      "file": "fourier_spec.json",
+      "description": "Shift zero-frequency component to center of spectrum",
+      "parameters": [
+        {
+          "name": "input",
+          "type": "array<complex>",
+          "description": "FFT output array"
+        },
+        {
+          "name": "axes",
+          "type": "array<integer>",
+          "description": "Axes over which to shift",
+          "optional": true
+        }
+      ],
+      "returns": {
+        "type": "array<complex>",
+        "description": "Shifted spectrum with DC at center"
+      },
+      "mathematical_formula": "Circular shift by n/2 positions",
+      "implementation_notes": "Useful for visualization. For odd-length arrays, shifts by (n-1)/2."
+    },
+    {
+      "id": "no_id",
+      "name": "taylor_series",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "numerical",
+      "file": "approximation_spec.json",
+      "description": "Compute Taylor series expansion of a function around a point",
+      "parameters": [
+        {
+          "name": "function",
+          "type": "string|callable",
+          "description": "Function to expand (name or callable)"
+        },
+        {
+          "name": "center",
+          "type": "float",
+          "description": "Expansion point (a)"
+        },
+        {
+          "name": "order",
+          "type": "integer",
+          "description": "Number of terms in expansion"
+        },
+        {
+          "name": "x",
+          "type": "float",
+          "description": "Evaluation point",
+          "optional": true
+        }
+      ],
+      "returns": {
+        "type": "object",
+        "description": "Taylor series result",
+        "properties": {
+          "coefficients": "array<float>",
+          "value": "float"
+        }
+      },
+      "mathematical_formula": "f(x) \u2248 \u03a3_{n=0}^N f^(n)(a)/n! * (x-a)^n",
+      "implementation_notes": "Requires derivatives of function. Convergence depends on radius of convergence. Symbolic or automatic differentiation for coefficients."
+    },
+    {
+      "id": "no_id",
+      "name": "chebyshev_polynomial",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "numerical",
+      "file": "approximation_spec.json",
+      "description": "Evaluate Chebyshev polynomial of the first kind T_n(x)",
+      "parameters": [
+        {
+          "name": "n",
+          "type": "integer",
+          "description": "Degree of polynomial"
+        },
+        {
+          "name": "x",
+          "type": "float",
+          "description": "Evaluation point"
+        }
+      ],
+      "returns": {
+        "type": "float",
+        "description": "T_n(x)"
+      },
+      "mathematical_formula": "T_n(x) = cos(n * arccos(x)) for |x| \u2264 1, recurrence: T_{n+1} = 2xT_n - T_{n-1}",
+      "implementation_notes": "Use recurrence relation for stability. Orthogonal on [-1,1] with weight 1/\u221a(1-x\u00b2)."
+    },
+    {
+      "id": "no_id",
+      "name": "continued_fraction",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "numerical",
+      "file": "approximation_spec.json",
+      "description": "Evaluate a continued fraction representation",
+      "parameters": [
+        {
+          "name": "a",
+          "type": "array<float>",
+          "description": "Partial numerators"
+        },
+        {
+          "name": "b",
+          "type": "array<float>",
+          "description": "Partial denominators"
+        },
+        {
+          "name": "max_terms",
+          "type": "integer",
+          "description": "Maximum terms to evaluate",
+          "optional": true
+        }
+      ],
+      "returns": {
+        "type": "float",
+        "description": "Continued fraction value"
+      },
+      "mathematical_formula": "b_0 + a_1/(b_1 + a_2/(b_2 + a_3/(b_3 + ...)))",
+      "implementation_notes": "Use modified Lentz algorithm for numerical stability. Converges faster than series for many functions."
+    },
+    {
+      "id": "no_id",
+      "name": "spline_interpolation",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "numerical",
+      "file": "approximation_spec.json",
+      "description": "Construct cubic spline interpolation through data points",
+      "parameters": [
+        {
+          "name": "x_points",
+          "type": "array<float>",
+          "description": "X coordinates (must be sorted)"
+        },
+        {
+          "name": "y_points",
+          "type": "array<float>",
+          "description": "Y coordinates"
+        },
+        {
+          "name": "boundary",
+          "type": "string",
+          "description": "Boundary condition (natural, clamped, not-a-knot)",
+          "default": "natural"
+        }
+      ],
+      "returns": {
+        "type": "object",
+        "description": "Spline interpolant",
+        "properties": {
+          "coefficients": "array<array<float>>",
+          "evaluate": "callable"
+        }
+      },
+      "mathematical_formula": "S_i(x) = a_i + b_i(x-x_i) + c_i(x-x_i)\u00b2 + d_i(x-x_i)\u00b3 on [x_i, x_{i+1}]",
+      "implementation_notes": "Tridiagonal system for natural splines. C\u00b2 continuity. No Runge phenomenon."
+    },
+    {
+      "id": "no_id",
+      "name": "dwt",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "numerical",
+      "file": "wavelets_spec.json",
+      "description": "Compute the Discrete Wavelet Transform",
+      "parameters": [
+        {
+          "name": "input",
+          "type": "array<float>",
+          "description": "Input signal (length should be power of 2 for efficiency)"
+        },
+        {
+          "name": "wavelet",
+          "type": "string",
+          "description": "Wavelet family (haar, db4, sym4, coif2)",
+          "default": "db4"
+        },
+        {
+          "name": "level",
+          "type": "integer",
+          "description": "Decomposition level",
+          "optional": true
+        }
+      ],
+      "returns": {
+        "type": "object",
+        "description": "DWT coefficients",
+        "properties": {
+          "approximation": "array<float>",
+          "details": "array<array<float>>"
+        }
+      },
+      "mathematical_formula": "cA[k] = \u03a3 x[n] * h[2k-n], cD[k] = \u03a3 x[n] * g[2k-n]",
+      "implementation_notes": "Pyramid algorithm with downsampling. Filter bank implementation. Boundary handling affects edge coefficients."
+    },
+    {
+      "id": "no_id",
+      "name": "idwt",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "numerical",
+      "file": "wavelets_spec.json",
+      "description": "Compute the Inverse Discrete Wavelet Transform",
+      "parameters": [
+        {
+          "name": "approximation",
+          "type": "array<float>",
+          "description": "Approximation coefficients"
+        },
+        {
+          "name": "details",
+          "type": "array<array<float>>",
+          "description": "Detail coefficients at each level"
+        },
+        {
+          "name": "wavelet",
+          "type": "string",
+          "description": "Wavelet family (must match forward transform)",
+          "default": "db4"
+        }
+      ],
+      "returns": {
+        "type": "array<float>",
+        "description": "Reconstructed signal"
+      },
+      "mathematical_formula": "x[n] = \u03a3 cA[k] * h'[n-2k] + \u03a3 cD[k] * g'[n-2k]",
+      "implementation_notes": "Perfect reconstruction with orthogonal wavelets. Upsampling followed by filtering."
+    },
+    {
+      "id": "no_id",
+      "name": "wavelet_family",
+      "complexity": "O(1)",
+      "complexity_class": "O(1)",
+      "category": "numerical",
+      "file": "wavelets_spec.json",
+      "description": "Get wavelet filter coefficients for a specified wavelet family",
+      "parameters": [
+        {
+          "name": "name",
+          "type": "string",
+          "description": "Wavelet name (haar, db1-db20, sym2-sym20, coif1-coif5)"
+        },
+        {
+          "name": "filter_type",
+          "type": "string",
+          "description": "Filter type (decomposition, reconstruction)",
+          "default": "decomposition"
+        }
+      ],
+      "returns": {
+        "type": "object",
+        "description": "Wavelet filters",
+        "properties": {
+          "lowpass": "array<float>",
+          "highpass": "array<float>"
+        }
+      },
+      "mathematical_formula": "g[n] = (-1)^n * h[L-1-n] for orthogonal wavelets",
+      "implementation_notes": "Daubechies wavelets have maximum vanishing moments. Symlets are near-symmetric. Coiflets have vanishing moments for both scaling and wavelet functions."
+    },
+    {
+      "id": "no_id",
+      "name": "float_compare",
+      "complexity": "O(1)",
+      "complexity_class": "O(1)",
+      "category": "numerical",
+      "file": "numerical_utilities_spec.json",
+      "description": "Compare two floating-point numbers with tolerance for numerical equality",
+      "parameters": [
+        {
+          "name": "a",
+          "type": "float",
+          "description": "First value"
+        },
+        {
+          "name": "b",
+          "type": "float",
+          "description": "Second value"
+        },
+        {
+          "name": "rel_tol",
+          "type": "float",
+          "description": "Relative tolerance",
+          "default": 1e-09
+        },
+        {
+          "name": "abs_tol",
+          "type": "float",
+          "description": "Absolute tolerance",
+          "default": 0.0
+        }
+      ],
+      "returns": {
+        "type": "boolean",
+        "description": "True if values are approximately equal"
+      },
+      "mathematical_formula": "|a - b| \u2264 max(rel_tol * max(|a|, |b|), abs_tol)",
+      "implementation_notes": "Handles edge cases like comparing to zero, infinities, and NaN. Use abs_tol when comparing near zero."
+    },
+    {
+      "id": "no_id",
+      "name": "array_allclose",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "numerical",
+      "file": "numerical_utilities_spec.json",
+      "description": "Check if all elements of two arrays are approximately equal",
+      "parameters": [
+        {
+          "name": "a",
+          "type": "array<float>",
+          "description": "First array"
+        },
+        {
+          "name": "b",
+          "type": "array<float>",
+          "description": "Second array"
+        },
+        {
+          "name": "rel_tol",
+          "type": "float",
+          "description": "Relative tolerance",
+          "default": 1e-09
+        },
+        {
+          "name": "abs_tol",
+          "type": "float",
+          "description": "Absolute tolerance",
+          "default": 0.0
+        }
+      ],
+      "returns": {
+        "type": "boolean",
+        "description": "True if all elements are approximately equal"
+      },
+      "mathematical_formula": "\u2200i: |a[i] - b[i]| \u2264 max(rel_tol * max(|a[i]|, |b[i]|), abs_tol)",
+      "implementation_notes": "Short-circuits on first mismatch. Arrays must have same shape."
+    },
+    {
+      "id": "no_id",
+      "name": "set_precision",
+      "complexity": "O(1)",
+      "complexity_class": "O(1)",
+      "category": "numerical",
+      "file": "numerical_utilities_spec.json",
+      "description": "Set the numerical precision for subsequent operations",
+      "parameters": [
+        {
+          "name": "precision",
+          "type": "integer",
+          "description": "Number of significant digits (or bits for binary)"
+        },
+        {
+          "name": "mode",
+          "type": "string",
+          "description": "Precision mode (decimal, binary)",
+          "default": "decimal"
+        }
+      ],
+      "returns": {
+        "type": "object",
+        "description": "Previous precision settings"
+      },
+      "mathematical_formula": "N/A - configuration operation",
+      "implementation_notes": "Affects arbitrary precision arithmetic. Standard float64 has ~15-17 decimal digits. Context manager pattern recommended."
+    },
+    {
+      "id": "no_id",
+      "name": "handle_overflow",
+      "complexity": "O(1)",
+      "complexity_class": "O(1)",
+      "category": "numerical",
+      "file": "numerical_utilities_spec.json",
+      "description": "Handle arithmetic overflow with specified strategy",
+      "parameters": [
+        {
+          "name": "value",
+          "type": "float",
+          "description": "Value to check/handle"
+        },
+        {
+          "name": "strategy",
+          "type": "string",
+          "description": "Overflow handling (saturate, wrap, error, infinity)",
+          "default": "infinity"
+        }
+      ],
+      "returns": {
+        "type": "float",
+        "description": "Handled value"
+      },
+      "mathematical_formula": "N/A - error handling operation",
+      "implementation_notes": "Saturate clamps to max representable. Wrap uses modular arithmetic. Error raises exception."
+    },
+    {
+      "id": "no_id",
+      "name": "handle_underflow",
+      "complexity": "O(1)",
+      "complexity_class": "O(1)",
+      "category": "numerical",
+      "file": "numerical_utilities_spec.json",
+      "description": "Handle arithmetic underflow with specified strategy",
+      "parameters": [
+        {
+          "name": "value",
+          "type": "float",
+          "description": "Value to check/handle"
+        },
+        {
+          "name": "strategy",
+          "type": "string",
+          "description": "Underflow handling (zero, denormal, error)",
+          "default": "zero"
+        }
+      ],
+      "returns": {
+        "type": "float",
+        "description": "Handled value"
+      },
+      "mathematical_formula": "N/A - error handling operation",
+      "implementation_notes": "Denormal numbers have reduced precision. Flush-to-zero can improve performance on some hardware."
+    },
+    {
+      "id": "no_id",
+      "name": "is_nan",
+      "complexity": "O(1)",
+      "complexity_class": "O(1)",
+      "category": "numerical",
+      "file": "numerical_utilities_spec.json",
+      "description": "Check if a value is NaN (Not a Number)",
+      "parameters": [
+        {
+          "name": "value",
+          "type": "float",
+          "description": "Value to check"
+        }
+      ],
+      "returns": {
+        "type": "boolean",
+        "description": "True if value is NaN"
+      },
+      "mathematical_formula": "NaN \u2260 NaN (IEEE 754 property)",
+      "implementation_notes": "NaN is the only value that is not equal to itself. Use this function instead of value != value."
+    },
+    {
+      "id": "no_id",
+      "name": "is_inf",
+      "complexity": "O(1)",
+      "complexity_class": "O(1)",
+      "category": "numerical",
+      "file": "numerical_utilities_spec.json",
+      "description": "Check if a value is infinite",
+      "parameters": [
+        {
+          "name": "value",
+          "type": "float",
+          "description": "Value to check"
+        },
+        {
+          "name": "sign",
+          "type": "string",
+          "description": "Check for specific sign (positive, negative, any)",
+          "default": "any"
+        }
+      ],
+      "returns": {
+        "type": "boolean",
+        "description": "True if value is infinite"
+      },
+      "mathematical_formula": "value = \u00b1\u221e",
+      "implementation_notes": "IEEE 754 defines positive and negative infinity. Result of overflow or division by zero."
+    },
+    {
+      "id": "no_id",
+      "name": "is_finite",
+      "complexity": "O(1)",
+      "complexity_class": "O(1)",
+      "category": "numerical",
+      "file": "numerical_utilities_spec.json",
+      "description": "Check if a value is finite (not NaN or infinite)",
+      "parameters": [
+        {
+          "name": "value",
+          "type": "float",
+          "description": "Value to check"
+        }
+      ],
+      "returns": {
+        "type": "boolean",
+        "description": "True if value is finite"
+      },
+      "mathematical_formula": "-\u221e < value < \u221e and value is not NaN",
+      "implementation_notes": "Equivalent to not(is_nan(x) or is_inf(x)). Useful for input validation."
+    },
+    {
+      "id": "no_id",
+      "name": "replace_nan",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "numerical",
+      "file": "numerical_utilities_spec.json",
+      "description": "Replace NaN values in an array with a specified value",
+      "parameters": [
+        {
+          "name": "input",
+          "type": "array<float>",
+          "description": "Input array"
+        },
+        {
+          "name": "replacement",
+          "type": "float",
+          "description": "Value to replace NaN with",
+          "default": 0.0
+        }
+      ],
+      "returns": {
+        "type": "array<float>",
+        "description": "Array with NaN values replaced"
+      },
+      "mathematical_formula": "output[i] = replacement if isnan(input[i]) else input[i]",
+      "implementation_notes": "Common preprocessing step. Consider using interpolation for time series data."
+    },
+    {
+      "id": "no_id",
+      "name": "round_to_precision",
+      "complexity": "O(1)",
+      "complexity_class": "O(1)",
+      "category": "numerical",
+      "file": "numerical_utilities_spec.json",
+      "description": "Round a number to specified precision with rounding mode control",
+      "parameters": [
+        {
+          "name": "value",
+          "type": "float",
+          "description": "Value to round"
+        },
+        {
+          "name": "precision",
+          "type": "integer",
+          "description": "Number of decimal places"
+        },
+        {
+          "name": "mode",
+          "type": "string",
+          "description": "Rounding mode (nearest, up, down, toward_zero, away_from_zero)",
+          "default": "nearest"
+        }
+      ],
+      "returns": {
+        "type": "float",
+        "description": "Rounded value"
+      },
+      "mathematical_formula": "Depends on mode: nearest uses round-half-to-even (banker's rounding)",
+      "implementation_notes": "Banker's rounding (round-half-to-even) reduces bias in statistical calculations."
+    },
+    {
+      "id": "no_id",
+      "name": "arbitrary_precision_add",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "numerical",
+      "file": "numerical_utilities_spec.json",
+      "description": "Add two numbers with arbitrary precision arithmetic",
+      "parameters": [
+        {
+          "name": "a",
+          "type": "string|float",
+          "description": "First operand (string for high precision)"
+        },
+        {
+          "name": "b",
+          "type": "string|float",
+          "description": "Second operand"
+        },
+        {
+          "name": "precision",
+          "type": "integer",
+          "description": "Result precision in decimal digits",
+          "default": 50
+        }
+      ],
+      "returns": {
+        "type": "string",
+        "description": "Sum as string with full precision"
+      },
+      "mathematical_formula": "a + b with n-digit precision",
+      "implementation_notes": "Use libraries like mpmath or decimal. String representation avoids float precision loss."
+    },
+    {
+      "id": "no_id",
+      "name": "complex_from_polar",
+      "complexity": "O(1)",
+      "complexity_class": "O(1)",
+      "category": "numerical",
+      "file": "numerical_utilities_spec.json",
+      "description": "Create a complex number from polar coordinates",
+      "parameters": [
+        {
+          "name": "magnitude",
+          "type": "float",
+          "description": "Magnitude (r)"
+        },
+        {
+          "name": "phase",
+          "type": "float",
+          "description": "Phase angle in radians (\u03b8)"
+        }
+      ],
+      "returns": {
+        "type": "complex",
+        "description": "Complex number r * e^(i\u03b8)"
+      },
+      "mathematical_formula": "z = r * e^(i\u03b8) = r * (cos(\u03b8) + i*sin(\u03b8))",
+      "implementation_notes": "Phase is typically in range [-\u03c0, \u03c0]. Magnitude should be non-negative."
+    },
+    {
+      "id": "no_id",
+      "name": "complex_to_polar",
+      "complexity": "O(1)",
+      "complexity_class": "O(1)",
+      "category": "numerical",
+      "file": "numerical_utilities_spec.json",
+      "description": "Convert a complex number to polar coordinates",
+      "parameters": [
+        {
+          "name": "z",
+          "type": "complex",
+          "description": "Complex number"
+        }
+      ],
+      "returns": {
+        "type": "object",
+        "description": "Polar representation",
+        "properties": {
+          "magnitude": "float",
+          "phase": "float"
+        }
+      },
+      "mathematical_formula": "r = |z| = \u221a(x\u00b2 + y\u00b2), \u03b8 = atan2(y, x)",
+      "implementation_notes": "Phase returned in range [-\u03c0, \u03c0]. Use atan2 for correct quadrant."
+    },
+    {
+      "id": "no_id",
+      "name": "complex_conjugate",
+      "complexity": "O(1)",
+      "complexity_class": "O(1)",
+      "category": "numerical",
+      "file": "numerical_utilities_spec.json",
+      "description": "Compute the complex conjugate of a number",
+      "parameters": [
+        {
+          "name": "z",
+          "type": "complex",
+          "description": "Complex number"
+        }
+      ],
+      "returns": {
+        "type": "complex",
+        "description": "Complex conjugate z*"
+      },
+      "mathematical_formula": "z* = x - iy for z = x + iy",
+      "implementation_notes": "Conjugate reflects across real axis. z * z* = |z|\u00b2."
+    },
+    {
+      "id": "no_id",
+      "name": "gamma",
+      "complexity": "O(1)",
+      "complexity_class": "O(1)",
+      "category": "numerical",
+      "file": "special_functions_spec.json",
+      "description": "Compute the gamma function \u0393(x), the extension of factorial to real and complex numbers",
+      "parameters": [
+        {
+          "name": "x",
+          "type": "float|complex",
+          "description": "Input value (x > 0 for real, or complex)"
+        }
+      ],
+      "returns": {
+        "type": "float|complex",
+        "description": "Gamma function value"
+      },
+      "mathematical_formula": "\u0393(x) = \u222b\u2080^\u221e t^(x-1) * e^(-t) dt, \u0393(n) = (n-1)! for positive integers",
+      "implementation_notes": "Use Lanczos or Stirling approximation. Poles at non-positive integers. Reflection formula for negative values."
+    },
+    {
+      "id": "no_id",
+      "name": "log_gamma",
+      "complexity": "O(1)",
+      "complexity_class": "O(1)",
+      "category": "numerical",
+      "file": "special_functions_spec.json",
+      "description": "Compute the natural logarithm of the absolute value of the gamma function",
+      "parameters": [
+        {
+          "name": "x",
+          "type": "float",
+          "description": "Input value"
+        }
+      ],
+      "returns": {
+        "type": "float",
+        "description": "log(|\u0393(x)|)"
+      },
+      "mathematical_formula": "lgamma(x) = log(|\u0393(x)|)",
+      "implementation_notes": "More numerically stable than log(gamma(x)) for large x. Avoids overflow issues."
+    },
+    {
+      "id": "no_id",
+      "name": "digamma",
+      "complexity": "O(1)",
+      "complexity_class": "O(1)",
+      "category": "numerical",
+      "file": "special_functions_spec.json",
+      "description": "Compute the digamma function (logarithmic derivative of gamma function)",
+      "parameters": [
+        {
+          "name": "x",
+          "type": "float",
+          "description": "Input value"
+        }
+      ],
+      "returns": {
+        "type": "float",
+        "description": "\u03c8(x) = d/dx ln(\u0393(x))"
+      },
+      "mathematical_formula": "\u03c8(x) = \u0393'(x)/\u0393(x) = d/dx ln(\u0393(x))",
+      "implementation_notes": "Use asymptotic expansion for large x, recurrence relation for small x."
+    },
+    {
+      "id": "no_id",
+      "name": "beta",
+      "complexity": "O(1)",
+      "complexity_class": "O(1)",
+      "category": "numerical",
+      "file": "special_functions_spec.json",
+      "description": "Compute the beta function B(a, b)",
+      "parameters": [
+        {
+          "name": "a",
+          "type": "float",
+          "description": "First parameter (a > 0)"
+        },
+        {
+          "name": "b",
+          "type": "float",
+          "description": "Second parameter (b > 0)"
+        }
+      ],
+      "returns": {
+        "type": "float",
+        "description": "Beta function value"
+      },
+      "mathematical_formula": "B(a,b) = \u0393(a)\u0393(b)/\u0393(a+b) = \u222b\u2080\u00b9 t^(a-1)(1-t)^(b-1) dt",
+      "implementation_notes": "Compute via log-gamma for numerical stability: exp(lgamma(a) + lgamma(b) - lgamma(a+b))"
+    },
+    {
+      "id": "no_id",
+      "name": "bessel_j",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "numerical",
+      "file": "special_functions_spec.json",
+      "description": "Compute the Bessel function of the first kind J_n(x)",
+      "parameters": [
+        {
+          "name": "n",
+          "type": "integer|float",
+          "description": "Order of the Bessel function"
+        },
+        {
+          "name": "x",
+          "type": "float",
+          "description": "Argument"
+        }
+      ],
+      "returns": {
+        "type": "float",
+        "description": "J_n(x)"
+      },
+      "mathematical_formula": "J_n(x) = (x/2)^n \u03a3_{k=0}^\u221e (-1)^k (x/2)^(2k) / (k! \u0393(n+k+1))",
+      "implementation_notes": "Use Miller's algorithm for backward recurrence. Asymptotic expansion for large x."
+    },
+    {
+      "id": "no_id",
+      "name": "bessel_y",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "numerical",
+      "file": "special_functions_spec.json",
+      "description": "Compute the Bessel function of the second kind Y_n(x)",
+      "parameters": [
+        {
+          "name": "n",
+          "type": "integer|float",
+          "description": "Order of the Bessel function"
+        },
+        {
+          "name": "x",
+          "type": "float",
+          "description": "Argument (x > 0)"
+        }
+      ],
+      "returns": {
+        "type": "float",
+        "description": "Y_n(x)"
+      },
+      "mathematical_formula": "Y_n(x) = (J_n(x)cos(n\u03c0) - J_{-n}(x)) / sin(n\u03c0)",
+      "implementation_notes": "Singular at x=0. Use forward recurrence from Y_0 and Y_1."
+    },
+    {
+      "id": "no_id",
+      "name": "bessel_i",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "numerical",
+      "file": "special_functions_spec.json",
+      "description": "Compute the modified Bessel function of the first kind I_n(x)",
+      "parameters": [
+        {
+          "name": "n",
+          "type": "integer|float",
+          "description": "Order of the Bessel function"
+        },
+        {
+          "name": "x",
+          "type": "float",
+          "description": "Argument"
+        }
+      ],
+      "returns": {
+        "type": "float",
+        "description": "I_n(x)"
+      },
+      "mathematical_formula": "I_n(x) = i^(-n) J_n(ix) = \u03a3_{k=0}^\u221e (x/2)^(n+2k) / (k! \u0393(n+k+1))",
+      "implementation_notes": "Exponentially growing for large x. Use scaled version for numerical stability."
+    },
+    {
+      "id": "no_id",
+      "name": "bessel_k",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "numerical",
+      "file": "special_functions_spec.json",
+      "description": "Compute the modified Bessel function of the second kind K_n(x)",
+      "parameters": [
+        {
+          "name": "n",
+          "type": "integer|float",
+          "description": "Order of the Bessel function"
+        },
+        {
+          "name": "x",
+          "type": "float",
+          "description": "Argument (x > 0)"
+        }
+      ],
+      "returns": {
+        "type": "float",
+        "description": "K_n(x)"
+      },
+      "mathematical_formula": "K_n(x) = (\u03c0/2) * i^(n+1) * (J_n(ix) + i*Y_n(ix))",
+      "implementation_notes": "Exponentially decaying for large x. Singular at x=0."
+    },
+    {
+      "id": "no_id",
+      "name": "erf",
+      "complexity": "O(1)",
+      "complexity_class": "O(1)",
+      "category": "numerical",
+      "file": "special_functions_spec.json",
+      "description": "Compute the error function erf(x)",
+      "parameters": [
+        {
+          "name": "x",
+          "type": "float",
+          "description": "Input value"
+        }
+      ],
+      "returns": {
+        "type": "float",
+        "description": "Error function value in range [-1, 1]"
+      },
+      "mathematical_formula": "erf(x) = (2/\u221a\u03c0) \u222b\u2080^x e^(-t\u00b2) dt",
+      "implementation_notes": "Use rational approximation or series expansion. Related to normal CDF: \u03a6(x) = (1 + erf(x/\u221a2))/2"
+    },
+    {
+      "id": "no_id",
+      "name": "erfc",
+      "complexity": "O(1)",
+      "complexity_class": "O(1)",
+      "category": "numerical",
+      "file": "special_functions_spec.json",
+      "description": "Compute the complementary error function erfc(x) = 1 - erf(x)",
+      "parameters": [
+        {
+          "name": "x",
+          "type": "float",
+          "description": "Input value"
+        }
+      ],
+      "returns": {
+        "type": "float",
+        "description": "Complementary error function value"
+      },
+      "mathematical_formula": "erfc(x) = 1 - erf(x) = (2/\u221a\u03c0) \u222b_x^\u221e e^(-t\u00b2) dt",
+      "implementation_notes": "More accurate than 1-erf(x) for large x. Use asymptotic expansion for large x."
+    },
+    {
+      "id": "no_id",
+      "name": "factorial",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "numerical",
+      "file": "special_functions_spec.json",
+      "description": "Compute the factorial n!",
+      "parameters": [
+        {
+          "name": "n",
+          "type": "integer",
+          "description": "Non-negative integer"
+        }
+      ],
+      "returns": {
+        "type": "integer|float",
+        "description": "n! = n \u00d7 (n-1) \u00d7 ... \u00d7 1"
+      },
+      "mathematical_formula": "n! = \u220f_{k=1}^n k = \u0393(n+1)",
+      "implementation_notes": "Use lookup table for small n. For large n, use Stirling approximation or gamma function."
+    },
+    {
+      "id": "no_id",
+      "name": "legendre_polynomial",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "numerical",
+      "file": "special_functions_spec.json",
+      "description": "Compute the Legendre polynomial P_n(x)",
+      "parameters": [
+        {
+          "name": "n",
+          "type": "integer",
+          "description": "Degree of the polynomial (n \u2265 0)"
+        },
+        {
+          "name": "x",
+          "type": "float",
+          "description": "Evaluation point (-1 \u2264 x \u2264 1)"
+        }
+      ],
+      "returns": {
+        "type": "float",
+        "description": "P_n(x)"
+      },
+      "mathematical_formula": "P_n(x) = (1/2^n n!) d^n/dx^n (x\u00b2-1)^n, recurrence: (n+1)P_{n+1} = (2n+1)xP_n - nP_{n-1}",
+      "implementation_notes": "Use three-term recurrence relation. Orthogonal on [-1,1] with weight 1."
+    },
+    {
+      "id": "la_vec_001",
+      "name": "vector_create",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "linear_algebra",
+      "file": "vector_operations_spec.json",
+      "description": "Create a vector from a list of numeric values. Supports any numeric type (int, float, complex) and arbitrary dimensions.",
+      "parameters": [
+        {
+          "name": "elements",
+          "type": "List[Numeric]",
+          "description": "List of numeric values",
+          "required": true
+        },
+        {
+          "name": "dtype",
+          "type": "string",
+          "description": "Data type (float32, float64, complex64, complex128)",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "Vector",
+        "description": "New vector containing the specified elements"
+      },
+      "mathematical_formula": "v = [v\u2081, v\u2082, ..., v\u2099]\u1d40",
+      "implementation_notes": "Use contiguous memory allocation for cache efficiency. Default dtype is float64 for numerical stability."
+    },
+    {
+      "id": "la_vec_002",
+      "name": "vector_zeros",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "linear_algebra",
+      "file": "vector_operations_spec.json",
+      "description": "Create a vector of zeros with specified dimension.",
+      "parameters": [
+        {
+          "name": "n",
+          "type": "int",
+          "description": "Vector dimension",
+          "required": true
+        },
+        {
+          "name": "dtype",
+          "type": "string",
+          "description": "Data type (default: float64)",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "Vector",
+        "description": "Zero vector of dimension n"
+      },
+      "mathematical_formula": "0\u20d7 = [0, 0, ..., 0]\u1d40",
+      "implementation_notes": "Use calloc for automatic zero initialization. Verify memory alignment for SIMD operations."
+    },
+    {
+      "id": "la_vec_003",
+      "name": "vector_ones",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "linear_algebra",
+      "file": "vector_operations_spec.json",
+      "description": "Create a vector of ones with specified dimension.",
+      "parameters": [
+        {
+          "name": "n",
+          "type": "int",
+          "description": "Vector dimension",
+          "required": true
+        },
+        {
+          "name": "dtype",
+          "type": "string",
+          "description": "Data type (default: float64)",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "Vector",
+        "description": "Vector of ones with dimension n"
+      },
+      "mathematical_formula": "1\u20d7 = [1, 1, ..., 1]\u1d40",
+      "implementation_notes": "Can use memset-style optimization for common dtypes. Useful for normalization denominators."
+    },
+    {
+      "id": "la_vec_004",
+      "name": "vector_random",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "linear_algebra",
+      "file": "vector_operations_spec.json",
+      "description": "Create a vector with random values from specified distribution.",
+      "parameters": [
+        {
+          "name": "n",
+          "type": "int",
+          "description": "Vector dimension",
+          "required": true
+        },
+        {
+          "name": "distribution",
+          "type": "string",
+          "description": "Distribution type: 'uniform', 'normal', 'standard_normal'",
+          "required": false
+        },
+        {
+          "name": "low",
+          "type": "float",
+          "description": "Lower bound for uniform (default: 0)",
+          "required": false
+        },
+        {
+          "name": "high",
+          "type": "float",
+          "description": "Upper bound for uniform (default: 1)",
+          "required": false
+        },
+        {
+          "name": "seed",
+          "type": "int",
+          "description": "Random seed for reproducibility",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "Vector",
+        "description": "Vector with random values"
+      },
+      "mathematical_formula": "v\u1d62 ~ Distribution(params)",
+      "implementation_notes": "Use cryptographically secure RNG for sensitive applications. Cache RNG state for batch operations."
+    },
+    {
+      "id": "la_vec_005",
+      "name": "vector_add",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "linear_algebra",
+      "file": "vector_operations_spec.json",
+      "description": "Add two vectors element-wise. Vectors must have same dimension.",
+      "parameters": [
+        {
+          "name": "v1",
+          "type": "Vector",
+          "description": "First vector",
+          "required": true
+        },
+        {
+          "name": "v2",
+          "type": "Vector",
+          "description": "Second vector",
+          "required": true
+        }
+      ],
+      "returns": {
+        "type": "Vector",
+        "description": "Element-wise sum v1 + v2"
+      },
+      "mathematical_formula": "(u + v)\u1d62 = u\u1d62 + v\u1d62",
+      "implementation_notes": "Use SIMD intrinsics (AVX/SSE) for performance. Handle type promotion automatically."
+    },
+    {
+      "id": "la_vec_006",
+      "name": "vector_subtract",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "linear_algebra",
+      "file": "vector_operations_spec.json",
+      "description": "Subtract two vectors element-wise. Vectors must have same dimension.",
+      "parameters": [
+        {
+          "name": "v1",
+          "type": "Vector",
+          "description": "First vector",
+          "required": true
+        },
+        {
+          "name": "v2",
+          "type": "Vector",
+          "description": "Second vector",
+          "required": true
+        }
+      ],
+      "returns": {
+        "type": "Vector",
+        "description": "Element-wise difference v1 - v2"
+      },
+      "mathematical_formula": "(u - v)\u1d62 = u\u1d62 - v\u1d62",
+      "implementation_notes": "Beware of catastrophic cancellation when subtracting similar values. Use Kahan summation for high precision."
+    },
+    {
+      "id": "la_vec_007",
+      "name": "vector_scalar_multiply",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "linear_algebra",
+      "file": "vector_operations_spec.json",
+      "description": "Multiply vector by scalar value.",
+      "parameters": [
+        {
+          "name": "v",
+          "type": "Vector",
+          "description": "Input vector",
+          "required": true
+        },
+        {
+          "name": "scalar",
+          "type": "Numeric",
+          "description": "Scalar multiplier",
+          "required": true
+        }
+      ],
+      "returns": {
+        "type": "Vector",
+        "description": "Scaled vector"
+      },
+      "mathematical_formula": "(\u03b1v)\u1d62 = \u03b1 \u00b7 v\u1d62",
+      "implementation_notes": "Special case scalar=0 and scalar=1 for efficiency. Use fused multiply-add when chaining operations."
+    },
+    {
+      "id": "la_vec_008",
+      "name": "vector_dot_product",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "linear_algebra",
+      "file": "vector_operations_spec.json",
+      "description": "Compute dot product (inner product) of two vectors.",
+      "parameters": [
+        {
+          "name": "v1",
+          "type": "Vector",
+          "description": "First vector",
+          "required": true
+        },
+        {
+          "name": "v2",
+          "type": "Vector",
+          "description": "Second vector",
+          "required": true
+        }
+      ],
+      "returns": {
+        "type": "Numeric",
+        "description": "Scalar dot product value"
+      },
+      "mathematical_formula": "u \u00b7 v = \u03a3\u1d62 u\u1d62v\u1d62 = u\u2081v\u2081 + u\u2082v\u2082 + ... + u\u2099v\u2099",
+      "implementation_notes": "Use Kahan summation for numerical stability. For complex vectors, use conjugate of first argument: \u27e8u,v\u27e9 = \u03a3 \u016b_i v_i"
+    },
+    {
+      "id": "la_vec_009",
+      "name": "vector_cross_product",
+      "complexity": "O(1)",
+      "complexity_class": "O(1)",
+      "category": "linear_algebra",
+      "file": "vector_operations_spec.json",
+      "description": "Compute cross product of two 3D vectors. Returns vector perpendicular to both inputs.",
+      "parameters": [
+        {
+          "name": "v1",
+          "type": "Vector",
+          "description": "First 3D vector",
+          "required": true
+        },
+        {
+          "name": "v2",
+          "type": "Vector",
+          "description": "Second 3D vector",
+          "required": true
+        }
+      ],
+      "returns": {
+        "type": "Vector",
+        "description": "Cross product vector (3D)"
+      },
+      "mathematical_formula": "u \u00d7 v = [u\u2082v\u2083 - u\u2083v\u2082, u\u2083v\u2081 - u\u2081v\u2083, u\u2081v\u2082 - u\u2082v\u2081]",
+      "implementation_notes": "Only defined for 3D vectors. For 2D, can return scalar (z-component). Consider numerical stability for nearly parallel vectors."
+    },
+    {
+      "id": "la_vec_010",
+      "name": "vector_norm",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "linear_algebra",
+      "file": "vector_operations_spec.json",
+      "description": "Compute vector norm (magnitude). Supports L1, L2 (Euclidean), and Linf norms.",
+      "parameters": [
+        {
+          "name": "v",
+          "type": "Vector",
+          "description": "Input vector",
+          "required": true
+        },
+        {
+          "name": "ord",
+          "type": "Numeric|string",
+          "description": "Norm order: 1 (L1), 2 (L2/Euclidean), 'inf' (max), 'fro' (Frobenius)",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "float",
+        "description": "Norm value (non-negative)"
+      },
+      "mathematical_formula": "||v||\u2081 = \u03a3|v\u1d62|, ||v||\u2082 = \u221a(\u03a3v\u1d62\u00b2), ||v||\u221e = max|v\u1d62|",
+      "implementation_notes": "For L2, use hypot-style algorithm to avoid overflow/underflow. Scale by max element for numerical stability."
+    },
+    {
+      "id": "la_vec_011",
+      "name": "vector_normalize",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "linear_algebra",
+      "file": "vector_operations_spec.json",
+      "description": "Normalize vector to unit length (L2 norm = 1).",
+      "parameters": [
+        {
+          "name": "v",
+          "type": "Vector",
+          "description": "Input vector",
+          "required": true
+        },
+        {
+          "name": "ord",
+          "type": "Numeric",
+          "description": "Norm order for normalization (default: 2)",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "Vector",
+        "description": "Unit vector in same direction"
+      },
+      "mathematical_formula": "v\u0302 = v / ||v||",
+      "implementation_notes": "Check for zero vector before division. Can fuse norm and division into single pass with proper scaling."
+    },
+    {
+      "id": "la_vec_012",
+      "name": "vector_projection",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "linear_algebra",
+      "file": "vector_operations_spec.json",
+      "description": "Project vector v onto vector u. Returns component of v in direction of u.",
+      "parameters": [
+        {
+          "name": "v",
+          "type": "Vector",
+          "description": "Vector to project",
+          "required": true
+        },
+        {
+          "name": "u",
+          "type": "Vector",
+          "description": "Vector to project onto",
+          "required": true
+        }
+      ],
+      "returns": {
+        "type": "Vector",
+        "description": "Projection of v onto u"
+      },
+      "mathematical_formula": "proj_u(v) = (v \u00b7 u / u \u00b7 u) \u00d7 u",
+      "implementation_notes": "Check for zero vector u. For orthonormal basis, simplify to (v\u00b7u)u."
+    },
+    {
+      "id": "la_mat_012",
+      "name": "matrix_trace",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "linear_algebra",
+      "file": "matrix_operations_spec.json",
+      "description": "Compute the trace (sum of diagonal elements) of a square matrix.",
+      "parameters": [
+        {
+          "name": "A",
+          "type": "Matrix",
+          "description": "Square matrix (n\u00d7n)",
+          "required": true
+        }
+      ],
+      "returns": {
+        "type": "Numeric",
+        "description": "Trace value"
+      },
+      "mathematical_formula": "tr(A) = \u03a3\u1d62 A\u1d62\u1d62 = \u03bb\u2081 + \u03bb\u2082 + ... + \u03bb\u2099",
+      "implementation_notes": "Use strided access for diagonal. Equal to sum of eigenvalues. Invariant under cyclic permutations: tr(ABC) = tr(BCA) = tr(CAB)."
+    },
+    {
+      "id": "la_spc_002",
+      "name": "diagonal_matrix_create",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "linear_algebra",
+      "file": "special_matrices_spec.json",
+      "description": "Create a diagonal matrix from vector of diagonal elements.",
+      "parameters": [
+        {
+          "name": "diagonal",
+          "type": "Vector",
+          "description": "Diagonal elements",
+          "required": true
+        },
+        {
+          "name": "k",
+          "type": "int",
+          "description": "Diagonal offset: 0=main, k>0=above, k<0=below",
+          "required": false
+        },
+        {
+          "name": "shape",
+          "type": "Tuple[int,int]",
+          "description": "Output shape (default: square)",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "Matrix",
+        "description": "Diagonal (or banded) matrix"
+      },
+      "mathematical_formula": "D = diag(d) where D[i,i] = d[i], D[i,j] = 0 for i\u2260j",
+      "implementation_notes": "Fundamental for eigendecomposition (\u039b), scaling, efficient multiplication. Store as vector when possible."
+    },
+    {
+      "id": "calc_interp_001",
+      "name": "interpolate_linear",
+      "complexity": "O(log n) per evaluation",
+      "complexity_class": "O(log n)",
+      "category": "calculus",
+      "file": "interpolation_spec.json",
+      "description": "Piecewise linear interpolation between data points",
+      "parameters": [
+        {
+          "name": "x_data",
+          "type": "Vector",
+          "description": "Known x coordinates (must be sorted)",
+          "required": true
+        },
+        {
+          "name": "y_data",
+          "type": "Vector",
+          "description": "Known y values at x_data points",
+          "required": true
+        },
+        {
+          "name": "x_eval",
+          "type": "float | Vector",
+          "description": "Point(s) at which to evaluate interpolant",
+          "required": true
+        },
+        {
+          "name": "extrapolate",
+          "type": "bool",
+          "description": "Allow extrapolation outside data range (default: false)",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "float | Vector",
+        "description": "Interpolated value(s) at x_eval"
+      },
+      "mathematical_formula": "y(x) = y_i + (y_{i+1} - y_i)/(x_{i+1} - x_i) \u00d7 (x - x_i) for x \u2208 [x_i, x_{i+1}]",
+      "implementation_notes": "Continuous but not smooth (C\u2070). Fast and robust. No oscillation issues. Good for monotonic data. Derivative discontinuous at data points."
+    },
+    {
+      "id": "calc_interp_004",
+      "name": "interpolate_cubic_spline",
+      "complexity": "O(n) setup, O(log n) per evaluation",
+      "complexity_class": "O(n)",
+      "category": "calculus",
+      "file": "interpolation_spec.json",
+      "description": "Natural cubic spline interpolation with continuous second derivatives",
+      "parameters": [
+        {
+          "name": "x_data",
+          "type": "Vector",
+          "description": "Known x coordinates (sorted)",
+          "required": true
+        },
+        {
+          "name": "y_data",
+          "type": "Vector",
+          "description": "Known y values",
+          "required": true
+        },
+        {
+          "name": "x_eval",
+          "type": "float | Vector",
+          "description": "Point(s) at which to evaluate",
+          "required": true
+        },
+        {
+          "name": "bc_type",
+          "type": "string",
+          "description": "Boundary condition: 'natural', 'clamped', 'not-a-knot'",
+          "required": false
+        },
+        {
+          "name": "bc_values",
+          "type": "Tuple[float, float]",
+          "description": "Boundary values for clamped BC (derivatives at endpoints)",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "float | Vector",
+        "description": "Interpolated value(s)"
+      },
+      "mathematical_formula": "S\u1d62(x) = a\u1d62 + b\u1d62(x-x\u1d62) + c\u1d62(x-x\u1d62)\u00b2 + d\u1d62(x-x\u1d62)\u00b3 on [x\u1d62, x\u1d62\u208a\u2081]",
+      "implementation_notes": "C\u00b2 continuous. Natural: S''(x\u2080) = S''(x\u2099) = 0. Clamped: S'(x\u2080), S'(x\u2099) specified. Not-a-knot: third derivative continuous at x\u2081, x\u2099\u208b\u2081."
+    },
+    {
+      "id": "calc_interp_005",
+      "name": "interpolate_bspline",
+      "complexity": "O(n) setup, O(k) per evaluation",
+      "complexity_class": "O(n)",
+      "category": "calculus",
+      "file": "interpolation_spec.json",
+      "description": "B-spline interpolation with specified degree",
+      "parameters": [
+        {
+          "name": "x_data",
+          "type": "Vector",
+          "description": "Known x coordinates",
+          "required": true
+        },
+        {
+          "name": "y_data",
+          "type": "Vector",
+          "description": "Known y values",
+          "required": true
+        },
+        {
+          "name": "degree",
+          "type": "int",
+          "description": "B-spline degree (default: 3 for cubic)",
+          "required": false
+        },
+        {
+          "name": "x_eval",
+          "type": "float | Vector",
+          "description": "Point(s) at which to evaluate",
+          "required": true
+        },
+        {
+          "name": "smoothing",
+          "type": "float",
+          "description": "Smoothing factor (0 = interpolation)",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "Dict",
+        "description": "{value: float|Vector, knots: Vector, coefficients: Vector}"
+      },
+      "mathematical_formula": "S(x) = \u03a3\u1d62 c\u1d62 B\u1d62,\u2096(x) where B\u1d62,\u2096 are B-spline basis functions",
+      "implementation_notes": "Local support: each basis function nonzero on k+1 intervals. Numerically stable. Smoothing > 0 gives approximation rather than interpolation."
+    },
+    {
+      "id": "calc_interp_010",
+      "name": "extrapolate",
+      "complexity": "O(n) for fitting",
+      "complexity_class": "O(n)",
+      "category": "calculus",
+      "file": "interpolation_spec.json",
+      "description": "Extrapolate beyond data range using fitted model",
+      "parameters": [
+        {
+          "name": "x_data",
+          "type": "Vector",
+          "description": "Known x coordinates",
+          "required": true
+        },
+        {
+          "name": "y_data",
+          "type": "Vector",
+          "description": "Known y values",
+          "required": true
+        },
+        {
+          "name": "x_eval",
+          "type": "float | Vector",
+          "description": "Point(s) to extrapolate to",
+          "required": true
+        },
+        {
+          "name": "method",
+          "type": "string",
+          "description": "'linear', 'polynomial', 'exponential', 'constant'",
+          "required": false
+        },
+        {
+          "name": "degree",
+          "type": "int",
+          "description": "Polynomial degree (if method='polynomial')",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "Dict",
+        "description": "{value: float|Vector, confidence: float, warning: string}"
+      },
+      "mathematical_formula": "Extends interpolant beyond data range; accuracy decreases with distance",
+      "implementation_notes": "Extrapolation inherently risky. Linear uses endpoint slope. Polynomial can diverge rapidly. Include confidence/uncertainty estimate. Warn user about reliability."
+    },
+    {
+      "id": "calc_int_001",
+      "name": "integrate_trapezoidal",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "calculus",
+      "file": "integration_spec.json",
+      "description": "Compute definite integral using composite trapezoidal rule",
+      "parameters": [
+        {
+          "name": "f",
+          "type": "Callable[[float], float]",
+          "description": "Function to integrate",
+          "required": true
+        },
+        {
+          "name": "a",
+          "type": "float",
+          "description": "Lower bound of integration",
+          "required": true
+        },
+        {
+          "name": "b",
+          "type": "float",
+          "description": "Upper bound of integration",
+          "required": true
+        },
+        {
+          "name": "n",
+          "type": "int",
+          "description": "Number of subintervals (default: 100)",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "float",
+        "description": "Approximate value of \u222b\u2090\u1d47 f(x)dx"
+      },
+      "mathematical_formula": "\u222b\u2090\u1d47 f(x)dx \u2248 h/2 [f(a) + 2\u03a3\u1d62\u208c\u2081\u207f\u207b\u00b9 f(x\u1d62) + f(b)], h = (b-a)/n",
+      "implementation_notes": "Second-order accurate: error O(h\u00b2). Good for smooth functions. Error proportional to f''(\u03be) for some \u03be \u2208 [a,b]."
+    },
+    {
+      "id": "calc_int_002",
+      "name": "integrate_simpson",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "calculus",
+      "file": "integration_spec.json",
+      "description": "Compute definite integral using composite Simpson's rule",
+      "parameters": [
+        {
+          "name": "f",
+          "type": "Callable[[float], float]",
+          "description": "Function to integrate",
+          "required": true
+        },
+        {
+          "name": "a",
+          "type": "float",
+          "description": "Lower bound of integration",
+          "required": true
+        },
+        {
+          "name": "b",
+          "type": "float",
+          "description": "Upper bound of integration",
+          "required": true
+        },
+        {
+          "name": "n",
+          "type": "int",
+          "description": "Number of subintervals (must be even, default: 100)",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "float",
+        "description": "Approximate value of \u222b\u2090\u1d47 f(x)dx"
+      },
+      "mathematical_formula": "\u222b\u2090\u1d47 f(x)dx \u2248 h/3 [f(a) + 4\u03a3_odd f(x\u1d62) + 2\u03a3_even f(x\u1d62) + f(b)]",
+      "implementation_notes": "Fourth-order accurate: error O(h\u2074). Requires even n. Exact for polynomials up to degree 3. Superior to trapezoidal for smooth functions."
+    },
+    {
+      "id": "calc_int_003",
+      "name": "integrate_simpson38",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "calculus",
+      "file": "integration_spec.json",
+      "description": "Compute definite integral using Simpson's 3/8 rule (cubic interpolation)",
+      "parameters": [
+        {
+          "name": "f",
+          "type": "Callable[[float], float]",
+          "description": "Function to integrate",
+          "required": true
+        },
+        {
+          "name": "a",
+          "type": "float",
+          "description": "Lower bound of integration",
+          "required": true
+        },
+        {
+          "name": "b",
+          "type": "float",
+          "description": "Upper bound of integration",
+          "required": true
+        },
+        {
+          "name": "n",
+          "type": "int",
+          "description": "Number of subintervals (must be multiple of 3, default: 99)",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "float",
+        "description": "Approximate value of \u222b\u2090\u1d47 f(x)dx"
+      },
+      "mathematical_formula": "\u222b\u2090\u1d47 f(x)dx \u2248 3h/8 [f(x\u2080) + 3f(x\u2081) + 3f(x\u2082) + 2f(x\u2083) + 3f(x\u2084) + ...]",
+      "implementation_notes": "Fourth-order accurate like Simpson's 1/3. Useful when n is not divisible by 2. Can combine with 1/3 rule for arbitrary n."
+    },
+    {
+      "id": "calc_int_004",
+      "name": "integrate_gauss_legendre",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "calculus",
+      "file": "integration_spec.json",
+      "description": "Compute definite integral using Gauss-Legendre quadrature",
+      "parameters": [
+        {
+          "name": "f",
+          "type": "Callable[[float], float]",
+          "description": "Function to integrate",
+          "required": true
+        },
+        {
+          "name": "a",
+          "type": "float",
+          "description": "Lower bound of integration",
+          "required": true
+        },
+        {
+          "name": "b",
+          "type": "float",
+          "description": "Upper bound of integration",
+          "required": true
+        },
+        {
+          "name": "n",
+          "type": "int",
+          "description": "Number of quadrature points (default: 5)",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "float",
+        "description": "Approximate value of \u222b\u2090\u1d47 f(x)dx"
+      },
+      "mathematical_formula": "\u222b\u208b\u2081\u00b9 f(x)dx \u2248 \u03a3\u1d62 w\u1d62f(x\u1d62) where x\u1d62 are roots of Legendre polynomial P\u2099(x)",
+      "implementation_notes": "Exact for polynomials up to degree 2n-1. Transform [a,b] to [-1,1]: x = (b-a)t/2 + (a+b)/2. Precompute nodes and weights for common n values."
+    },
+    {
+      "id": "calc_int_007",
+      "name": "integrate_monte_carlo",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "calculus",
+      "file": "integration_spec.json",
+      "description": "Compute definite integral using Monte Carlo integration with random sampling",
+      "parameters": [
+        {
+          "name": "f",
+          "type": "Callable[[float], float]",
+          "description": "Function to integrate",
+          "required": true
+        },
+        {
+          "name": "a",
+          "type": "float",
+          "description": "Lower bound of integration",
+          "required": true
+        },
+        {
+          "name": "b",
+          "type": "float",
+          "description": "Upper bound of integration",
+          "required": true
+        },
+        {
+          "name": "n_samples",
+          "type": "int",
+          "description": "Number of random samples (default: 10000)",
+          "required": false
+        },
+        {
+          "name": "seed",
+          "type": "int",
+          "description": "Random seed for reproducibility",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "Dict",
+        "description": "{value: float, std_error: float, n_samples: int}"
+      },
+      "mathematical_formula": "\u222b\u2090\u1d47 f(x)dx \u2248 (b-a)/n \u03a3\u1d62 f(x\u1d62), x\u1d62 ~ Uniform(a,b)",
+      "implementation_notes": "Error O(1/\u221an) regardless of dimension. Good for high-dimensional integrals. Variance reduction techniques (importance sampling, stratification) can improve convergence."
+    },
+    {
+      "id": "calc_int_011",
+      "name": "integrate_from_samples",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "calculus",
+      "file": "integration_spec.json",
+      "description": "Compute integral from discrete samples using numerical quadrature",
+      "parameters": [
+        {
+          "name": "x",
+          "type": "Vector",
+          "description": "Sample points (must be sorted)",
+          "required": true
+        },
+        {
+          "name": "y",
+          "type": "Vector",
+          "description": "Function values at sample points",
+          "required": true
+        },
+        {
+          "name": "method",
+          "type": "string",
+          "description": "Method: 'trapezoidal', 'simpson'",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "float",
+        "description": "Approximate integral from x[0] to x[-1]"
+      },
+      "mathematical_formula": "\u222b f(x)dx \u2248 \u03a3\u1d62 w\u1d62 y\u1d62 with appropriate weights",
+      "implementation_notes": "Handles non-uniform spacing. Trapezoidal works for any spacing. Simpson requires uniform or uses composite approach."
+    },
+    {
+      "id": "calc_diff_001",
+      "name": "derivative_forward",
+      "complexity": "O(1)",
+      "complexity_class": "O(1)",
+      "category": "calculus",
+      "file": "differentiation_spec.json",
+      "description": "Compute numerical derivative using forward difference approximation: f'(x) \u2248 (f(x+h) - f(x)) / h",
+      "parameters": [
+        {
+          "name": "f",
+          "type": "Callable[[float], float]",
+          "description": "Function to differentiate",
+          "required": true
+        },
+        {
+          "name": "x",
+          "type": "float",
+          "description": "Point at which to evaluate derivative",
+          "required": true
+        },
+        {
+          "name": "h",
+          "type": "float",
+          "description": "Step size (default: 1e-8)",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "float",
+        "description": "Approximate derivative f'(x)"
+      },
+      "mathematical_formula": "f'(x) \u2248 [f(x+h) - f(x)] / h + O(h)",
+      "implementation_notes": "First-order accurate. Truncation error O(h), round-off error O(\u03b5/h). Optimal h \u2248 \u221a\u03b5 \u2248 1e-8 for float64. Susceptible to cancellation errors for small h."
+    },
+    {
+      "id": "calc_diff_002",
+      "name": "derivative_backward",
+      "complexity": "O(1)",
+      "complexity_class": "O(1)",
+      "category": "calculus",
+      "file": "differentiation_spec.json",
+      "description": "Compute numerical derivative using backward difference approximation: f'(x) \u2248 (f(x) - f(x-h)) / h",
+      "parameters": [
+        {
+          "name": "f",
+          "type": "Callable[[float], float]",
+          "description": "Function to differentiate",
+          "required": true
+        },
+        {
+          "name": "x",
+          "type": "float",
+          "description": "Point at which to evaluate derivative",
+          "required": true
+        },
+        {
+          "name": "h",
+          "type": "float",
+          "description": "Step size (default: 1e-8)",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "float",
+        "description": "Approximate derivative f'(x)"
+      },
+      "mathematical_formula": "f'(x) \u2248 [f(x) - f(x-h)] / h + O(h)",
+      "implementation_notes": "First-order accurate. Useful when function only defined for x \u2264 x\u2080. Same error characteristics as forward difference."
+    },
+    {
+      "id": "calc_diff_003",
+      "name": "derivative_central",
+      "complexity": "O(1)",
+      "complexity_class": "O(1)",
+      "category": "calculus",
+      "file": "differentiation_spec.json",
+      "description": "Compute numerical derivative using central difference approximation: f'(x) \u2248 (f(x+h) - f(x-h)) / (2h)",
+      "parameters": [
+        {
+          "name": "f",
+          "type": "Callable[[float], float]",
+          "description": "Function to differentiate",
+          "required": true
+        },
+        {
+          "name": "x",
+          "type": "float",
+          "description": "Point at which to evaluate derivative",
+          "required": true
+        },
+        {
+          "name": "h",
+          "type": "float",
+          "description": "Step size (default: 1e-5)",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "float",
+        "description": "Approximate derivative f'(x)"
+      },
+      "mathematical_formula": "f'(x) \u2248 [f(x+h) - f(x-h)] / (2h) + O(h\u00b2)",
+      "implementation_notes": "Second-order accurate. Optimal h \u2248 \u03b5^(1/3) \u2248 1e-5 for float64. Preferred method when function is smooth and defined on both sides of x."
+    },
+    {
+      "id": "calc_diff_004",
+      "name": "derivative_second",
+      "complexity": "O(1)",
+      "complexity_class": "O(1)",
+      "category": "calculus",
+      "file": "differentiation_spec.json",
+      "description": "Compute second derivative using central difference: f''(x) \u2248 (f(x+h) - 2f(x) + f(x-h)) / h\u00b2",
+      "parameters": [
+        {
+          "name": "f",
+          "type": "Callable[[float], float]",
+          "description": "Function to differentiate",
+          "required": true
+        },
+        {
+          "name": "x",
+          "type": "float",
+          "description": "Point at which to evaluate second derivative",
+          "required": true
+        },
+        {
+          "name": "h",
+          "type": "float",
+          "description": "Step size (default: 1e-4)",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "float",
+        "description": "Approximate second derivative f''(x)"
+      },
+      "mathematical_formula": "f''(x) \u2248 [f(x+h) - 2f(x) + f(x-h)] / h\u00b2 + O(h\u00b2)",
+      "implementation_notes": "Second-order accurate. Optimal h \u2248 \u03b5^(1/4) \u2248 1e-4 for float64. More sensitive to round-off errors than first derivative."
+    },
+    {
+      "id": "calc_diff_005",
+      "name": "derivative_higher_order",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "calculus",
+      "file": "differentiation_spec.json",
+      "description": "Compute nth derivative using finite difference stencils",
+      "parameters": [
+        {
+          "name": "f",
+          "type": "Callable[[float], float]",
+          "description": "Function to differentiate",
+          "required": true
+        },
+        {
+          "name": "x",
+          "type": "float",
+          "description": "Point at which to evaluate derivative",
+          "required": true
+        },
+        {
+          "name": "n",
+          "type": "int",
+          "description": "Order of derivative (1, 2, 3, ...)",
+          "required": true
+        },
+        {
+          "name": "h",
+          "type": "float",
+          "description": "Step size",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "float",
+        "description": "Approximate nth derivative f^(n)(x)"
+      },
+      "mathematical_formula": "f^(n)(x) \u2248 \u03a3\u1d62 c\u1d62 f(x + i\u0394h) / h\u207f where c\u1d62 are binomial coefficients",
+      "implementation_notes": "Uses central difference stencils. Accuracy decreases with order. For n > 4, consider Richardson extrapolation or automatic differentiation."
+    },
+    {
+      "id": "calc_diff_006",
+      "name": "gradient",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "calculus",
+      "file": "differentiation_spec.json",
+      "description": "Compute gradient vector of a scalar function f: \u211d\u207f \u2192 \u211d using numerical differentiation",
+      "parameters": [
+        {
+          "name": "f",
+          "type": "Callable[[Vector], float]",
+          "description": "Scalar function of n variables",
+          "required": true
+        },
+        {
+          "name": "x",
+          "type": "Vector",
+          "description": "Point at which to evaluate gradient (n-dimensional)",
+          "required": true
+        },
+        {
+          "name": "h",
+          "type": "float",
+          "description": "Step size for finite differences (default: 1e-5)",
+          "required": false
+        },
+        {
+          "name": "method",
+          "type": "string",
+          "description": "Difference method: 'central', 'forward', 'backward'",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "Vector",
+        "description": "Gradient vector \u2207f(x) of dimension n"
+      },
+      "mathematical_formula": "\u2207f(x) = [\u2202f/\u2202x\u2081, \u2202f/\u2202x\u2082, ..., \u2202f/\u2202x\u2099]\u1d40",
+      "implementation_notes": "Central difference recommended for accuracy. Each partial derivative computed independently. Consider parallel evaluation for expensive functions."
+    },
+    {
+      "id": "calc_diff_007",
+      "name": "partial_derivative",
+      "complexity": "O(1)",
+      "complexity_class": "O(1)",
+      "category": "calculus",
+      "file": "differentiation_spec.json",
+      "description": "Compute partial derivative of a multivariate function with respect to a specified variable",
+      "parameters": [
+        {
+          "name": "f",
+          "type": "Callable[[Vector], float]",
+          "description": "Multivariate function",
+          "required": true
+        },
+        {
+          "name": "x",
+          "type": "Vector",
+          "description": "Point at which to evaluate",
+          "required": true
+        },
+        {
+          "name": "var_index",
+          "type": "int",
+          "description": "Index of variable to differentiate with respect to (0-based)",
+          "required": true
+        },
+        {
+          "name": "h",
+          "type": "float",
+          "description": "Step size (default: 1e-5)",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "float",
+        "description": "Partial derivative \u2202f/\u2202x\u1d62 at point x"
+      },
+      "mathematical_formula": "\u2202f/\u2202x\u1d62 = lim_{h\u21920} [f(x + he\u1d62) - f(x - he\u1d62)] / (2h)",
+      "implementation_notes": "Uses central difference by default. Creates temporary vectors with perturbed i-th component."
+    },
+    {
+      "id": "calc_diff_008",
+      "name": "directional_derivative",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "calculus",
+      "file": "differentiation_spec.json",
+      "description": "Compute directional derivative of f at x in direction v: D\u1d65f(x) = \u2207f(x)\u00b7v\u0302",
+      "parameters": [
+        {
+          "name": "f",
+          "type": "Callable[[Vector], float]",
+          "description": "Scalar function",
+          "required": true
+        },
+        {
+          "name": "x",
+          "type": "Vector",
+          "description": "Point at which to evaluate",
+          "required": true
+        },
+        {
+          "name": "v",
+          "type": "Vector",
+          "description": "Direction vector (will be normalized)",
+          "required": true
+        },
+        {
+          "name": "h",
+          "type": "float",
+          "description": "Step size (default: 1e-5)",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "float",
+        "description": "Directional derivative D\u1d65f(x)"
+      },
+      "mathematical_formula": "D\u1d65f(x) = lim_{t\u21920} [f(x + tv\u0302) - f(x)] / t = \u2207f(x) \u00b7 v\u0302",
+      "implementation_notes": "Normalize direction vector first. Can compute directly as [f(x + hv\u0302) - f(x - hv\u0302)] / (2h) without computing full gradient."
+    },
+    {
+      "id": "calc_diff_011",
+      "name": "laplacian",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "calculus",
+      "file": "differentiation_spec.json",
+      "description": "Compute Laplacian (trace of Hessian) of a scalar function: \u2207\u00b2f = \u03a3\u1d62 \u2202\u00b2f/\u2202x\u1d62\u00b2",
+      "parameters": [
+        {
+          "name": "f",
+          "type": "Callable[[Vector], float]",
+          "description": "Scalar function of n variables",
+          "required": true
+        },
+        {
+          "name": "x",
+          "type": "Vector",
+          "description": "Point at which to evaluate",
+          "required": true
+        },
+        {
+          "name": "h",
+          "type": "float",
+          "description": "Step size (default: 1e-4)",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "float",
+        "description": "Laplacian \u2207\u00b2f(x)"
+      },
+      "mathematical_formula": "\u2207\u00b2f = \u03a3\u1d62 \u2202\u00b2f/\u2202x\u1d62\u00b2 = tr(H)",
+      "implementation_notes": "More efficient than computing full Hessian when only Laplacian needed. Sum of second derivatives along each axis."
+    },
+    {
+      "id": "calc_diff_012",
+      "name": "divergence",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "calculus",
+      "file": "differentiation_spec.json",
+      "description": "Compute divergence of a vector field F: \u211d\u207f \u2192 \u211d\u207f: div(F) = \u03a3\u1d62 \u2202F\u1d62/\u2202x\u1d62",
+      "parameters": [
+        {
+          "name": "F",
+          "type": "Callable[[Vector], Vector]",
+          "description": "Vector field (n inputs, n outputs)",
+          "required": true
+        },
+        {
+          "name": "x",
+          "type": "Vector",
+          "description": "Point at which to evaluate",
+          "required": true
+        },
+        {
+          "name": "h",
+          "type": "float",
+          "description": "Step size (default: 1e-5)",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "float",
+        "description": "Divergence \u2207\u00b7F(x)"
+      },
+      "mathematical_formula": "\u2207\u00b7F = \u2202F\u2081/\u2202x\u2081 + \u2202F\u2082/\u2202x\u2082 + ... + \u2202F\u2099/\u2202x\u2099 = tr(J)",
+      "implementation_notes": "Trace of Jacobian matrix. Only diagonal elements needed, so more efficient than full Jacobian computation."
+    },
+    {
+      "id": "calc_ode_001",
+      "name": "ode_euler",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "calculus",
+      "file": "differential_equations_spec.json",
+      "description": "Solve initial value problem using forward Euler method: y_{n+1} = y_n + h*f(t_n, y_n)",
+      "parameters": [
+        {
+          "name": "f",
+          "type": "Callable[[float, float], float]",
+          "description": "Derivative function f(t, y) = dy/dt",
+          "required": true
+        },
+        {
+          "name": "y0",
+          "type": "float",
+          "description": "Initial condition y(t0)",
+          "required": true
+        },
+        {
+          "name": "t_span",
+          "type": "Tuple[float, float]",
+          "description": "Time interval (t0, t_final)",
+          "required": true
+        },
+        {
+          "name": "h",
+          "type": "float",
+          "description": "Step size (default: 0.01)",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "Dict",
+        "description": "{t: Vector, y: Vector} - time points and solution values"
+      },
+      "mathematical_formula": "y_{n+1} = y_n + h\u00b7f(t_n, y_n), local error O(h\u00b2), global error O(h)",
+      "implementation_notes": "First-order accurate. Simple but requires small h for accuracy. Conditionally stable: h < 2/|\u2202f/\u2202y| for stability. Not suitable for stiff equations."
+    },
+    {
+      "id": "calc_ode_002",
+      "name": "ode_euler_improved",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "calculus",
+      "file": "differential_equations_spec.json",
+      "description": "Solve IVP using improved Euler (Heun's) method with predictor-corrector approach",
+      "parameters": [
+        {
+          "name": "f",
+          "type": "Callable[[float, float], float]",
+          "description": "Derivative function f(t, y)",
+          "required": true
+        },
+        {
+          "name": "y0",
+          "type": "float",
+          "description": "Initial condition y(t0)",
+          "required": true
+        },
+        {
+          "name": "t_span",
+          "type": "Tuple[float, float]",
+          "description": "Time interval (t0, t_final)",
+          "required": true
+        },
+        {
+          "name": "h",
+          "type": "float",
+          "description": "Step size (default: 0.01)",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "Dict",
+        "description": "{t: Vector, y: Vector}"
+      },
+      "mathematical_formula": "\u1ef9_{n+1} = y_n + h\u00b7f(t_n, y_n), y_{n+1} = y_n + h/2\u00b7[f(t_n, y_n) + f(t_{n+1}, \u1ef9_{n+1})]",
+      "implementation_notes": "Second-order accurate. Also known as explicit trapezoidal method. Better stability than forward Euler."
+    },
+    {
+      "id": "calc_ode_003",
+      "name": "ode_midpoint",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "calculus",
+      "file": "differential_equations_spec.json",
+      "description": "Solve IVP using midpoint method (second-order Runge-Kutta)",
+      "parameters": [
+        {
+          "name": "f",
+          "type": "Callable[[float, float], float]",
+          "description": "Derivative function f(t, y)",
+          "required": true
+        },
+        {
+          "name": "y0",
+          "type": "float",
+          "description": "Initial condition y(t0)",
+          "required": true
+        },
+        {
+          "name": "t_span",
+          "type": "Tuple[float, float]",
+          "description": "Time interval (t0, t_final)",
+          "required": true
+        },
+        {
+          "name": "h",
+          "type": "float",
+          "description": "Step size (default: 0.01)",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "Dict",
+        "description": "{t: Vector, y: Vector}"
+      },
+      "mathematical_formula": "k\u2081 = f(t_n, y_n), k\u2082 = f(t_n + h/2, y_n + h\u00b7k\u2081/2), y_{n+1} = y_n + h\u00b7k\u2082",
+      "implementation_notes": "Second-order accurate. Evaluates derivative at midpoint for better accuracy. Part of RK2 family."
+    },
+    {
+      "id": "calc_ode_004",
+      "name": "ode_rk4",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "calculus",
+      "file": "differential_equations_spec.json",
+      "description": "Solve IVP using classic fourth-order Runge-Kutta method",
+      "parameters": [
+        {
+          "name": "f",
+          "type": "Callable[[float, float], float]",
+          "description": "Derivative function f(t, y)",
+          "required": true
+        },
+        {
+          "name": "y0",
+          "type": "float",
+          "description": "Initial condition y(t0)",
+          "required": true
+        },
+        {
+          "name": "t_span",
+          "type": "Tuple[float, float]",
+          "description": "Time interval (t0, t_final)",
+          "required": true
+        },
+        {
+          "name": "h",
+          "type": "float",
+          "description": "Step size (default: 0.01)",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "Dict",
+        "description": "{t: Vector, y: Vector}"
+      },
+      "mathematical_formula": "k\u2081 = f(t, y), k\u2082 = f(t+h/2, y+hk\u2081/2), k\u2083 = f(t+h/2, y+hk\u2082/2), k\u2084 = f(t+h, y+hk\u2083), y_{n+1} = y_n + h(k\u2081+2k\u2082+2k\u2083+k\u2084)/6",
+      "implementation_notes": "Fourth-order accurate, local error O(h\u2075). Workhorse of ODE solvers. Good balance of accuracy and efficiency. Not adaptive."
+    },
+    {
+      "id": "calc_ode_005",
+      "name": "ode_rk45",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "calculus",
+      "file": "differential_equations_spec.json",
+      "description": "Solve IVP using adaptive Runge-Kutta-Fehlberg (RK45) method with automatic step size control",
+      "parameters": [
+        {
+          "name": "f",
+          "type": "Callable[[float, float], float]",
+          "description": "Derivative function f(t, y)",
+          "required": true
+        },
+        {
+          "name": "y0",
+          "type": "float",
+          "description": "Initial condition y(t0)",
+          "required": true
+        },
+        {
+          "name": "t_span",
+          "type": "Tuple[float, float]",
+          "description": "Time interval (t0, t_final)",
+          "required": true
+        },
+        {
+          "name": "rtol",
+          "type": "float",
+          "description": "Relative tolerance (default: 1e-6)",
+          "required": false
+        },
+        {
+          "name": "atol",
+          "type": "float",
+          "description": "Absolute tolerance (default: 1e-9)",
+          "required": false
+        },
+        {
+          "name": "max_step",
+          "type": "float",
+          "description": "Maximum step size",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "Dict",
+        "description": "{t: Vector, y: Vector, n_steps: int, n_failed: int}"
+      },
+      "mathematical_formula": "Embedded 4th/5th order pair for error estimation. Step accepted if error < atol + rtol*|y|",
+      "implementation_notes": "Industry standard for non-stiff ODEs. Automatically adjusts step size. Uses FSAL (First Same As Last) optimization. Dopri5 variant commonly used."
+    },
+    {
+      "id": "calc_ode_011",
+      "name": "bvp_finite_difference",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "calculus",
+      "file": "differential_equations_spec.json",
+      "description": "Solve BVP using finite difference discretization",
+      "parameters": [
+        {
+          "name": "p",
+          "type": "Callable[[float], float]",
+          "description": "Coefficient p(t) in y'' + p(t)y' + q(t)y = r(t)",
+          "required": true
+        },
+        {
+          "name": "q",
+          "type": "Callable[[float], float]",
+          "description": "Coefficient q(t)",
+          "required": true
+        },
+        {
+          "name": "r",
+          "type": "Callable[[float], float]",
+          "description": "Right-hand side r(t)",
+          "required": true
+        },
+        {
+          "name": "t_span",
+          "type": "Tuple[float, float]",
+          "description": "Interval [a, b]",
+          "required": true
+        },
+        {
+          "name": "bc",
+          "type": "Tuple[float, float]",
+          "description": "Boundary values (y(a), y(b))",
+          "required": true
+        },
+        {
+          "name": "n",
+          "type": "int",
+          "description": "Number of interior points (default: 100)",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "Dict",
+        "description": "{t: Vector, y: Vector}"
+      },
+      "mathematical_formula": "y''\u1d62 \u2248 (y\u1d62\u208a\u2081 - 2y\u1d62 + y\u1d62\u208b\u2081)/h\u00b2, y'\u1d62 \u2248 (y\u1d62\u208a\u2081 - y\u1d62\u208b\u2081)/(2h)",
+      "implementation_notes": "Results in tridiagonal linear system. Second-order accurate. Efficient for linear BVPs. Extend to nonlinear via Newton iteration."
+    },
+    {
+      "id": "stat_desc_001",
+      "name": "mean",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "statistics",
+      "file": "descriptive_stats_spec.json",
+      "description": "Compute arithmetic mean (average) of a dataset. Sum of values divided by count.",
+      "parameters": [
+        {
+          "name": "data",
+          "type": "Array[Number]",
+          "description": "Input data array",
+          "required": true
+        },
+        {
+          "name": "weights",
+          "type": "Array[Number]",
+          "description": "Optional weights for weighted mean",
+          "required": false
+        },
+        {
+          "name": "axis",
+          "type": "int",
+          "description": "Axis along which to compute (for multi-dimensional)",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "Number",
+        "description": "Arithmetic mean of the data"
+      },
+      "mathematical_formula": "\u03bc = (1/n) \u03a3\u1d62 x\u1d62, weighted: \u03bc = \u03a3\u1d62(w\u1d62x\u1d62) / \u03a3\u1d62w\u1d62",
+      "implementation_notes": "Use Kahan summation for numerical stability with large datasets. Two-pass algorithm can improve accuracy: first compute sum, then deviations."
+    },
+    {
+      "id": "stat_desc_002",
+      "name": "median",
+      "complexity": "O(n) average with quickselect, O(n log n) with sorting",
+      "complexity_class": "O(n)",
+      "category": "statistics",
+      "file": "descriptive_stats_spec.json",
+      "description": "Compute median (middle value) of a dataset. Robust measure of central tendency.",
+      "parameters": [
+        {
+          "name": "data",
+          "type": "Array[Number]",
+          "description": "Input data array",
+          "required": true
+        },
+        {
+          "name": "axis",
+          "type": "int",
+          "description": "Axis along which to compute",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "Number",
+        "description": "Median value (average of two middle values for even-length arrays)"
+      },
+      "mathematical_formula": "median = x[(n+1)/2] if n odd, (x[n/2] + x[n/2+1])/2 if n even",
+      "implementation_notes": "Quickselect (median-of-medians) for O(n) guaranteed. Does not require full sort. Robust to outliers unlike mean."
+    },
+    {
+      "id": "stat_desc_003",
+      "name": "mode",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "statistics",
+      "file": "descriptive_stats_spec.json",
+      "description": "Compute mode (most frequent value) of a dataset. Returns all modes if multimodal.",
+      "parameters": [
+        {
+          "name": "data",
+          "type": "Array[Number]",
+          "description": "Input data array",
+          "required": true
+        },
+        {
+          "name": "return_counts",
+          "type": "bool",
+          "description": "Also return frequency counts",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "Array[Number]|Tuple",
+        "description": "Mode(s) of the data, optionally with counts"
+      },
+      "mathematical_formula": "mode = argmax_x count(x)",
+      "implementation_notes": "For continuous data, consider binning first. May return multiple values for multimodal distributions. For floats, exact equality comparison may be problematic."
+    },
+    {
+      "id": "stat_desc_004",
+      "name": "variance",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "statistics",
+      "file": "descriptive_stats_spec.json",
+      "description": "Compute variance (average squared deviation from mean). Measure of spread.",
+      "parameters": [
+        {
+          "name": "data",
+          "type": "Array[Number]",
+          "description": "Input data array",
+          "required": true
+        },
+        {
+          "name": "ddof",
+          "type": "int",
+          "description": "Delta degrees of freedom: 0 for population, 1 for sample",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "Number",
+        "description": "Variance of the data (non-negative)"
+      },
+      "mathematical_formula": "\u03c3\u00b2 = (1/(n-ddof)) \u03a3\u1d62(x\u1d62 - \u03bc)\u00b2",
+      "implementation_notes": "Use Welford's online algorithm for numerical stability. Two-pass: compute mean first, then squared deviations. ddof=1 gives unbiased sample variance."
+    },
+    {
+      "id": "stat_desc_005",
+      "name": "standard_deviation",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "statistics",
+      "file": "descriptive_stats_spec.json",
+      "description": "Compute standard deviation (square root of variance). Same units as data.",
+      "parameters": [
+        {
+          "name": "data",
+          "type": "Array[Number]",
+          "description": "Input data array",
+          "required": true
+        },
+        {
+          "name": "ddof",
+          "type": "int",
+          "description": "Delta degrees of freedom: 0 for population, 1 for sample",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "Number",
+        "description": "Standard deviation of the data (non-negative)"
+      },
+      "mathematical_formula": "\u03c3 = \u221a[(1/(n-ddof)) \u03a3\u1d62(x\u1d62 - \u03bc)\u00b2]",
+      "implementation_notes": "Compute variance first, then take square root. Bessel's correction (ddof=1) for unbiased estimation in sample statistics."
+    },
+    {
+      "id": "stat_desc_006",
+      "name": "skewness",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "statistics",
+      "file": "descriptive_stats_spec.json",
+      "description": "Compute skewness (measure of asymmetry). Zero for symmetric distributions.",
+      "parameters": [
+        {
+          "name": "data",
+          "type": "Array[Number]",
+          "description": "Input data array",
+          "required": true
+        },
+        {
+          "name": "bias",
+          "type": "bool",
+          "description": "If False, apply bias correction",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "Number",
+        "description": "Skewness coefficient (positive=right tail, negative=left tail)"
+      },
+      "mathematical_formula": "\u03b3\u2081 = E[(X-\u03bc)\u00b3] / \u03c3\u00b3 = (1/n) \u03a3\u1d62((x\u1d62-\u03bc)/\u03c3)\u00b3",
+      "implementation_notes": "Fisher's adjustment for sample skewness: multiply by \u221a(n(n-1))/(n-2). Right-skewed (positive) means tail extends right."
+    },
+    {
+      "id": "stat_desc_007",
+      "name": "kurtosis",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "statistics",
+      "file": "descriptive_stats_spec.json",
+      "description": "Compute kurtosis (measure of tailedness/peakedness). Normal distribution has kurtosis 3.",
+      "parameters": [
+        {
+          "name": "data",
+          "type": "Array[Number]",
+          "description": "Input data array",
+          "required": true
+        },
+        {
+          "name": "fisher",
+          "type": "bool",
+          "description": "If True, return excess kurtosis (subtract 3)",
+          "required": false
+        },
+        {
+          "name": "bias",
+          "type": "bool",
+          "description": "If False, apply bias correction",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "Number",
+        "description": "Kurtosis coefficient (excess kurtosis if fisher=True)"
+      },
+      "mathematical_formula": "\u03ba = E[(X-\u03bc)\u2074] / \u03c3\u2074, excess = \u03ba - 3",
+      "implementation_notes": "Normal distribution has kurtosis=3 (excess=0). Leptokurtic (>3): heavy tails. Platykurtic (<3): light tails. Sensitive to outliers."
+    },
+    {
+      "id": "stat_desc_011",
+      "name": "covariance",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "statistics",
+      "file": "descriptive_stats_spec.json",
+      "description": "Compute covariance between two variables. Measures how variables change together.",
+      "parameters": [
+        {
+          "name": "x",
+          "type": "Array[Number]",
+          "description": "First variable",
+          "required": true
+        },
+        {
+          "name": "y",
+          "type": "Array[Number]",
+          "description": "Second variable",
+          "required": true
+        },
+        {
+          "name": "ddof",
+          "type": "int",
+          "description": "Delta degrees of freedom (0 or 1)",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "Number",
+        "description": "Covariance (positive=same direction, negative=opposite)"
+      },
+      "mathematical_formula": "Cov(X,Y) = (1/(n-ddof)) \u03a3\u1d62(x\u1d62-\u03bc\u2093)(y\u1d62-\u03bc\u1d67)",
+      "implementation_notes": "Use numerically stable algorithm. Covariance depends on scale of variables. For normalized version, use correlation."
+    },
+    {
+      "id": "stat_desc_012",
+      "name": "correlation",
+      "complexity": "O(n) for Pearson, O(n log n) for Spearman",
+      "complexity_class": "O(n)",
+      "category": "statistics",
+      "file": "descriptive_stats_spec.json",
+      "description": "Compute Pearson correlation coefficient. Normalized covariance in [-1, 1].",
+      "parameters": [
+        {
+          "name": "x",
+          "type": "Array[Number]",
+          "description": "First variable",
+          "required": true
+        },
+        {
+          "name": "y",
+          "type": "Array[Number]",
+          "description": "Second variable",
+          "required": true
+        },
+        {
+          "name": "method",
+          "type": "string",
+          "description": "Correlation type: pearson, spearman, kendall",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "Number",
+        "description": "Correlation coefficient in [-1, 1]"
+      },
+      "mathematical_formula": "r = Cov(X,Y) / (\u03c3\u2093 \u03c3\u1d67) = \u03a3(x\u1d62-\u03bc\u2093)(y\u1d62-\u03bc\u1d67) / \u221a[\u03a3(x\u1d62-\u03bc\u2093)\u00b2 \u03a3(y\u1d62-\u03bc\u1d67)\u00b2]",
+      "implementation_notes": "Pearson measures linear relationship. Spearman (rank-based) measures monotonic relationship. Kendall measures concordance of pairs."
+    },
+    {
+      "id": "stat_util_001",
+      "name": "zscore_normalize",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "statistics",
+      "file": "stat_utilities_spec.json",
+      "description": "Standardize data to zero mean and unit variance (z-score normalization).",
+      "parameters": [
+        {
+          "name": "data",
+          "type": "Array[Number]|Matrix",
+          "description": "Input data",
+          "required": true
+        },
+        {
+          "name": "axis",
+          "type": "int",
+          "description": "Axis along which to normalize",
+          "required": false
+        },
+        {
+          "name": "ddof",
+          "type": "int",
+          "description": "Delta degrees of freedom for std calculation",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "Object",
+        "description": "{normalized_data, mean, std} for inverse transform"
+      },
+      "mathematical_formula": "z = (x - \u03bc) / \u03c3",
+      "implementation_notes": "Handle zero variance by returning zeros or raising warning. Store mean and std for applying same transformation to test data. Each feature normalized independently."
+    },
+    {
+      "id": "stat_util_002",
+      "name": "minmax_normalize",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "statistics",
+      "file": "stat_utilities_spec.json",
+      "description": "Scale data to [0, 1] range (or custom [min, max] range).",
+      "parameters": [
+        {
+          "name": "data",
+          "type": "Array[Number]|Matrix",
+          "description": "Input data",
+          "required": true
+        },
+        {
+          "name": "feature_range",
+          "type": "Tuple",
+          "description": "Target range (default [0, 1])",
+          "required": false
+        },
+        {
+          "name": "axis",
+          "type": "int",
+          "description": "Axis along which to normalize",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "Object",
+        "description": "{normalized_data, data_min, data_max} for inverse transform"
+      },
+      "mathematical_formula": "x_scaled = (x - x_min) / (x_max - x_min) \u00d7 (max - min) + min",
+      "implementation_notes": "Sensitive to outliers. Store min/max for consistent test data transformation. Does not center data (unlike z-score)."
+    },
+    {
+      "id": "stat_util_004",
+      "name": "outlier_detection_zscore",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "statistics",
+      "file": "stat_utilities_spec.json",
+      "description": "Detect outliers using z-score method (standard deviations from mean).",
+      "parameters": [
+        {
+          "name": "data",
+          "type": "Array[Number]",
+          "description": "Input data",
+          "required": true
+        },
+        {
+          "name": "threshold",
+          "type": "Number",
+          "description": "Z-score threshold (default 3)",
+          "required": false
+        },
+        {
+          "name": "modified",
+          "type": "bool",
+          "description": "Use modified z-score with MAD",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "Object",
+        "description": "{outliers: Array, outlier_mask: Array[bool], z_scores: Array}"
+      },
+      "mathematical_formula": "z = (x - \u03bc)/\u03c3, outlier if |z| > threshold",
+      "implementation_notes": "Sensitive to outliers affecting mean/std (masking effect). Modified z-score uses median and MAD for robustness. Common threshold: 2.5-3."
+    },
+    {
+      "id": "stat_util_005",
+      "name": "moving_average",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "statistics",
+      "file": "stat_utilities_spec.json",
+      "description": "Compute moving average (rolling mean) for time series smoothing.",
+      "parameters": [
+        {
+          "name": "data",
+          "type": "Array[Number]",
+          "description": "Input time series",
+          "required": true
+        },
+        {
+          "name": "window",
+          "type": "int",
+          "description": "Window size",
+          "required": true
+        },
+        {
+          "name": "center",
+          "type": "bool",
+          "description": "Center the window labels",
+          "required": false
+        },
+        {
+          "name": "min_periods",
+          "type": "int",
+          "description": "Minimum observations required",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "Array[Number]",
+        "description": "Smoothed series (with NaN for incomplete windows if min_periods not met)"
+      },
+      "mathematical_formula": "MA_t = (1/w) \u03a3\u1d62\u208c\u2080^(w-1) x_{t-i}",
+      "implementation_notes": "Use cumulative sum for O(n) computation. Handle edges with NaN or partial windows. Centered windows look back and forward."
+    },
+    {
+      "id": "stat_util_006",
+      "name": "exponential_smoothing",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "statistics",
+      "file": "stat_utilities_spec.json",
+      "description": "Apply exponential smoothing (exponentially weighted moving average).",
+      "parameters": [
+        {
+          "name": "data",
+          "type": "Array[Number]",
+          "description": "Input time series",
+          "required": true
+        },
+        {
+          "name": "alpha",
+          "type": "Number",
+          "description": "Smoothing factor (0 < \u03b1 \u2264 1)",
+          "required": true
+        },
+        {
+          "name": "initial",
+          "type": "Number",
+          "description": "Initial smoothed value (default: first observation)",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "Array[Number]",
+        "description": "Exponentially smoothed series"
+      },
+      "mathematical_formula": "S_t = \u03b1x_t + (1-\u03b1)S_{t-1}",
+      "implementation_notes": "Higher \u03b1 gives more weight to recent observations. \u03b1=1 means no smoothing. Related to EWMA in finance. Good for trend following."
+    },
+    {
+      "id": "stat_util_008",
+      "name": "kfold_split",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "statistics",
+      "file": "stat_utilities_spec.json",
+      "description": "Generate k-fold cross-validation splits for model evaluation.",
+      "parameters": [
+        {
+          "name": "n_samples",
+          "type": "int",
+          "description": "Total number of samples",
+          "required": true
+        },
+        {
+          "name": "n_folds",
+          "type": "int",
+          "description": "Number of folds (k)",
+          "required": true
+        },
+        {
+          "name": "shuffle",
+          "type": "bool",
+          "description": "Shuffle before splitting",
+          "required": false
+        },
+        {
+          "name": "seed",
+          "type": "int",
+          "description": "Random seed for shuffling",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "Array[Tuple]",
+        "description": "List of (train_indices, test_indices) tuples"
+      },
+      "mathematical_formula": "Partition indices into k roughly equal parts, rotate test fold",
+      "implementation_notes": "Each sample appears in exactly one test fold. Stratified variant maintains class proportions. Leave-one-out when k=n."
+    },
+    {
+      "id": "stat_util_009",
+      "name": "stratified_split",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "statistics",
+      "file": "stat_utilities_spec.json",
+      "description": "Split data maintaining class proportions (for classification).",
+      "parameters": [
+        {
+          "name": "y",
+          "type": "Array",
+          "description": "Class labels",
+          "required": true
+        },
+        {
+          "name": "test_size",
+          "type": "Number",
+          "description": "Proportion or count for test set",
+          "required": true
+        },
+        {
+          "name": "seed",
+          "type": "int",
+          "description": "Random seed",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "Tuple",
+        "description": "(train_indices, test_indices)"
+      },
+      "mathematical_formula": "For each class c: sample test_size proportion from class c",
+      "implementation_notes": "Ensures representative test set for imbalanced classes. Each class appears in both train and test (if possible). Round to maintain exact proportions."
+    },
+    {
+      "id": "stat_util_010",
+      "name": "histogram_compute",
+      "complexity": "O(n + bins)",
+      "complexity_class": "O(n)",
+      "category": "statistics",
+      "file": "stat_utilities_spec.json",
+      "description": "Compute histogram (frequency distribution) of data.",
+      "parameters": [
+        {
+          "name": "data",
+          "type": "Array[Number]",
+          "description": "Input data",
+          "required": true
+        },
+        {
+          "name": "bins",
+          "type": "int|Array",
+          "description": "Number of bins or bin edges",
+          "required": false
+        },
+        {
+          "name": "range",
+          "type": "Tuple",
+          "description": "Range (min, max) to consider",
+          "required": false
+        },
+        {
+          "name": "density",
+          "type": "bool",
+          "description": "Normalize to form probability density",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "Object",
+        "description": "{counts: Array, bin_edges: Array, bin_centers: Array}"
+      },
+      "mathematical_formula": "count[i] = #{x : edge[i] \u2264 x < edge[i+1]}",
+      "implementation_notes": "Sturges' rule for default bins: k = 1 + log\u2082(n). Rightmost bin includes right edge. Density integrates to 1 over range."
+    },
+    {
+      "id": "stat_dist_001",
+      "name": "normal_pdf",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "statistics",
+      "file": "distributions_spec.json",
+      "description": "Compute probability density function of normal (Gaussian) distribution at given point(s).",
+      "parameters": [
+        {
+          "name": "x",
+          "type": "Number|Array",
+          "description": "Point(s) at which to evaluate PDF",
+          "required": true
+        },
+        {
+          "name": "mu",
+          "type": "Number",
+          "description": "Mean (location parameter)",
+          "required": false
+        },
+        {
+          "name": "sigma",
+          "type": "Number",
+          "description": "Standard deviation (scale parameter, >0)",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "Number|Array",
+        "description": "PDF value(s) at x"
+      },
+      "mathematical_formula": "f(x) = (1/(\u03c3\u221a(2\u03c0))) exp(-(x-\u03bc)\u00b2/(2\u03c3\u00b2))",
+      "implementation_notes": "Use log-space computation for numerical stability with extreme values. Standard normal has \u03bc=0, \u03c3=1. Maximum at x=\u03bc with value 1/(\u03c3\u221a(2\u03c0))."
+    },
+    {
+      "id": "stat_dist_002",
+      "name": "normal_cdf",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "statistics",
+      "file": "distributions_spec.json",
+      "description": "Compute cumulative distribution function of normal distribution. P(X \u2264 x).",
+      "parameters": [
+        {
+          "name": "x",
+          "type": "Number|Array",
+          "description": "Point(s) at which to evaluate CDF",
+          "required": true
+        },
+        {
+          "name": "mu",
+          "type": "Number",
+          "description": "Mean",
+          "required": false
+        },
+        {
+          "name": "sigma",
+          "type": "Number",
+          "description": "Standard deviation (>0)",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "Number|Array",
+        "description": "CDF value(s) in [0, 1]"
+      },
+      "mathematical_formula": "\u03a6(x) = (1/2)[1 + erf((x-\u03bc)/(\u03c3\u221a2))]",
+      "implementation_notes": "Implemented via error function (erf). Use complementary error function (erfc) for extreme tails to maintain precision."
+    },
+    {
+      "id": "stat_dist_003",
+      "name": "normal_ppf",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "statistics",
+      "file": "distributions_spec.json",
+      "description": "Compute percent point function (inverse CDF, quantile function) of normal distribution.",
+      "parameters": [
+        {
+          "name": "p",
+          "type": "Number|Array",
+          "description": "Probability value(s) in (0, 1)",
+          "required": true
+        },
+        {
+          "name": "mu",
+          "type": "Number",
+          "description": "Mean",
+          "required": false
+        },
+        {
+          "name": "sigma",
+          "type": "Number",
+          "description": "Standard deviation (>0)",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "Number|Array",
+        "description": "Quantile value(s) x such that P(X \u2264 x) = p"
+      },
+      "mathematical_formula": "\u03a6\u207b\u00b9(p) = \u03bc + \u03c3\u221a2 \u00b7 erf\u207b\u00b9(2p - 1)",
+      "implementation_notes": "Use rational approximations or Newton-Raphson for high precision. Critical values: z_0.975 \u2248 1.96, z_0.99 \u2248 2.576."
+    },
+    {
+      "id": "stat_dist_004",
+      "name": "uniform_distribution",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "statistics",
+      "file": "distributions_spec.json",
+      "description": "Compute PDF, CDF, or inverse CDF of continuous uniform distribution U(a, b).",
+      "parameters": [
+        {
+          "name": "x",
+          "type": "Number|Array",
+          "description": "Point(s) for evaluation",
+          "required": true
+        },
+        {
+          "name": "a",
+          "type": "Number",
+          "description": "Lower bound",
+          "required": false
+        },
+        {
+          "name": "b",
+          "type": "Number",
+          "description": "Upper bound (b > a)",
+          "required": false
+        },
+        {
+          "name": "function",
+          "type": "string",
+          "description": "Function: pdf, cdf, ppf",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "Number|Array",
+        "description": "Requested distribution function value(s)"
+      },
+      "mathematical_formula": "PDF: f(x) = 1/(b-a) for a\u2264x\u2264b, CDF: F(x) = (x-a)/(b-a)",
+      "implementation_notes": "Simplest continuous distribution. PDF is constant within bounds. CDF is linear. Used as building block for other distributions via inverse transform."
+    },
+    {
+      "id": "stat_dist_005",
+      "name": "exponential_distribution",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "statistics",
+      "file": "distributions_spec.json",
+      "description": "Compute PDF, CDF, or inverse CDF of exponential distribution Exp(\u03bb).",
+      "parameters": [
+        {
+          "name": "x",
+          "type": "Number|Array",
+          "description": "Point(s) for evaluation (x \u2265 0)",
+          "required": true
+        },
+        {
+          "name": "rate",
+          "type": "Number",
+          "description": "Rate parameter \u03bb (>0)",
+          "required": true
+        },
+        {
+          "name": "function",
+          "type": "string",
+          "description": "Function: pdf, cdf, ppf",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "Number|Array",
+        "description": "Requested distribution function value(s)"
+      },
+      "mathematical_formula": "PDF: f(x) = \u03bbe^(-\u03bbx), CDF: F(x) = 1-e^(-\u03bbx), PPF: F\u207b\u00b9(p) = -ln(1-p)/\u03bb",
+      "implementation_notes": "Memoryless property: P(X>s+t|X>s) = P(X>t). Mean = 1/\u03bb, Variance = 1/\u03bb\u00b2. Use for modeling waiting times."
+    },
+    {
+      "id": "stat_dist_008",
+      "name": "chi_squared_distribution",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "statistics",
+      "file": "distributions_spec.json",
+      "description": "Compute PDF, CDF, or inverse CDF of chi-squared distribution \u03c7\u00b2(k).",
+      "parameters": [
+        {
+          "name": "x",
+          "type": "Number|Array",
+          "description": "Point(s) for evaluation (x \u2265 0)",
+          "required": true
+        },
+        {
+          "name": "df",
+          "type": "int",
+          "description": "Degrees of freedom (k > 0)",
+          "required": true
+        },
+        {
+          "name": "function",
+          "type": "string",
+          "description": "Function: pdf, cdf, ppf",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "Number|Array",
+        "description": "Requested distribution function value(s)"
+      },
+      "mathematical_formula": "PDF: f(x) = x^(k/2-1)e^(-x/2) / (2^(k/2)\u0393(k/2)), CDF via incomplete gamma",
+      "implementation_notes": "Sum of k independent standard normal squared. Mean = k, Variance = 2k. Used in chi-squared tests and confidence intervals for variance."
+    },
+    {
+      "id": "stat_dist_009",
+      "name": "t_distribution",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "statistics",
+      "file": "distributions_spec.json",
+      "description": "Compute PDF, CDF, or inverse CDF of Student's t-distribution t(\u03bd).",
+      "parameters": [
+        {
+          "name": "x",
+          "type": "Number|Array",
+          "description": "Point(s) for evaluation",
+          "required": true
+        },
+        {
+          "name": "df",
+          "type": "int",
+          "description": "Degrees of freedom (\u03bd > 0)",
+          "required": true
+        },
+        {
+          "name": "function",
+          "type": "string",
+          "description": "Function: pdf, cdf, ppf",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "Number|Array",
+        "description": "Requested distribution function value(s)"
+      },
+      "mathematical_formula": "PDF: f(x) = \u0393((\u03bd+1)/2) / (\u221a(\u03bd\u03c0)\u0393(\u03bd/2)) (1+x\u00b2/\u03bd)^(-(\u03bd+1)/2)",
+      "implementation_notes": "Heavier tails than normal, approaches normal as df\u2192\u221e. Used for inference with unknown population variance. Symmetric about 0."
+    },
+    {
+      "id": "stat_dist_010",
+      "name": "f_distribution",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "statistics",
+      "file": "distributions_spec.json",
+      "description": "Compute PDF, CDF, or inverse CDF of F-distribution F(d1, d2).",
+      "parameters": [
+        {
+          "name": "x",
+          "type": "Number|Array",
+          "description": "Point(s) for evaluation (x \u2265 0)",
+          "required": true
+        },
+        {
+          "name": "df1",
+          "type": "int",
+          "description": "Numerator degrees of freedom (>0)",
+          "required": true
+        },
+        {
+          "name": "df2",
+          "type": "int",
+          "description": "Denominator degrees of freedom (>0)",
+          "required": true
+        },
+        {
+          "name": "function",
+          "type": "string",
+          "description": "Function: pdf, cdf, ppf",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "Number|Array",
+        "description": "Requested distribution function value(s)"
+      },
+      "mathematical_formula": "PDF: f(x) = \u221a[(d\u2081x)^d\u2081 d\u2082^d\u2082 / (d\u2081x+d\u2082)^(d\u2081+d\u2082)] / (xB(d\u2081/2, d\u2082/2))",
+      "implementation_notes": "Ratio of two chi-squared distributions divided by their df. Used in ANOVA, regression F-tests. Non-negative support."
+    },
+    {
+      "id": "stat_dist_011",
+      "name": "beta_distribution",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "statistics",
+      "file": "distributions_spec.json",
+      "description": "Compute PDF, CDF, or inverse CDF of beta distribution Beta(\u03b1, \u03b2) on [0, 1].",
+      "parameters": [
+        {
+          "name": "x",
+          "type": "Number|Array",
+          "description": "Point(s) in [0, 1]",
+          "required": true
+        },
+        {
+          "name": "alpha",
+          "type": "Number",
+          "description": "Shape parameter \u03b1 (>0)",
+          "required": true
+        },
+        {
+          "name": "beta",
+          "type": "Number",
+          "description": "Shape parameter \u03b2 (>0)",
+          "required": true
+        },
+        {
+          "name": "function",
+          "type": "string",
+          "description": "Function: pdf, cdf, ppf",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "Number|Array",
+        "description": "Requested distribution function value(s)"
+      },
+      "mathematical_formula": "PDF: f(x) = x^(\u03b1-1)(1-x)^(\u03b2-1) / B(\u03b1,\u03b2)",
+      "implementation_notes": "Flexible distribution on [0,1]. Mean = \u03b1/(\u03b1+\u03b2). Uniform when \u03b1=\u03b2=1. Used for Bayesian inference on proportions."
+    },
+    {
+      "id": "stat_dist_012",
+      "name": "gamma_distribution",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "statistics",
+      "file": "distributions_spec.json",
+      "description": "Compute PDF, CDF, or inverse CDF of gamma distribution Gamma(k, \u03b8).",
+      "parameters": [
+        {
+          "name": "x",
+          "type": "Number|Array",
+          "description": "Point(s) for evaluation (x \u2265 0)",
+          "required": true
+        },
+        {
+          "name": "shape",
+          "type": "Number",
+          "description": "Shape parameter k (>0)",
+          "required": true
+        },
+        {
+          "name": "scale",
+          "type": "Number",
+          "description": "Scale parameter \u03b8 (>0)",
+          "required": false
+        },
+        {
+          "name": "function",
+          "type": "string",
+          "description": "Function: pdf, cdf, ppf",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "Number|Array",
+        "description": "Requested distribution function value(s)"
+      },
+      "mathematical_formula": "PDF: f(x) = x^(k-1)e^(-x/\u03b8) / (\u03b8\u1d4f\u0393(k))",
+      "implementation_notes": "Generalizes exponential (k=1) and chi-squared (k=df/2, \u03b8=2). Mean = k\u03b8, Variance = k\u03b8\u00b2. Used for waiting times, lifetimes."
+    },
+    {
+      "id": "stat_dist_013",
+      "name": "lognormal_distribution",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "statistics",
+      "file": "distributions_spec.json",
+      "description": "Compute PDF, CDF, or inverse CDF of log-normal distribution.",
+      "parameters": [
+        {
+          "name": "x",
+          "type": "Number|Array",
+          "description": "Point(s) for evaluation (x > 0)",
+          "required": true
+        },
+        {
+          "name": "mu",
+          "type": "Number",
+          "description": "Mean of underlying normal",
+          "required": false
+        },
+        {
+          "name": "sigma",
+          "type": "Number",
+          "description": "Std dev of underlying normal (>0)",
+          "required": false
+        },
+        {
+          "name": "function",
+          "type": "string",
+          "description": "Function: pdf, cdf, ppf",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "Number|Array",
+        "description": "Requested distribution function value(s)"
+      },
+      "mathematical_formula": "PDF: f(x) = (1/(x\u03c3\u221a(2\u03c0))) exp(-(ln x - \u03bc)\u00b2/(2\u03c3\u00b2))",
+      "implementation_notes": "If X ~ Normal(\u03bc,\u03c3\u00b2), then e^X ~ LogNormal. Strictly positive. Highly right-skewed. Used for multiplicative processes."
+    },
+    {
+      "id": "stat_dist_014",
+      "name": "weibull_distribution",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "statistics",
+      "file": "distributions_spec.json",
+      "description": "Compute PDF, CDF, or inverse CDF of Weibull distribution for reliability analysis.",
+      "parameters": [
+        {
+          "name": "x",
+          "type": "Number|Array",
+          "description": "Point(s) for evaluation (x \u2265 0)",
+          "required": true
+        },
+        {
+          "name": "shape",
+          "type": "Number",
+          "description": "Shape parameter k (>0)",
+          "required": true
+        },
+        {
+          "name": "scale",
+          "type": "Number",
+          "description": "Scale parameter \u03bb (>0)",
+          "required": false
+        },
+        {
+          "name": "function",
+          "type": "string",
+          "description": "Function: pdf, cdf, ppf, hazard",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "Number|Array",
+        "description": "Requested distribution function value(s)"
+      },
+      "mathematical_formula": "PDF: f(x) = (k/\u03bb)(x/\u03bb)^(k-1)e^(-(x/\u03bb)^k), CDF: F(x) = 1-e^(-(x/\u03bb)^k)",
+      "implementation_notes": "k<1: decreasing hazard, k=1: exponential, k>1: increasing hazard. Used in reliability/survival analysis. Mean = \u03bb\u0393(1+1/k)."
+    },
+    {
+      "id": "stat_reg_001",
+      "name": "simple_linear_regression",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "statistics",
+      "file": "regression_spec.json",
+      "description": "Fit simple linear regression model y = \u03b2\u2080 + \u03b2\u2081x with single predictor.",
+      "parameters": [
+        {
+          "name": "x",
+          "type": "Array[Number]",
+          "description": "Predictor variable values",
+          "required": true
+        },
+        {
+          "name": "y",
+          "type": "Array[Number]",
+          "description": "Response variable values",
+          "required": true
+        },
+        {
+          "name": "fit_intercept",
+          "type": "bool",
+          "description": "Include intercept term",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "Object",
+        "description": "{intercept: \u03b2\u2080, slope: \u03b2\u2081, r_squared: R\u00b2, std_errors: [SE_\u03b2\u2080, SE_\u03b2\u2081]}"
+      },
+      "mathematical_formula": "\u03b2\u2081 = Cov(x,y)/Var(x), \u03b2\u2080 = \u0233 - \u03b2\u2081x\u0304",
+      "implementation_notes": "Minimize sum of squared residuals. Use numerically stable formulas. Standard errors require residual variance estimate."
+    },
+    {
+      "id": "stat_reg_008",
+      "name": "r_squared",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "statistics",
+      "file": "regression_spec.json",
+      "description": "Compute coefficient of determination R\u00b2 measuring goodness of fit.",
+      "parameters": [
+        {
+          "name": "y_true",
+          "type": "Array[Number]",
+          "description": "Actual values",
+          "required": true
+        },
+        {
+          "name": "y_pred",
+          "type": "Array[Number]",
+          "description": "Predicted values",
+          "required": true
+        }
+      ],
+      "returns": {
+        "type": "Number",
+        "description": "R\u00b2 value (typically in [0, 1], can be negative for bad models)"
+      },
+      "mathematical_formula": "R\u00b2 = 1 - SS_res/SS_tot = 1 - \u03a3(y\u1d62-\u0177\u1d62)\u00b2/\u03a3(y\u1d62-\u0233)\u00b2",
+      "implementation_notes": "R\u00b2=1 means perfect fit, R\u00b2=0 means model as good as predicting mean. Can be negative if model worse than mean. Does not indicate causation."
+    },
+    {
+      "id": "stat_reg_009",
+      "name": "adjusted_r_squared",
+      "complexity": "O(1)",
+      "complexity_class": "O(1)",
+      "category": "statistics",
+      "file": "regression_spec.json",
+      "description": "Compute adjusted R\u00b2 that penalizes additional predictors.",
+      "parameters": [
+        {
+          "name": "r_squared",
+          "type": "Number",
+          "description": "Original R\u00b2 value",
+          "required": true
+        },
+        {
+          "name": "n",
+          "type": "int",
+          "description": "Number of observations",
+          "required": true
+        },
+        {
+          "name": "p",
+          "type": "int",
+          "description": "Number of predictors (excluding intercept)",
+          "required": true
+        }
+      ],
+      "returns": {
+        "type": "Number",
+        "description": "Adjusted R\u00b2 value"
+      },
+      "mathematical_formula": "R\u00b2_adj = 1 - (1-R\u00b2)(n-1)/(n-p-1)",
+      "implementation_notes": "Always \u2264 R\u00b2. Decreases if adding predictor doesn't improve fit enough. Use for model comparison with different numbers of predictors."
+    },
+    {
+      "id": "stat_reg_010",
+      "name": "residual_analysis",
+      "complexity": "O(n) for residuals, O(np\u00b2) for leverage",
+      "complexity_class": "O(n)",
+      "category": "statistics",
+      "file": "regression_spec.json",
+      "description": "Compute residuals and diagnostic statistics for regression model.",
+      "parameters": [
+        {
+          "name": "y_true",
+          "type": "Array[Number]",
+          "description": "Actual values",
+          "required": true
+        },
+        {
+          "name": "y_pred",
+          "type": "Array[Number]",
+          "description": "Predicted values",
+          "required": true
+        },
+        {
+          "name": "X",
+          "type": "Matrix",
+          "description": "Design matrix (optional, for leverage)",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "Object",
+        "description": "{residuals, standardized_residuals, leverage, cooks_distance}"
+      },
+      "mathematical_formula": "e = y - \u0177, standardized: e/(s\u221a(1-h\u1d62\u1d62)), Cook's D = (e\u00b2h\u1d62\u1d62)/(ps\u00b2(1-h\u1d62\u1d62)\u00b2)",
+      "implementation_notes": "Residuals should be roughly normal with constant variance. High leverage points have unusual x values. High Cook's D indicates influential points."
+    },
+    {
+      "id": "stat_hyp_001",
+      "name": "t_test_one_sample",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "statistics",
+      "file": "hypothesis_testing_spec.json",
+      "description": "Perform one-sample t-test to compare sample mean to a known population mean.",
+      "parameters": [
+        {
+          "name": "sample",
+          "type": "Array[Number]",
+          "description": "Sample data",
+          "required": true
+        },
+        {
+          "name": "popmean",
+          "type": "Number",
+          "description": "Population mean under null hypothesis",
+          "required": true
+        },
+        {
+          "name": "alternative",
+          "type": "string",
+          "description": "Alternative: two-sided, less, greater",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "Object",
+        "description": "{statistic: t-value, pvalue: p-value, df: degrees of freedom}"
+      },
+      "mathematical_formula": "t = (x\u0304 - \u03bc\u2080) / (s/\u221an), df = n-1",
+      "implementation_notes": "Assumes normal population or large sample (CLT). Use Welch's t-test for unknown/unequal variances. Two-sided p-value = 2*P(T > |t|)."
+    },
+    {
+      "id": "stat_hyp_003",
+      "name": "t_test_paired",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "statistics",
+      "file": "hypothesis_testing_spec.json",
+      "description": "Perform paired (dependent) t-test for matched samples or repeated measures.",
+      "parameters": [
+        {
+          "name": "sample1",
+          "type": "Array[Number]",
+          "description": "First measurements",
+          "required": true
+        },
+        {
+          "name": "sample2",
+          "type": "Array[Number]",
+          "description": "Second measurements (paired with first)",
+          "required": true
+        },
+        {
+          "name": "alternative",
+          "type": "string",
+          "description": "Alternative: two-sided, less, greater",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "Object",
+        "description": "{statistic: t-value, pvalue: p-value, df: degrees of freedom}"
+      },
+      "mathematical_formula": "d = sample1 - sample2, t = d\u0304 / (s\u1d48/\u221an), df = n-1",
+      "implementation_notes": "More powerful than independent t-test when pairing is meaningful. Compute differences first, then one-sample t-test against 0."
+    },
+    {
+      "id": "stat_hyp_005",
+      "name": "anova_one_way",
+      "complexity": "O(N)",
+      "complexity_class": "O(n)",
+      "category": "statistics",
+      "file": "hypothesis_testing_spec.json",
+      "description": "Perform one-way ANOVA to compare means of 3+ groups.",
+      "parameters": [
+        {
+          "name": "groups",
+          "type": "Array[Array]",
+          "description": "List of sample arrays for each group",
+          "required": true
+        }
+      ],
+      "returns": {
+        "type": "Object",
+        "description": "{statistic: F-value, pvalue: p-value, df_between: k-1, df_within: N-k}"
+      },
+      "mathematical_formula": "F = MS_between / MS_within = [SS_B/(k-1)] / [SS_W/(N-k)]",
+      "implementation_notes": "Assumes normality and homogeneity of variances. For unequal variances, use Welch's ANOVA. Post-hoc tests (Tukey, Bonferroni) needed to identify which groups differ."
+    },
+    {
+      "id": "stat_hyp_006",
+      "name": "anova_two_way",
+      "complexity": "O(N)",
+      "complexity_class": "O(n)",
+      "category": "statistics",
+      "file": "hypothesis_testing_spec.json",
+      "description": "Perform two-way ANOVA to analyze effect of two factors and their interaction.",
+      "parameters": [
+        {
+          "name": "data",
+          "type": "Matrix",
+          "description": "Data matrix (rows=factor A levels, cols=factor B levels)",
+          "required": true
+        },
+        {
+          "name": "factor_a_levels",
+          "type": "int",
+          "description": "Number of levels for factor A",
+          "required": true
+        },
+        {
+          "name": "factor_b_levels",
+          "type": "int",
+          "description": "Number of levels for factor B",
+          "required": true
+        },
+        {
+          "name": "replications",
+          "type": "int",
+          "description": "Number of replications per cell",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "Object",
+        "description": "{F_A, p_A, F_B, p_B, F_AB, p_AB, df_A, df_B, df_AB, df_error}"
+      },
+      "mathematical_formula": "F_A = MS_A/MS_E, F_B = MS_B/MS_E, F_AB = MS_AB/MS_E",
+      "implementation_notes": "Tests main effects and interaction. Requires balanced design or Type III SS for unbalanced. Interaction significant \u2192 main effects interpretation complex."
+    },
+    {
+      "id": "stat_hyp_008",
+      "name": "z_test",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "statistics",
+      "file": "hypothesis_testing_spec.json",
+      "description": "Perform z-test when population standard deviation is known.",
+      "parameters": [
+        {
+          "name": "sample",
+          "type": "Array[Number]",
+          "description": "Sample data",
+          "required": true
+        },
+        {
+          "name": "popmean",
+          "type": "Number",
+          "description": "Population mean under H\u2080",
+          "required": true
+        },
+        {
+          "name": "popstd",
+          "type": "Number",
+          "description": "Known population standard deviation",
+          "required": true
+        },
+        {
+          "name": "alternative",
+          "type": "string",
+          "description": "Alternative: two-sided, less, greater",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "Object",
+        "description": "{statistic: z-value, pvalue: p-value}"
+      },
+      "mathematical_formula": "z = (x\u0304 - \u03bc\u2080) / (\u03c3/\u221an)",
+      "implementation_notes": "Rarely used in practice (\u03c3 usually unknown). For large samples, t-test approaches z-test. Use standard normal for critical values."
+    },
+    {
+      "id": "stat_hyp_009",
+      "name": "p_value_compute",
+      "complexity": "O(1)",
+      "complexity_class": "O(1)",
+      "category": "statistics",
+      "file": "hypothesis_testing_spec.json",
+      "description": "Compute p-value from test statistic and distribution.",
+      "parameters": [
+        {
+          "name": "statistic",
+          "type": "Number",
+          "description": "Test statistic value",
+          "required": true
+        },
+        {
+          "name": "distribution",
+          "type": "string",
+          "description": "Distribution: normal, t, chi2, f",
+          "required": true
+        },
+        {
+          "name": "df",
+          "type": "Number|Array",
+          "description": "Degrees of freedom (required for t, chi2, f)",
+          "required": false
+        },
+        {
+          "name": "alternative",
+          "type": "string",
+          "description": "Alternative: two-sided, less, greater",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "Number",
+        "description": "p-value in [0, 1]"
+      },
+      "mathematical_formula": "p = P(T \u2265 |t|) for two-sided, P(T \u2265 t) for greater, P(T \u2264 t) for less",
+      "implementation_notes": "Two-sided p-value is 2\u00d7one-sided for symmetric distributions. Use survival function (1-CDF) for right tail. Chi-squared and F are one-tailed by nature."
+    },
+    {
+      "id": "stat_hyp_010",
+      "name": "confidence_interval_mean",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "statistics",
+      "file": "hypothesis_testing_spec.json",
+      "description": "Compute confidence interval for population mean.",
+      "parameters": [
+        {
+          "name": "sample",
+          "type": "Array[Number]",
+          "description": "Sample data",
+          "required": true
+        },
+        {
+          "name": "confidence",
+          "type": "Number",
+          "description": "Confidence level (e.g., 0.95)",
+          "required": false
+        },
+        {
+          "name": "popstd",
+          "type": "Number",
+          "description": "Known population std (uses z if provided, t otherwise)",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "Tuple[Number, Number]",
+        "description": "(lower_bound, upper_bound) of confidence interval"
+      },
+      "mathematical_formula": "CI = x\u0304 \u00b1 t_{\u03b1/2,n-1} \u00d7 (s/\u221an) or x\u0304 \u00b1 z_{\u03b1/2} \u00d7 (\u03c3/\u221an)",
+      "implementation_notes": "Use t-distribution when \u03c3 unknown (typical). 95% CI: roughly x\u0304 \u00b1 2\u00d7SE for large samples. Width decreases with \u221an."
+    },
+    {
+      "id": "stat_hyp_011",
+      "name": "confidence_interval_proportion",
+      "complexity": "O(1) for normal/Wilson, O(n) for exact",
+      "complexity_class": "O(1)",
+      "category": "statistics",
+      "file": "hypothesis_testing_spec.json",
+      "description": "Compute confidence interval for population proportion.",
+      "parameters": [
+        {
+          "name": "successes",
+          "type": "int",
+          "description": "Number of successes",
+          "required": true
+        },
+        {
+          "name": "n",
+          "type": "int",
+          "description": "Total sample size",
+          "required": true
+        },
+        {
+          "name": "confidence",
+          "type": "Number",
+          "description": "Confidence level",
+          "required": false
+        },
+        {
+          "name": "method",
+          "type": "string",
+          "description": "Method: normal, wilson, exact",
+          "required": false
+        }
+      ],
+      "returns": {
+        "type": "Tuple[Number, Number]",
+        "description": "(lower_bound, upper_bound) of confidence interval"
+      },
+      "mathematical_formula": "Normal: p\u0302 \u00b1 z_{\u03b1/2}\u221a(p\u0302(1-p\u0302)/n), Wilson adjustment recommended",
+      "implementation_notes": "Normal approximation poor for p near 0 or 1, or small n. Wilson score interval preferred. Clopper-Pearson (exact) is conservative."
+    }
+  ]
+}

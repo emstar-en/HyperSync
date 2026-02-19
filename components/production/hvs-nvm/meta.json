@@ -1,0 +1,99 @@
+{
+  "component": {
+    "name": "hvs-nvm",
+    "full_name": "HyperVisor System - Node Virtual Machine",
+    "version": "1.0.0",
+    "status": "production",
+    "maturity": "stable",
+    "created": "2024-01-01",
+    "last_updated": "2026-02-19"
+  },
+  
+  "lifecycle": {
+    "stage": "production",
+    "promotion_history": [
+      {"from": "experimental", "to": "stable", "date": "2024-05-01"},
+      {"from": "stable", "to": "production", "date": "2024-12-01"}
+    ],
+    "next_review": "2026-05-01"
+  },
+  
+  "classification": {
+    "type": "foundation",
+    "layer": "runtime-substrate",
+    "domain": ["virtualization", "execution", "runtime", "node-management"]
+  },
+  
+  "relationships": {
+    "depends_on": [],
+    "used_by": ["agua", "pct", "mom", "haw", "ascif", "sdl", "vnes", "mxfy"],
+    "integrates_with": ["stunir"],
+    "derived_from": null,
+    "derives": []
+  },
+  
+  "files": {
+    "specs": {
+      "location": "./specs",
+      "count": 0,
+      "format": ["json"],
+      "index": "./specs/index.json"
+    },
+    "reference": {
+      "location": "./reference",
+      "languages": ["c", "rust"],
+      "purpose": "Examples for STUNIR process",
+      "note": "NOT generated code - reference implementations",
+      "index": "./reference/index.json"
+    },
+    "generated": {
+      "location": "./generated",
+      "targets": ["c99", "rust"],
+      "auto_generated": true,
+      "do_not_edit": true
+    },
+    "analysis": {
+      "location": "./analysis",
+      "types": ["performance", "usage", "feedback"],
+      "updated": "2026-02-19"
+    }
+  },
+  
+  "ai_metadata": {
+    "keywords": [
+      "hypervisor", "virtual-machine", "runtime", "execution",
+      "node-management", "virtualization", "substrate"
+    ],
+    "primary_functions": [
+      "vm_execution",
+      "node_management",
+      "runtime_isolation",
+      "hypervisor_control",
+      "resource_virtualization"
+    ],
+    "use_cases": [
+      "virtual_machine_runtime",
+      "node_execution",
+      "isolated_environments",
+      "runtime_substrate"
+    ],
+    "complexity": "high",
+    "learning_curve": "steep",
+    "documentation_quality": "basic"
+  },
+  
+  "development": {
+    "active_work": true,
+    "contributors": ["system"],
+    "issues_open": 0,
+    "next_milestone": "performance-optimization-v3"
+  },
+  
+  "stunir": {
+    "uses_stunir": true,
+    "spec_to_ir": true,
+    "ir_to_code": true,
+    "targets": ["c99", "rust"],
+    "last_generation": "2026-02-18"
+  }
+}

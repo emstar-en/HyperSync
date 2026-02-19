@@ -1,0 +1,183 @@
+{
+  "agua_geometry_spec": {
+    "agua_integration": {
+      "decision_phases": {
+        "execution_supervision": {
+          "geometry_control_rulesets_ref": "geometry_control_rulesets_v1",
+          "used_components": [
+            "geometric_security_robustness",
+            "topological_data_analysis"
+          ]
+        }
+      },
+      "default_tui_geometry_mode_id": "poincare_disk",
+      "geometry_layer_ref": "hypersync_geometry_layer_v1",
+      "geometry_profiles_registry_ref": "geometry_profiles_registry_v1",
+      "receipt_and_telemetry_integration": {
+        "geometry_receipts_schema_ref": "geometry_receipts_schema_v1",
+        "pct_episode_schema_ref": "pct_episode_schema_v2:pathfinder_episode"
+      }
+    },
+    "component_tiering_and_links": {},
+    "implementation_priorities": {
+      "dynamic_curvature_adaptation": {
+        "preferred_pct_phases": [
+          "cartographer",
+          "trailblazer"
+        ],
+        "priority": "high"
+      },
+      "geometric_learning_acceleration": {
+        "preferred_pct_phases": [
+          "cartographer",
+          "trailblazer"
+        ],
+        "priority": "high"
+      },
+      "geometric_security_robustness": {
+        "preferred_pct_phases": [
+          "pathfinder",
+          "cartographer",
+          "trailblazer"
+        ],
+        "priority": "critical"
+      },
+      "geometric_uncertainty_quantification": {
+        "preferred_pct_phases": [
+          "cartographer",
+          "trailblazer"
+        ],
+        "priority": "medium"
+      },
+      "multi_scale_geometric_hierarchies": {
+        "preferred_pct_phases": [
+          "pathfinder",
+          "cartographer",
+          "trailblazer"
+        ],
+        "priority": "high"
+      }
+    },
+    "metadata": {
+      "created_by": "HyperSync Geometry/PCT/AGUA Integration Plan",
+      "description": "Geometry-aware control and orchestration for HyperSync workloads",
+      "integration_date": "2025-12-06",
+      "title": "Enhanced AGUA Geometry Specification v2.1"
+    },
+    "operational_modes": {
+      "modes": {
+        "conservative_geometric_core": {
+          "description": "Conservative mode for production geometric operations",
+          "determinism_tiers": [
+            "D0",
+            "D1_limited"
+          ]
+        },
+        "exploration_and_research": {
+          "description": "Exploratory mode allowing all determinism tiers",
+          "determinism_tiers": [
+            "D0",
+            "D1",
+            "D2"
+          ]
+        },
+        "human_facing_explainability_mode": {
+          "description": "Mode optimized for human-facing visualization and explanation",
+          "determinism_tiers": [
+            "D0",
+            "D1_visual_exploration"
+          ]
+        }
+      }
+    },
+    "pct_integration": {
+      "pct_method_ref": "pct_method_v2",
+      "usage_modes": {
+        "trailblazer": {
+          "outputs": {
+            "canonized_workflow_schema_ref": "pct_canonized_workflow_schema_v2:pct_canonized_workflow"
+          }
+        }
+      }
+    },
+    "performance_characteristics": {
+      "determinism_conformance_suites": [
+        {
+          "purpose": "Deterministic settings are declared for replay",
+          "suite_id_hint": "determinism.v1",
+          "suite_path": "HyperSync_ALPHA/05_implementation/codegen/templates/runtime/hypersync/specpack/conformance/patent_enablement/suite/determinism.v1.json"
+        }
+      ]
+    },
+    "mathematical_foundations": {
+      "geometry_type": "Riemannian Manifold with variable curvature (Poincare Disk Model)",
+      "metric_tensor_definition": "Conformal metric g_ij(x) = (2 / (1 - ||x||^2))^2 * delta_ij",
+      "curvature_flow_dynamics": {
+        "algorithm": "Discrete Ricci Flow",
+        "purpose": "Load balancing via geometric volume expansion",
+        "equation_ref": "dR/dt = -2 * Ric(g)"
+      },
+      "topological_data_analysis": {
+        "invariants": [
+          "Betti_0 (connected components)",
+          "Betti_1 (cycles)"
+        ],
+        "persistence_threshold": 0.05
+      },
+      "convergence_criteria": "L2 norm of curvature gradient < 1e-6"
+    },
+    "fault_detection": {
+      "geometric_integrity_checks": [
+        {
+          "check_id": "metric_tensor_determinant",
+          "condition": "det(g) > 0",
+          "action_on_failure": "halt_and_dump_state",
+          "severity": "critical"
+        },
+        {
+          "check_id": "curvature_singularity_detection",
+          "threshold": "max_curvature_bound_exceeded",
+          "action_on_failure": "trigger_manifold_smoothing",
+          "severity": "high"
+        },
+        {
+          "check_id": "boundary_violation",
+          "condition": "||x|| >= 1.0 (Poincare limit)",
+          "action_on_failure": "project_to_boundary_buffer",
+          "severity": "critical"
+        }
+      ],
+      "determinism_watchdogs": {
+        "floating_point_consistency": "IEEE 754 strict mode verification",
+        "topology_persistence_check": "Ensure persistent homology groups remain stable across D0 execution"
+      }
+    },
+    "detailed_mechanisms": {
+      "dynamic_curvature_adaptation": {
+        "mechanism_description": "Adjusts the local curvature of the compute manifold to represent task complexity. High complexity tasks warp the geometry to increase local volume, effectively allocating more 'space' for computation.",
+        "update_frequency": "per_epoch",
+        "algorithm_ref": "discrete_ricci_flow_v4",
+        "inputs": [
+          "node_load_metrics",
+          "network_latency_tensor"
+        ],
+        "outputs": [
+          "updated_metric_tensor"
+        ]
+      },
+      "geometric_security_robustness": {
+        "mechanism_description": "Uses isoperimetric inequalities to detect adversarial inputs that attempt to partition the consensus graph. Enforces expansion properties.",
+        "defense_strategy": "Cheeger constant monitoring",
+        "trigger_condition": "Cheeger constant < 0.1"
+      },
+      "multi_scale_geometric_hierarchies": {
+        "mechanism_description": "Maintains multiple resolutions of the system state geometry to allow for fast approximate routing (coarse) and precise state verification (fine).",
+        "levels": [
+          "global_topology",
+          "regional_cluster",
+          "local_node_manifold"
+        ]
+      }
+    }
+  }
+}

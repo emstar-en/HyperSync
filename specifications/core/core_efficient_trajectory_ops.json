@@ -1,0 +1,2630 @@
+{
+  "specification_type": "STUNIR",
+  "tier": "CORE",
+  "category": "efficient_trajectory_operations",
+  "description": "O(n) or faster trajectory operations promoted from Basic Phase 7C",
+  "total_operations": 78,
+  "complexity_criteria": "O(n) or faster (O(1), O(log n), O(n))",
+  "operations": [
+    {
+      "id": "cubic_spline_interpolate",
+      "name": "cubic_spline_interpolate",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "curves",
+      "file": "spline_curves_spec.json",
+      "description": "Create cubic spline interpolating given data points",
+      "parameters": [
+        {
+          "name": "points",
+          "type": "array[array[float]]",
+          "description": "Data points to interpolate"
+        },
+        {
+          "name": "parameters",
+          "type": "array[float]",
+          "description": "Parameter values for each point",
+          "default": null
+        },
+        {
+          "name": "boundary_condition",
+          "type": "string",
+          "description": "Boundary type: natural, clamped, periodic, not-a-knot",
+          "default": "natural"
+        },
+        {
+          "name": "end_derivatives",
+          "type": "array[array[float]]",
+          "description": "End derivatives for clamped condition",
+          "default": null
+        }
+      ],
+      "returns": {
+        "type": "CubicSpline",
+        "description": "Cubic spline curve"
+      },
+      "mathematical_formula": "S\u1d62(t) = a\u1d62 + b\u1d62(t-t\u1d62) + c\u1d62(t-t\u1d62)\u00b2 + d\u1d62(t-t\u1d62)\u00b3 for t \u2208 [t\u1d62, t\u1d62\u208a\u2081]",
+      "implementation_notes": "Solve tridiagonal system for second derivatives. Natural: S''(0)=S''(n)=0."
+    },
+    {
+      "id": "bspline_curve_create",
+      "name": "bspline_curve_create",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "curves",
+      "file": "spline_curves_spec.json",
+      "description": "Create B-spline curve from control points and knot vector",
+      "parameters": [
+        {
+          "name": "control_points",
+          "type": "array[array[float]]",
+          "description": "B-spline control points"
+        },
+        {
+          "name": "degree",
+          "type": "int",
+          "description": "Spline degree",
+          "default": 3
+        },
+        {
+          "name": "knots",
+          "type": "array[float]",
+          "description": "Knot vector",
+          "default": null
+        },
+        {
+          "name": "knot_type",
+          "type": "string",
+          "description": "Knot type if auto-generated: uniform, open_uniform",
+          "default": "open_uniform"
+        }
+      ],
+      "returns": {
+        "type": "BSplineCurve",
+        "description": "B-spline curve"
+      },
+      "mathematical_formula": "C(t) = \u03a3\u1d62\u208c\u2080\u207f P\u1d62 \u00b7 N\u1d62,\u209a(t), where N\u1d62,\u209a are B-spline basis functions",
+      "implementation_notes": "Knot vector length = n + p + 2. Open uniform knots interpolate endpoints."
+    },
+    {
+      "id": "nurbs_curve_create",
+      "name": "nurbs_curve_create",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "curves",
+      "file": "spline_curves_spec.json",
+      "description": "Create NURBS (Non-Uniform Rational B-Spline) curve",
+      "parameters": [
+        {
+          "name": "control_points",
+          "type": "array[array[float]]",
+          "description": "Control points"
+        },
+        {
+          "name": "weights",
+          "type": "array[float]",
+          "description": "Weight for each control point"
+        },
+        {
+          "name": "degree",
+          "type": "int",
+          "description": "Curve degree",
+          "default": 3
+        },
+        {
+          "name": "knots",
+          "type": "array[float]",
+          "description": "Knot vector",
+          "default": null
+        }
+      ],
+      "returns": {
+        "type": "NURBSCurve",
+        "description": "NURBS curve"
+      },
+      "mathematical_formula": "C(t) = \u03a3\u1d62 w\u1d62P\u1d62N\u1d62,\u209a(t) / \u03a3\u1d62 w\u1d62N\u1d62,\u209a(t)",
+      "implementation_notes": "NURBS can exactly represent conics. Use homogeneous coordinates internally."
+    },
+    {
+      "id": "catmull_rom_spline_create",
+      "name": "catmull_rom_spline_create",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "curves",
+      "file": "spline_curves_spec.json",
+      "description": "Create Catmull-Rom spline through given points",
+      "parameters": [
+        {
+          "name": "points",
+          "type": "array[array[float]]",
+          "description": "Points to interpolate"
+        },
+        {
+          "name": "tension",
+          "type": "float",
+          "description": "Tension parameter (0 = Catmull-Rom)",
+          "default": 0
+        },
+        {
+          "name": "closed",
+          "type": "bool",
+          "description": "Create closed loop",
+          "default": false
+        }
+      ],
+      "returns": {
+        "type": "CatmullRomSpline",
+        "description": "Catmull-Rom spline"
+      },
+      "mathematical_formula": "Tangent at P\u1d62: T\u1d62 = (1-\u03c4)(P\u1d62\u208a\u2081 - P\u1d62\u208b\u2081)/2",
+      "implementation_notes": "C1 continuous, passes through all points. Tension controls tangent magnitude."
+    },
+    {
+      "id": "hermite_spline_create",
+      "name": "hermite_spline_create",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "curves",
+      "file": "spline_curves_spec.json",
+      "description": "Create cubic Hermite spline from points and tangents",
+      "parameters": [
+        {
+          "name": "points",
+          "type": "array[array[float]]",
+          "description": "Interpolation points"
+        },
+        {
+          "name": "tangents",
+          "type": "array[array[float]]",
+          "description": "Tangent vectors at each point"
+        },
+        {
+          "name": "parameters",
+          "type": "array[float]",
+          "description": "Parameter values",
+          "default": null
+        }
+      ],
+      "returns": {
+        "type": "HermiteSpline",
+        "description": "Hermite spline curve"
+      },
+      "mathematical_formula": "H(t) = (2t\u00b3-3t\u00b2+1)P\u2080 + (t\u00b3-2t\u00b2+t)T\u2080 + (-2t\u00b3+3t\u00b2)P\u2081 + (t\u00b3-t\u00b2)T\u2081",
+      "implementation_notes": "Each segment defined by two points and two tangents. C1 continuous."
+    },
+    {
+      "id": "cardinal_spline_create",
+      "name": "cardinal_spline_create",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "curves",
+      "file": "spline_curves_spec.json",
+      "description": "Create cardinal spline (generalized Catmull-Rom) through points",
+      "parameters": [
+        {
+          "name": "points",
+          "type": "array[array[float]]",
+          "description": "Points to interpolate"
+        },
+        {
+          "name": "tension",
+          "type": "float",
+          "description": "Tension parameter [0,1]",
+          "default": 0.5
+        },
+        {
+          "name": "closed",
+          "type": "bool",
+          "description": "Create closed loop",
+          "default": false
+        }
+      ],
+      "returns": {
+        "type": "CardinalSpline",
+        "description": "Cardinal spline curve"
+      },
+      "mathematical_formula": "Tangent: T\u1d62 = (1-c)(P\u1d62\u208a\u2081 - P\u1d62\u208b\u2081) where c is tension",
+      "implementation_notes": "Tension 0 = Catmull-Rom, tension 1 = linear segments."
+    },
+    {
+      "id": "curve_serialize",
+      "name": "curve_serialize",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "curves",
+      "file": "curve_utilities_spec.json",
+      "description": "Serialize curve to portable format (JSON, binary)",
+      "parameters": [
+        {
+          "name": "curve",
+          "type": "Curve",
+          "description": "Curve to serialize"
+        },
+        {
+          "name": "format",
+          "type": "string",
+          "description": "Output format: json, binary, svg_path",
+          "default": "json"
+        },
+        {
+          "name": "precision",
+          "type": "int",
+          "description": "Decimal precision for text formats",
+          "default": 6
+        }
+      ],
+      "returns": {
+        "type": "string|bytes",
+        "description": "Serialized curve data"
+      },
+      "mathematical_formula": "N/A - data serialization",
+      "implementation_notes": "Include curve type, parameters, and all necessary reconstruction data."
+    },
+    {
+      "id": "curve_deserialize",
+      "name": "curve_deserialize",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "curves",
+      "file": "curve_utilities_spec.json",
+      "description": "Deserialize curve from portable format",
+      "parameters": [
+        {
+          "name": "data",
+          "type": "string|bytes",
+          "description": "Serialized curve data"
+        },
+        {
+          "name": "format",
+          "type": "string",
+          "description": "Input format: json, binary, svg_path",
+          "default": "json"
+        }
+      ],
+      "returns": {
+        "type": "Curve",
+        "description": "Reconstructed curve"
+      },
+      "mathematical_formula": "N/A - data deserialization",
+      "implementation_notes": "Validate data integrity. Handle version differences."
+    },
+    {
+      "id": "curve_to_visualization_data",
+      "name": "curve_to_visualization_data",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "curves",
+      "file": "curve_utilities_spec.json",
+      "description": "Generate visualization-ready data for rendering",
+      "parameters": [
+        {
+          "name": "curve",
+          "type": "Curve",
+          "description": "Curve to visualize"
+        },
+        {
+          "name": "num_segments",
+          "type": "int",
+          "description": "Number of line segments",
+          "default": 100
+        },
+        {
+          "name": "include_control_points",
+          "type": "bool",
+          "description": "Include control polygon",
+          "default": false
+        },
+        {
+          "name": "include_tangents",
+          "type": "bool",
+          "description": "Include tangent vectors",
+          "default": false
+        }
+      ],
+      "returns": {
+        "type": "dict",
+        "description": "Visualization data {vertices, control_points, tangents}"
+      },
+      "mathematical_formula": "N/A - data preparation",
+      "implementation_notes": "Format suitable for WebGL, SVG, or plotting libraries."
+    },
+    {
+      "id": "curve_convert_type",
+      "name": "curve_convert_type",
+      "complexity": "O(n) to O(n\u00b2)",
+      "complexity_class": "O(n)",
+      "category": "curves",
+      "file": "curve_utilities_spec.json",
+      "description": "Convert curve between different representations",
+      "parameters": [
+        {
+          "name": "curve",
+          "type": "Curve",
+          "description": "Source curve"
+        },
+        {
+          "name": "target_type",
+          "type": "string",
+          "description": "Target type: bezier, bspline, nurbs, polyline"
+        },
+        {
+          "name": "tolerance",
+          "type": "float",
+          "description": "Approximation tolerance",
+          "default": 1e-06
+        }
+      ],
+      "returns": {
+        "type": "Curve",
+        "description": "Converted curve"
+      },
+      "mathematical_formula": "Depends on conversion; may be exact or approximate",
+      "implementation_notes": "Some conversions exact (Bezier\u2192B-spline), others approximate (parametric\u2192Bezier)."
+    },
+    {
+      "id": "curve_bounding_box",
+      "name": "curve_bounding_box",
+      "complexity": "O(n) to O(n\u00b7log(1/\u03b5))",
+      "complexity_class": "O(n)",
+      "category": "curves",
+      "file": "curve_analysis_spec.json",
+      "description": "Compute axis-aligned bounding box of curve",
+      "parameters": [
+        {
+          "name": "curve",
+          "type": "Curve",
+          "description": "Curve to bound"
+        },
+        {
+          "name": "tight",
+          "type": "bool",
+          "description": "Compute tight bounds vs control polygon",
+          "default": true
+        },
+        {
+          "name": "tolerance",
+          "type": "float",
+          "description": "Tolerance for tight bounds",
+          "default": 1e-06
+        }
+      ],
+      "returns": {
+        "type": "dict",
+        "description": "Bounding box {min: [x,y,z], max: [x,y,z]}"
+      },
+      "mathematical_formula": "min/max of each coordinate over parameter range",
+      "implementation_notes": "For Bezier, control polygon gives loose bound. Tight needs derivative roots."
+    },
+    {
+      "id": "bezier_curve_create",
+      "name": "bezier_curve_create",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "curves",
+      "file": "bezier_curves_spec.json",
+      "description": "Create a Bezier curve from control points",
+      "parameters": [
+        {
+          "name": "control_points",
+          "type": "array[array[float]]",
+          "description": "Array of control points"
+        },
+        {
+          "name": "degree",
+          "type": "int",
+          "description": "Curve degree (auto-detected if not specified)",
+          "default": null
+        },
+        {
+          "name": "weights",
+          "type": "array[float]",
+          "description": "Weights for rational Bezier",
+          "default": null
+        }
+      ],
+      "returns": {
+        "type": "BezierCurve",
+        "description": "Bezier curve object"
+      },
+      "mathematical_formula": "B(t) = \u03a3\u1d62\u208c\u2080\u207f P\u1d62 \u00b7 B\u1d62,\u2099(t), where B\u1d62,\u2099(t) = C(n,i)\u00b7t\u2071\u00b7(1-t)\u207f\u207b\u2071",
+      "implementation_notes": "Degree = n_points - 1. Store control points and precompute binomial coefficients."
+    },
+    {
+      "id": "bezier_curve_join",
+      "name": "bezier_curve_join",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "curves",
+      "file": "bezier_curves_spec.json",
+      "description": "Join two Bezier curves with specified continuity",
+      "parameters": [
+        {
+          "name": "curve1",
+          "type": "BezierCurve",
+          "description": "First Bezier curve"
+        },
+        {
+          "name": "curve2",
+          "type": "BezierCurve",
+          "description": "Second Bezier curve"
+        },
+        {
+          "name": "continuity",
+          "type": "string",
+          "description": "Continuity type: C0, C1, G1, C2",
+          "default": "C0"
+        }
+      ],
+      "returns": {
+        "type": "BezierCurve",
+        "description": "Joined curve (may be degree elevated)"
+      },
+      "mathematical_formula": "C0: P\u2081_end = P\u2082_start; C1: also tangents match; G1: tangent directions match",
+      "implementation_notes": "May need to adjust control points to achieve desired continuity."
+    },
+    {
+      "id": "rational_bezier_create",
+      "name": "rational_bezier_create",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "curves",
+      "file": "bezier_curves_spec.json",
+      "description": "Create a rational Bezier curve with weights",
+      "parameters": [
+        {
+          "name": "control_points",
+          "type": "array[array[float]]",
+          "description": "Control points"
+        },
+        {
+          "name": "weights",
+          "type": "array[float]",
+          "description": "Weight for each control point"
+        }
+      ],
+      "returns": {
+        "type": "RationalBezierCurve",
+        "description": "Rational Bezier curve"
+      },
+      "mathematical_formula": "R(t) = \u03a3\u1d62 w\u1d62P\u1d62B\u1d62,\u2099(t) / \u03a3\u1d62 w\u1d62B\u1d62,\u2099(t)",
+      "implementation_notes": "Weights allow exact representation of conics. All weights = 1 gives standard Bezier."
+    },
+    {
+      "id": "bezier_curve_control_polygon_length",
+      "name": "bezier_curve_control_polygon_length",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "curves",
+      "file": "bezier_curves_spec.json",
+      "description": "Compute length of control polygon (upper bound on curve length)",
+      "parameters": [
+        {
+          "name": "curve",
+          "type": "BezierCurve",
+          "description": "Bezier curve"
+        }
+      ],
+      "returns": {
+        "type": "float",
+        "description": "Sum of distances between consecutive control points"
+      },
+      "mathematical_formula": "L_polygon = \u03a3\u1d62\u208c\u2080\u207f\u207b\u00b9 |P\u1d62\u208a\u2081 - P\u1d62|",
+      "implementation_notes": "Control polygon length >= curve length. Useful for subdivision termination."
+    },
+    {
+      "id": "parametric_curve_create",
+      "name": "parametric_curve_create",
+      "complexity": "O(1)",
+      "complexity_class": "O(1)",
+      "category": "curves",
+      "file": "parametric_curves_spec.json",
+      "description": "Create a parametric curve from component functions x(t), y(t), z(t)",
+      "parameters": [
+        {
+          "name": "x_function",
+          "type": "callable",
+          "description": "Function x(t) for x-coordinate"
+        },
+        {
+          "name": "y_function",
+          "type": "callable",
+          "description": "Function y(t) for y-coordinate"
+        },
+        {
+          "name": "z_function",
+          "type": "callable",
+          "description": "Function z(t) for z-coordinate (optional for 2D)"
+        },
+        {
+          "name": "t_min",
+          "type": "float",
+          "description": "Minimum parameter value",
+          "default": 0.0
+        },
+        {
+          "name": "t_max",
+          "type": "float",
+          "description": "Maximum parameter value",
+          "default": 1.0
+        },
+        {
+          "name": "dimension",
+          "type": "int",
+          "description": "Curve dimension (2 or 3)",
+          "default": 3
+        }
+      ],
+      "returns": {
+        "type": "ParametricCurve",
+        "description": "Parametric curve object"
+      },
+      "mathematical_formula": "\u03b3(t) = (x(t), y(t), z(t)), t \u2208 [t_min, t_max]",
+      "implementation_notes": "Store function references and parameter bounds. Support both 2D and 3D curves."
+    },
+    {
+      "id": "path_waypoint_interpolate",
+      "name": "path_waypoint_interpolate",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "curves",
+      "file": "path_planning_spec.json",
+      "description": "Create smooth path through waypoints with specified interpolation method",
+      "parameters": [
+        {
+          "name": "waypoints",
+          "type": "array[array[float]]",
+          "description": "Waypoint positions"
+        },
+        {
+          "name": "method",
+          "type": "string",
+          "description": "Interpolation method: linear, cubic, quintic, bezier",
+          "default": "cubic"
+        },
+        {
+          "name": "velocities",
+          "type": "array[array[float]]",
+          "description": "Velocity constraints at waypoints",
+          "default": null
+        },
+        {
+          "name": "timestamps",
+          "type": "array[float]",
+          "description": "Time at each waypoint",
+          "default": null
+        }
+      ],
+      "returns": {
+        "type": "Path",
+        "description": "Interpolated path object"
+      },
+      "mathematical_formula": "Depends on method; cubic uses Hermite interpolation with estimated tangents",
+      "implementation_notes": "Auto-estimate velocities if not provided. Ensure C1 or C2 continuity."
+    },
+    {
+      "id": "path_reverse",
+      "name": "path_reverse",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "curves",
+      "file": "path_planning_spec.json",
+      "description": "Reverse direction of path traversal",
+      "parameters": [
+        {
+          "name": "path",
+          "type": "Path",
+          "description": "Path to reverse"
+        }
+      ],
+      "returns": {
+        "type": "Path",
+        "description": "Reversed path"
+      },
+      "mathematical_formula": "\u03b3_rev(t) = \u03b3(1-t) for t \u2208 [0,1]",
+      "implementation_notes": "Reverse control points for Bezier/splines. Negate velocities."
+    },
+    {
+      "id": "path_trim",
+      "name": "path_trim",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "curves",
+      "file": "path_planning_spec.json",
+      "description": "Extract portion of path between two parameter values",
+      "parameters": [
+        {
+          "name": "path",
+          "type": "Path",
+          "description": "Path to trim"
+        },
+        {
+          "name": "t_start",
+          "type": "float",
+          "description": "Start parameter"
+        },
+        {
+          "name": "t_end",
+          "type": "float",
+          "description": "End parameter"
+        }
+      ],
+      "returns": {
+        "type": "Path",
+        "description": "Trimmed path segment"
+      },
+      "mathematical_formula": "\u03b3_trim(s) = \u03b3(t_start + s(t_end - t_start)) for s \u2208 [0,1]",
+      "implementation_notes": "For Bezier, use De Casteljau splitting. For splines, use knot insertion."
+    },
+    {
+      "id": "dubins_path",
+      "name": "dubins_path",
+      "complexity": "O(1)",
+      "complexity_class": "O(1)",
+      "category": "curves",
+      "file": "path_planning_spec.json",
+      "description": "Compute shortest Dubins path (car-like motion) between configurations",
+      "parameters": [
+        {
+          "name": "start",
+          "type": "dict",
+          "description": "Start configuration {x, y, theta}"
+        },
+        {
+          "name": "end",
+          "type": "dict",
+          "description": "End configuration {x, y, theta}"
+        },
+        {
+          "name": "turning_radius",
+          "type": "float",
+          "description": "Minimum turning radius"
+        }
+      ],
+      "returns": {
+        "type": "DubinsPath",
+        "description": "Optimal Dubins path (sequence of arcs and lines)"
+      },
+      "mathematical_formula": "Optimal path is one of: LSL, RSR, LSR, RSL, RLR, LRL",
+      "implementation_notes": "Compute all 6 path types, return shortest. L=left arc, R=right arc, S=straight."
+    },
+    {
+      "id": "reeds_shepp_path",
+      "name": "reeds_shepp_path",
+      "complexity": "O(1)",
+      "complexity_class": "O(1)",
+      "category": "curves",
+      "file": "path_planning_spec.json",
+      "description": "Compute shortest Reeds-Shepp path (car with reverse) between configurations",
+      "parameters": [
+        {
+          "name": "start",
+          "type": "dict",
+          "description": "Start configuration {x, y, theta}"
+        },
+        {
+          "name": "end",
+          "type": "dict",
+          "description": "End configuration {x, y, theta}"
+        },
+        {
+          "name": "turning_radius",
+          "type": "float",
+          "description": "Minimum turning radius"
+        }
+      ],
+      "returns": {
+        "type": "ReedsSheppPath",
+        "description": "Optimal Reeds-Shepp path"
+      },
+      "mathematical_formula": "48 possible path types with forward/reverse segments",
+      "implementation_notes": "Extension of Dubins allowing reverse motion. Often shorter than Dubins."
+    },
+    {
+      "id": "geodesic_validation",
+      "name": "geodesic_validation",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "geodesics",
+      "file": "geodesic_utilities_spec.json",
+      "description": "Validate that curve is approximately geodesic",
+      "parameters": [
+        {
+          "name": "curve",
+          "type": "Curve"
+        },
+        {
+          "name": "manifold",
+          "type": "Manifold"
+        },
+        {
+          "name": "tolerance",
+          "type": "float"
+        }
+      ],
+      "returns": {
+        "type": "Dict",
+        "description": "Validation results with error metrics"
+      },
+      "mathematical_formula": "Check geodesic curvature \u2248 0",
+      "implementation_notes": "Sample geodesic curvature along curve; report max deviation"
+    },
+    {
+      "id": "geodesic_visualization_data",
+      "name": "geodesic_visualization_data",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "geodesics",
+      "file": "geodesic_utilities_spec.json",
+      "description": "Generate visualization data for geodesic",
+      "parameters": [
+        {
+          "name": "geodesic",
+          "type": "GeodesicPath"
+        },
+        {
+          "name": "format",
+          "type": "str",
+          "default": "mesh"
+        }
+      ],
+      "returns": {
+        "type": "Dict",
+        "description": "Visualization-ready data"
+      },
+      "mathematical_formula": "Points, normals, colors for rendering",
+      "implementation_notes": "Generate tube mesh or line data; include tangent/normal frames"
+    },
+    {
+      "id": "geodesic_caching",
+      "name": "geodesic_caching",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "geodesics",
+      "file": "geodesic_utilities_spec.json",
+      "description": "Cache computed geodesic for reuse",
+      "parameters": [
+        {
+          "name": "geodesic",
+          "type": "GeodesicPath"
+        },
+        {
+          "name": "cache_key",
+          "type": "str"
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "Cache identifier"
+      },
+      "mathematical_formula": "Store with lookup key",
+      "implementation_notes": "Use content hash for automatic key generation; LRU eviction"
+    },
+    {
+      "id": "geodesic_hash",
+      "name": "geodesic_hash",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "geodesics",
+      "file": "geodesic_utilities_spec.json",
+      "description": "Compute hash of geodesic for comparison/lookup",
+      "parameters": [
+        {
+          "name": "geodesic",
+          "type": "GeodesicPath"
+        },
+        {
+          "name": "precision",
+          "type": "int",
+          "default": 6
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "Hash string"
+      },
+      "mathematical_formula": "Hash based on discretized points",
+      "implementation_notes": "Use geometric hash invariant under reparameterization"
+    },
+    {
+      "id": "geodesic_serialize",
+      "name": "geodesic_serialize",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "geodesics",
+      "file": "geodesic_utilities_spec.json",
+      "description": "Serialize geodesic to storable format",
+      "parameters": [
+        {
+          "name": "geodesic",
+          "type": "GeodesicPath"
+        },
+        {
+          "name": "format",
+          "type": "str",
+          "default": "json"
+        }
+      ],
+      "returns": {
+        "type": "bytes",
+        "description": "Serialized geodesic"
+      },
+      "mathematical_formula": "Convert to JSON, binary, or protocol buffer",
+      "implementation_notes": "Include manifold metadata for deserialization"
+    },
+    {
+      "id": "geodesic_deserialize",
+      "name": "geodesic_deserialize",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "geodesics",
+      "file": "geodesic_utilities_spec.json",
+      "description": "Deserialize geodesic from stored format",
+      "parameters": [
+        {
+          "name": "data",
+          "type": "bytes"
+        },
+        {
+          "name": "format",
+          "type": "str",
+          "default": "json"
+        }
+      ],
+      "returns": {
+        "type": "GeodesicPath",
+        "description": "Reconstructed geodesic"
+      },
+      "mathematical_formula": "Reconstruct from serialized representation",
+      "implementation_notes": "Validate manifold compatibility; handle version differences"
+    },
+    {
+      "id": "geodesic_interpolation",
+      "name": "geodesic_interpolation",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "geodesics",
+      "file": "geodesic_interpolation_spec.json",
+      "description": "Interpolate between points along geodesic (slerp-like)",
+      "parameters": [
+        {
+          "name": "point_a",
+          "type": "ManifoldPoint"
+        },
+        {
+          "name": "point_b",
+          "type": "ManifoldPoint"
+        },
+        {
+          "name": "t",
+          "type": "float"
+        }
+      ],
+      "returns": {
+        "type": "ManifoldPoint",
+        "description": "Interpolated point at parameter t"
+      },
+      "mathematical_formula": "\u03b3(t) = exp_a(t * log_a(b))",
+      "implementation_notes": "Use exponential and logarithm maps; generalizes slerp to arbitrary manifolds"
+    },
+    {
+      "id": "geodesic_midpoint",
+      "name": "geodesic_midpoint",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "geodesics",
+      "file": "geodesic_interpolation_spec.json",
+      "description": "Compute geodesic midpoint of two points",
+      "parameters": [
+        {
+          "name": "point_a",
+          "type": "ManifoldPoint"
+        },
+        {
+          "name": "point_b",
+          "type": "ManifoldPoint"
+        }
+      ],
+      "returns": {
+        "type": "ManifoldPoint",
+        "description": "Midpoint on geodesic"
+      },
+      "mathematical_formula": "m = exp_a(0.5 * log_a(b))",
+      "implementation_notes": "Special case of geodesic interpolation at t=0.5"
+    },
+    {
+      "id": "geodesic_extrapolation",
+      "name": "geodesic_extrapolation",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "geodesics",
+      "file": "geodesic_interpolation_spec.json",
+      "description": "Extrapolate beyond given points along geodesic",
+      "parameters": [
+        {
+          "name": "point_a",
+          "type": "ManifoldPoint"
+        },
+        {
+          "name": "point_b",
+          "type": "ManifoldPoint"
+        },
+        {
+          "name": "t",
+          "type": "float"
+        }
+      ],
+      "returns": {
+        "type": "ManifoldPoint",
+        "description": "Extrapolated point (t > 1 or t < 0)"
+      },
+      "mathematical_formula": "\u03b3(t) = exp_a(t * log_a(b)) for t \u2208 \u211d",
+      "implementation_notes": "Same as interpolation but with t outside [0,1]; may hit cut locus"
+    },
+    {
+      "id": "geodesic_curvature",
+      "name": "geodesic_curvature",
+      "complexity": "O(1)",
+      "complexity_class": "O(1)",
+      "category": "geodesics",
+      "file": "geodesic_properties_spec.json",
+      "description": "Compute geodesic curvature of curve on surface",
+      "parameters": [
+        {
+          "name": "curve",
+          "type": "Curve"
+        },
+        {
+          "name": "surface",
+          "type": "Surface"
+        },
+        {
+          "name": "parameter",
+          "type": "float"
+        }
+      ],
+      "returns": {
+        "type": "float",
+        "description": "Geodesic curvature \u03ba_g"
+      },
+      "mathematical_formula": "\u03ba_g = \u03ba - \u03ba_n where \u03ba is curvature, \u03ba_n is normal curvature",
+      "implementation_notes": "Project curvature vector onto tangent plane; zero for geodesics"
+    },
+    {
+      "id": "geodesic_torsion",
+      "name": "geodesic_torsion",
+      "complexity": "O(1)",
+      "complexity_class": "O(1)",
+      "category": "geodesics",
+      "file": "geodesic_properties_spec.json",
+      "description": "Compute geodesic torsion of curve",
+      "parameters": [
+        {
+          "name": "curve",
+          "type": "Curve"
+        },
+        {
+          "name": "surface",
+          "type": "Surface"
+        },
+        {
+          "name": "parameter",
+          "type": "float"
+        }
+      ],
+      "returns": {
+        "type": "float",
+        "description": "Geodesic torsion \u03c4_g"
+      },
+      "mathematical_formula": "\u03c4_g = -dN/ds \u00b7 (T \u00d7 N) where N is surface normal",
+      "implementation_notes": "Measures twisting of surface normal along curve"
+    },
+    {
+      "id": "arc_length_parameterization",
+      "name": "arc_length_parameterization",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "geodesics",
+      "file": "geodesic_properties_spec.json",
+      "description": "Reparameterize geodesic by arc length",
+      "parameters": [
+        {
+          "name": "geodesic",
+          "type": "GeodesicPath"
+        }
+      ],
+      "returns": {
+        "type": "GeodesicPath",
+        "description": "Unit-speed parameterized geodesic"
+      },
+      "mathematical_formula": "s(t) = \u222b_0^t |\u03b3'(u)| du, then \u03b3(s)",
+      "implementation_notes": "Compute cumulative arc length; invert to get arc-length parameter"
+    },
+    {
+      "id": "geodesic_symmetry",
+      "name": "geodesic_symmetry",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "geodesics",
+      "file": "geodesic_properties_spec.json",
+      "description": "Check if geodesic has reflection symmetry",
+      "parameters": [
+        {
+          "name": "geodesic",
+          "type": "GeodesicPath"
+        }
+      ],
+      "returns": {
+        "type": "Dict",
+        "description": "Symmetry information"
+      },
+      "mathematical_formula": "\u03b3(t) = \u03b3(-t) up to reparameterization",
+      "implementation_notes": "Compare geodesic with its reverse; account for parameterization"
+    },
+    {
+      "id": "geodesic_winding",
+      "name": "geodesic_winding",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "geodesics",
+      "file": "geodesic_properties_spec.json",
+      "description": "Compute winding number of closed geodesic",
+      "parameters": [
+        {
+          "name": "geodesic",
+          "type": "GeodesicPath"
+        },
+        {
+          "name": "reference",
+          "type": "ManifoldPoint"
+        }
+      ],
+      "returns": {
+        "type": "int",
+        "description": "Winding number"
+      },
+      "mathematical_formula": "Number of times geodesic winds around reference",
+      "implementation_notes": "Integrate angular change; only for closed geodesics on 2-manifolds"
+    },
+    {
+      "id": "hyperbolic_geodesic",
+      "name": "hyperbolic_geodesic",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "geodesics",
+      "file": "multi_geometry_geodesics_spec.json",
+      "description": "Compute geodesic in hyperbolic space",
+      "parameters": [
+        {
+          "name": "point_a",
+          "type": "HyperbolicPoint"
+        },
+        {
+          "name": "point_b",
+          "type": "HyperbolicPoint"
+        },
+        {
+          "name": "model",
+          "type": "str",
+          "default": "poincare"
+        }
+      ],
+      "returns": {
+        "type": "GeodesicPath",
+        "description": "Hyperbolic geodesic"
+      },
+      "mathematical_formula": "Poincar\u00e9: arcs of circles orthogonal to boundary; Klein: straight lines",
+      "implementation_notes": "Model-specific formulas; transform between models as needed"
+    },
+    {
+      "id": "spherical_geodesic",
+      "name": "spherical_geodesic",
+      "complexity": "O(1)",
+      "complexity_class": "O(1)",
+      "category": "geodesics",
+      "file": "multi_geometry_geodesics_spec.json",
+      "description": "Compute geodesic on sphere (great circle)",
+      "parameters": [
+        {
+          "name": "point_a",
+          "type": "SphericalPoint"
+        },
+        {
+          "name": "point_b",
+          "type": "SphericalPoint"
+        },
+        {
+          "name": "radius",
+          "type": "float",
+          "default": 1.0
+        }
+      ],
+      "returns": {
+        "type": "GeodesicPath",
+        "description": "Great circle arc"
+      },
+      "mathematical_formula": "Plane through center and both points intersects sphere",
+      "implementation_notes": "Use cross product to find plane normal; parameterize great circle"
+    },
+    {
+      "id": "euclidean_geodesic",
+      "name": "euclidean_geodesic",
+      "complexity": "O(1)",
+      "complexity_class": "O(1)",
+      "category": "geodesics",
+      "file": "multi_geometry_geodesics_spec.json",
+      "description": "Compute geodesic in Euclidean space (straight line)",
+      "parameters": [
+        {
+          "name": "point_a",
+          "type": "EuclideanPoint"
+        },
+        {
+          "name": "point_b",
+          "type": "EuclideanPoint"
+        }
+      ],
+      "returns": {
+        "type": "GeodesicPath",
+        "description": "Straight line segment"
+      },
+      "mathematical_formula": "\u03b3(t) = (1-t)a + tb",
+      "implementation_notes": "Direct linear interpolation; simplest geodesic"
+    },
+    {
+      "id": "curvature_geodesic_conversion",
+      "name": "curvature_geodesic_conversion",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "geodesics",
+      "file": "multi_geometry_geodesics_spec.json",
+      "description": "Convert geodesic between different curvature spaces",
+      "parameters": [
+        {
+          "name": "geodesic",
+          "type": "GeodesicPath"
+        },
+        {
+          "name": "source_curvature",
+          "type": "float"
+        },
+        {
+          "name": "target_curvature",
+          "type": "float"
+        }
+      ],
+      "returns": {
+        "type": "GeodesicPath",
+        "description": "Converted geodesic"
+      },
+      "mathematical_formula": "Scaling: curvature \u03ba \u2192 \u03ba' requires length scaling by \u221a(|\u03ba/\u03ba'|)",
+      "implementation_notes": "Useful for comparing geometries; handle sign changes carefully"
+    },
+    {
+      "id": "klein_model_geodesic",
+      "name": "klein_model_geodesic",
+      "complexity": "O(1)",
+      "complexity_class": "O(1)",
+      "category": "geodesics",
+      "file": "multi_geometry_geodesics_spec.json",
+      "description": "Compute geodesic in Klein disk model",
+      "parameters": [
+        {
+          "name": "point_a",
+          "type": "KleinPoint"
+        },
+        {
+          "name": "point_b",
+          "type": "KleinPoint"
+        }
+      ],
+      "returns": {
+        "type": "GeodesicPath",
+        "description": "Straight line in Klein model"
+      },
+      "mathematical_formula": "Straight Euclidean line (within disk)",
+      "implementation_notes": "Geodesics are chords of the disk; simpler than Poincar\u00e9"
+    },
+    {
+      "id": "upper_half_plane_geodesic",
+      "name": "upper_half_plane_geodesic",
+      "complexity": "O(1)",
+      "complexity_class": "O(1)",
+      "category": "geodesics",
+      "file": "multi_geometry_geodesics_spec.json",
+      "description": "Compute geodesic in upper half-plane model",
+      "parameters": [
+        {
+          "name": "point_a",
+          "type": "UpperHalfPlanePoint"
+        },
+        {
+          "name": "point_b",
+          "type": "UpperHalfPlanePoint"
+        }
+      ],
+      "returns": {
+        "type": "GeodesicPath",
+        "description": "Vertical line or semicircle"
+      },
+      "mathematical_formula": "Semicircles centered on real axis, or vertical lines",
+      "implementation_notes": "Check if x-coordinates equal (vertical) or compute circle center"
+    },
+    {
+      "id": "lorentz_model_geodesic",
+      "name": "lorentz_model_geodesic",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "geodesics",
+      "file": "multi_geometry_geodesics_spec.json",
+      "description": "Compute geodesic in Lorentz (hyperboloid) model",
+      "parameters": [
+        {
+          "name": "point_a",
+          "type": "LorentzPoint"
+        },
+        {
+          "name": "point_b",
+          "type": "LorentzPoint"
+        }
+      ],
+      "returns": {
+        "type": "GeodesicPath",
+        "description": "Hyperboloid geodesic"
+      },
+      "mathematical_formula": "Intersection of hyperboloid with plane through origin",
+      "implementation_notes": "Use Lorentz inner product; geodesics are hyperbolas"
+    },
+    {
+      "id": "geodesic_model_transform",
+      "name": "geodesic_model_transform",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "geodesics",
+      "file": "multi_geometry_geodesics_spec.json",
+      "description": "Transform geodesic between hyperbolic models",
+      "parameters": [
+        {
+          "name": "geodesic",
+          "type": "GeodesicPath"
+        },
+        {
+          "name": "source_model",
+          "type": "str"
+        },
+        {
+          "name": "target_model",
+          "type": "str"
+        }
+      ],
+      "returns": {
+        "type": "GeodesicPath",
+        "description": "Transformed geodesic"
+      },
+      "mathematical_formula": "Apply M\u00f6bius transformations between disk/half-plane/Klein/Lorentz",
+      "implementation_notes": "Use standard isometries between models; preserve geodesic structure"
+    },
+    {
+      "id": "geodesic_shooting",
+      "name": "geodesic_shooting",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "geodesics",
+      "file": "geodesic_computation_spec.json",
+      "description": "Compute geodesic from initial point and velocity via shooting method",
+      "parameters": [
+        {
+          "name": "point",
+          "type": "ManifoldPoint"
+        },
+        {
+          "name": "velocity",
+          "type": "TangentVector"
+        },
+        {
+          "name": "time",
+          "type": "float"
+        }
+      ],
+      "returns": {
+        "type": "ManifoldPoint",
+        "description": "Endpoint of geodesic"
+      },
+      "mathematical_formula": "exp_p(tv) = \u03b3(t) where \u03b3'(0) = v",
+      "implementation_notes": "Integrate geodesic equation forward in time; equivalent to exponential map"
+    },
+    {
+      "id": "geodesic_parallel_transport",
+      "name": "geodesic_parallel_transport",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "geodesics",
+      "file": "geodesic_computation_spec.json",
+      "description": "Parallel transport a vector along geodesic",
+      "parameters": [
+        {
+          "name": "vector",
+          "type": "TangentVector"
+        },
+        {
+          "name": "geodesic",
+          "type": "GeodesicPath"
+        }
+      ],
+      "returns": {
+        "type": "TangentVector",
+        "description": "Parallel transported vector"
+      },
+      "mathematical_formula": "\u2207_\u03b3' V = 0 along \u03b3",
+      "implementation_notes": "Solve parallel transport ODE alongside geodesic integration"
+    },
+    {
+      "id": "geodesic_normal_coordinates",
+      "name": "geodesic_normal_coordinates",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "geodesics",
+      "file": "geodesic_computation_spec.json",
+      "description": "Compute geodesic in normal (exponential) coordinates",
+      "parameters": [
+        {
+          "name": "center",
+          "type": "ManifoldPoint"
+        },
+        {
+          "name": "direction",
+          "type": "TangentVector"
+        },
+        {
+          "name": "radius",
+          "type": "float"
+        }
+      ],
+      "returns": {
+        "type": "GeodesicPath",
+        "description": "Geodesic as straight line in normal coords"
+      },
+      "mathematical_formula": "In normal coords: \u03b3(t) = tv (straight line)",
+      "implementation_notes": "Geodesics through center are straight lines; transform back to ambient coords"
+    },
+    {
+      "id": "geodesic_length",
+      "name": "geodesic_length",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "geodesics",
+      "file": "geodesic_computation_spec.json",
+      "description": "Compute arc length of geodesic segment",
+      "parameters": [
+        {
+          "name": "geodesic",
+          "type": "GeodesicPath"
+        },
+        {
+          "name": "start_param",
+          "type": "float",
+          "default": 0
+        },
+        {
+          "name": "end_param",
+          "type": "float",
+          "default": 1
+        }
+      ],
+      "returns": {
+        "type": "float",
+        "description": "Arc length"
+      },
+      "mathematical_formula": "L = \u222b_a^b |\u03b3'(t)| dt",
+      "implementation_notes": "Numerical integration of speed; geodesics have constant speed so L = |v| * (b-a)"
+    },
+    {
+      "id": "geodesic_tangent",
+      "name": "geodesic_tangent",
+      "complexity": "O(1)",
+      "complexity_class": "O(1)",
+      "category": "geodesics",
+      "file": "geodesic_computation_spec.json",
+      "description": "Extract tangent vector at point along geodesic",
+      "parameters": [
+        {
+          "name": "geodesic",
+          "type": "GeodesicPath"
+        },
+        {
+          "name": "parameter",
+          "type": "float"
+        }
+      ],
+      "returns": {
+        "type": "TangentVector",
+        "description": "Tangent vector at parameter"
+      },
+      "mathematical_formula": "T = \u03b3'(t)",
+      "implementation_notes": "Differentiate geodesic parameterization; use finite differences if only discrete"
+    },
+    {
+      "id": "geodesic_flow_tangent_bundle",
+      "name": "geodesic_flow_tangent_bundle",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "geodesics",
+      "file": "geodesic_flows_spec.json",
+      "description": "Compute geodesic flow on tangent bundle",
+      "parameters": [
+        {
+          "name": "initial_state",
+          "type": "Tuple[ManifoldPoint, TangentVector]"
+        },
+        {
+          "name": "time",
+          "type": "float"
+        }
+      ],
+      "returns": {
+        "type": "Tuple[ManifoldPoint, TangentVector]",
+        "description": "Evolved state (position, velocity)"
+      },
+      "mathematical_formula": "\u03c6_t(x, v) = (\u03b3(t), \u03b3'(t)) where \u03b3 is geodesic with \u03b3(0)=x, \u03b3'(0)=v",
+      "implementation_notes": "Integrate geodesic equation; preserve symplectic structure"
+    },
+    {
+      "id": "exponential_map_geodesic",
+      "name": "exponential_map_geodesic",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "geodesics",
+      "file": "geodesic_flows_spec.json",
+      "description": "Compute exponential map via geodesic",
+      "parameters": [
+        {
+          "name": "base_point",
+          "type": "ManifoldPoint"
+        },
+        {
+          "name": "tangent_vector",
+          "type": "TangentVector"
+        }
+      ],
+      "returns": {
+        "type": "ManifoldPoint",
+        "description": "exp_p(v)"
+      },
+      "mathematical_formula": "exp_p(v) = \u03b3(1) where \u03b3'(0) = v, \u03b3(0) = p",
+      "implementation_notes": "Endpoint of geodesic with given initial velocity"
+    },
+    {
+      "id": "compute_velocity_from_position",
+      "name": "compute_velocity_from_position",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "motion",
+      "file": "velocity_acceleration_spec.json",
+      "description": "Compute instantaneous velocity vector from position trajectory using finite differences",
+      "parameters": [
+        {
+          "name": "positions",
+          "type": "array<Point>",
+          "description": "Sequence of position points on trajectory"
+        },
+        {
+          "name": "timestamps",
+          "type": "array<float>",
+          "description": "Time values corresponding to positions"
+        },
+        {
+          "name": "method",
+          "type": "string",
+          "description": "Differentiation method: central, forward, backward",
+          "default": "central"
+        },
+        {
+          "name": "curvature",
+          "type": "float",
+          "description": "Hyperbolic space curvature",
+          "default": -1.0
+        }
+      ],
+      "returns": {
+        "type": "array<TangentVector>",
+        "description": "Velocity vectors in tangent space at each point"
+      },
+      "mathematical_formula": "v(t) = lim_{h\u21920} [log_p(q)/h] where q = \u03b3(t+h), p = \u03b3(t)",
+      "implementation_notes": "Use parallel transport for consistent velocity representation. Central differences provide O(h\u00b2) accuracy."
+    },
+    {
+      "id": "compute_acceleration",
+      "name": "compute_acceleration",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "motion",
+      "file": "velocity_acceleration_spec.json",
+      "description": "Compute covariant acceleration accounting for hyperbolic geometry",
+      "parameters": [
+        {
+          "name": "positions",
+          "type": "array<Point>",
+          "description": "Position trajectory"
+        },
+        {
+          "name": "timestamps",
+          "type": "array<float>",
+          "description": "Time values"
+        },
+        {
+          "name": "curvature",
+          "type": "float",
+          "description": "Space curvature",
+          "default": -1.0
+        },
+        {
+          "name": "include_geometric",
+          "type": "boolean",
+          "description": "Include geometric acceleration terms",
+          "default": true
+        }
+      ],
+      "returns": {
+        "type": "array<TangentVector>",
+        "description": "Covariant acceleration vectors"
+      },
+      "mathematical_formula": "a = \u2207_v v = dv/dt + \u0393^k_{ij} v^i v^j",
+      "implementation_notes": "Christoffel symbols required for covariant derivative. Geodesics have zero covariant acceleration."
+    },
+    {
+      "id": "compute_jerk",
+      "name": "compute_jerk",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "motion",
+      "file": "velocity_acceleration_spec.json",
+      "description": "Compute third derivative of position (jerk) for motion smoothness analysis",
+      "parameters": [
+        {
+          "name": "positions",
+          "type": "array<Point>",
+          "description": "Position trajectory"
+        },
+        {
+          "name": "timestamps",
+          "type": "array<float>",
+          "description": "Time values"
+        },
+        {
+          "name": "curvature",
+          "type": "float",
+          "description": "Space curvature",
+          "default": -1.0
+        }
+      ],
+      "returns": {
+        "type": "array<TangentVector>",
+        "description": "Jerk vectors (rate of change of acceleration)"
+      },
+      "mathematical_formula": "j = d\u00b3\u03b3/dt\u00b3 + higher-order Christoffel terms",
+      "implementation_notes": "Requires at least 4 points. Important for motion planning smoothness constraints."
+    },
+    {
+      "id": "generate_trapezoidal_velocity_profile",
+      "name": "generate_trapezoidal_velocity_profile",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "motion",
+      "file": "velocity_acceleration_spec.json",
+      "description": "Generate trapezoidal velocity profile with acceleration/deceleration phases",
+      "parameters": [
+        {
+          "name": "start_point",
+          "type": "Point",
+          "description": "Starting position"
+        },
+        {
+          "name": "end_point",
+          "type": "Point",
+          "description": "Ending position"
+        },
+        {
+          "name": "max_velocity",
+          "type": "float",
+          "description": "Maximum cruise velocity"
+        },
+        {
+          "name": "acceleration",
+          "type": "float",
+          "description": "Acceleration/deceleration magnitude"
+        },
+        {
+          "name": "num_samples",
+          "type": "integer",
+          "description": "Number of trajectory samples",
+          "default": 100
+        }
+      ],
+      "returns": {
+        "type": "Trajectory",
+        "description": "Trajectory following trapezoidal velocity profile"
+      },
+      "mathematical_formula": "v(t) = min(a*t, v_max, a*(T-t)) for acceleration phase, cruise, deceleration",
+      "implementation_notes": "May degenerate to triangular profile if distance too short for cruise phase."
+    },
+    {
+      "id": "generate_s_curve_velocity_profile",
+      "name": "generate_s_curve_velocity_profile",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "motion",
+      "file": "velocity_acceleration_spec.json",
+      "description": "Generate S-curve velocity profile with limited jerk for smooth motion",
+      "parameters": [
+        {
+          "name": "start_point",
+          "type": "Point",
+          "description": "Starting position"
+        },
+        {
+          "name": "end_point",
+          "type": "Point",
+          "description": "Ending position"
+        },
+        {
+          "name": "max_velocity",
+          "type": "float",
+          "description": "Maximum cruise velocity"
+        },
+        {
+          "name": "max_acceleration",
+          "type": "float",
+          "description": "Maximum acceleration"
+        },
+        {
+          "name": "max_jerk",
+          "type": "float",
+          "description": "Maximum jerk (rate of acceleration change)"
+        },
+        {
+          "name": "num_samples",
+          "type": "integer",
+          "description": "Number of trajectory samples",
+          "default": 100
+        }
+      ],
+      "returns": {
+        "type": "Trajectory",
+        "description": "Trajectory following S-curve velocity profile"
+      },
+      "mathematical_formula": "7-segment profile: j+, 0, j-, cruise, j-, 0, j+",
+      "implementation_notes": "Smoother than trapezoidal but requires longer traversal time. Essential for high-precision applications."
+    },
+    {
+      "id": "compute_angular_velocity",
+      "name": "compute_angular_velocity",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "motion",
+      "file": "velocity_acceleration_spec.json",
+      "description": "Compute angular velocity for rotational motion in hyperbolic space",
+      "parameters": [
+        {
+          "name": "orientations",
+          "type": "array<Quaternion>",
+          "description": "Sequence of orientations"
+        },
+        {
+          "name": "timestamps",
+          "type": "array<float>",
+          "description": "Time values"
+        },
+        {
+          "name": "reference_frame",
+          "type": "string",
+          "description": "Frame for angular velocity: body, world",
+          "default": "body"
+        }
+      ],
+      "returns": {
+        "type": "array<Vector3>",
+        "description": "Angular velocity vectors (axis-angle rate)"
+      },
+      "mathematical_formula": "\u03c9 = 2 * (dq/dt) * q^(-1) for body frame",
+      "implementation_notes": "Quaternion differentiation avoids gimbal lock. Handle quaternion double-cover (q = -q)."
+    },
+    {
+      "id": "compute_centripetal_acceleration",
+      "name": "compute_centripetal_acceleration",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "motion",
+      "file": "velocity_acceleration_spec.json",
+      "description": "Compute centripetal (normal) acceleration component for curved paths",
+      "parameters": [
+        {
+          "name": "trajectory",
+          "type": "Trajectory",
+          "description": "Curved trajectory"
+        },
+        {
+          "name": "curvature",
+          "type": "float",
+          "description": "Space curvature",
+          "default": -1.0
+        }
+      ],
+      "returns": {
+        "type": "array<TangentVector>",
+        "description": "Centripetal acceleration vectors pointing toward center of curvature"
+      },
+      "mathematical_formula": "a_n = \u03ba * v\u00b2 * N where \u03ba is path curvature, N is normal vector",
+      "implementation_notes": "In hyperbolic space, centripetal acceleration is modified by space curvature."
+    },
+    {
+      "id": "compute_tangential_acceleration",
+      "name": "compute_tangential_acceleration",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "motion",
+      "file": "velocity_acceleration_spec.json",
+      "description": "Compute tangential acceleration component (speed change rate)",
+      "parameters": [
+        {
+          "name": "trajectory",
+          "type": "Trajectory",
+          "description": "Trajectory with timing information"
+        },
+        {
+          "name": "curvature",
+          "type": "float",
+          "description": "Space curvature",
+          "default": -1.0
+        }
+      ],
+      "returns": {
+        "type": "array<float>",
+        "description": "Tangential acceleration scalars (positive = speeding up)"
+      },
+      "mathematical_formula": "a_t = dv/dt = d|v|/dt",
+      "implementation_notes": "Tangential component is scalar projection onto velocity direction."
+    },
+    {
+      "id": "decompose_acceleration",
+      "name": "decompose_acceleration",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "motion",
+      "file": "velocity_acceleration_spec.json",
+      "description": "Decompose total acceleration into tangential and normal components",
+      "parameters": [
+        {
+          "name": "trajectory",
+          "type": "Trajectory",
+          "description": "Trajectory with positions and timing"
+        },
+        {
+          "name": "curvature",
+          "type": "float",
+          "description": "Space curvature",
+          "default": -1.0
+        }
+      ],
+      "returns": {
+        "type": "object",
+        "properties": {
+          "tangential": "array<float>",
+          "normal": "array<TangentVector>",
+          "total": "array<TangentVector>"
+        },
+        "description": "Decomposed acceleration components"
+      },
+      "mathematical_formula": "a = a_t * T + a_n * N where T is tangent, N is normal",
+      "implementation_notes": "Uses Frenet-Serret frame adapted to hyperbolic geometry."
+    },
+    {
+      "id": "compute_proper_acceleration",
+      "name": "compute_proper_acceleration",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "motion",
+      "file": "velocity_acceleration_spec.json",
+      "description": "Compute proper (felt) acceleration excluding gravitational effects",
+      "parameters": [
+        {
+          "name": "trajectory",
+          "type": "Trajectory",
+          "description": "World-line trajectory"
+        },
+        {
+          "name": "metric",
+          "type": "MetricTensor",
+          "description": "Spacetime metric"
+        },
+        {
+          "name": "gravitational_field",
+          "type": "VectorField",
+          "description": "Gravitational acceleration field",
+          "optional": true
+        }
+      ],
+      "returns": {
+        "type": "array<float>",
+        "description": "Proper acceleration magnitudes"
+      },
+      "mathematical_formula": "a_proper = |a_total - g| where g is gravitational acceleration",
+      "implementation_notes": "Relevant for relativistic considerations in hyperbolic spacetime models."
+    },
+    {
+      "id": "forward_kinematics",
+      "name": "forward_kinematics",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "motion",
+      "file": "kinematics_spec.json",
+      "description": "Compute end-effector pose from joint angles in hyperbolic articulated chain",
+      "parameters": [
+        {
+          "name": "joint_angles",
+          "type": "array<float>",
+          "description": "Joint angle values in radians"
+        },
+        {
+          "name": "link_lengths",
+          "type": "array<float>",
+          "description": "Hyperbolic lengths of links"
+        },
+        {
+          "name": "joint_types",
+          "type": "array<string>",
+          "description": "Type of each joint: revolute, prismatic"
+        },
+        {
+          "name": "base_pose",
+          "type": "Pose",
+          "description": "Base frame pose in hyperbolic space"
+        },
+        {
+          "name": "curvature",
+          "type": "float",
+          "description": "Space curvature",
+          "default": -1.0
+        }
+      ],
+      "returns": {
+        "type": "Pose",
+        "description": "End-effector pose (position and orientation)"
+      },
+      "mathematical_formula": "T_end = T_base * prod_{i=1}^n T_i(theta_i) using hyperbolic SE(2) or SE(3)",
+      "implementation_notes": "Chain transformations using hyperbolic isometries. Link lengths are hyperbolic distances."
+    },
+    {
+      "id": "compute_kinematic_chain",
+      "name": "compute_kinematic_chain",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "motion",
+      "file": "kinematics_spec.json",
+      "description": "Construct full kinematic chain representation with all intermediate transforms",
+      "parameters": [
+        {
+          "name": "joint_angles",
+          "type": "array<float>",
+          "description": "Joint angle values"
+        },
+        {
+          "name": "link_parameters",
+          "type": "array<LinkParams>",
+          "description": "DH or equivalent parameters for each link"
+        },
+        {
+          "name": "base_pose",
+          "type": "Pose",
+          "description": "Base frame pose"
+        },
+        {
+          "name": "curvature",
+          "type": "float",
+          "description": "Space curvature",
+          "default": -1.0
+        }
+      ],
+      "returns": {
+        "type": "array<Pose>",
+        "description": "Pose of each link frame in world coordinates"
+      },
+      "mathematical_formula": "T_i = T_{i-1} * A_i(theta_i) for hyperbolic DH convention",
+      "implementation_notes": "Store all intermediate poses for visualization and collision checking."
+    },
+    {
+      "id": "joint_to_cartesian",
+      "name": "joint_to_cartesian",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "motion",
+      "file": "kinematics_spec.json",
+      "description": "Transform joint-space position to Cartesian-space position",
+      "parameters": [
+        {
+          "name": "joint_position",
+          "type": "array<float>",
+          "description": "Position in joint space (angles/displacements)"
+        },
+        {
+          "name": "robot_model",
+          "type": "RobotModel",
+          "description": "Kinematic model of robot"
+        },
+        {
+          "name": "end_effector",
+          "type": "string",
+          "description": "Name of end-effector frame",
+          "default": "tool"
+        }
+      ],
+      "returns": {
+        "type": "Point",
+        "description": "Cartesian position of end-effector"
+      },
+      "mathematical_formula": "p_cartesian = FK(q_joint)[position]",
+      "implementation_notes": "Wrapper around forward kinematics extracting only position component."
+    },
+    {
+      "id": "compute_newton_euler_dynamics",
+      "name": "compute_newton_euler_dynamics",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "motion",
+      "file": "dynamics_spec.json",
+      "description": "Compute joint torques using recursive Newton-Euler algorithm",
+      "parameters": [
+        {
+          "name": "joint_angles",
+          "type": "array<float>",
+          "description": "Joint positions"
+        },
+        {
+          "name": "joint_velocities",
+          "type": "array<float>",
+          "description": "Joint velocities"
+        },
+        {
+          "name": "joint_accelerations",
+          "type": "array<float>",
+          "description": "Joint accelerations"
+        },
+        {
+          "name": "robot_model",
+          "type": "RobotModel",
+          "description": "Dynamic model with masses and inertias"
+        },
+        {
+          "name": "external_wrench",
+          "type": "Wrench",
+          "description": "External force/torque at end-effector",
+          "optional": true
+        },
+        {
+          "name": "gravity",
+          "type": "Vector",
+          "description": "Gravity vector in base frame",
+          "default": [
+            0,
+            0,
+            -9.81
+          ]
+        },
+        {
+          "name": "curvature",
+          "type": "float",
+          "description": "Space curvature",
+          "default": -1.0
+        }
+      ],
+      "returns": {
+        "type": "array<float>",
+        "description": "Required joint torques/forces"
+      },
+      "mathematical_formula": "tau = M(q)*q_ddot + C(q,q_dot)*q_dot + g(q) computed recursively",
+      "implementation_notes": "Recursive algorithm: forward pass for velocities/accelerations, backward pass for forces."
+    },
+    {
+      "id": "compute_gravity_compensation",
+      "name": "compute_gravity_compensation",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "motion",
+      "file": "dynamics_spec.json",
+      "description": "Compute torques required to counteract gravity",
+      "parameters": [
+        {
+          "name": "joint_angles",
+          "type": "array<float>",
+          "description": "Joint configuration"
+        },
+        {
+          "name": "robot_model",
+          "type": "RobotModel",
+          "description": "Dynamic model with masses"
+        },
+        {
+          "name": "gravity_vector",
+          "type": "Vector",
+          "description": "Gravity acceleration vector",
+          "default": [
+            0,
+            0,
+            -9.81
+          ]
+        },
+        {
+          "name": "curvature",
+          "type": "float",
+          "description": "Space curvature",
+          "default": -1.0
+        }
+      ],
+      "returns": {
+        "type": "array<float>",
+        "description": "Gravity compensation torques g(q)"
+      },
+      "mathematical_formula": "g(q) = dV/dq where V is potential energy",
+      "implementation_notes": "Essential for static holding and feedforward control."
+    },
+    {
+      "id": "compute_forward_dynamics",
+      "name": "compute_forward_dynamics",
+      "complexity": "O(n^3) or O(n) with ABA",
+      "complexity_class": "O(n)",
+      "category": "motion",
+      "file": "dynamics_spec.json",
+      "description": "Compute joint accelerations from applied torques",
+      "parameters": [
+        {
+          "name": "joint_angles",
+          "type": "array<float>",
+          "description": "Current joint positions"
+        },
+        {
+          "name": "joint_velocities",
+          "type": "array<float>",
+          "description": "Current joint velocities"
+        },
+        {
+          "name": "applied_torques",
+          "type": "array<float>",
+          "description": "Applied joint torques"
+        },
+        {
+          "name": "robot_model",
+          "type": "RobotModel",
+          "description": "Dynamic model"
+        },
+        {
+          "name": "external_wrench",
+          "type": "Wrench",
+          "description": "External force at end-effector",
+          "optional": true
+        },
+        {
+          "name": "curvature",
+          "type": "float",
+          "description": "Space curvature",
+          "default": -1.0
+        }
+      ],
+      "returns": {
+        "type": "array<float>",
+        "description": "Resulting joint accelerations q_ddot"
+      },
+      "mathematical_formula": "q_ddot = M(q)^(-1) * [tau - C*q_dot - g + J^T*F_ext]",
+      "implementation_notes": "Use Articulated Body Algorithm for O(n) complexity."
+    },
+    {
+      "id": "compute_potential_energy",
+      "name": "compute_potential_energy",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "motion",
+      "file": "dynamics_spec.json",
+      "description": "Compute gravitational and elastic potential energy",
+      "parameters": [
+        {
+          "name": "joint_angles",
+          "type": "array<float>",
+          "description": "Joint configuration"
+        },
+        {
+          "name": "robot_model",
+          "type": "RobotModel",
+          "description": "Dynamic model with masses and springs"
+        },
+        {
+          "name": "gravity_vector",
+          "type": "Vector",
+          "description": "Gravity direction and magnitude",
+          "default": [
+            0,
+            0,
+            -9.81
+          ]
+        },
+        {
+          "name": "reference_config",
+          "type": "array<float>",
+          "description": "Reference configuration for V=0",
+          "optional": true
+        },
+        {
+          "name": "curvature",
+          "type": "float",
+          "description": "Space curvature",
+          "default": -1.0
+        }
+      ],
+      "returns": {
+        "type": "float",
+        "description": "Total potential energy V"
+      },
+      "mathematical_formula": "V = sum_i m_i*g*h_i + 0.5*sum_j k_j*(q_j - q_j0)^2",
+      "implementation_notes": "Height computed in hyperbolic space. Reference configuration defines zero."
+    },
+    {
+      "id": "blend_trajectories",
+      "name": "blend_trajectories",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "motion",
+      "file": "trajectory_optimization_spec.json",
+      "description": "Blend between two trajectories smoothly",
+      "parameters": [
+        {
+          "name": "trajectory_a",
+          "type": "Trajectory",
+          "description": "First trajectory"
+        },
+        {
+          "name": "trajectory_b",
+          "type": "Trajectory",
+          "description": "Second trajectory"
+        },
+        {
+          "name": "blend_start",
+          "type": "float",
+          "description": "Time to start blending"
+        },
+        {
+          "name": "blend_duration",
+          "type": "float",
+          "description": "Duration of blend transition"
+        },
+        {
+          "name": "blend_function",
+          "type": "string",
+          "description": "Blending function: linear, cubic, quintic",
+          "default": "quintic"
+        },
+        {
+          "name": "curvature",
+          "type": "float",
+          "description": "Space curvature",
+          "default": -1.0
+        }
+      ],
+      "returns": {
+        "type": "Trajectory",
+        "description": "Blended trajectory"
+      },
+      "mathematical_formula": "q(t) = (1-\u03b1(t)) q_a(t) + \u03b1(t) q_b(t) with smooth \u03b1(t)",
+      "implementation_notes": "Use geodesic interpolation for blending in hyperbolic space. Ensure C2 continuity."
+    },
+    {
+      "id": "compute_trajectory_cost",
+      "name": "compute_trajectory_cost",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "motion",
+      "file": "trajectory_optimization_spec.json",
+      "description": "Evaluate cost/objective function for a given trajectory",
+      "parameters": [
+        {
+          "name": "trajectory",
+          "type": "Trajectory",
+          "description": "Trajectory to evaluate"
+        },
+        {
+          "name": "cost_function",
+          "type": "string",
+          "description": "Cost type: time, energy, jerk, length, custom"
+        },
+        {
+          "name": "robot_model",
+          "type": "RobotModel",
+          "description": "Dynamic model for energy computation",
+          "optional": true
+        },
+        {
+          "name": "custom_cost",
+          "type": "function",
+          "description": "Custom cost function",
+          "optional": true
+        },
+        {
+          "name": "curvature",
+          "type": "float",
+          "description": "Space curvature",
+          "default": -1.0
+        }
+      ],
+      "returns": {
+        "type": "object",
+        "properties": {
+          "total_cost": "float",
+          "cost_breakdown": "array<float>",
+          "cost_density": "array<float>"
+        },
+        "description": "Cost evaluation with breakdown"
+      },
+      "mathematical_formula": "J = \u222b L(q,q\u0307,q\u0308) dt or discrete sum approximation",
+      "implementation_notes": "Numerical integration of cost. Density shows where cost is incurred."
+    },
+    {
+      "id": "interpolate_linear_motion",
+      "name": "interpolate_linear_motion",
+      "complexity": "O(1)",
+      "complexity_class": "O(1)",
+      "category": "motion",
+      "file": "motion_interpolation_spec.json",
+      "description": "Linear interpolation of position along geodesic in hyperbolic space",
+      "parameters": [
+        {
+          "name": "start_point",
+          "type": "Point",
+          "description": "Starting position"
+        },
+        {
+          "name": "end_point",
+          "type": "Point",
+          "description": "Ending position"
+        },
+        {
+          "name": "t",
+          "type": "float",
+          "description": "Interpolation parameter [0,1]"
+        },
+        {
+          "name": "curvature",
+          "type": "float",
+          "description": "Space curvature",
+          "default": -1.0
+        }
+      ],
+      "returns": {
+        "type": "Point",
+        "description": "Interpolated point on geodesic"
+      },
+      "mathematical_formula": "p(t) = exp_{p_0}(t * log_{p_0}(p_1)) - geodesic lerp in hyperbolic space",
+      "implementation_notes": "Not straight line in ambient coordinates. Uses exponential map for true geodesic path."
+    },
+    {
+      "id": "interpolate_circular_motion",
+      "name": "interpolate_circular_motion",
+      "complexity": "O(1)",
+      "complexity_class": "O(1)",
+      "category": "motion",
+      "file": "motion_interpolation_spec.json",
+      "description": "Interpolate position along circular arc in hyperbolic space",
+      "parameters": [
+        {
+          "name": "center",
+          "type": "Point",
+          "description": "Center of hyperbolic circle"
+        },
+        {
+          "name": "radius",
+          "type": "float",
+          "description": "Hyperbolic radius"
+        },
+        {
+          "name": "start_angle",
+          "type": "float",
+          "description": "Starting angle"
+        },
+        {
+          "name": "end_angle",
+          "type": "float",
+          "description": "Ending angle"
+        },
+        {
+          "name": "t",
+          "type": "float",
+          "description": "Interpolation parameter [0,1]"
+        },
+        {
+          "name": "curvature",
+          "type": "float",
+          "description": "Space curvature",
+          "default": -1.0
+        }
+      ],
+      "returns": {
+        "type": "Point",
+        "description": "Point on circular arc at parameter t"
+      },
+      "mathematical_formula": "p(t) = center \u2295 (r, \u03b8(t)) where \u03b8(t) = \u03b8_0 + t(\u03b8_1 - \u03b8_0)",
+      "implementation_notes": "Hyperbolic circles are not geodesics. Use polar coordinates centered at circle center."
+    },
+    {
+      "id": "slerp",
+      "name": "slerp",
+      "complexity": "O(1)",
+      "complexity_class": "O(1)",
+      "category": "motion",
+      "file": "motion_interpolation_spec.json",
+      "description": "Spherical linear interpolation for orientations (quaternions)",
+      "parameters": [
+        {
+          "name": "q0",
+          "type": "Quaternion",
+          "description": "Starting quaternion (normalized)"
+        },
+        {
+          "name": "q1",
+          "type": "Quaternion",
+          "description": "Ending quaternion (normalized)"
+        },
+        {
+          "name": "t",
+          "type": "float",
+          "description": "Interpolation parameter [0,1]"
+        }
+      ],
+      "returns": {
+        "type": "Quaternion",
+        "description": "Interpolated quaternion"
+      },
+      "mathematical_formula": "slerp(q0,q1,t) = q0 * (q0^(-1) * q1)^t = sin((1-t)omega)/sin(omega) * q0 + sin(tomega)/sin(omega) * q1",
+      "implementation_notes": "Handle quaternion double-cover by checking dot product sign. Use lerp for small angles."
+    },
+    {
+      "id": "squad",
+      "name": "squad",
+      "complexity": "O(1)",
+      "complexity_class": "O(1)",
+      "category": "motion",
+      "file": "motion_interpolation_spec.json",
+      "description": "Spherical quadrangle interpolation for smooth quaternion sequences",
+      "parameters": [
+        {
+          "name": "quaternions",
+          "type": "array<Quaternion>",
+          "description": "Sequence of key quaternions"
+        },
+        {
+          "name": "t",
+          "type": "float",
+          "description": "Global interpolation parameter"
+        },
+        {
+          "name": "tangent_mode",
+          "type": "string",
+          "description": "Tangent computation: auto, specified",
+          "default": "auto"
+        }
+      ],
+      "returns": {
+        "type": "Quaternion",
+        "description": "Smoothly interpolated quaternion"
+      },
+      "mathematical_formula": "squad(q_i, q_{i+1}, s_i, s_{i+1}, t) = slerp(slerp(q_i,q_{i+1},t), slerp(s_i,s_{i+1},t), 2t(1-t))",
+      "implementation_notes": "C1 continuous through keyframes. Compute intermediate control quaternions for smoothness."
+    },
+    {
+      "id": "scale_motion_time",
+      "name": "scale_motion_time",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "motion",
+      "file": "motion_interpolation_spec.json",
+      "description": "Scale motion timing uniformly or non-uniformly",
+      "parameters": [
+        {
+          "name": "motion",
+          "type": "Motion",
+          "description": "Original motion"
+        },
+        {
+          "name": "time_scale",
+          "type": "float",
+          "description": "Uniform scaling factor",
+          "optional": true
+        },
+        {
+          "name": "time_warp",
+          "type": "function",
+          "description": "Non-uniform time warping function t_new(t_old)",
+          "optional": true
+        },
+        {
+          "name": "preserve_velocity",
+          "type": "boolean",
+          "description": "Scale velocities to match new timing",
+          "default": true
+        }
+      ],
+      "returns": {
+        "type": "Motion",
+        "description": "Time-scaled motion"
+      },
+      "mathematical_formula": "q_new(t) = q_old(f(t)) with velocity scaling dq/dt_new = dq/dt_old * df/dt",
+      "implementation_notes": "Resampling may be needed for non-uniform warping. Preserve motion character."
+    },
+    {
+      "id": "interpolate_poses",
+      "name": "interpolate_poses",
+      "complexity": "O(1)",
+      "complexity_class": "O(1)",
+      "category": "motion",
+      "file": "motion_interpolation_spec.json",
+      "description": "Interpolate between two full poses (position + orientation)",
+      "parameters": [
+        {
+          "name": "pose_a",
+          "type": "Pose",
+          "description": "Starting pose"
+        },
+        {
+          "name": "pose_b",
+          "type": "Pose",
+          "description": "Ending pose"
+        },
+        {
+          "name": "t",
+          "type": "float",
+          "description": "Interpolation parameter [0,1]"
+        },
+        {
+          "name": "position_method",
+          "type": "string",
+          "description": "Position interpolation: geodesic, euclidean",
+          "default": "geodesic"
+        },
+        {
+          "name": "orientation_method",
+          "type": "string",
+          "description": "Orientation interpolation: slerp, nlerp",
+          "default": "slerp"
+        },
+        {
+          "name": "curvature",
+          "type": "float",
+          "description": "Space curvature",
+          "default": -1.0
+        }
+      ],
+      "returns": {
+        "type": "Pose",
+        "description": "Interpolated pose"
+      },
+      "mathematical_formula": "pose(t) = (lerp_hyp(p_a, p_b, t), slerp(q_a, q_b, t))",
+      "implementation_notes": "Combine position and orientation interpolation appropriately."
+    },
+    {
+      "id": "interpolate_twist",
+      "name": "interpolate_twist",
+      "complexity": "O(1)",
+      "complexity_class": "O(1)",
+      "category": "motion",
+      "file": "motion_interpolation_spec.json",
+      "description": "Interpolate rigid body motion using twist (screw) representation",
+      "parameters": [
+        {
+          "name": "pose_a",
+          "type": "Pose",
+          "description": "Starting pose"
+        },
+        {
+          "name": "pose_b",
+          "type": "Pose",
+          "description": "Ending pose"
+        },
+        {
+          "name": "t",
+          "type": "float",
+          "description": "Interpolation parameter [0,1]"
+        },
+        {
+          "name": "curvature",
+          "type": "float",
+          "description": "Space curvature",
+          "default": -1.0
+        }
+      ],
+      "returns": {
+        "type": "Pose",
+        "description": "Pose interpolated via screw motion"
+      },
+      "mathematical_formula": "pose(t) = exp(t * log(T_a^(-1) * T_b)) * T_a using SE(3) exponential",
+      "implementation_notes": "Screw interpolation gives geodesic in SE(3). Natural rigid body motion."
+    },
+    {
+      "id": "compute_motion_derivative",
+      "name": "compute_motion_derivative",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "motion",
+      "file": "motion_interpolation_spec.json",
+      "description": "Compute velocity/acceleration from motion data",
+      "parameters": [
+        {
+          "name": "motion",
+          "type": "Motion",
+          "description": "Motion data with position/orientation over time"
+        },
+        {
+          "name": "derivative_order",
+          "type": "integer",
+          "description": "Order of derivative: 1=velocity, 2=acceleration",
+          "default": 1
+        },
+        {
+          "name": "method",
+          "type": "string",
+          "description": "Differentiation method: finite_diff, spline, analytic",
+          "default": "finite_diff"
+        },
+        {
+          "name": "curvature",
+          "type": "float",
+          "description": "Space curvature",
+          "default": -1.0
+        }
+      ],
+      "returns": {
+        "type": "Motion",
+        "description": "Derivative motion (velocity or acceleration field)"
+      },
+      "mathematical_formula": "v(t) = dq/dt computed with chosen method in tangent space",
+      "implementation_notes": "Use parallel transport for consistent derivative representation."
+    },
+    {
+      "id": "compute_motion_integral",
+      "name": "compute_motion_integral",
+      "complexity": "O(n)",
+      "complexity_class": "O(n)",
+      "category": "motion",
+      "file": "motion_interpolation_spec.json",
+      "description": "Integrate velocity/acceleration to get position motion",
+      "parameters": [
+        {
+          "name": "derivative_motion",
+          "type": "Motion",
+          "description": "Velocity or acceleration data"
+        },
+        {
+          "name": "initial_condition",
+          "type": "Pose",
+          "description": "Initial pose for integration"
+        },
+        {
+          "name": "integration_order",
+          "type": "integer",
+          "description": "Number of integrations: 1 or 2",
+          "default": 1
+        },
+        {
+          "name": "method",
+          "type": "string",
+          "description": "Integration method: euler, rk4, trapezoidal",
+          "default": "rk4"
+        },
+        {
+          "name": "curvature",
+          "type": "float",
+          "description": "Space curvature",
+          "default": -1.0
+        }
+      ],
+      "returns": {
+        "type": "Motion",
+        "description": "Integrated motion (position trajectory)"
+      },
+      "mathematical_formula": "q(t) = q_0 + \u222bv(\u03c4)d\u03c4 using exponential map integration",
+      "implementation_notes": "Use geometric integrators for hyperbolic space. Accumulation errors possible."
+    }
+  ]
+}

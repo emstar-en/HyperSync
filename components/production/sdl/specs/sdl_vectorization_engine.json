@@ -1,0 +1,598 @@
+{
+  "name": "sdl_vectorization_engine",
+  "version": "3.1.0",
+  "description": "SDL Vectorization Engine specification - Text to vector conversion pipeline with AGUA manifold projection (H⁴ × S³ × E⁵)",
+  "license": {
+    "type": "AGPLv3",
+    "text": "This specification is licensed under the GNU Affero General Public License v3.0. See https://www.gnu.org/licenses/agpl-3.0.html for full license text.",
+    "copyright": "Copyright (c) 2024-2026 HyperSync Project"
+  },
+  "subsystem": "SDL",
+  "category": "vectorization",
+  "stunir_compatible": true,
+  "dependencies": [
+    "sdl_core_infrastructure@3.1.0",
+    "hypersync_vector_storage@3.0.0",
+    "hypersync_geometric_integration@2.1.0"
+  ],
+  "vectorization_architecture": {
+    "overview": "Multi-stage pipeline converting diverse content types to semantic vectors projected onto AGUA manifold",
+    "pipeline_stages": [
+      {
+        "stage": 1,
+        "name": "Content Analysis",
+        "description": "Analyze content type and extract text",
+        "outputs": ["raw_text", "content_type", "structure_info"]
+      },
+      {
+        "stage": 2,
+        "name": "Text Preprocessing",
+        "description": "Clean and prepare text for embedding",
+        "outputs": ["processed_text", "chunks"]
+      },
+      {
+        "stage": 3,
+        "name": "Embedding Generation",
+        "description": "Generate dense vector embeddings",
+        "outputs": ["raw_embedding"]
+      },
+      {
+        "stage": 4,
+        "name": "Manifold Projection",
+        "description": "Project embedding onto appropriate AGUA manifold component",
+        "outputs": ["manifold_vector", "component"]
+      },
+      {
+        "stage": 5,
+        "name": "Vector Storage",
+        "description": "Store vector in HVS with metadata",
+        "outputs": ["vector_id", "storage_location"]
+      }
+    ],
+    "agua_manifold": {
+      "description": "12-dimensional product manifold H⁴ × S³ × E⁵",
+      "components": {
+        "H4": {
+          "name": "4D Hyperbolic Space",
+          "dimensions": 4,
+          "curvature": "negative (k = -1)",
+          "model": "Lorentz hyperboloid",
+          "best_for": ["Hierarchical data", "Tree structures", "Temporal sequences"]
+        },
+        "S3": {
+          "name": "3-Sphere",
+          "dimensions": 3,
+          "curvature": "positive (k = +1)",
+          "model": "Unit 3-sphere in R⁴",
+          "best_for": ["Cyclic data", "Bounded concepts", "Domain ontologies"]
+        },
+        "E5": {
+          "name": "5D Euclidean Space",
+          "dimensions": 5,
+          "curvature": "zero (k = 0)",
+          "model": "Standard R⁵",
+          "best_for": ["Flat features", "Linear relationships", "General purpose"]
+        }
+      },
+      "total_dimensions": 12
+    }
+  },
+  "type_definitions": {
+    "EmbeddingConfig": {
+      "description": "Configuration for embedding generation",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "type": "enum",
+            "values": ["default", "code", "text", "multimodal"],
+            "default": "default",
+            "description": "Embedding model to use"
+          },
+          "dimension": {
+            "type": "int",
+            "default": 768,
+            "description": "Output embedding dimension"
+          },
+          "normalize": {
+            "type": "bool",
+            "default": true,
+            "description": "L2 normalize output"
+          },
+          "pooling": {
+            "type": "enum",
+            "values": ["mean", "cls", "max", "weighted"],
+            "default": "mean",
+            "description": "Pooling strategy for sequence"
+          },
+          "max_length": {
+            "type": "int",
+            "default": 512,
+            "description": "Maximum input tokens"
+          }
+        }
+      }
+    },
+    "ManifoldProjectionConfig": {
+      "description": "Configuration for manifold projection",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "target_component": {
+            "type": "enum",
+            "values": ["H4", "S3", "E5", "AUTO"],
+            "default": "AUTO",
+            "description": "Target manifold component"
+          },
+          "auto_selection_features": {
+            "type": "array[string]",
+            "default": ["content_type", "structure", "relationships"],
+            "description": "Features for auto component selection"
+          },
+          "curvature": {
+            "type": "float64",
+            "default": -1.0,
+            "description": "Curvature for hyperbolic projection"
+          },
+          "projection_method": {
+            "type": "enum",
+            "values": ["exponential_map", "stereographic", "gnomonic"],
+            "default": "exponential_map"
+          }
+        }
+      }
+    },
+    "VectorResult": {
+      "description": "Result of vectorization",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "vector": {
+            "type": "array[float64]",
+            "description": "Final vector embedding"
+          },
+          "manifold_location": {
+            "type": "object",
+            "properties": {
+              "component": { "type": "enum", "values": ["H4", "S3", "E5"] },
+              "coordinates": { "type": "array[float64]" },
+              "curvature": { "type": "float64" }
+            }
+          },
+          "metadata": {
+            "type": "object",
+            "properties": {
+              "model_used": { "type": "string" },
+              "processing_time_ms": { "type": "float64" },
+              "tokens_processed": { "type": "int" },
+              "chunks_count": { "type": "int" }
+            }
+          }
+        }
+      }
+    },
+    "ChunkingStrategy": {
+      "description": "Strategy for chunking large content",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "method": {
+            "type": "enum",
+            "values": ["fixed_size", "semantic", "structural", "sliding_window"],
+            "default": "semantic"
+          },
+          "chunk_size": { "type": "int", "default": 512, "description": "Tokens per chunk" },
+          "overlap": { "type": "int", "default": 50, "description": "Overlap between chunks" },
+          "aggregation": {
+            "type": "enum",
+            "values": ["mean", "max", "weighted_mean", "first"],
+            "default": "weighted_mean",
+            "description": "How to aggregate chunk vectors"
+          }
+        }
+      }
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "SDL-VEC-001",
+      "name": "sdl_vectorize_content",
+      "category": "Vectorization",
+      "description": "Convert content to semantic vector with manifold projection",
+      "signature": {
+        "inputs": {
+          "content": { "type": "bytes", "description": "Raw content to vectorize" },
+          "content_type": { "type": "string", "optional": true, "description": "Content type hint" },
+          "embedding_config": { "type": "EmbeddingConfig", "optional": true },
+          "projection_config": { "type": "ManifoldProjectionConfig", "optional": true }
+        },
+        "outputs": {
+          "result": { "type": "VectorResult" }
+        }
+      },
+      "implementation": {
+        "pipeline": [
+          {
+            "step": "content_analysis",
+            "description": "Determine content type and extract text",
+            "by_type": {
+              "code": "Parse AST, extract docstrings and identifiers",
+              "text": "Direct text extraction",
+              "data": "Extract column names, sample values",
+              "model": "Extract model card, architecture description",
+              "config": "Extract keys, values, comments"
+            }
+          },
+          {
+            "step": "preprocessing",
+            "description": "Clean and prepare text",
+            "operations": [
+              "Remove special characters (configurable)",
+              "Normalize whitespace",
+              "Apply tokenization",
+              "Chunk if exceeds max_length"
+            ]
+          },
+          {
+            "step": "embedding",
+            "description": "Generate dense embedding",
+            "models": {
+              "code": "CodeBERT or similar code-specialized model",
+              "text": "SentenceTransformers or BERT",
+              "multimodal": "CLIP or similar"
+            },
+            "output": "768-dimensional vector (default)"
+          },
+          {
+            "step": "aggregation",
+            "description": "Aggregate chunk embeddings if chunked",
+            "methods": {
+              "mean": "Simple average of all chunk vectors",
+              "weighted_mean": "Weight by chunk position/importance",
+              "max": "Max pooling across chunks",
+              "first": "Use first chunk only"
+            }
+          },
+          {
+            "step": "projection",
+            "description": "Project to AGUA manifold component",
+            "auto_selection": {
+              "H4_indicators": ["hierarchical", "tree-like", "temporal", "inheritance"],
+              "S3_indicators": ["cyclic", "bounded", "categorical", "ontological"],
+              "E5_indicators": ["flat", "linear", "general", "mixed"]
+            }
+          }
+        ]
+      },
+      "complexity": "O(|content|) for analysis + O(d²) for projection",
+      "test_cases": [
+        {
+          "test_id": "SDL-VEC-001-T01",
+          "description": "Vectorize Python code",
+          "input": {
+            "content": "def calculate_sum(a, b): return a + b",
+            "content_type": "code"
+          },
+          "expected": {
+            "result.vector.length": 768,
+            "result.manifold_location.component": "E5"
+          }
+        },
+        {
+          "test_id": "SDL-VEC-001-T02",
+          "description": "Vectorize with hierarchical content",
+          "input": {
+            "content": "class Parent: pass\nclass Child(Parent): pass",
+            "content_type": "code"
+          },
+          "expected": {
+            "result.manifold_location.component": "H4"
+          }
+        },
+        {
+          "test_id": "SDL-VEC-001-T03",
+          "description": "Vectorize large content with chunking",
+          "input": { "content": "50KB text document" },
+          "expected": {
+            "result.metadata.chunks_count": "> 1"
+          }
+        }
+      ]
+    },
+    {
+      "operation_id": "SDL-VEC-002",
+      "name": "sdl_batch_vectorize",
+      "category": "Vectorization",
+      "description": "Batch vectorization for efficiency",
+      "signature": {
+        "inputs": {
+          "contents": { "type": "array[bytes]", "description": "Array of contents" },
+          "content_types": { "type": "array[string]", "optional": true },
+          "embedding_config": { "type": "EmbeddingConfig", "optional": true },
+          "projection_config": { "type": "ManifoldProjectionConfig", "optional": true }
+        },
+        "outputs": {
+          "results": { "type": "array[VectorResult]" },
+          "batch_metadata": {
+            "type": "object",
+            "properties": {
+              "total_time_ms": { "type": "float64" },
+              "vectors_generated": { "type": "int" },
+              "avg_time_per_vector_ms": { "type": "float64" }
+            }
+          }
+        }
+      },
+      "implementation": {
+        "steps": [
+          "1. Preprocess all contents in parallel",
+          "2. Batch content through embedding model",
+          "3. Apply projections in batch",
+          "4. Return results array"
+        ],
+        "optimization": "Uses GPU batching when available"
+      },
+      "complexity": "O(n × |avg_content|) with batch parallelization",
+      "performance": {
+        "batch_10": "~500ms total",
+        "batch_100": "~2s total",
+        "batch_1000": "~15s total"
+      },
+      "test_cases": [
+        {
+          "test_id": "SDL-VEC-002-T01",
+          "description": "Batch vectorize 10 items",
+          "input": { "contents": "[10 code snippets]" },
+          "expected": { "results.length": 10, "batch_metadata.avg_time_per_vector_ms": "< 100" }
+        }
+      ]
+    },
+    {
+      "operation_id": "SDL-VEC-003",
+      "name": "sdl_project_to_manifold",
+      "category": "Manifold Projection",
+      "description": "Project Euclidean embedding to AGUA manifold component",
+      "signature": {
+        "inputs": {
+          "vector": { "type": "array[float64]", "description": "Euclidean embedding" },
+          "target_component": { "type": "enum", "values": ["H4", "S3", "E5", "AUTO"] },
+          "config": { "type": "ManifoldProjectionConfig", "optional": true }
+        },
+        "outputs": {
+          "projected": { "type": "array[float64]" },
+          "component": { "type": "enum", "values": ["H4", "S3", "E5"] },
+          "projection_metadata": {
+            "type": "object",
+            "properties": {
+              "distortion": { "type": "float64", "description": "Projection distortion measure" },
+              "confidence": { "type": "float64", "description": "Component selection confidence" }
+            }
+          }
+        }
+      },
+      "implementation": {
+        "projection_formulas": {
+          "H4": {
+            "name": "Exponential map to hyperboloid",
+            "formula": "p = (√(1 + ‖v‖²), v) ∈ H⁴",
+            "constraint": "⟨p,p⟩_L = -1 (Lorentz constraint)",
+            "steps": [
+              "1. Normalize input vector to unit ball",
+              "2. Apply exponential map at origin",
+              "3. Verify Lorentz constraint"
+            ]
+          },
+          "S3": {
+            "name": "Normalization to 3-sphere",
+            "formula": "p = v / ‖v‖ ∈ S³",
+            "constraint": "‖p‖ = 1",
+            "steps": [
+              "1. Project to 4D (pad or PCA)",
+              "2. L2 normalize",
+              "3. Verify unit norm"
+            ]
+          },
+          "E5": {
+            "name": "Identity/dimension adjustment",
+            "formula": "p = Wv ∈ E⁵",
+            "steps": [
+              "1. Apply learned projection matrix W",
+              "2. Optional normalization"
+            ]
+          }
+        },
+        "auto_selection": {
+          "algorithm": "Classifier on content features",
+          "features": [
+            "Hierarchical depth score",
+            "Cyclic pattern score", 
+            "Linear relationship score",
+            "Content type",
+            "Structure complexity"
+          ],
+          "output": "Component with highest probability"
+        }
+      },
+      "mathematical_details": {
+        "lorentz_inner_product": "⟨p,q⟩_L = -p₀q₀ + p₁q₁ + p₂q₂ + p₃q₃",
+        "hyperboloid_constraint": "-p₀² + p₁² + p₂² + p₃² = -1",
+        "exponential_map_H4": "exp_o(v) = (cosh(‖v‖), sinh(‖v‖) · v/‖v‖)"
+      },
+      "test_cases": [
+        {
+          "test_id": "SDL-VEC-003-T01",
+          "description": "Project to hyperbolic space",
+          "input": { "vector": "[0.1, 0.2, 0.3, ...]", "target_component": "H4" },
+          "expected": {
+            "projected.length": 4,
+            "component": "H4"
+          }
+        },
+        {
+          "test_id": "SDL-VEC-003-T02",
+          "description": "Auto-select component",
+          "input": { "vector": "[...]", "target_component": "AUTO" },
+          "expected": {
+            "component": "in ['H4', 'S3', 'E5']",
+            "projection_metadata.confidence": "> 0.5"
+          }
+        }
+      ]
+    },
+    {
+      "operation_id": "SDL-VEC-004",
+      "name": "sdl_compute_similarity",
+      "category": "Similarity",
+      "description": "Compute similarity between vectors respecting manifold geometry",
+      "signature": {
+        "inputs": {
+          "vector_a": { "type": "array[float64]" },
+          "vector_b": { "type": "array[float64]" },
+          "manifold_component": { "type": "enum", "values": ["H4", "S3", "E5", "PRODUCT"] }
+        },
+        "outputs": {
+          "distance": { "type": "float64" },
+          "similarity": { "type": "float64", "description": "Normalized [0,1]" }
+        }
+      },
+      "implementation": {
+        "distance_formulas": {
+          "H4": {
+            "name": "Hyperbolic distance",
+            "formula": "d(p,q) = arcosh(-⟨p,q⟩_L)",
+            "range": "[0, ∞)"
+          },
+          "S3": {
+            "name": "Great circle distance",
+            "formula": "d(p,q) = arccos(⟨p,q⟩)",
+            "range": "[0, π]"
+          },
+          "E5": {
+            "name": "Euclidean distance",
+            "formula": "d(p,q) = ‖p-q‖₂",
+            "range": "[0, ∞)"
+          },
+          "PRODUCT": {
+            "name": "Weighted product distance",
+            "formula": "d(p,q) = w₁d_H(p_H,q_H) + w₂d_S(p_S,q_S) + w₃d_E(p_E,q_E)",
+            "default_weights": {"w1": 0.4, "w2": 0.3, "w3": 0.3}
+          }
+        },
+        "similarity_conversion": "similarity = 1 / (1 + distance)"
+      },
+      "test_cases": [
+        {
+          "test_id": "SDL-VEC-004-T01",
+          "description": "Euclidean similarity",
+          "input": {
+            "vector_a": "[1, 0, 0, 0, 0]",
+            "vector_b": "[0, 1, 0, 0, 0]",
+            "manifold_component": "E5"
+          },
+          "expected": {
+            "distance": 1.414,
+            "similarity": 0.414
+          }
+        }
+      ]
+    },
+    {
+      "operation_id": "SDL-VEC-005",
+      "name": "sdl_chunk_content",
+      "category": "Preprocessing",
+      "description": "Chunk large content for vectorization",
+      "signature": {
+        "inputs": {
+          "content": { "type": "string" },
+          "strategy": { "type": "ChunkingStrategy" }
+        },
+        "outputs": {
+          "chunks": { "type": "array[string]" },
+          "chunk_metadata": {
+            "type": "array[object]",
+            "properties": {
+              "start_pos": { "type": "int" },
+              "end_pos": { "type": "int" },
+              "token_count": { "type": "int" }
+            }
+          }
+        }
+      },
+      "implementation": {
+        "strategies": {
+          "fixed_size": {
+            "description": "Split at fixed token intervals",
+            "algorithm": "Tokenize → split at boundaries"
+          },
+          "semantic": {
+            "description": "Split at semantic boundaries",
+            "algorithm": "Identify paragraphs, sections, functions"
+          },
+          "structural": {
+            "description": "Split based on code structure",
+            "algorithm": "AST-aware splitting for code"
+          },
+          "sliding_window": {
+            "description": "Overlapping windows",
+            "algorithm": "Fixed size with overlap"
+          }
+        }
+      },
+      "test_cases": [
+        {
+          "test_id": "SDL-VEC-005-T01",
+          "description": "Semantic chunking",
+          "input": {
+            "content": "Paragraph 1.\n\nParagraph 2.",
+            "strategy": { "method": "semantic" }
+          },
+          "expected": {
+            "chunks.length": 2
+          }
+        }
+      ]
+    }
+  ],
+  "embedding_models": {
+    "default": {
+      "description": "General purpose text embedding",
+      "dimension": 768,
+      "supported_content": ["text", "code", "config"],
+      "max_tokens": 512
+    },
+    "code": {
+      "description": "Code-specialized embedding (CodeBERT-like)",
+      "dimension": 768,
+      "supported_languages": ["python", "javascript", "rust", "go", "java"],
+      "features": ["AST-aware", "Comment extraction", "Identifier normalization"]
+    },
+    "text": {
+      "description": "Natural language embedding (SentenceTransformers-like)",
+      "dimension": 768,
+      "supported_languages": ["English", "Multilingual"],
+      "features": ["Semantic similarity optimized"]
+    },
+    "multimodal": {
+      "description": "Multi-modal embedding (CLIP-like)",
+      "dimension": 512,
+      "supported_content": ["text", "images"],
+      "features": ["Cross-modal alignment"]
+    }
+  },
+  "performance_characteristics": {
+    "single_vectorization": {
+      "small_content_100_tokens": "~10ms",
+      "medium_content_1k_tokens": "~50ms",
+      "large_content_10k_tokens": "~200ms with chunking"
+    },
+    "batch_vectorization": {
+      "batch_10": "~100ms total (10ms/item)",
+      "batch_100": "~500ms total (5ms/item)",
+      "batch_1000": "~3s total (3ms/item)"
+    },
+    "manifold_projection": {
+      "single_projection": "~1ms",
+      "batch_1000": "~100ms"
+    }
+  }
+}

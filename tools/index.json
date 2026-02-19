@@ -1,0 +1,61 @@
+{
+  "tools": {
+    "description": "Development tools for HyperSync component lifecycle management",
+    "updated": "2026-02-19"
+  },
+  
+  "available_tools": {
+    "component-creator": {
+      "path": "./component-creator",
+      "description": "Scaffolding tool for creating new components",
+      "scripts": {
+        "bash": "./component-creator/create-component.sh",
+        "windows": "./component-creator/create-component.bat"
+      },
+      "usage": "Create new components in experimental/stable/production stages",
+      "documentation": "./component-creator/README.md"
+    },
+    "live-analyzer": {
+      "path": "./live-analyzer",
+      "description": "Performance and usage tracking for live development cycle",
+      "main": "./live-analyzer/analyze.py",
+      "commands": ["track", "feedback", "analyze", "report"],
+      "usage": "Track component usage, collect feedback, generate analysis reports",
+      "documentation": "./live-analyzer/README.md"
+    },
+    "stunir": {
+      "path": "./stunir",
+      "description": "STUNIR code generation pipeline",
+      "stages": ["spec_to_ir", "ir_to_code"],
+      "status": "planned"
+    },
+    "indexer": {
+      "path": "./indexer",
+      "description": "Semantic indexing and search tool",
+      "status": "planned"
+    },
+    "validators": {
+      "path": "./validators",
+      "description": "Component and specification validation tools",
+      "status": "planned"
+    }
+  },
+  
+  "workflows": {
+    "create_new_component": {
+      "tool": "component-creator",
+      "command": "./component-creator/create-component.sh --name <name> --stage experimental",
+      "output": "components/experimental/<name>/"
+    },
+    "track_usage": {
+      "tool": "live-analyzer",
+      "command": "python ./live-analyzer/analyze.py track --component <name> --function <func> --duration <ms>",
+      "output": "components/<stage>/<name>/analysis/usage-patterns/usage_log.jsonl"
+    },
+    "generate_report": {
+      "tool": "live-analyzer",
+      "command": "python ./live-analyzer/analyze.py report --component <name>",
+      "output": "components/<stage>/<name>/analysis/report_*.json"
+    }
+  }
+}

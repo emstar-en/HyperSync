@@ -1,0 +1,634 @@
+{
+  "name": "sdl_usage_patterns",
+  "version": "3.1.0",
+  "description": "SDL Usage Patterns specification - How to create, populate, query, and manage SDL. Best practices, common patterns, and examples",
+  "license": {
+    "type": "AGPLv3",
+    "text": "This specification is licensed under the GNU Affero General Public License v3.0. See https://www.gnu.org/licenses/agpl-3.0.html for full license text.",
+    "copyright": "Copyright (c) 2024-2026 HyperSync Project"
+  },
+  "subsystem": "SDL",
+  "category": "usage",
+  "stunir_compatible": true,
+  "dependencies": [
+    "sdl_core_infrastructure@3.1.0",
+    "sdl_semantic_search@3.1.0"
+  ],
+  "usage_overview": {
+    "core_workflow": [
+      {
+        "step": 1,
+        "action": "Create or Access Lake",
+        "description": "Initialize or connect to an SDL lake"
+      },
+      {
+        "step": 2,
+        "action": "Ingest Shards",
+        "description": "Add content (code, data, models, configs) to the lake"
+      },
+      {
+        "step": 3,
+        "action": "Discover Shards",
+        "description": "Find relevant shards via semantic search"
+      },
+      {
+        "step": 4,
+        "action": "Activate Shards",
+        "description": "Load shards into active memory for use"
+      },
+      {
+        "step": 5,
+        "action": "Use Capabilities",
+        "description": "Access shard capabilities (functions, data, etc.)"
+      },
+      {
+        "step": 6,
+        "action": "Manage Lifecycle",
+        "description": "Update, deactivate, or remove shards as needed"
+      }
+    ],
+    "key_concepts": {
+      "zero_config": "Shards auto-indexed and discoverable without manual configuration",
+      "semantic_first": "Always search by meaning/intent, not by path/name",
+      "capability_oriented": "Focus on what shards can do, not where they are",
+      "dependency_aware": "SDL tracks and resolves dependencies automatically"
+    }
+  },
+  "common_patterns": {
+    "pattern_1_basic_discovery": {
+      "name": "Basic Discovery Pattern",
+      "description": "Find and use shards for a task",
+      "use_case": "Developer needs functionality but doesn't know what's available",
+      "steps": [
+        {
+          "step": 1,
+          "action": "Describe what you need in natural language",
+          "code": "results = sdl_discover_shards(query='parse and validate JSON data')"
+        },
+        {
+          "step": 2,
+          "action": "Review results and select appropriate shard",
+          "code": "best_match = results[0]  # Highest relevance"
+        },
+        {
+          "step": 3,
+          "action": "Activate the shard",
+          "code": "sdl_activate_shard(best_match.shard.id)"
+        },
+        {
+          "step": 4,
+          "action": "Use shard capabilities",
+          "code": "result = best_match.shard.capabilities[0].call(input_data)"
+        }
+      ],
+      "example": {
+        "scenario": "Need a function to parse JSON",
+        "code": [
+          "# Step 1: Search",
+          "results = sdl_discover_shards(",
+          "    query='parse JSON string to dictionary',",
+          "    shard_type='code',",
+          "    k=5",
+          ")",
+          "",
+          "# Step 2: Inspect results",
+          "for r in results:",
+          "    print(f'{r.shard.name}: {r.score:.2f}')",
+          "    for cap in r.shard.capabilities:",
+          "        print(f'  - {cap.name}: {cap.interface}')",
+          "",
+          "# Step 3: Activate best match",
+          "sdl_activate_shard(results[0].shard.id)",
+          "",
+          "# Step 4: Use capability",
+          "parsed = json_parser.parse_json('{\"key\": \"value\"}')"
+        ]
+      }
+    },
+    "pattern_2_capability_lookup": {
+      "name": "Capability Lookup Pattern",
+      "description": "Find shards by specific capability name",
+      "use_case": "Know the capability you need, want to find providers",
+      "steps": [
+        {
+          "step": 1,
+          "action": "Query capability registry",
+          "code": "results = sdl_capability_search(capability_name='parse_json')"
+        },
+        {
+          "step": 2,
+          "action": "Compare providers",
+          "code": "# Multiple shards may provide same capability"
+        },
+        {
+          "step": 3,
+          "action": "Select and activate",
+          "code": "sdl_activate_shard(preferred_provider.shard.id)"
+        }
+      ],
+      "example": {
+        "scenario": "Need 'sort_list' capability",
+        "code": [
+          "# Find all providers of 'sort_list' capability",
+          "results = sdl_capability_search(",
+          "    capability_name='sort_list',",
+          "    capability_type='function'",
+          ")",
+          "",
+          "# Compare providers by metadata",
+          "for r in results:",
+          "    perf = r.shard.metadata.get('performance', 'unknown')",
+          "    print(f'{r.shard.name}: performance={perf}')",
+          "",
+          "# Select fastest implementation",
+          "fastest = max(results, key=lambda r: r.shard.metadata.get('performance_score', 0))",
+          "sdl_activate_shard(fastest.shard.id)"
+        ]
+      }
+    },
+    "pattern_3_dependency_resolution": {
+      "name": "Dependency Resolution Pattern",
+      "description": "Load a shard with all its dependencies",
+      "use_case": "Shard requires other shards to function",
+      "steps": [
+        {
+          "step": 1,
+          "action": "Discover dependencies",
+          "code": "deps = sdl_dependency_search(shard_id, recursive=True)"
+        },
+        {
+          "step": 2,
+          "action": "Topologically sort dependencies",
+          "code": "ordered = topological_sort(deps.graph)"
+        },
+        {
+          "step": 3,
+          "action": "Activate in order",
+          "code": "for dep_id in ordered: sdl_activate_shard(dep_id)"
+        },
+        {
+          "step": 4,
+          "action": "Finally activate target shard",
+          "code": "sdl_activate_shard(shard_id)"
+        }
+      ],
+      "example": {
+        "scenario": "Load 'ml_pipeline' which depends on 'data_loader' and 'model_trainer'",
+        "code": [
+          "# Get all dependencies",
+          "deps = sdl_dependency_search(",
+          "    shard_id=ml_pipeline_id,",
+          "    direction='dependencies',",
+          "    recursive=True",
+          ")",
+          "",
+          "# Check for issues",
+          "if deps.warnings:",
+          "    for w in deps.warnings:",
+          "        print(f'Warning: {w}')",
+          "",
+          "# Activate in correct order",
+          "for node in deps.graph.topological_order():",
+          "    result = sdl_activate_shard(node)",
+          "    if not result.success:",
+          "        raise ActivationError(f'Failed to activate {node}')",
+          "",
+          "# Now ml_pipeline is ready with all deps"
+        ]
+      }
+    },
+    "pattern_4_composition": {
+      "name": "Composition Pattern",
+      "description": "Compose multiple shards into a solution",
+      "use_case": "Build complex functionality from simpler building blocks",
+      "steps": [
+        {
+          "step": 1,
+          "action": "Identify needed capabilities",
+          "code": "needed = ['read_file', 'parse_data', 'analyze', 'visualize']"
+        },
+        {
+          "step": 2,
+          "action": "Discover shards for each capability",
+          "code": "shards = {cap: sdl_capability_search(cap) for cap in needed}"
+        },
+        {
+          "step": 3,
+          "action": "Select compatible shards",
+          "code": "selected = select_compatible(shards)"
+        },
+        {
+          "step": 4,
+          "action": "Resolve combined dependencies",
+          "code": "all_deps = merge_dependencies(selected)"
+        },
+        {
+          "step": 5,
+          "action": "Activate and compose",
+          "code": "composed = compose_pipeline(selected)"
+        }
+      ],
+      "example": {
+        "scenario": "Build data analysis pipeline",
+        "code": [
+          "# Define needed capabilities",
+          "pipeline_capabilities = [",
+          "    'read_csv',",
+          "    'clean_data',",
+          "    'calculate_statistics',",
+          "    'generate_report'",
+          "]",
+          "",
+          "# Find best shard for each capability",
+          "pipeline_shards = []",
+          "for cap in pipeline_capabilities:",
+          "    results = sdl_capability_search(cap)",
+          "    if not results:",
+          "        raise MissingCapabilityError(cap)",
+          "    pipeline_shards.append(results[0].shard)",
+          "",
+          "# Collect all dependencies",
+          "all_deps = set()",
+          "for shard in pipeline_shards:",
+          "    deps = sdl_dependency_search(shard.id, recursive=True)",
+          "    all_deps.update(deps.shards)",
+          "",
+          "# Activate dependencies first, then pipeline shards",
+          "for dep in topological_sort(all_deps):",
+          "    sdl_activate_shard(dep.id)",
+          "",
+          "for shard in pipeline_shards:",
+          "    sdl_activate_shard(shard.id)",
+          "",
+          "# Compose into pipeline",
+          "def run_pipeline(input_file):",
+          "    data = read_csv(input_file)",
+          "    clean = clean_data(data)",
+          "    stats = calculate_statistics(clean)",
+          "    return generate_report(stats)"
+        ]
+      }
+    },
+    "pattern_5_alternative_discovery": {
+      "name": "Alternative Discovery Pattern",
+      "description": "Find alternative implementations for a shard",
+      "use_case": "Current implementation has issues, need alternatives",
+      "steps": [
+        {
+          "step": 1,
+          "action": "Find similar shards",
+          "code": "alternatives = sdl_similar_search(shard_id, k=10)"
+        },
+        {
+          "step": 2,
+          "action": "Filter by compatibility",
+          "code": "compatible = filter_by_interface(alternatives, required_interface)"
+        },
+        {
+          "step": 3,
+          "action": "Compare and select",
+          "code": "best_alt = compare_by_metrics(compatible)"
+        },
+        {
+          "step": 4,
+          "action": "Swap implementations",
+          "code": "sdl_deactivate_shard(old_id); sdl_activate_shard(new_id)"
+        }
+      ],
+      "example": {
+        "scenario": "Find alternative JSON parser with better performance",
+        "code": [
+          "# Current parser is slow, find alternatives",
+          "current_parser_id = 'uuid-of-current-parser'",
+          "",
+          "# Find similar shards",
+          "alternatives = sdl_similar_search(",
+          "    shard_id=current_parser_id,",
+          "    similarity_type='hybrid',",
+          "    k=10",
+          ")",
+          "",
+          "# Filter to those with same interface",
+          "compatible = [",
+          "    alt for alt in alternatives",
+          "    if has_compatible_interface(alt.shard, 'parse_json(str) -> dict')",
+          "]",
+          "",
+          "# Find fastest",
+          "benchmarks = {",
+          "    alt.shard.id: benchmark_parser(alt.shard)",
+          "    for alt in compatible",
+          "}",
+          "fastest_id = min(benchmarks, key=benchmarks.get)",
+          "",
+          "# Swap implementations",
+          "sdl_deactivate_shard(current_parser_id)",
+          "sdl_activate_shard(fastest_id)"
+        ]
+      }
+    },
+    "pattern_6_bulk_ingestion": {
+      "name": "Bulk Ingestion Pattern",
+      "description": "Efficiently ingest many shards at once",
+      "use_case": "Populating a new lake or importing a library",
+      "steps": [
+        {
+          "step": 1,
+          "action": "Collect all content to ingest",
+          "code": "files = scan_directory('/path/to/library')"
+        },
+        {
+          "step": 2,
+          "action": "Batch ingest with parallel processing",
+          "code": "results = sdl_batch_ingest(files)"
+        },
+        {
+          "step": 3,
+          "action": "Run full index rebuild",
+          "code": "sdl_index_lake(mode='FULL')"
+        },
+        {
+          "step": 4,
+          "action": "Verify and optimize",
+          "code": "sdl_optimize_lake(operations=['compact', 'rebalance'])"
+        }
+      ],
+      "example": {
+        "scenario": "Import Python utility library",
+        "code": [
+          "import os",
+          "",
+          "# Scan library directory",
+          "library_path = '/path/to/utils_library'",
+          "files = []",
+          "for root, _, filenames in os.walk(library_path):",
+          "    for f in filenames:",
+          "        if f.endswith('.py'):",
+          "            files.append(os.path.join(root, f))",
+          "",
+          "# Prepare for batch ingestion",
+          "batch = []",
+          "for filepath in files:",
+          "    with open(filepath, 'rb') as f:",
+          "        batch.append({",
+          "            'name': os.path.basename(filepath),",
+          "            'type': 'code',",
+          "            'content': f.read(),",
+          "            'metadata': {",
+          "                'language': 'python',",
+          "                'source': 'utils_library',",
+          "                'filepath': filepath",
+          "            }",
+          "        })",
+          "",
+          "# Batch ingest",
+          "results = sdl_batch_ingest(batch)",
+          "print(f'Ingested {len(results.successful)} shards')",
+          "print(f'Failed: {len(results.failed)}')",
+          "",
+          "# Rebuild index",
+          "sdl_index_lake(mode='FULL')",
+          "",
+          "# Optimize",
+          "sdl_optimize_lake(operations=['compact', 'rebalance'])"
+        ]
+      }
+    },
+    "pattern_7_contextual_search": {
+      "name": "Contextual Search Pattern",
+      "description": "Use context to improve search relevance",
+      "use_case": "Search results should consider current task context",
+      "steps": [
+        {
+          "step": 1,
+          "action": "Build context from current state",
+          "code": "context = extract_context(current_task, active_shards)"
+        },
+        {
+          "step": 2,
+          "action": "Augment query with context",
+          "code": "augmented_query = f'{query} context: {context}'"
+        },
+        {
+          "step": 3,
+          "action": "Search with contextual boost",
+          "code": "results = sdl_discover_shards(augmented_query, boost_active=True)"
+        }
+      ],
+      "example": {
+        "scenario": "Search for data processing shards while working on ML pipeline",
+        "code": [
+          "# Current context",
+          "active_task = 'building ML training pipeline'",
+          "active_shards = ['sklearn_utils', 'data_loader', 'model_base']",
+          "",
+          "# Build contextual query",
+          "base_query = 'preprocess and normalize data'",
+          "context_keywords = extract_keywords(active_task, active_shards)",
+          "contextual_query = f'{base_query} for {\" \".join(context_keywords)}'",
+          "",
+          "# Search with context",
+          "results = sdl_discover_shards(",
+          "    query=contextual_query,",
+          "    filters={",
+          "        'metadata.compatible_with': 'sklearn'  # Context-aware filter",
+          "    }",
+          ")",
+          "",
+          "# Results will favor shards compatible with current ML context"
+        ]
+      }
+    }
+  },
+  "best_practices": {
+    "shard_creation": {
+      "guidelines": [
+        {
+          "practice": "Use descriptive names",
+          "description": "Name shards clearly to aid discovery",
+          "good": "json_data_validator.py",
+          "bad": "utils.py"
+        },
+        {
+          "practice": "Add rich metadata",
+          "description": "Include language, version, tags, author",
+          "example": {
+            "language": "python",
+            "version": "3.9+",
+            "tags": ["parsing", "validation", "json"],
+            "author": "team-data",
+            "documentation_url": "https://..."
+          }
+        },
+        {
+          "practice": "Document capabilities",
+          "description": "Each function/capability should have clear docstrings",
+          "example": "def parse_json(text: str) -> dict:\n    '''Parse JSON string to dictionary.\n    \n    Args:\n        text: Valid JSON string\n    Returns:\n        Parsed dictionary\n    Raises:\n        JSONDecodeError: If text is not valid JSON\n    '''"
+        },
+        {
+          "practice": "Declare dependencies explicitly",
+          "description": "Use standard import patterns for dependency detection",
+          "good": "import pandas as pd",
+          "bad": "exec('import pandas')"
+        },
+        {
+          "practice": "Keep shards focused",
+          "description": "Single responsibility - one module, one purpose",
+          "good": "json_parser.py, yaml_parser.py",
+          "bad": "all_parsers.py"
+        }
+      ]
+    },
+    "search_optimization": {
+      "guidelines": [
+        {
+          "practice": "Use specific queries",
+          "description": "More specific queries yield better results",
+          "good": "parse JSON string to Python dictionary",
+          "bad": "parser"
+        },
+        {
+          "practice": "Apply type filters when possible",
+          "description": "Filter by shard type to reduce search space",
+          "example": "sdl_discover_shards(query, shard_type='code')"
+        },
+        {
+          "practice": "Use capability search for known functions",
+          "description": "If you know the function name, use capability search",
+          "example": "sdl_capability_search('parse_json') instead of semantic search"
+        },
+        {
+          "practice": "Leverage similar search for exploration",
+          "description": "Found something close? Use similar search to find better",
+          "example": "sdl_similar_search(close_match_id)"
+        }
+      ]
+    },
+    "lifecycle_management": {
+      "guidelines": [
+        {
+          "practice": "Activate only what you need",
+          "description": "Don't activate shards speculatively",
+          "reason": "Active shards consume memory"
+        },
+        {
+          "practice": "Deactivate when done",
+          "description": "Clean up after tasks complete",
+          "example": "finally: sdl_deactivate_shard(shard_id)"
+        },
+        {
+          "practice": "Version, don't duplicate",
+          "description": "Update existing shards instead of creating duplicates",
+          "example": "sdl_ingest_shard(..., duplicate_handling='version')"
+        },
+        {
+          "practice": "Regular optimization",
+          "description": "Run optimization periodically",
+          "schedule": "Weekly: sdl_optimize_lake(operations=['compact'])"
+        }
+      ]
+    },
+    "error_handling": {
+      "guidelines": [
+        {
+          "practice": "Handle empty results gracefully",
+          "description": "No results is not an error",
+          "code": "results = sdl_discover_shards(query)\nif not results:\n    # Try broader search or fallback"
+        },
+        {
+          "practice": "Check activation success",
+          "description": "Activation can fail for various reasons",
+          "code": "result = sdl_activate_shard(id)\nif not result.success:\n    handle_activation_error(result.error)"
+        },
+        {
+          "practice": "Handle missing dependencies",
+          "description": "Dependencies might not exist",
+          "code": "try:\n    sdl_activate_shard(id)\nexcept MissingDependencies as e:\n    resolve_or_install_deps(e.missing)"
+        }
+      ]
+    }
+  },
+  "anti_patterns": {
+    "patterns_to_avoid": [
+      {
+        "pattern": "Hardcoding shard IDs",
+        "problem": "IDs may change, breaks portability",
+        "solution": "Always discover by capability or semantic search"
+      },
+      {
+        "pattern": "Activating everything",
+        "problem": "Memory exhaustion, slow startup",
+        "solution": "Lazy activation - only when needed"
+      },
+      {
+        "pattern": "Ignoring dependencies",
+        "problem": "Runtime errors when dependencies missing",
+        "solution": "Always resolve dependencies before activation"
+      },
+      {
+        "pattern": "Skipping deactivation",
+        "problem": "Memory leaks, stale state",
+        "solution": "Always deactivate in finally blocks"
+      },
+      {
+        "pattern": "Manual capability registration",
+        "problem": "Out of sync with actual content",
+        "solution": "Let SDL auto-detect capabilities"
+      }
+    ]
+  },
+  "operations": [
+    {
+      "operation_id": "SDL-USE-001",
+      "name": "sdl_quick_search",
+      "category": "Usage Helper",
+      "description": "Simplified search for common use cases",
+      "signature": {
+        "inputs": {
+          "what": { "type": "string", "description": "What you're looking for" },
+          "type": { "type": "string", "optional": true, "description": "code/data/model/config" }
+        },
+        "outputs": {
+          "best_match": { "type": "SDLShard", "description": "Best matching shard" },
+          "alternatives": { "type": "array[SDLShard]", "description": "Other good matches" }
+        }
+      },
+      "example": {
+        "code": "shard = sdl_quick_search('parse JSON', type='code').best_match"
+      }
+    },
+    {
+      "operation_id": "SDL-USE-002",
+      "name": "sdl_use_capability",
+      "category": "Usage Helper",
+      "description": "Find, activate, and return a capability in one call",
+      "signature": {
+        "inputs": {
+          "capability_name": { "type": "string" },
+          "args": { "type": "dict", "optional": true }
+        },
+        "outputs": {
+          "result": { "type": "any", "description": "Result of calling the capability" }
+        }
+      },
+      "example": {
+        "code": "parsed = sdl_use_capability('parse_json', args={'text': '{\"a\":1}'})"
+      }
+    },
+    {
+      "operation_id": "SDL-USE-003",
+      "name": "sdl_batch_ingest",
+      "category": "Bulk Operations",
+      "description": "Ingest multiple shards efficiently",
+      "signature": {
+        "inputs": {
+          "shards": { "type": "array[object]", "description": "Array of shard specs" }
+        },
+        "outputs": {
+          "successful": { "type": "array[UUID]" },
+          "failed": { "type": "array[object]", "description": "Failed items with errors" }
+        }
+      }
+    }
+  ]
+}

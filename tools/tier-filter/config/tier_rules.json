@@ -1,0 +1,34 @@
+{
+  "core": {
+    "complexity": ["O(n)", "O(1)", "O(log n)", "O(n log n)"],
+    "exclude_patterns": [
+      "*/basic/*",
+      "*/pro/*",
+      "*/advanced/*",
+      "*/enterprise/*"
+    ],
+    "include_patterns": [
+      "*/core/*",
+      "*_core.*",
+      "*_core_*"
+    ],
+    "forbidden_keywords": [],
+    "required_license": "Apache-2.0"
+  },
+  "basic": {
+    "complexity": ["O(n log n)", "O(n sqrt(n))"],
+    "license": "Proprietary"
+  },
+  "pro": {
+    "complexity": ["O(n²)", "O(n² log n)"],
+    "license": "Proprietary"
+  },
+  "advanced": {
+    "complexity": ["Specialized", "O(n³)+", "ML/AI", "Quantum"],
+    "license": "Proprietary"
+  },
+  "enterprise": {
+    "complexity": ["All", "Distributed", "Global Scale"],
+    "license": "Proprietary"
+  }
+}

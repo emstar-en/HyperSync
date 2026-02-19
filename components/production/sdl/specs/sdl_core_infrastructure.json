@@ -1,0 +1,487 @@
+{
+  "name": "sdl_core_infrastructure",
+  "version": "3.1.0",
+  "description": "Core SDL (Semantic Data Lake) infrastructure specification - Universal extensibility mechanism for HyperSync enabling zero-config discovery of code, data, models, and configurations through semantic search",
+  "license": {
+    "type": "AGPLv3",
+    "text": "This specification is licensed under the GNU Affero General Public License v3.0. See https://www.gnu.org/licenses/agpl-3.0.html for full license text.",
+    "copyright": "Copyright (c) 2024-2026 HyperSync Project"
+  },
+  "subsystem": "SDL",
+  "category": "core_infrastructure",
+  "stunir_compatible": true,
+  "dependencies": [
+    "hypersync_vector_storage@3.0.0",
+    "hypersync_geometric_integration@2.1.0",
+    "hypersync_type_system@2.1.0"
+  ],
+  "architecture": {
+    "overview": "SDL is HyperSync's universal extensibility mechanism providing indexed, vectorized, semantically-searchable pools of ANY granular content",
+    "value_proposition": {
+      "zero_config_extensibility": "Drop content → automatically indexed → semantically discoverable",
+      "semantic_discovery": "Find by meaning, not by name or explicit path",
+      "universal_pattern": "Same mechanism for code, UI, docs, models, configs",
+      "capability_based": "Query what something can do, not where it is"
+    },
+    "three_layer_architecture": {
+      "application_layer": {
+        "description": "Applications and systems that consume SDL capabilities",
+        "components": ["Make X for Y", "AI UI Generation", "Knowledge Search", "VNES Extensions", "Capsule System"]
+      },
+      "sdl_layer": {
+        "description": "Core SDL functionality including shard management, semantic discovery, and lake management",
+        "components": ["Shard Management", "Semantic Discovery", "Lake Management", "Capability Registry", "Dependency Analyzer"]
+      },
+      "storage_layer": {
+        "description": "HVS (HyperSync Vector System) providing geometric vector storage on AGUA manifold",
+        "manifold": "H⁴ × S³ × E⁵ = 12D"
+      }
+    },
+    "core_components": {
+      "shard_ingestion": {
+        "description": "Process and index new shards (files, data blocks, models)",
+        "processing": ["Extract vectors", "Analyze metadata", "Detect structure", "Identify capabilities"]
+      },
+      "semantic_index": {
+        "description": "Vector index for semantic discovery of shards",
+        "backend": "HVS for storage and search",
+        "algorithms": ["HNSW", "IVF", "Geometric-aware ANN"]
+      },
+      "capability_registry": {
+        "description": "Track capabilities provided by shards",
+        "indexing": "Capability name → shard mapping",
+        "complexity": "O(1) lookup"
+      },
+      "dependency_analyzer": {
+        "description": "Analyze and track shard dependencies",
+        "analysis_types": ["Static analysis", "Semantic dependency detection"],
+        "output": "Dependency DAG"
+      },
+      "lake_manager": {
+        "description": "Manage lake structure, optimization, statistics",
+        "operations": ["Index", "Optimize", "Export", "Import", "Statistics"]
+      }
+    }
+  },
+  "type_definitions": {
+    "SDLShard": {
+      "description": "Atomic unit of content in SDL - the fundamental storage unit",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "UUID",
+            "description": "Unique shard identifier generated on ingestion"
+          },
+          "name": {
+            "type": "string",
+            "description": "Human-readable shard name",
+            "examples": ["json_parser.py", "data_table_widget", "kubernetes_deployment_guide"]
+          },
+          "type": {
+            "type": "enum",
+            "values": ["code", "data", "model", "config"],
+            "description": "Shard type classification"
+          },
+          "content": {
+            "type": "bytes",
+            "description": "Raw shard content (code, binary, text, etc.)",
+            "max_size": "100MB default, configurable"
+          },
+          "vector": {
+            "type": "array[float64]",
+            "description": "Semantic embedding vector for discovery",
+            "dimensions": "768 default, configurable"
+          },
+          "capabilities": {
+            "type": "array[SDLCapability]",
+            "description": "List of capabilities provided by this shard"
+          },
+          "dependencies": {
+            "type": "array[UUID]",
+            "description": "Shard dependencies (IDs of required shards)"
+          },
+          "metadata": {
+            "type": "dict",
+            "description": "Custom metadata (language, version, author, tags, etc.)",
+            "examples": {
+              "language": "python",
+              "version": "3.9",
+              "author": "system",
+              "tags": ["parser", "json"]
+            }
+          },
+          "timestamp": {
+            "type": "datetime",
+            "description": "Ingestion timestamp (ISO 8601)"
+          },
+          "active": {
+            "type": "bool",
+            "description": "Whether shard is currently loaded in active memory",
+            "default": false
+          },
+          "version_info": {
+            "type": "object",
+            "description": "Version tracking information",
+            "properties": {
+              "version": { "type": "int", "description": "Shard version number" },
+              "previous_id": { "type": "UUID", "description": "Previous version shard ID" },
+              "changelog": { "type": "string", "description": "Change description" }
+            }
+          }
+        },
+        "required": ["id", "name", "type", "content", "vector", "timestamp"]
+      }
+    },
+    "SDLCapability": {
+      "description": "Capability declaration - what a shard provides",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Capability name (e.g., 'parse_json', 'embed_text')"
+          },
+          "type": {
+            "type": "enum",
+            "values": ["function", "model", "data", "config"],
+            "description": "Capability type classification"
+          },
+          "interface": {
+            "type": "dict",
+            "description": "Capability interface (signature, schema, contract)",
+            "examples": {
+              "function": {"inputs": {"text": "string"}, "outputs": {"dict": "object"}},
+              "model": {"input_shape": [1, 768], "output_shape": [1, 512]},
+              "data": {"schema": {"columns": ["id", "name", "value"]}},
+              "config": {"format": "yaml", "version": "1.2"}
+            }
+          },
+          "vector": {
+            "type": "array[float64]",
+            "description": "Capability-specific semantic vector for fine-grained discovery"
+          },
+          "metadata": {
+            "type": "dict",
+            "description": "Optional capability metadata",
+            "optional": true
+          }
+        },
+        "required": ["name", "type", "interface"]
+      }
+    },
+    "SDLSearchResult": {
+      "description": "Result from SDL search operations",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "shard": {
+            "type": "SDLShard",
+            "description": "The matched shard"
+          },
+          "score": {
+            "type": "float64",
+            "description": "Relevance score normalized to [0, 1]",
+            "computation": "1 / (1 + distance)"
+          },
+          "provenance": {
+            "type": "dict",
+            "description": "Source and lineage information",
+            "properties": {
+              "source": { "type": "string", "description": "Origin of the shard" },
+              "lineage": { "type": "array", "description": "Derivation chain" },
+              "search_scope": { "type": "string", "description": "Which index matched" }
+            }
+          },
+          "match_context": {
+            "type": "dict",
+            "description": "Context about why this shard matched",
+            "properties": {
+              "matched_capabilities": { "type": "array", "description": "Capabilities that matched query" },
+              "matched_terms": { "type": "array", "description": "Key terms that matched" }
+            }
+          }
+        },
+        "required": ["shard", "score"]
+      }
+    },
+    "SDLIndex": {
+      "description": "Index structure for semantic search",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "index_id": { "type": "UUID", "description": "Index identifier" },
+          "index_type": { 
+            "type": "enum", 
+            "values": ["shard_vectors", "capability_vectors", "content_vectors"],
+            "description": "Type of content indexed"
+          },
+          "algorithm": {
+            "type": "enum",
+            "values": ["HNSW", "IVF", "FLAT", "GEOMETRIC"],
+            "description": "ANN algorithm used"
+          },
+          "dimensions": { "type": "int", "description": "Vector dimensions" },
+          "shard_count": { "type": "int", "description": "Number of indexed shards" },
+          "build_timestamp": { "type": "datetime", "description": "Last index build time" },
+          "quality_metrics": {
+            "type": "object",
+            "properties": {
+              "recall_at_10": { "type": "float64" },
+              "precision_at_10": { "type": "float64" },
+              "latency_p99_ms": { "type": "float64" }
+            }
+          }
+        }
+      }
+    },
+    "SDLLake": {
+      "description": "Collection of shards forming a semantic data lake",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "lake_id": { "type": "UUID", "description": "Lake identifier" },
+          "name": { "type": "string", "description": "Lake name" },
+          "shards": { "type": "array[UUID]", "description": "Shard IDs in this lake" },
+          "indices": { "type": "array[SDLIndex]", "description": "Indices for this lake" },
+          "capability_registry": { 
+            "type": "dict", 
+            "description": "Map of capability_name → [shard_id, ...]" 
+          },
+          "dependency_graph": {
+            "type": "dict",
+            "description": "DAG of shard dependencies"
+          },
+          "statistics": {
+            "type": "SDLStatistics",
+            "description": "Lake statistics"
+          },
+          "config": {
+            "type": "SDLConfig",
+            "description": "Lake configuration"
+          }
+        }
+      }
+    },
+    "SDLConfig": {
+      "description": "SDL configuration parameters",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "auto_index": { "type": "bool", "default": true, "description": "Auto-index new shards" },
+          "max_shard_size": { "type": "int", "default": 104857600, "description": "Max shard size in bytes (100MB)" },
+          "capability_detection": { "type": "bool", "default": true, "description": "Auto-detect capabilities" },
+          "dependency_detection": { "type": "bool", "default": true, "description": "Auto-detect dependencies" },
+          "semantic_analysis": { "type": "bool", "default": true, "description": "Perform semantic analysis" },
+          "embedding_dimension": { "type": "int", "default": 768, "description": "Vector embedding dimension" },
+          "duplicate_handling": { 
+            "type": "enum", 
+            "values": ["update", "version", "reject"],
+            "default": "version",
+            "description": "How to handle duplicate shards"
+          }
+        }
+      }
+    },
+    "SDLStatistics": {
+      "description": "Lake statistics structure",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "shard_count": { "type": "int", "description": "Total shard count" },
+          "by_type": { 
+            "type": "dict", 
+            "description": "Shard count by type",
+            "example": {"code": 150, "data": 50, "model": 20, "config": 30}
+          },
+          "total_size_bytes": { "type": "int", "description": "Total storage size" },
+          "capability_count": { "type": "int", "description": "Total unique capabilities" },
+          "active_shards": { "type": "int", "description": "Currently active shards" },
+          "inactive_shards": { "type": "int", "description": "Inactive shards" },
+          "avg_dependencies": { "type": "float64", "description": "Average dependencies per shard" },
+          "index_quality": { "type": "float64", "description": "Index quality score [0, 1]" },
+          "last_updated": { "type": "datetime", "description": "Last statistics update" }
+        }
+      }
+    }
+  },
+  "shard_types": {
+    "code": {
+      "description": "Source code files, libraries, modules",
+      "examples": ["Python scripts", "JavaScript modules", "Compiled libraries"],
+      "capability_detection": ["Function signatures", "Class definitions", "Module exports"],
+      "dependency_detection": ["Import statements", "Require calls", "Package references"]
+    },
+    "data": {
+      "description": "Datasets, databases, files",
+      "examples": ["CSV files", "JSON data", "Parquet files", "Database dumps"],
+      "capability_detection": ["Schema inference", "Column types", "Data shape"],
+      "dependency_detection": ["Foreign key references", "Data lineage"]
+    },
+    "model": {
+      "description": "ML models, weights, configurations",
+      "examples": ["PyTorch models", "ONNX models", "Model cards", "Weights"],
+      "capability_detection": ["Input/output shapes", "Model architecture", "Capabilities"],
+      "dependency_detection": ["Base model references", "Tokenizer dependencies"]
+    },
+    "config": {
+      "description": "Configuration files, schemas, templates",
+      "examples": ["YAML configs", "JSON Schema", "Jinja templates", "Environment files"],
+      "capability_detection": ["Configuration keys", "Schema definitions", "Template variables"],
+      "dependency_detection": ["Included files", "Extended schemas"]
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "SDL-CORE-001",
+      "name": "sdl_create_lake",
+      "category": "Lake Lifecycle",
+      "description": "Create a new semantic data lake",
+      "signature": {
+        "inputs": {
+          "name": { "type": "string", "description": "Lake name" },
+          "config": { "type": "SDLConfig", "optional": true, "description": "Lake configuration" }
+        },
+        "outputs": {
+          "lake_id": { "type": "UUID", "description": "New lake identifier" },
+          "lake": { "type": "SDLLake", "description": "Lake object" }
+        }
+      },
+      "implementation": {
+        "steps": [
+          "1. Generate unique lake ID",
+          "2. Initialize empty shard collection",
+          "3. Create index structures",
+          "4. Initialize capability registry",
+          "5. Create dependency graph",
+          "6. Store in HVS"
+        ]
+      },
+      "complexity": "O(1)",
+      "test_cases": [
+        {
+          "test_id": "SDL-CORE-001-T01",
+          "description": "Create lake with default config",
+          "input": { "name": "main_lake" },
+          "expected": { "lake_id": "UUID", "lake.name": "main_lake" }
+        },
+        {
+          "test_id": "SDL-CORE-001-T02",
+          "description": "Create lake with custom config",
+          "input": { "name": "custom_lake", "config": { "max_shard_size": 52428800 } },
+          "expected": { "lake.config.max_shard_size": 52428800 }
+        }
+      ]
+    },
+    {
+      "operation_id": "SDL-CORE-002",
+      "name": "sdl_get_lake",
+      "category": "Lake Lifecycle",
+      "description": "Retrieve lake by ID",
+      "signature": {
+        "inputs": {
+          "lake_id": { "type": "UUID", "description": "Lake identifier" }
+        },
+        "outputs": {
+          "lake": { "type": "SDLLake", "description": "Lake object" }
+        }
+      },
+      "complexity": "O(1)",
+      "errors": ["LAKE_NOT_FOUND"]
+    },
+    {
+      "operation_id": "SDL-CORE-003",
+      "name": "sdl_delete_lake",
+      "category": "Lake Lifecycle",
+      "description": "Delete a lake and all its shards",
+      "signature": {
+        "inputs": {
+          "lake_id": { "type": "UUID" },
+          "confirm": { "type": "bool", "default": false }
+        },
+        "outputs": {
+          "success": { "type": "bool" },
+          "deleted_shards": { "type": "int" }
+        }
+      },
+      "implementation": {
+        "steps": [
+          "1. Verify confirmation flag",
+          "2. Deactivate all active shards",
+          "3. Remove all shards from HVS",
+          "4. Delete indices",
+          "5. Clear capability registry",
+          "6. Delete lake metadata"
+        ]
+      },
+      "complexity": "O(n) where n is shard count",
+      "irreversible": true,
+      "errors": ["LAKE_NOT_FOUND", "CONFIRMATION_REQUIRED"]
+    }
+  ],
+  "configuration": {
+    "default_config": {
+      "auto_index": true,
+      "max_shard_size": 104857600,
+      "capability_detection": true,
+      "dependency_detection": true,
+      "semantic_analysis": true,
+      "embedding_dimension": 768,
+      "duplicate_handling": "version"
+    },
+    "performance_targets": {
+      "ingest_latency_ms": 5000,
+      "discover_latency_ms": 200,
+      "activate_latency_ms": 1000,
+      "search_latency_ms": 300
+    }
+  },
+  "error_handling": {
+    "error_types": {
+      "INVALID_CONTENT": "Corrupted or malformed content",
+      "SHARD_TOO_LARGE": "Content exceeds max_shard_size",
+      "UNSUPPORTED_TYPE": "Unknown shard type",
+      "SHARD_NOT_FOUND": "Shard ID doesn't exist",
+      "LAKE_NOT_FOUND": "Lake ID doesn't exist",
+      "MISSING_DEPENDENCIES": "Unmet shard dependencies",
+      "HAS_DEPENDENTS": "Cannot remove shard with dependents",
+      "CIRCULAR_DEPENDENCY": "Circular dependency detected",
+      "INDEXING_IN_PROGRESS": "Index operation already running",
+      "CONFIRMATION_REQUIRED": "Destructive operation requires confirmation"
+    },
+    "recovery_strategies": {
+      "INVALID_CONTENT": "Reject ingestion, return validation errors",
+      "SHARD_TOO_LARGE": "Stream processing or reject based on config",
+      "MISSING_DEPENDENCIES": "Auto-resolve if possible, otherwise error",
+      "CIRCULAR_DEPENDENCY": "Report cycle, reject operation"
+    }
+  },
+  "examples": {
+    "create_and_populate_lake": {
+      "description": "Create a lake and add shards",
+      "code": [
+        "# Create lake",
+        "lake = sdl_create_lake(name='code_primitives')",
+        "",
+        "# Add code shard",
+        "shard_id = sdl_ingest_shard(",
+        "    name='json_parser.py',",
+        "    type='code',",
+        "    content=open('json_parser.py', 'rb').read(),",
+        "    metadata={'language': 'python', 'version': '3.9'}",
+        ")",
+        "",
+        "# Discover shards",
+        "results = sdl_discover_shards(",
+        "    query='parse structured data',",
+        "    shard_type='code',",
+        "    k=5",
+        ")",
+        "",
+        "# Activate and use",
+        "for result in results:",
+        "    sdl_activate_shard(result.shard.id)"
+      ]
+    }
+  }
+}

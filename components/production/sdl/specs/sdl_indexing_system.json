@@ -1,0 +1,639 @@
+{
+  "name": "sdl_indexing_system",
+  "version": "3.1.0",
+  "description": "SDL Indexing System specification - Comprehensive indexing mechanism for semantic discovery including metadata extraction, capability indexing, and index optimization",
+  "license": {
+    "type": "AGPLv3",
+    "text": "This specification is licensed under the GNU Affero General Public License v3.0. See https://www.gnu.org/licenses/agpl-3.0.html for full license text.",
+    "copyright": "Copyright (c) 2024-2026 HyperSync Project"
+  },
+  "subsystem": "SDL",
+  "category": "indexing",
+  "stunir_compatible": true,
+  "dependencies": [
+    "sdl_core_infrastructure@3.1.0",
+    "hypersync_vector_storage@3.0.0"
+  ],
+  "indexing_architecture": {
+    "overview": "Multi-level indexing system supporting semantic, capability-based, and metadata search",
+    "index_types": {
+      "primary_semantic_index": {
+        "description": "Main vector index for semantic similarity search",
+        "backend": "HVS (HyperSync Vector System)",
+        "algorithms": ["HNSW", "IVF", "FLAT", "Geometric-aware"],
+        "distance_metrics": ["Hyperbolic", "Spherical", "Euclidean", "Product"],
+        "complexity": {
+          "insert": "O(log n)",
+          "search": "O(log n)",
+          "build": "O(n log n)"
+        }
+      },
+      "capability_registry_index": {
+        "description": "Hash-based index for capability name lookups",
+        "structure": "HashMap<capability_name, List<shard_id>>",
+        "complexity": {
+          "insert": "O(1)",
+          "lookup": "O(1)",
+          "fuzzy_search": "O(c) where c is capability count"
+        }
+      },
+      "metadata_index": {
+        "description": "Secondary index for metadata filtering",
+        "indexed_fields": ["language", "version", "author", "type", "tags"],
+        "structure": "Inverted index per field",
+        "complexity": {
+          "filter": "O(log m) where m is unique values"
+        }
+      },
+      "dependency_graph_index": {
+        "description": "Graph structure for dependency traversal",
+        "structure": "Adjacency list DAG",
+        "operations": ["ancestors", "descendants", "topological_sort"],
+        "complexity": {
+          "traverse": "O(V + E)"
+        }
+      }
+    }
+  },
+  "type_definitions": {
+    "IndexConfiguration": {
+      "description": "Configuration for index building",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "algorithm": {
+            "type": "enum",
+            "values": ["HNSW", "IVF", "FLAT", "GEOMETRIC"],
+            "default": "HNSW",
+            "description": "ANN algorithm"
+          },
+          "hnsw_params": {
+            "type": "object",
+            "properties": {
+              "m": { "type": "int", "default": 16, "description": "Number of connections per layer" },
+              "ef_construction": { "type": "int", "default": 200, "description": "Construction time accuracy" },
+              "ef_search": { "type": "int", "default": 50, "description": "Search time accuracy" }
+            }
+          },
+          "ivf_params": {
+            "type": "object",
+            "properties": {
+              "nlist": { "type": "int", "default": 100, "description": "Number of clusters" },
+              "nprobe": { "type": "int", "default": 10, "description": "Clusters to search" }
+            }
+          },
+          "geometric_params": {
+            "type": "object",
+            "properties": {
+              "manifold_component": {
+                "type": "enum",
+                "values": ["H4", "S3", "E5", "PRODUCT"],
+                "description": "AGUA manifold component"
+              },
+              "curvature": { "type": "float64", "default": -1.0, "description": "Curvature for hyperbolic" }
+            }
+          }
+        }
+      }
+    },
+    "IndexBuildResult": {
+      "description": "Result of index building operation",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "index_id": { "type": "UUID" },
+          "vectors_indexed": { "type": "int" },
+          "build_time_seconds": { "type": "float64" },
+          "quality_metrics": {
+            "type": "object",
+            "properties": {
+              "recall_at_10": { "type": "float64" },
+              "recall_at_100": { "type": "float64" },
+              "latency_p50_ms": { "type": "float64" },
+              "latency_p99_ms": { "type": "float64" }
+            }
+          }
+        }
+      }
+    },
+    "MetadataExtraction": {
+      "description": "Extracted metadata from shard content",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "detected_language": { "type": "string", "description": "Programming language or format" },
+          "detected_type": { "type": "string", "description": "Inferred shard type" },
+          "size_bytes": { "type": "int" },
+          "line_count": { "type": "int", "optional": true },
+          "encoding": { "type": "string" },
+          "content_hash": { "type": "string", "description": "SHA-256 hash for deduplication" },
+          "structure": {
+            "type": "object",
+            "description": "Detected structure (AST info for code, schema for data)"
+          }
+        }
+      }
+    },
+    "CapabilityExtraction": {
+      "description": "Extracted capabilities from shard",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "capabilities": { "type": "array[SDLCapability]" },
+          "extraction_method": {
+            "type": "enum",
+            "values": ["ast_analysis", "schema_inference", "model_inspection", "config_parsing"]
+          },
+          "confidence_scores": {
+            "type": "dict",
+            "description": "Confidence per capability"
+          }
+        }
+      }
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "SDL-IDX-001",
+      "name": "sdl_index_lake",
+      "category": "Index Management",
+      "description": "Build or rebuild semantic indices for lake",
+      "signature": {
+        "inputs": {
+          "lake_id": { "type": "UUID", "optional": true, "description": "Lake to index (default: main)" },
+          "mode": {
+            "type": "enum",
+            "values": ["INCREMENTAL", "FULL"],
+            "default": "INCREMENTAL",
+            "description": "INCREMENTAL indexes only new/modified shards, FULL rebuilds from scratch"
+          },
+          "config": { "type": "IndexConfiguration", "optional": true }
+        },
+        "outputs": {
+          "success": { "type": "bool" },
+          "indexed_count": { "type": "int", "description": "Shards indexed" },
+          "duration_seconds": { "type": "float64" },
+          "quality_metrics": { "type": "object" }
+        }
+      },
+      "implementation": {
+        "incremental_steps": [
+          "1. Identify shards modified since last index build",
+          "2. Extract vectors for new/modified shards",
+          "3. Update ANN index with new vectors",
+          "4. Update capability registry",
+          "5. Update metadata indices",
+          "6. Update dependency graph"
+        ],
+        "full_steps": [
+          "1. Clear existing indices",
+          "2. Extract vectors for all shards",
+          "3. Build new ANN index from scratch",
+          "4. Rebuild capability registry",
+          "5. Rebuild metadata indices",
+          "6. Rebuild dependency graph"
+        ]
+      },
+      "complexity": {
+        "incremental": "O(m log n) where m is modified shards",
+        "full": "O(n log n) where n is total shards"
+      },
+      "properties": {
+        "background": true,
+        "interruptible": true
+      },
+      "test_cases": [
+        {
+          "test_id": "SDL-IDX-001-T01",
+          "description": "Incremental index with new shards",
+          "setup": "Lake with 100 shards, add 10 new",
+          "input": { "mode": "INCREMENTAL" },
+          "expected": { "indexed_count": 10, "success": true }
+        },
+        {
+          "test_id": "SDL-IDX-001-T02",
+          "description": "Full index rebuild",
+          "setup": "Lake with 100 shards",
+          "input": { "mode": "FULL" },
+          "expected": { "indexed_count": 100, "success": true }
+        },
+        {
+          "test_id": "SDL-IDX-001-T03",
+          "description": "Empty lake",
+          "setup": "Empty lake",
+          "expected": { "indexed_count": 0, "success": true }
+        },
+        {
+          "test_id": "SDL-IDX-001-T04",
+          "description": "Indexing in progress",
+          "setup": "Start indexing twice",
+          "expected_error": "INDEXING_IN_PROGRESS"
+        },
+        {
+          "test_id": "SDL-IDX-001-T05",
+          "description": "Performance with 10k shards",
+          "setup": "Lake with 10k shards",
+          "input": { "mode": "FULL" },
+          "expected_performance": "< 5 minutes"
+        }
+      ]
+    },
+    {
+      "operation_id": "SDL-IDX-002",
+      "name": "sdl_extract_metadata",
+      "category": "Metadata Extraction",
+      "description": "Extract metadata from shard content",
+      "signature": {
+        "inputs": {
+          "content": { "type": "bytes", "description": "Raw shard content" },
+          "type_hint": { "type": "string", "optional": true, "description": "Suggested shard type" }
+        },
+        "outputs": {
+          "metadata": { "type": "MetadataExtraction" }
+        }
+      },
+      "implementation": {
+        "detection_pipeline": [
+          {
+            "step": "encoding_detection",
+            "description": "Detect content encoding (UTF-8, binary, etc.)"
+          },
+          {
+            "step": "language_detection",
+            "description": "Detect programming language or format",
+            "methods": ["File extension", "Shebang", "Magic bytes", "Content analysis"]
+          },
+          {
+            "step": "type_inference",
+            "description": "Infer shard type from language and structure",
+            "mapping": {
+              "python|javascript|rust": "code",
+              "csv|json|parquet": "data",
+              "onnx|pytorch|tensorflow": "model",
+              "yaml|toml|ini": "config"
+            }
+          },
+          {
+            "step": "structure_extraction",
+            "description": "Extract structural information",
+            "by_type": {
+              "code": "Parse AST, extract functions/classes",
+              "data": "Infer schema, column types",
+              "model": "Extract architecture, shapes",
+              "config": "Parse keys, values, sections"
+            }
+          }
+        ]
+      },
+      "complexity": "O(|content|)",
+      "test_cases": [
+        {
+          "test_id": "SDL-IDX-002-T01",
+          "description": "Extract Python metadata",
+          "input": { "content": "def hello(): pass", "type_hint": "code" },
+          "expected": { "detected_language": "python", "detected_type": "code" }
+        },
+        {
+          "test_id": "SDL-IDX-002-T02",
+          "description": "Extract JSON data metadata",
+          "input": { "content": "[{\"a\": 1}, {\"a\": 2}]" },
+          "expected": { "detected_language": "json", "detected_type": "data" }
+        }
+      ]
+    },
+    {
+      "operation_id": "SDL-IDX-003",
+      "name": "sdl_extract_capabilities",
+      "category": "Capability Extraction",
+      "description": "Extract capabilities from shard content",
+      "signature": {
+        "inputs": {
+          "content": { "type": "bytes" },
+          "shard_type": { "type": "enum", "values": ["code", "data", "model", "config"] },
+          "metadata": { "type": "MetadataExtraction", "optional": true }
+        },
+        "outputs": {
+          "extraction": { "type": "CapabilityExtraction" }
+        }
+      },
+      "implementation": {
+        "by_type": {
+          "code": {
+            "method": "ast_analysis",
+            "steps": [
+              "Parse source into AST",
+              "Walk AST for function definitions",
+              "Extract function signatures",
+              "Extract docstrings for descriptions",
+              "Generate capability vectors from docstrings/names"
+            ],
+            "example_output": {
+              "name": "parse_json",
+              "type": "function",
+              "interface": {
+                "inputs": { "text": "string" },
+                "outputs": { "result": "dict" }
+              }
+            }
+          },
+          "data": {
+            "method": "schema_inference",
+            "steps": [
+              "Sample content",
+              "Infer column types",
+              "Build schema definition",
+              "Generate capability vector from schema"
+            ],
+            "example_output": {
+              "name": "sales_data",
+              "type": "data",
+              "interface": {
+                "columns": ["date", "amount", "product"],
+                "types": ["datetime", "float", "string"]
+              }
+            }
+          },
+          "model": {
+            "method": "model_inspection",
+            "steps": [
+              "Load model metadata",
+              "Extract input/output shapes",
+              "Identify model type",
+              "Generate capability vector from description"
+            ],
+            "example_output": {
+              "name": "text_embedder",
+              "type": "model",
+              "interface": {
+                "input_shape": [1, 512],
+                "output_shape": [1, 768]
+              }
+            }
+          },
+          "config": {
+            "method": "config_parsing",
+            "steps": [
+              "Parse configuration format",
+              "Extract top-level keys",
+              "Identify configuration purpose",
+              "Generate capability vector"
+            ],
+            "example_output": {
+              "name": "logging_config",
+              "type": "config",
+              "interface": {
+                "keys": ["level", "format", "handlers"],
+                "format": "yaml"
+              }
+            }
+          }
+        }
+      },
+      "complexity": "O(|content|)",
+      "test_cases": [
+        {
+          "test_id": "SDL-IDX-003-T01",
+          "description": "Extract function capabilities from Python",
+          "input": {
+            "content": "def add(a: int, b: int) -> int:\n    '''Add two numbers'''\n    return a + b",
+            "shard_type": "code"
+          },
+          "expected": {
+            "capabilities": [
+              {
+                "name": "add",
+                "type": "function",
+                "interface.inputs": { "a": "int", "b": "int" },
+                "interface.outputs": { "return": "int" }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "operation_id": "SDL-IDX-004",
+      "name": "sdl_detect_dependencies",
+      "category": "Dependency Analysis",
+      "description": "Detect dependencies for a shard",
+      "signature": {
+        "inputs": {
+          "content": { "type": "bytes" },
+          "shard_type": { "type": "enum", "values": ["code", "data", "model", "config"] },
+          "metadata": { "type": "MetadataExtraction", "optional": true }
+        },
+        "outputs": {
+          "dependencies": { "type": "array[object]" },
+          "unresolved": { "type": "array[string]", "description": "Dependencies that couldn't be resolved" }
+        }
+      },
+      "implementation": {
+        "static_analysis": {
+          "description": "Extract explicit dependencies from syntax",
+          "patterns": {
+            "python": ["import X", "from X import Y"],
+            "javascript": ["require('X')", "import X from 'Y'"],
+            "config": ["$ref", "extends", "include"]
+          }
+        },
+        "semantic_analysis": {
+          "description": "Find implicit dependencies via semantic similarity",
+          "steps": [
+            "Extract references/identifiers from content",
+            "Search SDL for matching capabilities",
+            "Filter by confidence threshold (0.9)",
+            "Add as potential dependencies"
+          ]
+        },
+        "resolution": {
+          "description": "Map detected dependencies to shard IDs",
+          "methods": [
+            "Exact name match in capability registry",
+            "Semantic search with high threshold",
+            "Package name to shard mapping"
+          ]
+        }
+      },
+      "complexity": "O(|content| + d log n) where d is dependency count",
+      "test_cases": [
+        {
+          "test_id": "SDL-IDX-004-T01",
+          "description": "Detect Python imports",
+          "input": {
+            "content": "import numpy\nimport pandas as pd\nfrom sklearn import tree",
+            "shard_type": "code"
+          },
+          "expected": {
+            "dependencies": [
+              { "name": "numpy", "type": "import" },
+              { "name": "pandas", "type": "import" },
+              { "name": "sklearn", "type": "import" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "operation_id": "SDL-IDX-005",
+      "name": "sdl_optimize_index",
+      "category": "Index Management",
+      "description": "Optimize index structure for performance",
+      "signature": {
+        "inputs": {
+          "operations": {
+            "type": "array[string]",
+            "description": "Operations to perform",
+            "values": ["compact", "rebalance", "quantize", "prune"],
+            "default": ["compact", "rebalance"]
+          }
+        },
+        "outputs": {
+          "success": { "type": "bool" },
+          "improvements": {
+            "type": "object",
+            "properties": {
+              "size_reduction_percent": { "type": "float64" },
+              "latency_improvement_percent": { "type": "float64" },
+              "memory_reduction_percent": { "type": "float64" }
+            }
+          }
+        }
+      },
+      "implementation": {
+        "operations": {
+          "compact": {
+            "description": "Remove fragmentation, consolidate storage",
+            "complexity": "O(n)"
+          },
+          "rebalance": {
+            "description": "Rebalance index structure for uniform access",
+            "complexity": "O(n log n)"
+          },
+          "quantize": {
+            "description": "Apply vector quantization for memory efficiency",
+            "methods": ["PQ", "OPQ", "SQ"],
+            "tradeoff": "Memory vs accuracy"
+          },
+          "prune": {
+            "description": "Remove stale or low-quality entries",
+            "criteria": ["Inactive > 90 days", "Never accessed", "Duplicate content"]
+          }
+        }
+      },
+      "test_cases": [
+        {
+          "test_id": "SDL-IDX-005-T01",
+          "description": "Compact and rebalance",
+          "input": { "operations": ["compact", "rebalance"] },
+          "expected": { "success": true, "improvements.size_reduction_percent": "> 0" }
+        }
+      ]
+    },
+    {
+      "operation_id": "SDL-IDX-006",
+      "name": "sdl_register_capability",
+      "category": "Capability Registry",
+      "description": "Register a capability in the capability registry",
+      "signature": {
+        "inputs": {
+          "shard_id": { "type": "UUID" },
+          "capability": { "type": "SDLCapability" }
+        },
+        "outputs": {
+          "success": { "type": "bool" },
+          "registry_id": { "type": "string" }
+        }
+      },
+      "implementation": {
+        "steps": [
+          "1. Validate capability structure",
+          "2. Generate capability vector if not present",
+          "3. Add to capability name → shard mapping",
+          "4. Index capability vector for semantic search",
+          "5. Update shard's capability list"
+        ]
+      },
+      "complexity": "O(1) for registry, O(log n) for vector index"
+    },
+    {
+      "operation_id": "SDL-IDX-007",
+      "name": "sdl_update_dependency_graph",
+      "category": "Dependency Analysis",
+      "description": "Update dependency graph with new relationships",
+      "signature": {
+        "inputs": {
+          "shard_id": { "type": "UUID" },
+          "dependencies": { "type": "array[UUID]" }
+        },
+        "outputs": {
+          "success": { "type": "bool" },
+          "cycles_detected": { "type": "bool" },
+          "cycle_path": { "type": "array[UUID]", "optional": true }
+        }
+      },
+      "implementation": {
+        "steps": [
+          "1. Add edges from shard_id to each dependency",
+          "2. Run cycle detection (DFS)",
+          "3. If cycle found, return cycle path",
+          "4. Update topological ordering cache"
+        ]
+      },
+      "complexity": "O(V + E) for cycle detection"
+    }
+  ],
+  "index_algorithms": {
+    "HNSW": {
+      "name": "Hierarchical Navigable Small World",
+      "description": "Graph-based ANN algorithm with logarithmic search",
+      "parameters": {
+        "m": "Connections per node (default: 16)",
+        "ef_construction": "Search accuracy during build (default: 200)",
+        "ef_search": "Search accuracy at query time (default: 50)"
+      },
+      "complexity": {
+        "build": "O(n log n)",
+        "search": "O(log n)",
+        "memory": "O(n * m)"
+      },
+      "best_for": "General purpose, balanced speed/accuracy"
+    },
+    "IVF": {
+      "name": "Inverted File Index",
+      "description": "Clustering-based ANN algorithm",
+      "parameters": {
+        "nlist": "Number of clusters (default: 100)",
+        "nprobe": "Clusters to search (default: 10)"
+      },
+      "complexity": {
+        "build": "O(n * iterations)",
+        "search": "O(nprobe * n/nlist)",
+        "memory": "O(n)"
+      },
+      "best_for": "Large scale, memory efficient"
+    },
+    "GEOMETRIC": {
+      "name": "Geometric-aware index",
+      "description": "Index that respects AGUA manifold geometry",
+      "manifolds": ["H4 (Hyperbolic)", "S3 (Spherical)", "E5 (Euclidean)"],
+      "distance_metrics": {
+        "H4": "arcosh(-⟨p,q⟩_L) - Lorentzian inner product",
+        "S3": "arccos(⟨p,q⟩) - Great circle distance",
+        "E5": "‖p-q‖₂ - Euclidean distance"
+      },
+      "best_for": "Hierarchical data, semantic relationships"
+    }
+  },
+  "performance_characteristics": {
+    "scalability": {
+      "shards_1k": { "ingest": "~5ms", "search": "~10ms", "memory": "~100MB" },
+      "shards_10k": { "ingest": "~5ms", "search": "~50ms", "memory": "~1GB" },
+      "shards_100k": { "ingest": "~5ms", "search": "~200ms", "memory": "~10GB" },
+      "shards_1m": { "ingest": "~5ms", "search": "~500ms", "memory": "~100GB" }
+    },
+    "index_build_time": {
+      "incremental": "O(m log n) - Only new shards",
+      "full_rebuild": "O(n log n) - All shards"
+    }
+  }
+}

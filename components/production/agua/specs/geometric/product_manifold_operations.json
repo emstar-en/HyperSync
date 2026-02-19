@@ -1,0 +1,2735 @@
+{
+  "metadata": {
+    "name": "product_manifold_operations",
+    "version": "1.0.0",
+    "description": "Product Manifold Operations for HyperSync - Construction and navigation of product spaces M₁ × M₂ × ... × Mₙ, multi-manifold coordinate systems, cross-manifold geodesics, product space metrics and curvature, projection and embedding operations",
+    "author": "HyperSync Framework",
+    "created": "2026-01-16T00:00:00Z",
+    "updated": "2026-01-16T00:00:00Z",
+    "stunir_version": "1.0",
+    "domain": "hypersync.geometry.product_manifold",
+    "conformance_level": 2,
+    "dependencies": [
+      "hyperbolic_core",
+      "lorentz_operations",
+      "parallel_transport",
+      "geodesic_computation"
+    ],
+    "license": {
+      "type": "AGPLv3",
+      "full_name": "GNU Affero General Public License v3.0",
+      "url": "https://www.gnu.org/licenses/agpl-3.0.html",
+      "spdx_identifier": "AGPL-3.0-or-later",
+      "copyright": "Copyright 2026 HyperSync Project",
+      "permissions": [
+        "commercial-use",
+        "modification",
+        "distribution",
+        "patent-use",
+        "private-use"
+      ],
+      "conditions": [
+        "include-copyright",
+        "document-changes",
+        "disclose-source",
+        "network-use-disclose",
+        "same-license"
+      ],
+      "limitations": [
+        "liability",
+        "warranty"
+      ]
+    },
+    "authors": [
+      "HyperSync Geometry Team"
+    ],
+    "operational_model": {
+      "product_construction": "Build product manifolds M₁ × M₂ × ... × Mₙ with individual curvatures",
+      "coordinate_systems": "Multi-factor coordinate systems with projection and lift operations",
+      "cross_manifold": "Geodesic and transport operations across factor boundaries",
+      "product_metrics": "Composite metrics respecting factor geometry"
+    },
+    "tags": [
+      "product-manifold",
+      "multi-factor",
+      "geometry",
+      "hyperbolic",
+      "cross-manifold",
+      "projection"
+    ]
+  },
+  "types": {
+    "ProductManifoldConfig": {
+      "description": "Configuration for a product manifold M₁ × M₂ × ... × Mₙ",
+      "base_type": "object",
+      "properties": {
+        "manifold_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$"
+        },
+        "factors": {
+          "type": "array",
+          "items": {
+            "type": "ManifoldFactor"
+          },
+          "minItems": 2
+        },
+        "product_metric": {
+          "type": "string",
+          "enum": [
+            "riemannian_product",
+            "warped_product",
+            "twisted_product"
+          ]
+        },
+        "total_dimension": {
+          "type": "integer",
+          "minimum": 4
+        },
+        "coupling_matrix": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          }
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "semantic_labels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      },
+      "constraints": [
+        "sum(factor.dimension) == total_dimension"
+      ]
+    },
+    "ManifoldFactor": {
+      "description": "Individual factor in a product manifold",
+      "base_type": "object",
+      "properties": {
+        "factor_id": {
+          "type": "string"
+        },
+        "factor_index": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "name": {
+          "type": "string"
+        },
+        "model": {
+          "type": "string",
+          "enum": [
+            "hyperboloid",
+            "poincare_ball",
+            "half_space",
+            "euclidean",
+            "spherical"
+          ]
+        },
+        "dimension": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "curvature_K": {
+          "type": "number"
+        },
+        "signature": {
+          "type": "string"
+        },
+        "semantic_role": {
+          "type": "string",
+          "enum": [
+            "vision",
+            "intent",
+            "context",
+            "temporal",
+            "spatial",
+            "semantic"
+          ]
+        },
+        "weight": {
+          "type": "number",
+          "default": 1.0,
+          "minimum": 0
+        },
+        "coordinate_range": {
+          "type": "CoordinateRange"
+        }
+      }
+    },
+    "CoordinateRange": {
+      "description": "Index range for factor coordinates in product space",
+      "base_type": "object",
+      "properties": {
+        "start_index": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "end_index": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "includes_time_component": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    "ProductPoint": {
+      "description": "Point in product manifold with factor decomposition",
+      "base_type": "object",
+      "properties": {
+        "point_id": {
+          "type": "string"
+        },
+        "manifold_id": {
+          "type": "string"
+        },
+        "full_coordinates": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        },
+        "factor_coordinates": {
+          "type": "array",
+          "items": {
+            "type": "FactorCoordinates"
+          }
+        },
+        "validated": {
+          "type": "boolean",
+          "default": false
+        },
+        "validation_errors": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "metadata": {
+          "type": "object"
+        }
+      }
+    },
+    "FactorCoordinates": {
+      "description": "Coordinates within a single factor",
+      "base_type": "object",
+      "properties": {
+        "factor_id": {
+          "type": "string"
+        },
+        "factor_index": {
+          "type": "integer"
+        },
+        "coords": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        },
+        "on_manifold": {
+          "type": "boolean"
+        },
+        "constraint_residual": {
+          "type": "number"
+        }
+      }
+    },
+    "ProductTangentVector": {
+      "description": "Tangent vector in product manifold",
+      "base_type": "object",
+      "properties": {
+        "vector_id": {
+          "type": "string"
+        },
+        "base_point": {
+          "type": "ProductPoint"
+        },
+        "full_components": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        },
+        "factor_components": {
+          "type": "array",
+          "items": {
+            "type": "FactorTangent"
+          }
+        },
+        "norm": {
+          "type": "number"
+        },
+        "factor_norms": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "FactorTangent": {
+      "description": "Tangent vector component in a single factor",
+      "base_type": "object",
+      "properties": {
+        "factor_id": {
+          "type": "string"
+        },
+        "factor_index": {
+          "type": "integer"
+        },
+        "components": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        },
+        "tangent_validated": {
+          "type": "boolean"
+        },
+        "orthogonal_to_position": {
+          "type": "boolean"
+        }
+      }
+    },
+    "ProductGeodesic": {
+      "description": "Geodesic path in product manifold",
+      "base_type": "object",
+      "properties": {
+        "geodesic_id": {
+          "type": "string"
+        },
+        "manifold_id": {
+          "type": "string"
+        },
+        "start_point": {
+          "type": "ProductPoint"
+        },
+        "end_point": {
+          "type": "ProductPoint"
+        },
+        "initial_velocity": {
+          "type": "ProductTangentVector"
+        },
+        "total_length": {
+          "type": "number"
+        },
+        "factor_lengths": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        },
+        "parameter_range": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "num_segments": {
+          "type": "integer"
+        },
+        "is_minimizing": {
+          "type": "boolean"
+        }
+      }
+    },
+    "CrossManifoldMap": {
+      "description": "Map between factors in product manifold",
+      "base_type": "object",
+      "properties": {
+        "map_id": {
+          "type": "string"
+        },
+        "source_factor": {
+          "type": "string"
+        },
+        "target_factor": {
+          "type": "string"
+        },
+        "map_type": {
+          "type": "string",
+          "enum": [
+            "projection",
+            "embedding",
+            "certified_bridge",
+            "isometry",
+            "quasi_isometry"
+          ]
+        },
+        "distortion_certificate": {
+          "type": "DistortionCertificate"
+        },
+        "parameters": {
+          "type": "object"
+        },
+        "invertible": {
+          "type": "boolean"
+        },
+        "inverse_map_id": {
+          "type": "string"
+        }
+      }
+    },
+    "DistortionCertificate": {
+      "description": "Certificate proving quality bounds for cross-factor maps",
+      "base_type": "object",
+      "properties": {
+        "certificate_id": {
+          "type": "string"
+        },
+        "map_id": {
+          "type": "string"
+        },
+        "max_expansion": {
+          "type": "number",
+          "minimum": 1.0
+        },
+        "max_contraction": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1.0
+        },
+        "average_distortion": {
+          "type": "number"
+        },
+        "bi_lipschitz_constant": {
+          "type": "number"
+        },
+        "geodesic_preservation": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "sample_size": {
+          "type": "integer"
+        },
+        "confidence_level": {
+          "type": "number"
+        },
+        "generated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "ProductMetric": {
+      "description": "Riemannian metric on product manifold",
+      "base_type": "object",
+      "properties": {
+        "metric_id": {
+          "type": "string"
+        },
+        "manifold_id": {
+          "type": "string"
+        },
+        "metric_type": {
+          "type": "string",
+          "enum": [
+            "product",
+            "warped",
+            "twisted",
+            "conformal_product"
+          ]
+        },
+        "factor_weights": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        },
+        "warping_function": {
+          "type": "WarpingFunction"
+        },
+        "coupling_terms": {
+          "type": "array",
+          "items": {
+            "type": "CouplingTerm"
+          }
+        }
+      }
+    },
+    "WarpingFunction": {
+      "description": "Warping function for warped product metrics",
+      "base_type": "object",
+      "properties": {
+        "function_type": {
+          "type": "string",
+          "enum": [
+            "constant",
+            "exponential",
+            "polynomial",
+            "custom"
+          ]
+        },
+        "base_factor": {
+          "type": "string"
+        },
+        "fiber_factor": {
+          "type": "string"
+        },
+        "parameters": {
+          "type": "object"
+        },
+        "formula": {
+          "type": "string"
+        }
+      }
+    },
+    "CouplingTerm": {
+      "description": "Coupling between factors in twisted product",
+      "base_type": "object",
+      "properties": {
+        "factor_i": {
+          "type": "string"
+        },
+        "factor_j": {
+          "type": "string"
+        },
+        "coupling_strength": {
+          "type": "number"
+        },
+        "coupling_type": {
+          "type": "string",
+          "enum": [
+            "linear",
+            "bilinear",
+            "geodesic"
+          ]
+        }
+      }
+    },
+    "ProductCurvature": {
+      "description": "Curvature information for product manifold",
+      "base_type": "object",
+      "properties": {
+        "point": {
+          "type": "ProductPoint"
+        },
+        "sectional_curvatures": {
+          "type": "array",
+          "items": {
+            "type": "SectionalCurvature"
+          }
+        },
+        "ricci_tensor": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          }
+        },
+        "scalar_curvature": {
+          "type": "number"
+        },
+        "factor_contributions": {
+          "type": "array",
+          "items": {
+            "type": "FactorCurvatureContribution"
+          }
+        }
+      }
+    },
+    "SectionalCurvature": {
+      "description": "Sectional curvature for a 2-plane",
+      "base_type": "object",
+      "properties": {
+        "plane_basis": {
+          "type": "array",
+          "items": {
+            "type": "ProductTangentVector"
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "curvature_value": {
+          "type": "number"
+        },
+        "plane_type": {
+          "type": "string",
+          "enum": [
+            "intra_factor",
+            "cross_factor",
+            "mixed"
+          ]
+        }
+      }
+    },
+    "FactorCurvatureContribution": {
+      "description": "Curvature contribution from a single factor",
+      "base_type": "object",
+      "properties": {
+        "factor_id": {
+          "type": "string"
+        },
+        "scalar_contribution": {
+          "type": "number"
+        },
+        "percentage": {
+          "type": "number"
+        }
+      }
+    },
+    "ParallelTransportConfig": {
+      "description": "Configuration for parallel transport in product manifold",
+      "base_type": "object",
+      "properties": {
+        "transport_method": {
+          "type": "string",
+          "enum": [
+            "levi_civita",
+            "schild_ladder",
+            "pole_ladder"
+          ]
+        },
+        "step_size": {
+          "type": "number",
+          "default": 0.01
+        },
+        "max_steps": {
+          "type": "integer",
+          "default": 1000
+        },
+        "tolerance": {
+          "type": "number",
+          "default": 1e-10
+        },
+        "preserve_factor_structure": {
+          "type": "boolean",
+          "default": true
+        },
+        "holonomy_tracking": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    "ProductParallelTransport": {
+      "description": "Result of parallel transport in product manifold",
+      "base_type": "object",
+      "properties": {
+        "transport_id": {
+          "type": "string"
+        },
+        "source_vector": {
+          "type": "ProductTangentVector"
+        },
+        "transported_vector": {
+          "type": "ProductTangentVector"
+        },
+        "along_geodesic": {
+          "type": "ProductGeodesic"
+        },
+        "factor_transports": {
+          "type": "array",
+          "items": {
+            "type": "FactorTransportResult"
+          }
+        },
+        "total_holonomy": {
+          "type": "number"
+        },
+        "norm_preservation_error": {
+          "type": "number"
+        }
+      }
+    },
+    "FactorTransportResult": {
+      "description": "Parallel transport result for single factor",
+      "base_type": "object",
+      "properties": {
+        "factor_id": {
+          "type": "string"
+        },
+        "source_component": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        },
+        "transported_component": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        },
+        "factor_holonomy": {
+          "type": "number"
+        }
+      }
+    },
+    "FactorSelection": {
+      "description": "Selection of factors for restricted operations",
+      "base_type": "object",
+      "properties": {
+        "selection_id": {
+          "type": "string"
+        },
+        "manifold_id": {
+          "type": "string"
+        },
+        "selected_factors": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "selection_method": {
+          "type": "string",
+          "enum": [
+            "manual",
+            "mutual_information",
+            "pga",
+            "task_specific"
+          ]
+        },
+        "variance_explained": {
+          "type": "number"
+        },
+        "effective_dimension": {
+          "type": "integer"
+        }
+      }
+    },
+    "PGAResult": {
+      "description": "Principal Geodesic Analysis result",
+      "base_type": "object",
+      "properties": {
+        "result_id": {
+          "type": "string"
+        },
+        "manifold_id": {
+          "type": "string"
+        },
+        "base_point": {
+          "type": "ProductPoint"
+        },
+        "principal_directions": {
+          "type": "array",
+          "items": {
+            "type": "ProductTangentVector"
+          }
+        },
+        "eigenvalues": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        },
+        "variance_explained": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        },
+        "cumulative_variance": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        },
+        "recommended_dimensions": {
+          "type": "integer"
+        }
+      }
+    },
+    "MutualInformationTest": {
+      "description": "Mutual information between factors",
+      "base_type": "object",
+      "properties": {
+        "test_id": {
+          "type": "string"
+        },
+        "factor_pairs": {
+          "type": "array",
+          "items": {
+            "type": "FactorPairMI"
+          }
+        },
+        "sample_size": {
+          "type": "integer"
+        },
+        "estimation_method": {
+          "type": "string",
+          "enum": [
+            "kraskov",
+            "kernel",
+            "binning"
+          ]
+        },
+        "significance_threshold": {
+          "type": "number"
+        }
+      }
+    },
+    "FactorPairMI": {
+      "description": "Mutual information between two factors",
+      "base_type": "object",
+      "properties": {
+        "factor_i": {
+          "type": "string"
+        },
+        "factor_j": {
+          "type": "string"
+        },
+        "mutual_information": {
+          "type": "number"
+        },
+        "normalized_mi": {
+          "type": "number"
+        },
+        "p_value": {
+          "type": "number"
+        },
+        "significant": {
+          "type": "boolean"
+        }
+      }
+    },
+    "EmbeddingResult": {
+      "description": "Result of embedding into product manifold",
+      "base_type": "object",
+      "properties": {
+        "embedding_id": {
+          "type": "string"
+        },
+        "source_space": {
+          "type": "string"
+        },
+        "target_manifold": {
+          "type": "string"
+        },
+        "embedded_points": {
+          "type": "array",
+          "items": {
+            "type": "ProductPoint"
+          }
+        },
+        "quality_metrics": {
+          "type": "EmbeddingQuality"
+        },
+        "distortion_map": {
+          "type": "array",
+          "items": {
+            "type": "PointDistortion"
+          }
+        }
+      }
+    },
+    "EmbeddingQuality": {
+      "description": "Quality metrics for embedding",
+      "base_type": "object",
+      "properties": {
+        "mean_distortion": {
+          "type": "number"
+        },
+        "max_distortion": {
+          "type": "number"
+        },
+        "geodesic_preservation": {
+          "type": "number"
+        },
+        "neighborhood_preservation": {
+          "type": "number"
+        },
+        "stress": {
+          "type": "number"
+        },
+        "trustworthiness": {
+          "type": "number"
+        },
+        "continuity": {
+          "type": "number"
+        }
+      }
+    },
+    "PointDistortion": {
+      "description": "Distortion at a single point",
+      "base_type": "object",
+      "properties": {
+        "point_id": {
+          "type": "string"
+        },
+        "local_distortion": {
+          "type": "number"
+        },
+        "neighbors_affected": {
+          "type": "integer"
+        }
+      }
+    },
+    "MonotoneRefinement": {
+      "description": "Monotone refinement with escalation for restricted views",
+      "base_type": "object",
+      "properties": {
+        "refinement_id": {
+          "type": "string"
+        },
+        "current_selection": {
+          "type": "FactorSelection"
+        },
+        "quality_history": {
+          "type": "array",
+          "items": {
+            "type": "QualitySnapshot"
+          }
+        },
+        "escalation_triggers": {
+          "type": "EscalationTriggers"
+        },
+        "escalation_chain": {
+          "type": "array",
+          "items": {
+            "type": "FactorSelection"
+          }
+        },
+        "current_level": {
+          "type": "integer"
+        }
+      }
+    },
+    "QualitySnapshot": {
+      "description": "Quality metrics at a point in time",
+      "base_type": "object",
+      "properties": {
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "recall_at_k": {
+          "type": "number"
+        },
+        "epsilon_rel": {
+          "type": "number"
+        },
+        "soft_deny_rate": {
+          "type": "number"
+        },
+        "projection_norm_p95": {
+          "type": "number"
+        }
+      }
+    },
+    "EscalationTriggers": {
+      "description": "Triggers for monotone refinement escalation",
+      "base_type": "object",
+      "properties": {
+        "recall_drop_threshold": {
+          "type": "number",
+          "default": 0.05
+        },
+        "epsilon_rel_threshold": {
+          "type": "number",
+          "default": 0.1
+        },
+        "soft_deny_rate_threshold": {
+          "type": "number",
+          "default": 0.1
+        },
+        "projection_norm_threshold": {
+          "type": "number",
+          "default": 2.0
+        }
+      }
+    },
+    "OperationResult": {
+      "description": "Generic result for product manifold operations",
+      "base_type": "object",
+      "properties": {
+        "operation_id": {
+          "type": "string"
+        },
+        "operation_type": {
+          "type": "string"
+        },
+        "success": {
+          "type": "boolean"
+        },
+        "result": {
+          "type": "object"
+        },
+        "error": {
+          "type": "OperationError"
+        },
+        "metrics": {
+          "type": "OperationMetrics"
+        },
+        "trace_id": {
+          "type": "string"
+        }
+      }
+    },
+    "OperationError": {
+      "description": "Error details for failed operations",
+      "base_type": "object",
+      "properties": {
+        "error_code": {
+          "type": "string"
+        },
+        "error_message": {
+          "type": "string"
+        },
+        "factor_id": {
+          "type": "string"
+        },
+        "recoverable": {
+          "type": "boolean"
+        },
+        "suggested_action": {
+          "type": "string"
+        }
+      }
+    },
+    "OperationMetrics": {
+      "description": "Performance metrics for operations",
+      "base_type": "object",
+      "properties": {
+        "duration_ms": {
+          "type": "number"
+        },
+        "memory_mb": {
+          "type": "number"
+        },
+        "iterations": {
+          "type": "integer"
+        },
+        "numerical_stability": {
+          "type": "number"
+        }
+      }
+    }
+  },
+  "operations": {
+    "create_product_manifold": {
+      "description": "Create a product manifold from factor specifications",
+      "inputs": {
+        "factors": {
+          "type": "array",
+          "items": {
+            "type": "ManifoldFactor"
+          }
+        },
+        "product_metric": {
+          "type": "string",
+          "enum": [
+            "riemannian_product",
+            "warped_product",
+            "twisted_product"
+          ]
+        },
+        "coupling_matrix": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          "optional": true
+        },
+        "semantic_labels": {
+          "type": "object",
+          "optional": true
+        }
+      },
+      "outputs": {
+        "manifold": {
+          "type": "ProductManifoldConfig"
+        },
+        "validation_report": {
+          "type": "object"
+        }
+      },
+      "preconditions": [
+        "factors.length >= 2",
+        "all factors have valid curvature specifications",
+        "coupling_matrix dimensions match number of factors if provided"
+      ],
+      "postconditions": [
+        "manifold.total_dimension == sum(f.dimension for f in factors)",
+        "manifold validated successfully"
+      ],
+      "error_conditions": [
+        "INVALID_FACTOR_SPEC: Factor specification is invalid",
+        "DIMENSION_MISMATCH: Total dimension doesn't match sum of factors",
+        "INCOMPATIBLE_CURVATURES: Factor curvatures cannot be combined"
+      ],
+      "complexity": {
+        "time": "O(n²) where n is number of factors",
+        "space": "O(d) where d is total dimension"
+      }
+    },
+    "construct_product_point": {
+      "description": "Construct a point in product manifold from factor coordinates",
+      "inputs": {
+        "manifold_id": {
+          "type": "string"
+        },
+        "factor_coordinates": {
+          "type": "array",
+          "items": {
+            "type": "FactorCoordinates"
+          }
+        }
+      },
+      "outputs": {
+        "point": {
+          "type": "ProductPoint"
+        },
+        "validation_details": {
+          "type": "object"
+        }
+      },
+      "preconditions": [
+        "manifold_id refers to valid product manifold",
+        "factor_coordinates cover all factors",
+        "each factor coordinate is on its respective manifold"
+      ],
+      "postconditions": [
+        "point.validated == true",
+        "all factor constraints satisfied"
+      ],
+      "error_conditions": [
+        "UNKNOWN_MANIFOLD: Manifold not found",
+        "MISSING_FACTOR: Not all factors provided",
+        "OFF_MANIFOLD: Factor coordinates not on manifold"
+      ],
+      "complexity": {
+        "time": "O(d) where d is total dimension",
+        "space": "O(d)"
+      }
+    },
+    "project_to_factor": {
+      "description": "Project product point to a single factor",
+      "inputs": {
+        "point": {
+          "type": "ProductPoint"
+        },
+        "factor_id": {
+          "type": "string"
+        }
+      },
+      "outputs": {
+        "factor_point": {
+          "type": "FactorCoordinates"
+        },
+        "projection_metadata": {
+          "type": "object"
+        }
+      },
+      "preconditions": [
+        "point is valid in product manifold",
+        "factor_id exists in manifold"
+      ],
+      "postconditions": [
+        "factor_point.on_manifold == true",
+        "projection is idempotent: project(project(p)) = project(p)"
+      ],
+      "error_conditions": [
+        "INVALID_POINT: Point not valid in manifold",
+        "UNKNOWN_FACTOR: Factor not found"
+      ],
+      "complexity": {
+        "time": "O(d_f) where d_f is factor dimension",
+        "space": "O(d_f)"
+      }
+    },
+    "lift_from_factor": {
+      "description": "Lift point from factor to product manifold",
+      "inputs": {
+        "factor_point": {
+          "type": "FactorCoordinates"
+        },
+        "manifold_id": {
+          "type": "string"
+        },
+        "other_factors": {
+          "type": "array",
+          "items": {
+            "type": "FactorCoordinates"
+          }
+        }
+      },
+      "outputs": {
+        "product_point": {
+          "type": "ProductPoint"
+        }
+      },
+      "preconditions": [
+        "factor_point is on factor manifold",
+        "other_factors cover remaining factors"
+      ],
+      "postconditions": [
+        "product_point.validated == true",
+        "project(product_point, factor_point.factor_id) == factor_point"
+      ],
+      "error_conditions": [
+        "OFF_MANIFOLD: Factor point not on manifold",
+        "INCOMPLETE_FACTORS: Not all factors specified"
+      ],
+      "complexity": {
+        "time": "O(d)",
+        "space": "O(d)"
+      }
+    },
+    "compute_product_distance": {
+      "description": "Compute distance between two points in product manifold",
+      "inputs": {
+        "point_a": {
+          "type": "ProductPoint"
+        },
+        "point_b": {
+          "type": "ProductPoint"
+        },
+        "metric_config": {
+          "type": "ProductMetric",
+          "optional": true
+        }
+      },
+      "outputs": {
+        "distance": {
+          "type": "number"
+        },
+        "factor_distances": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        },
+        "distance_breakdown": {
+          "type": "object"
+        }
+      },
+      "preconditions": [
+        "both points in same product manifold",
+        "both points validated"
+      ],
+      "postconditions": [
+        "distance >= 0",
+        "distance == 0 iff point_a == point_b",
+        "triangle inequality holds"
+      ],
+      "error_conditions": [
+        "MANIFOLD_MISMATCH: Points from different manifolds",
+        "INVALID_POINTS: One or both points invalid"
+      ],
+      "complexity": {
+        "time": "O(d)",
+        "space": "O(n) where n is number of factors"
+      }
+    },
+    "compute_product_geodesic": {
+      "description": "Compute geodesic between two points in product manifold",
+      "inputs": {
+        "start_point": {
+          "type": "ProductPoint"
+        },
+        "end_point": {
+          "type": "ProductPoint"
+        },
+        "num_segments": {
+          "type": "integer",
+          "default": 100
+        }
+      },
+      "outputs": {
+        "geodesic": {
+          "type": "ProductGeodesic"
+        },
+        "path_points": {
+          "type": "array",
+          "items": {
+            "type": "ProductPoint"
+          }
+        }
+      },
+      "preconditions": [
+        "both points in same product manifold",
+        "points are not identical"
+      ],
+      "postconditions": [
+        "geodesic.is_minimizing == true for standard product metric",
+        "path_points[0] == start_point",
+        "path_points[-1] == end_point"
+      ],
+      "error_conditions": [
+        "MANIFOLD_MISMATCH: Points from different manifolds",
+        "IDENTICAL_POINTS: Start and end are same",
+        "CUT_LOCUS: Points at cut locus"
+      ],
+      "complexity": {
+        "time": "O(n * d * num_segments)",
+        "space": "O(num_segments * d)"
+      }
+    },
+    "exponential_map_product": {
+      "description": "Compute exponential map in product manifold",
+      "inputs": {
+        "base_point": {
+          "type": "ProductPoint"
+        },
+        "tangent_vector": {
+          "type": "ProductTangentVector"
+        }
+      },
+      "outputs": {
+        "result_point": {
+          "type": "ProductPoint"
+        },
+        "factor_results": {
+          "type": "array",
+          "items": {
+            "type": "FactorCoordinates"
+          }
+        }
+      },
+      "preconditions": [
+        "tangent_vector is tangent at base_point",
+        "tangent_vector norm within injectivity radius"
+      ],
+      "postconditions": [
+        "result_point on manifold",
+        "distance(base_point, result_point) == ||tangent_vector||"
+      ],
+      "error_conditions": [
+        "NOT_TANGENT: Vector not tangent at base point",
+        "BEYOND_INJECTIVITY: Vector norm exceeds injectivity radius"
+      ],
+      "complexity": {
+        "time": "O(d)",
+        "space": "O(d)"
+      }
+    },
+    "logarithmic_map_product": {
+      "description": "Compute logarithmic map in product manifold",
+      "inputs": {
+        "base_point": {
+          "type": "ProductPoint"
+        },
+        "target_point": {
+          "type": "ProductPoint"
+        }
+      },
+      "outputs": {
+        "tangent_vector": {
+          "type": "ProductTangentVector"
+        },
+        "factor_tangents": {
+          "type": "array",
+          "items": {
+            "type": "FactorTangent"
+          }
+        }
+      },
+      "preconditions": [
+        "both points in same manifold",
+        "target within injectivity radius of base"
+      ],
+      "postconditions": [
+        "exp(base_point, tangent_vector) == target_point",
+        "||tangent_vector|| == distance(base_point, target_point)"
+      ],
+      "error_conditions": [
+        "MANIFOLD_MISMATCH: Points from different manifolds",
+        "AT_CUT_LOCUS: Target at cut locus of base"
+      ],
+      "complexity": {
+        "time": "O(d)",
+        "space": "O(d)"
+      }
+    },
+    "parallel_transport_product": {
+      "description": "Parallel transport vector along geodesic in product manifold",
+      "inputs": {
+        "vector": {
+          "type": "ProductTangentVector"
+        },
+        "along_geodesic": {
+          "type": "ProductGeodesic"
+        },
+        "config": {
+          "type": "ParallelTransportConfig",
+          "optional": true
+        }
+      },
+      "outputs": {
+        "transported_vector": {
+          "type": "ProductTangentVector"
+        },
+        "transport_result": {
+          "type": "ProductParallelTransport"
+        }
+      },
+      "preconditions": [
+        "vector is tangent at geodesic.start_point",
+        "geodesic is valid"
+      ],
+      "postconditions": [
+        "transported_vector is tangent at geodesic.end_point",
+        "|transport_result.norm_preservation_error| < tolerance"
+      ],
+      "error_conditions": [
+        "NOT_TANGENT: Vector not tangent at start",
+        "INVALID_GEODESIC: Geodesic is invalid"
+      ],
+      "complexity": {
+        "time": "O(num_steps * d)",
+        "space": "O(d)"
+      }
+    },
+    "compute_cross_manifold_map": {
+      "description": "Compute certified bridge map between factors",
+      "inputs": {
+        "source_factor": {
+          "type": "string"
+        },
+        "target_factor": {
+          "type": "string"
+        },
+        "manifold_id": {
+          "type": "string"
+        },
+        "map_type": {
+          "type": "string",
+          "enum": [
+            "projection",
+            "certified_bridge",
+            "quasi_isometry"
+          ]
+        },
+        "sample_points": {
+          "type": "array",
+          "items": {
+            "type": "ProductPoint"
+          },
+          "optional": true
+        }
+      },
+      "outputs": {
+        "cross_map": {
+          "type": "CrossManifoldMap"
+        },
+        "distortion_certificate": {
+          "type": "DistortionCertificate"
+        }
+      },
+      "preconditions": [
+        "both factors exist in manifold",
+        "sufficient sample points for certification if required"
+      ],
+      "postconditions": [
+        "distortion_certificate.confidence_level >= 0.95",
+        "map is consistent with samples"
+      ],
+      "error_conditions": [
+        "UNKNOWN_FACTOR: Factor not found",
+        "INSUFFICIENT_SAMPLES: Not enough points for certification",
+        "HIGH_DISTORTION: Cannot achieve acceptable distortion"
+      ],
+      "complexity": {
+        "time": "O(n * d) where n is sample size",
+        "space": "O(n)"
+      }
+    },
+    "apply_cross_manifold_map": {
+      "description": "Apply cross-manifold map to transform factor coordinates",
+      "inputs": {
+        "cross_map": {
+          "type": "CrossManifoldMap"
+        },
+        "source_coordinates": {
+          "type": "FactorCoordinates"
+        }
+      },
+      "outputs": {
+        "target_coordinates": {
+          "type": "FactorCoordinates"
+        },
+        "local_distortion": {
+          "type": "number"
+        }
+      },
+      "preconditions": [
+        "source_coordinates in source factor of map",
+        "cross_map is valid"
+      ],
+      "postconditions": [
+        "target_coordinates on target factor manifold",
+        "local_distortion <= cross_map.distortion_certificate.max_expansion"
+      ],
+      "error_conditions": [
+        "WRONG_SOURCE_FACTOR: Coordinates not from source factor",
+        "MAP_UNDEFINED: Map not defined at point"
+      ],
+      "complexity": {
+        "time": "O(d_s + d_t)",
+        "space": "O(d_t)"
+      }
+    },
+    "compute_product_curvature": {
+      "description": "Compute curvature at point in product manifold",
+      "inputs": {
+        "point": {
+          "type": "ProductPoint"
+        },
+        "curvature_type": {
+          "type": "string",
+          "enum": [
+            "sectional",
+            "ricci",
+            "scalar",
+            "all"
+          ]
+        }
+      },
+      "outputs": {
+        "curvature": {
+          "type": "ProductCurvature"
+        }
+      },
+      "preconditions": [
+        "point is valid in manifold"
+      ],
+      "postconditions": [
+        "curvature values consistent with factor curvatures",
+        "for product metric: mixed sectional curvatures are zero"
+      ],
+      "error_conditions": [
+        "INVALID_POINT: Point not valid"
+      ],
+      "complexity": {
+        "time": "O(d²) for sectional, O(d⁴) for full Riemann",
+        "space": "O(d²)"
+      }
+    },
+    "principal_geodesic_analysis": {
+      "description": "Perform PGA on points in product manifold",
+      "inputs": {
+        "points": {
+          "type": "array",
+          "items": {
+            "type": "ProductPoint"
+          }
+        },
+        "num_components": {
+          "type": "integer"
+        },
+        "base_point": {
+          "type": "ProductPoint",
+          "optional": true
+        }
+      },
+      "outputs": {
+        "pga_result": {
+          "type": "PGAResult"
+        }
+      },
+      "preconditions": [
+        "points.length >= num_components",
+        "all points in same manifold"
+      ],
+      "postconditions": [
+        "principal_directions are orthonormal",
+        "eigenvalues in descending order",
+        "sum(variance_explained) <= 1.0"
+      ],
+      "error_conditions": [
+        "INSUFFICIENT_POINTS: Not enough points",
+        "MANIFOLD_MISMATCH: Points from different manifolds",
+        "NUMERICAL_INSTABILITY: Computation unstable"
+      ],
+      "complexity": {
+        "time": "O(n * d²) where n is number of points",
+        "space": "O(n * d + d²)"
+      }
+    },
+    "compute_mutual_information": {
+      "description": "Compute mutual information between factors",
+      "inputs": {
+        "manifold_id": {
+          "type": "string"
+        },
+        "sample_points": {
+          "type": "array",
+          "items": {
+            "type": "ProductPoint"
+          }
+        },
+        "estimation_method": {
+          "type": "string",
+          "enum": [
+            "kraskov",
+            "kernel",
+            "binning"
+          ],
+          "default": "kraskov"
+        }
+      },
+      "outputs": {
+        "mi_result": {
+          "type": "MutualInformationTest"
+        }
+      },
+      "preconditions": [
+        "sample_points.length >= 100 for reliable estimation",
+        "all points valid in manifold"
+      ],
+      "postconditions": [
+        "all MI values >= 0",
+        "significance tests performed"
+      ],
+      "error_conditions": [
+        "INSUFFICIENT_SAMPLES: Need more samples",
+        "ESTIMATION_FAILED: MI estimation failed"
+      ],
+      "complexity": {
+        "time": "O(n² * log(n)) for kraskov",
+        "space": "O(n)"
+      }
+    },
+    "select_factors": {
+      "description": "Select optimal subset of factors based on criteria",
+      "inputs": {
+        "manifold_id": {
+          "type": "string"
+        },
+        "selection_method": {
+          "type": "string",
+          "enum": [
+            "mutual_information",
+            "pga",
+            "task_specific"
+          ]
+        },
+        "target_dimension": {
+          "type": "integer",
+          "optional": true
+        },
+        "variance_threshold": {
+          "type": "number",
+          "optional": true
+        },
+        "sample_points": {
+          "type": "array",
+          "items": {
+            "type": "ProductPoint"
+          }
+        }
+      },
+      "outputs": {
+        "selection": {
+          "type": "FactorSelection"
+        }
+      },
+      "preconditions": [
+        "manifold has multiple factors",
+        "sufficient sample points"
+      ],
+      "postconditions": [
+        "selection respects target_dimension if specified",
+        "selection achieves variance_threshold if specified"
+      ],
+      "error_conditions": [
+        "CANNOT_ACHIEVE_TARGET: Cannot meet dimension/variance targets",
+        "INSUFFICIENT_SAMPLES: Need more samples"
+      ],
+      "complexity": {
+        "time": "O(n * d + n² * k) where k is number of factors",
+        "space": "O(n * d)"
+      }
+    },
+    "monotone_refinement_step": {
+      "description": "Perform one step of monotone refinement with escalation",
+      "inputs": {
+        "current_refinement": {
+          "type": "MonotoneRefinement"
+        },
+        "quality_snapshot": {
+          "type": "QualitySnapshot"
+        }
+      },
+      "outputs": {
+        "updated_refinement": {
+          "type": "MonotoneRefinement"
+        },
+        "escalated": {
+          "type": "boolean"
+        },
+        "new_factors_added": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "preconditions": [
+        "current_refinement is valid",
+        "quality_snapshot is recent"
+      ],
+      "postconditions": [
+        "if escalated: new_selection includes more factors",
+        "escalation chain is monotone increasing"
+      ],
+      "error_conditions": [
+        "MAX_LEVEL_REACHED: Already at maximum factor set",
+        "QUALITY_DATA_STALE: Quality snapshot too old"
+      ],
+      "complexity": {
+        "time": "O(k) where k is number of factors",
+        "space": "O(k)"
+      }
+    },
+    "embed_into_product": {
+      "description": "Embed data into product manifold",
+      "inputs": {
+        "source_data": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          }
+        },
+        "target_manifold": {
+          "type": "ProductManifoldConfig"
+        },
+        "optimization_config": {
+          "type": "object"
+        }
+      },
+      "outputs": {
+        "embedding_result": {
+          "type": "EmbeddingResult"
+        }
+      },
+      "preconditions": [
+        "source_data dimensions compatible",
+        "target_manifold is valid"
+      ],
+      "postconditions": [
+        "all embedded points on manifold",
+        "quality_metrics.geodesic_preservation > threshold"
+      ],
+      "error_conditions": [
+        "DIMENSION_MISMATCH: Source incompatible with target",
+        "OPTIMIZATION_FAILED: Embedding optimization did not converge"
+      ],
+      "complexity": {
+        "time": "O(n² * d * iterations)",
+        "space": "O(n * d)"
+      }
+    },
+    "compute_frechet_mean": {
+      "description": "Compute Fréchet mean in product manifold",
+      "inputs": {
+        "points": {
+          "type": "array",
+          "items": {
+            "type": "ProductPoint"
+          }
+        },
+        "weights": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "optional": true
+        },
+        "max_iterations": {
+          "type": "integer",
+          "default": 100
+        },
+        "tolerance": {
+          "type": "number",
+          "default": 1e-08
+        }
+      },
+      "outputs": {
+        "mean": {
+          "type": "ProductPoint"
+        },
+        "iterations": {
+          "type": "integer"
+        },
+        "converged": {
+          "type": "boolean"
+        },
+        "final_variance": {
+          "type": "number"
+        }
+      },
+      "preconditions": [
+        "all points in same manifold",
+        "weights sum to 1 if provided",
+        "points within same convex region"
+      ],
+      "postconditions": [
+        "mean minimizes weighted sum of squared distances",
+        "mean is on manifold"
+      ],
+      "error_conditions": [
+        "DID_NOT_CONVERGE: Failed to converge",
+        "POINTS_TOO_SPREAD: Points too far apart"
+      ],
+      "complexity": {
+        "time": "O(iterations * n * d)",
+        "space": "O(d)"
+      }
+    },
+    "weiszfeld_algorithm": {
+      "description": "Compute geometric median using Weiszfeld's algorithm",
+      "inputs": {
+        "points": {
+          "type": "array",
+          "items": {
+            "type": "ProductPoint"
+          }
+        },
+        "weights": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "optional": true
+        },
+        "max_iterations": {
+          "type": "integer",
+          "default": 100
+        },
+        "tolerance": {
+          "type": "number",
+          "default": 1e-08
+        }
+      },
+      "outputs": {
+        "median": {
+          "type": "ProductPoint"
+        },
+        "iterations": {
+          "type": "integer"
+        },
+        "converged": {
+          "type": "boolean"
+        }
+      },
+      "preconditions": [
+        "all points in same manifold",
+        "points.length >= 1"
+      ],
+      "postconditions": [
+        "median minimizes weighted sum of distances",
+        "median is robust to outliers"
+      ],
+      "error_conditions": [
+        "DID_NOT_CONVERGE: Failed to converge",
+        "COINCIDENT_POINT: Iteration hit a data point"
+      ],
+      "complexity": {
+        "time": "O(iterations * n * d)",
+        "space": "O(d)"
+      }
+    },
+    "validate_product_point": {
+      "description": "Validate that a point lies on product manifold",
+      "inputs": {
+        "point": {
+          "type": "ProductPoint"
+        },
+        "tolerance": {
+          "type": "number",
+          "default": 1e-10
+        }
+      },
+      "outputs": {
+        "valid": {
+          "type": "boolean"
+        },
+        "factor_validations": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "total_residual": {
+          "type": "number"
+        }
+      },
+      "preconditions": [
+        "point has correct dimension"
+      ],
+      "postconditions": [
+        "if valid: all factor constraints satisfied within tolerance"
+      ],
+      "error_conditions": [
+        "DIMENSION_MISMATCH: Wrong number of coordinates"
+      ],
+      "complexity": {
+        "time": "O(d)",
+        "space": "O(n)"
+      }
+    }
+  },
+  "tests": {
+    "conformance_blocks": [
+      {
+        "schema_version": "block-uni-1",
+        "block_id": "product.construction.basic",
+        "metadata": {
+          "title": "Product Manifold Construction Test",
+          "description": "Verify construction of product manifolds with multiple hyperbolic factors",
+          "created_at": "2026-01-16T00:00:00Z",
+          "authors": [
+            "HyperSync Test Team"
+          ],
+          "tags": [
+            "product-manifold",
+            "construction",
+            "geometry"
+          ]
+        },
+        "integrity": {
+          "manifest": [
+            {
+              "path": "test_data/two_factor_hyperbolic.json",
+              "role": "fixture",
+              "sha256": "a1b2c3d4e5f6789012345678901234567890123456789012345678901234abcd"
+            }
+          ],
+          "dir_merkle_root": "b2c3d4e5f6789012345678901234567890123456789012345678901234abcdef",
+          "canonicalization": {
+            "field_order": "declared",
+            "byte_encoding": "utf8",
+            "float_format": "scientific",
+            "normalize_sign": true
+          },
+          "integrity_policy": {
+            "must_match_manifest": true,
+            "deny_unknown_files": true,
+            "allow_out_of_dir": false
+          }
+        },
+        "environment": {
+          "os": "linux",
+          "arch": "x86_64",
+          "accel": "cpu",
+          "precision": "fp64",
+          "deterministic_reductions": true,
+          "blas_threads": 1
+        },
+        "manifold": {
+          "model": "hyperboloid",
+          "dimension": 128,
+          "curvature_K": -1.0
+        },
+        "numeric_policy": {
+          "rounding_mode": "nearest_even",
+          "denormals": "preserve",
+          "rng_impl": "xoshiro256**",
+          "retraction_native": "exponential_map_intrinsic",
+          "vector_transport_native": "levi_civita_intrinsic",
+          "tolerances": {
+            "distance_abs": "1.0e-10",
+            "distance_rel": "1.0e-8"
+          }
+        },
+        "substrate": {
+          "topology": {
+            "nodes": [
+              "test_node"
+            ],
+            "edges": []
+          },
+          "queues": {
+            "policy": "fifo",
+            "drop": "tail"
+          },
+          "flow_control": {
+            "algorithm": "none"
+          },
+          "time_model": {
+            "clock": "lamport"
+          },
+          "crypto_capabilities": {
+            "enc": "none",
+            "auth": "none",
+            "hash": "sha256"
+          },
+          "observability": {
+            "tracing": "basic",
+            "export": "stdout"
+          }
+        },
+        "semantics": {
+          "message_types": [
+            {
+              "type_id": "product_point",
+              "sensitivity": "internal"
+            }
+          ],
+          "topics": [
+            {
+              "topic_id": "geometry",
+              "intent": "custom",
+              "qos": "at_least_once",
+              "ordering": "none"
+            }
+          ],
+          "headers": {
+            "causality": "lamport",
+            "trace": "enabled",
+            "clearance_levels": [
+              "public"
+            ],
+            "required_headers": [
+              "trace_id"
+            ]
+          },
+          "policies": {
+            "clearance_rules": [],
+            "shadow_ops_policy": {
+              "enabled": false,
+              "on_violation": "log"
+            },
+            "privacy_budget": {
+              "epsilon": 1.0,
+              "delta": 1e-05,
+              "mechanism": "gaussian"
+            }
+          }
+        },
+        "fixtures": {
+          "data": {
+            "points": [
+              [
+                1.0,
+                0.5,
+                0.3
+              ],
+              [
+                1.2,
+                0.4,
+                0.2
+              ]
+            ]
+          }
+        },
+        "program": [
+          {
+            "name": "create_product",
+            "op": "ops.sync.riemannian_consensus",
+            "args": {
+              "factors": [
+                {
+                  "dimension": 64,
+                  "curvature_K": -1.0
+                },
+                {
+                  "dimension": 64,
+                  "curvature_K": -0.5
+                }
+              ]
+            },
+            "save_as": "manifold_result"
+          }
+        ],
+        "checks": {
+          "invariants": [
+            {
+              "id": "INV.DIST.CORRECTNESS",
+              "metric": "lorentz"
+            }
+          ],
+          "ops": [
+            {
+              "kind": "sync.converges_tol",
+              "target": "manifold_result",
+              "params": {
+                "tol": 1e-08
+              }
+            }
+          ],
+          "performance": {
+            "max_runtime_ms": 1000,
+            "max_memory_mb": 256
+          }
+        },
+        "coverage": {
+          "claims": [
+            "PRODUCT.CONSTRUCTION.VALID",
+            "PRODUCT.DIMENSION.CORRECT"
+          ],
+          "matrix": [
+            {
+              "claim_id": "PRODUCT.CONSTRUCTION.VALID",
+              "step": "create_product"
+            }
+          ]
+        },
+        "receipts": {
+          "per_step": [
+            {
+              "step_name": "create_product",
+              "sha256": "c3d4e5f6789012345678901234567890123456789012345678901234abcdef01"
+            }
+          ]
+        }
+      },
+      {
+        "schema_version": "block-uni-1",
+        "block_id": "product.geodesic.cross_factor",
+        "metadata": {
+          "title": "Cross-Factor Geodesic Computation Test",
+          "description": "Verify geodesic computation across multiple factors in product space",
+          "created_at": "2026-01-16T00:00:00Z",
+          "authors": [
+            "HyperSync Test Team"
+          ],
+          "tags": [
+            "geodesic",
+            "cross-factor",
+            "product-manifold"
+          ]
+        },
+        "integrity": {
+          "manifest": [
+            {
+              "path": "test_data/geodesic_endpoints.json",
+              "role": "fixture",
+              "sha256": "d4e5f6789012345678901234567890123456789012345678901234abcdef0123"
+            }
+          ],
+          "dir_merkle_root": "e5f6789012345678901234567890123456789012345678901234abcdef012345",
+          "canonicalization": {
+            "field_order": "declared",
+            "byte_encoding": "utf8",
+            "float_format": "scientific",
+            "normalize_sign": true
+          },
+          "integrity_policy": {
+            "must_match_manifest": true,
+            "deny_unknown_files": true,
+            "allow_out_of_dir": false
+          }
+        },
+        "environment": {
+          "os": "linux",
+          "arch": "x86_64",
+          "accel": "cpu",
+          "precision": "fp64",
+          "deterministic_reductions": true,
+          "blas_threads": 1
+        },
+        "manifold": {
+          "model": "hyperboloid",
+          "dimension": 128,
+          "curvature_K": -1.0
+        },
+        "numeric_policy": {
+          "rounding_mode": "nearest_even",
+          "denormals": "preserve",
+          "rng_impl": "xoshiro256**",
+          "retraction_native": "exponential_map_intrinsic",
+          "vector_transport_native": "levi_civita_intrinsic",
+          "tolerances": {
+            "distance_abs": "1.0e-10",
+            "distance_rel": "1.0e-8"
+          }
+        },
+        "substrate": {
+          "topology": {
+            "nodes": [
+              "geo_node"
+            ],
+            "edges": []
+          },
+          "queues": {
+            "policy": "fifo",
+            "drop": "tail"
+          },
+          "flow_control": {
+            "algorithm": "none"
+          },
+          "time_model": {
+            "clock": "lamport"
+          },
+          "crypto_capabilities": {
+            "enc": "none",
+            "auth": "none",
+            "hash": "sha256"
+          },
+          "observability": {
+            "tracing": "basic",
+            "export": "stdout"
+          }
+        },
+        "semantics": {
+          "message_types": [
+            {
+              "type_id": "geodesic_result",
+              "sensitivity": "internal"
+            }
+          ],
+          "topics": [
+            {
+              "topic_id": "geodesics",
+              "intent": "custom",
+              "qos": "at_least_once",
+              "ordering": "none"
+            }
+          ],
+          "headers": {
+            "causality": "lamport",
+            "trace": "enabled",
+            "clearance_levels": [
+              "public"
+            ],
+            "required_headers": [
+              "trace_id"
+            ]
+          },
+          "policies": {
+            "clearance_rules": [],
+            "shadow_ops_policy": {
+              "enabled": false,
+              "on_violation": "log"
+            },
+            "privacy_budget": {
+              "epsilon": 1.0,
+              "delta": 1e-05,
+              "mechanism": "gaussian"
+            }
+          }
+        },
+        "fixtures": {
+          "data": {
+            "points": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.5,
+                0.5,
+                0.5,
+                0.5
+              ]
+            ]
+          }
+        },
+        "program": [
+          {
+            "name": "compute_geodesic",
+            "op": "ops.routing.route_path",
+            "args": {
+              "source": "$fixtures.data.points[0]",
+              "target": "$fixtures.data.points[1]"
+            },
+            "save_as": "geodesic_result"
+          }
+        ],
+        "checks": {
+          "invariants": [
+            {
+              "id": "INV.DIST.CORRECTNESS",
+              "metric": "lorentz"
+            },
+            {
+              "id": "INV.EXP_LOG.INVERSE",
+              "metric": "lorentz"
+            }
+          ],
+          "ops": [
+            {
+              "kind": "routing.path_valid",
+              "target": "geodesic_result"
+            },
+            {
+              "kind": "routing.stretch_leq",
+              "target": "geodesic_result",
+              "params": {
+                "stretch_bound": 1.01
+              }
+            }
+          ],
+          "performance": {
+            "max_runtime_ms": 500,
+            "max_memory_mb": 128
+          }
+        },
+        "coverage": {
+          "claims": [
+            "GEODESIC.MINIMIZING",
+            "GEODESIC.FACTOR_DECOMPOSITION"
+          ],
+          "matrix": [
+            {
+              "claim_id": "GEODESIC.MINIMIZING",
+              "step": "compute_geodesic"
+            }
+          ]
+        },
+        "receipts": {
+          "per_step": [
+            {
+              "step_name": "compute_geodesic",
+              "sha256": "f6789012345678901234567890123456789012345678901234abcdef01234567"
+            }
+          ]
+        }
+      },
+      {
+        "schema_version": "block-uni-1",
+        "block_id": "product.transport.parallel",
+        "metadata": {
+          "title": "Parallel Transport in Product Manifold Test",
+          "description": "Verify parallel transport preserves vector properties across factors",
+          "created_at": "2026-01-16T00:00:00Z",
+          "authors": [
+            "HyperSync Test Team"
+          ],
+          "tags": [
+            "parallel-transport",
+            "product-manifold",
+            "geometry"
+          ]
+        },
+        "integrity": {
+          "manifest": [
+            {
+              "path": "test_data/transport_vectors.json",
+              "role": "fixture",
+              "sha256": "789012345678901234567890123456789012345678901234abcdef0123456789"
+            }
+          ],
+          "dir_merkle_root": "89012345678901234567890123456789012345678901234abcdef01234567890",
+          "canonicalization": {
+            "field_order": "declared",
+            "byte_encoding": "utf8",
+            "float_format": "scientific",
+            "normalize_sign": true
+          },
+          "integrity_policy": {
+            "must_match_manifest": true,
+            "deny_unknown_files": true,
+            "allow_out_of_dir": false
+          }
+        },
+        "environment": {
+          "os": "linux",
+          "arch": "x86_64",
+          "accel": "cpu",
+          "precision": "fp64",
+          "deterministic_reductions": true,
+          "blas_threads": 1
+        },
+        "manifold": {
+          "model": "hyperboloid",
+          "dimension": 64,
+          "curvature_K": -1.0
+        },
+        "numeric_policy": {
+          "rounding_mode": "nearest_even",
+          "denormals": "preserve",
+          "rng_impl": "xoshiro256**",
+          "retraction_native": "exponential_map_intrinsic",
+          "vector_transport_native": "levi_civita_intrinsic",
+          "tolerances": {
+            "distance_abs": "1.0e-12",
+            "distance_rel": "1.0e-10",
+            "holonomy_angle_abs": "1.0e-8"
+          }
+        },
+        "substrate": {
+          "topology": {
+            "nodes": [
+              "transport_node"
+            ],
+            "edges": []
+          },
+          "queues": {
+            "policy": "fifo",
+            "drop": "tail"
+          },
+          "flow_control": {
+            "algorithm": "none"
+          },
+          "time_model": {
+            "clock": "lamport"
+          },
+          "crypto_capabilities": {
+            "enc": "none",
+            "auth": "none",
+            "hash": "sha256"
+          },
+          "observability": {
+            "tracing": "basic",
+            "export": "stdout"
+          }
+        },
+        "semantics": {
+          "message_types": [
+            {
+              "type_id": "transport_result",
+              "sensitivity": "internal"
+            }
+          ],
+          "topics": [
+            {
+              "topic_id": "transport",
+              "intent": "custom",
+              "qos": "at_least_once",
+              "ordering": "none"
+            }
+          ],
+          "headers": {
+            "causality": "lamport",
+            "trace": "enabled",
+            "clearance_levels": [
+              "public"
+            ],
+            "required_headers": [
+              "trace_id"
+            ]
+          },
+          "policies": {
+            "clearance_rules": [],
+            "shadow_ops_policy": {
+              "enabled": false,
+              "on_violation": "log"
+            },
+            "privacy_budget": {
+              "epsilon": 1.0,
+              "delta": 1e-05,
+              "mechanism": "gaussian"
+            }
+          }
+        },
+        "fixtures": {
+          "data": {
+            "points": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.2,
+                0.3,
+                0.1
+              ]
+            ]
+          }
+        },
+        "program": [
+          {
+            "name": "parallel_transport_test",
+            "op": "ops.sync.riemannian_consensus",
+            "args": {
+              "nodes": [
+                "transport_node"
+              ],
+              "initial_values": "$fixtures.data.points",
+              "max_rounds": 10
+            },
+            "save_as": "transport_result"
+          }
+        ],
+        "checks": {
+          "invariants": [
+            {
+              "id": "INV.TRANSPORT.CONSISTENCY",
+              "metric": "lorentz"
+            },
+            {
+              "id": "INV.HOLONOMY.BOUNDS",
+              "metric": "holonomy_angle",
+              "expected": {
+                "max_angle": 0.01
+              }
+            }
+          ],
+          "ops": [
+            {
+              "kind": "sync.converges_tol",
+              "target": "transport_result",
+              "params": {
+                "tol": 1e-10
+              }
+            }
+          ],
+          "performance": {
+            "max_runtime_ms": 200,
+            "max_memory_mb": 64
+          }
+        },
+        "coverage": {
+          "claims": [
+            "TRANSPORT.NORM_PRESERVED",
+            "TRANSPORT.HOLONOMY_BOUNDED"
+          ],
+          "matrix": [
+            {
+              "claim_id": "TRANSPORT.NORM_PRESERVED",
+              "step": "parallel_transport_test"
+            }
+          ]
+        },
+        "receipts": {
+          "per_step": [
+            {
+              "step_name": "parallel_transport_test",
+              "sha256": "9012345678901234567890123456789012345678901234abcdef012345678901"
+            }
+          ]
+        }
+      },
+      {
+        "schema_version": "block-uni-1",
+        "block_id": "product.pga.dimensionality",
+        "metadata": {
+          "title": "Principal Geodesic Analysis Test",
+          "description": "Verify PGA correctly identifies principal directions in product space",
+          "created_at": "2026-01-16T00:00:00Z",
+          "authors": [
+            "HyperSync Test Team"
+          ],
+          "tags": [
+            "pga",
+            "dimensionality-reduction",
+            "product-manifold"
+          ]
+        },
+        "integrity": {
+          "manifest": [
+            {
+              "path": "test_data/pga_sample_points.json",
+              "role": "fixture",
+              "sha256": "012345678901234567890123456789012345678901234abcdef0123456789012"
+            }
+          ],
+          "dir_merkle_root": "12345678901234567890123456789012345678901234abcdef01234567890123",
+          "canonicalization": {
+            "field_order": "declared",
+            "byte_encoding": "utf8",
+            "float_format": "scientific",
+            "normalize_sign": true
+          },
+          "integrity_policy": {
+            "must_match_manifest": true,
+            "deny_unknown_files": true,
+            "allow_out_of_dir": false
+          }
+        },
+        "environment": {
+          "os": "linux",
+          "arch": "x86_64",
+          "accel": "cpu",
+          "precision": "fp64",
+          "deterministic_reductions": true,
+          "blas_threads": 1
+        },
+        "manifold": {
+          "model": "hyperboloid",
+          "dimension": 256,
+          "curvature_K": -1.0
+        },
+        "numeric_policy": {
+          "rounding_mode": "nearest_even",
+          "denormals": "preserve",
+          "rng_impl": "xoshiro256**",
+          "retraction_native": "exponential_map_intrinsic",
+          "vector_transport_native": "levi_civita_intrinsic",
+          "tolerances": {
+            "distance_abs": "1.0e-10",
+            "distance_rel": "1.0e-8"
+          }
+        },
+        "substrate": {
+          "topology": {
+            "nodes": [
+              "pga_node"
+            ],
+            "edges": []
+          },
+          "queues": {
+            "policy": "fifo",
+            "drop": "tail"
+          },
+          "flow_control": {
+            "algorithm": "none"
+          },
+          "time_model": {
+            "clock": "lamport"
+          },
+          "crypto_capabilities": {
+            "enc": "none",
+            "auth": "none",
+            "hash": "sha256"
+          },
+          "observability": {
+            "tracing": "basic",
+            "export": "stdout"
+          }
+        },
+        "semantics": {
+          "message_types": [
+            {
+              "type_id": "pga_result",
+              "sensitivity": "internal"
+            }
+          ],
+          "topics": [
+            {
+              "topic_id": "analysis",
+              "intent": "custom",
+              "qos": "at_least_once",
+              "ordering": "none"
+            }
+          ],
+          "headers": {
+            "causality": "lamport",
+            "trace": "enabled",
+            "clearance_levels": [
+              "public"
+            ],
+            "required_headers": [
+              "trace_id"
+            ]
+          },
+          "policies": {
+            "clearance_rules": [],
+            "shadow_ops_policy": {
+              "enabled": false,
+              "on_violation": "log"
+            },
+            "privacy_budget": {
+              "epsilon": 1.0,
+              "delta": 1e-05,
+              "mechanism": "gaussian"
+            }
+          }
+        },
+        "fixtures": {
+          "data": {
+            "points": [
+              [
+                1.0,
+                0.1,
+                0.2
+              ],
+              [
+                1.1,
+                0.15,
+                0.18
+              ],
+              [
+                1.05,
+                0.12,
+                0.22
+              ]
+            ]
+          }
+        },
+        "program": [
+          {
+            "name": "run_pga",
+            "op": "ops.optimization.rsgd_intrinsic",
+            "args": {
+              "model": "pga_model",
+              "gradients": [],
+              "lr": 0.01,
+              "max_iters": 100
+            },
+            "save_as": "pga_result"
+          }
+        ],
+        "checks": {
+          "invariants": [
+            {
+              "id": "INV.DIST.CORRECTNESS",
+              "metric": "lorentz"
+            }
+          ],
+          "ops": [
+            {
+              "kind": "optimization.norm_decreases",
+              "target": "pga_result"
+            }
+          ],
+          "performance": {
+            "max_runtime_ms": 2000,
+            "max_memory_mb": 512
+          }
+        },
+        "coverage": {
+          "claims": [
+            "PGA.ORTHONORMAL_DIRECTIONS",
+            "PGA.VARIANCE_EXPLAINED"
+          ],
+          "matrix": [
+            {
+              "claim_id": "PGA.ORTHONORMAL_DIRECTIONS",
+              "step": "run_pga"
+            }
+          ]
+        },
+        "receipts": {
+          "per_step": [
+            {
+              "step_name": "run_pga",
+              "sha256": "2345678901234567890123456789012345678901234abcdef012345678901234"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "implementation_notes": {
+    "product_metric_computation": {
+      "description": "For standard Riemannian product metric, distance is sqrt(sum of squared factor distances)",
+      "formula": "d(p,q) = √(Σᵢ dᵢ(pᵢ,qᵢ)²)",
+      "optimization": "Factor distances can be computed in parallel"
+    },
+    "warped_product": {
+      "description": "Warped product metric M = B ×_f F with warping function f",
+      "formula": "g = g_B + f²(b) g_F",
+      "geodesic_equations": "Modified geodesic equations account for warping gradient"
+    },
+    "cross_manifold_transport": {
+      "description": "Transport across factors requires certified bridges",
+      "distortion_bounds": "Bi-Lipschitz constant bounds max expansion/contraction",
+      "validation": "Sample-based validation with confidence intervals"
+    },
+    "pga_algorithm": {
+      "description": "Iterative algorithm using tangent space PCA with retraction",
+      "steps": [
+        "1. Compute Fréchet mean as base point",
+        "2. Log-map all points to tangent space",
+        "3. Perform SVD in tangent space",
+        "4. Transform principal directions back to manifold"
+      ],
+      "complexity": "O(n * d²) for n points in d dimensions"
+    },
+    "numerical_stability": {
+      "factor_projection": "Use stable algorithms for each factor type",
+      "hyperboloid_constraint": "Maintain x₀² - ||x||² = 1/|K| exactly",
+      "condition_monitoring": "Track condition numbers during operations"
+    }
+  }
+}

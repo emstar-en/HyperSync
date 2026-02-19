@@ -1,0 +1,650 @@
+{
+  "name": "AGUA Product Manifold H\u2074 \u00d7 S\u00b3 \u00d7 E\u2075",
+  "version": "1.0.0",
+  "description": "Complete product manifold structure for AGUA 12D unified geometric architecture",
+  "total_dimension": 12,
+  "component_dimensions": {
+    "H4": 4,
+    "S3": 3,
+    "E5": 5
+  },
+  "operations": [
+    {
+      "id": "QW-PM.1",
+      "name": "product_point_creation",
+      "description": "Create point in H\u2074 \u00d7 S\u00b3 \u00d7 E\u2075 product manifold",
+      "category": "primitive",
+      "parameters": [
+        {
+          "name": "h4_component",
+          "type": "HyperboloidPoint",
+          "description": "H\u2074 component"
+        },
+        {
+          "name": "s3_component",
+          "type": "S3Point",
+          "description": "S\u00b3 component"
+        },
+        {
+          "name": "e5_component",
+          "type": "E5Point",
+          "description": "E\u2075 component"
+        }
+      ],
+      "returns": {
+        "type": "ProductPoint",
+        "description": "Point in H\u2074 \u00d7 S\u00b3 \u00d7 E\u2075"
+      },
+      "formula": {
+        "expression": "p = (h, s, e) where h \u2208 H\u2074, s \u2208 S\u00b3, e \u2208 E\u2075",
+        "validation": [
+          "\u27e8h, h\u27e9_Lorentz = -1 (H\u2074 constraint)",
+          "\u27e8s, s\u27e9_Euclidean = 1 (S\u00b3 constraint)",
+          "e \u2208 \u211d\u2075 (E\u2075 constraint)"
+        ]
+      },
+      "mathematical_properties": [
+        "Total dimension: 12 = 4 + 3 + 5",
+        "Product structure: M = H\u2074 \u00d7 S\u00b3 \u00d7 E\u2075",
+        "Independence: Components are independent coordinates"
+      ],
+      "edge_cases": [
+        {
+          "case": "invalid_h4",
+          "description": "H\u2074 point not on hyperboloid",
+          "handling": "Error: InvalidH4Point"
+        },
+        {
+          "case": "invalid_s3",
+          "description": "S\u00b3 point not on sphere",
+          "handling": "Error: InvalidS3Point"
+        },
+        {
+          "case": "invalid_e5",
+          "description": "E\u2075 component non-finite",
+          "handling": "Error: InvalidE5Point"
+        }
+      ],
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      },
+      "synthetic_tests": [
+        {
+          "name": "standard_product_point",
+          "test_cases": [
+            {
+              "input": {
+                "h4_component": {
+                  "t": 1,
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "s3_component": {
+                  "w": 1,
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "e5_component": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              "expected": "Valid ProductPoint"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "QW-PM.2",
+      "name": "product_inner_product",
+      "description": "Compute inner product on product manifold tangent space",
+      "category": "primitive",
+      "parameters": [
+        {
+          "name": "base_point",
+          "type": "ProductPoint",
+          "description": "Base point"
+        },
+        {
+          "name": "v1",
+          "type": "ProductTangentVector",
+          "description": "First tangent vector"
+        },
+        {
+          "name": "v2",
+          "type": "ProductTangentVector",
+          "description": "Second tangent vector"
+        }
+      ],
+      "returns": {
+        "type": "float64",
+        "description": "Inner product"
+      },
+      "formula": {
+        "expression": "\u27e8v1, v2\u27e9_product = \u27e8v1_H, v2_H\u27e9_H\u2074 + \u27e8v1_S, v2_S\u27e9_S\u00b3 + \u27e8v1_E, v2_E\u27e9_E\u2075",
+        "components": {
+          "h4_part": "Lorentz inner product on H\u2074 component",
+          "s3_part": "Euclidean inner product on S\u00b3 component",
+          "e5_part": "Euclidean inner product on E\u2075 component"
+        }
+      },
+      "mathematical_properties": [
+        "Symmetry: \u27e8v1, v2\u27e9 = \u27e8v2, v1\u27e9",
+        "Linearity: Bilinear form",
+        "Decomposition: Sum of component inner products"
+      ],
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      }
+    },
+    {
+      "id": "QW-PM.3",
+      "name": "product_distance",
+      "description": "Compute distance on product manifold",
+      "category": "primitive",
+      "parameters": [
+        {
+          "name": "p1",
+          "type": "ProductPoint",
+          "description": "First point"
+        },
+        {
+          "name": "p2",
+          "type": "ProductPoint",
+          "description": "Second point"
+        }
+      ],
+      "returns": {
+        "type": "float64",
+        "description": "Distance"
+      },
+      "formula": {
+        "expression": "d(p1, p2) = \u221a(d_H\u2074(h1,h2)\u00b2 + d_S\u00b3(s1,s2)\u00b2 + d_E\u2075(e1,e2)\u00b2)",
+        "components": {
+          "h4_dist": "d_H\u2074(h1, h2) using hyperbolic distance",
+          "s3_dist": "d_S\u00b3(s1, s2) using spherical distance",
+          "e5_dist": "d_E\u2075(e1, e2) using Euclidean distance"
+        }
+      },
+      "mathematical_properties": [
+        "Metric: Satisfies metric axioms",
+        "Product metric: Induced by component metrics",
+        "Triangle inequality: d(p1,p3) \u2264 d(p1,p2) + d(p2,p3)"
+      ],
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      }
+    },
+    {
+      "id": "QW-PM.4",
+      "name": "product_exponential_map",
+      "description": "Exponential map on product manifold",
+      "category": "manifold",
+      "parameters": [
+        {
+          "name": "base_point",
+          "type": "ProductPoint"
+        },
+        {
+          "name": "tangent_vector",
+          "type": "ProductTangentVector"
+        }
+      ],
+      "returns": {
+        "type": "ProductPoint"
+      },
+      "formula": {
+        "expression": "exp_p(v) = (exp_H\u2074(v_H), exp_S\u00b3(v_S), exp_E\u2075(v_E))",
+        "components": {
+          "h4_exp": "Hyperbolic exponential map",
+          "s3_exp": "Spherical exponential map",
+          "e5_exp": "Euclidean exponential map (translation)"
+        }
+      },
+      "mathematical_properties": [
+        "Component-wise: Apply exponential map to each component",
+        "Geodesics: Product geodesic is (\u03b3_H, \u03b3_S, \u03b3_E)"
+      ],
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      }
+    },
+    {
+      "id": "QW-PM.5",
+      "name": "product_logarithmic_map",
+      "description": "Logarithmic map on product manifold",
+      "category": "manifold",
+      "parameters": [
+        {
+          "name": "base_point",
+          "type": "ProductPoint"
+        },
+        {
+          "name": "target_point",
+          "type": "ProductPoint"
+        }
+      ],
+      "returns": {
+        "type": "ProductTangentVector"
+      },
+      "formula": {
+        "expression": "log_p(q) = (log_H\u2074(q_H), log_S\u00b3(q_S), log_E\u2075(q_E))",
+        "components": {
+          "h4_log": "Hyperbolic logarithmic map",
+          "s3_log": "Spherical logarithmic map",
+          "e5_log": "Euclidean logarithmic map (difference)"
+        }
+      },
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      }
+    },
+    {
+      "id": "QW-PM.6",
+      "name": "product_parallel_transport",
+      "description": "Parallel transport on product manifold",
+      "category": "manifold",
+      "parameters": [
+        {
+          "name": "start_point",
+          "type": "ProductPoint"
+        },
+        {
+          "name": "end_point",
+          "type": "ProductPoint"
+        },
+        {
+          "name": "tangent_vector",
+          "type": "ProductTangentVector"
+        }
+      ],
+      "returns": {
+        "type": "ProductTangentVector"
+      },
+      "formula": {
+        "expression": "PT(v) = (PT_H\u2074(v_H), PT_S\u00b3(v_S), PT_E\u2075(v_E))",
+        "note": "Component-wise parallel transport"
+      },
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      }
+    },
+    {
+      "id": "QW-PM.7",
+      "name": "product_geodesic",
+      "description": "Compute geodesic on product manifold",
+      "category": "manifold",
+      "parameters": [
+        {
+          "name": "start_point",
+          "type": "ProductPoint"
+        },
+        {
+          "name": "end_point",
+          "type": "ProductPoint"
+        },
+        {
+          "name": "num_points",
+          "type": "uint32"
+        }
+      ],
+      "returns": {
+        "type": "array[ProductPoint]"
+      },
+      "formula": {
+        "expression": "\u03b3(t) = (\u03b3_H\u2074(t), \u03b3_S\u00b3(t), \u03b3_E\u2075(t))",
+        "note": "Product of component geodesics"
+      },
+      "complexity": {
+        "time": "O(n)",
+        "space": "O(n)"
+      }
+    },
+    {
+      "id": "QW-PM.8",
+      "name": "h4_projection",
+      "description": "Project ProductPoint to H\u2074 component",
+      "category": "projection",
+      "parameters": [
+        {
+          "name": "product_point",
+          "type": "ProductPoint"
+        }
+      ],
+      "returns": {
+        "type": "HyperboloidPoint"
+      },
+      "formula": {
+        "expression": "\u03c0_H\u2074(p) = p.h4_component"
+      },
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      }
+    },
+    {
+      "id": "QW-PM.9",
+      "name": "s3_projection",
+      "description": "Project ProductPoint to S\u00b3 component",
+      "category": "projection",
+      "parameters": [
+        {
+          "name": "product_point",
+          "type": "ProductPoint"
+        }
+      ],
+      "returns": {
+        "type": "S3Point"
+      },
+      "formula": {
+        "expression": "\u03c0_S\u00b3(p) = p.s3_component"
+      },
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      }
+    },
+    {
+      "id": "QW-PM.10",
+      "name": "e5_projection",
+      "description": "Project ProductPoint to E\u2075 component",
+      "category": "projection",
+      "parameters": [
+        {
+          "name": "product_point",
+          "type": "ProductPoint"
+        }
+      ],
+      "returns": {
+        "type": "E5Point"
+      },
+      "formula": {
+        "expression": "\u03c0_E\u2075(p) = p.e5_component"
+      },
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      }
+    },
+    {
+      "id": "QW-PM.11",
+      "name": "h4_embedding",
+      "description": "Embed H\u2074 point into product manifold",
+      "category": "embedding",
+      "parameters": [
+        {
+          "name": "h4_point",
+          "type": "HyperboloidPoint"
+        },
+        {
+          "name": "s3_base",
+          "type": "S3Point",
+          "description": "Base point for S\u00b3"
+        },
+        {
+          "name": "e5_base",
+          "type": "E5Point",
+          "description": "Base point for E\u2075"
+        }
+      ],
+      "returns": {
+        "type": "ProductPoint"
+      },
+      "formula": {
+        "expression": "\u03b9_H\u2074(h) = (h, s3_base, e5_base)"
+      },
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      }
+    },
+    {
+      "id": "QW-PM.12",
+      "name": "s3_embedding",
+      "description": "Embed S\u00b3 point into product manifold",
+      "category": "embedding",
+      "parameters": [
+        {
+          "name": "s3_point",
+          "type": "S3Point"
+        },
+        {
+          "name": "h4_base",
+          "type": "HyperboloidPoint"
+        },
+        {
+          "name": "e5_base",
+          "type": "E5Point"
+        }
+      ],
+      "returns": {
+        "type": "ProductPoint"
+      },
+      "formula": {
+        "expression": "\u03b9_S\u00b3(s) = (h4_base, s, e5_base)"
+      },
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      }
+    },
+    {
+      "id": "QW-PM.13",
+      "name": "e5_embedding",
+      "description": "Embed E\u2075 point into product manifold",
+      "category": "embedding",
+      "parameters": [
+        {
+          "name": "e5_point",
+          "type": "E5Point"
+        },
+        {
+          "name": "h4_base",
+          "type": "HyperboloidPoint"
+        },
+        {
+          "name": "s3_base",
+          "type": "S3Point"
+        }
+      ],
+      "returns": {
+        "type": "ProductPoint"
+      },
+      "formula": {
+        "expression": "\u03b9_E\u2075(e) = (h4_base, s3_base, e)"
+      },
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      }
+    },
+    {
+      "id": "QW-PM.14",
+      "name": "product_curvature",
+      "description": "Compute curvature of product manifold",
+      "category": "advanced",
+      "parameters": [
+        {
+          "name": "base_point",
+          "type": "ProductPoint"
+        },
+        {
+          "name": "v1",
+          "type": "ProductTangentVector"
+        },
+        {
+          "name": "v2",
+          "type": "ProductTangentVector"
+        }
+      ],
+      "returns": {
+        "type": "float64"
+      },
+      "formula": {
+        "expression": "K(v1, v2) depends on which component 2-plane lies in",
+        "cases": {
+          "h4_plane": "K = -1 if 2-plane in H\u2074 tangent space",
+          "s3_plane": "K = +1 if 2-plane in S\u00b3 tangent space",
+          "e5_plane": "K = 0 if 2-plane in E\u2075 tangent space",
+          "mixed": "K = 0 if 2-plane spans multiple components"
+        }
+      },
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      }
+    },
+    {
+      "id": "QW-PM.15",
+      "name": "cross_component_transport",
+      "description": "Transport information between product manifold components",
+      "category": "advanced",
+      "parameters": [
+        {
+          "name": "product_point",
+          "type": "ProductPoint"
+        },
+        {
+          "name": "source_component",
+          "type": "string",
+          "description": "Source: 'H4', 'S3', or 'E5'"
+        },
+        {
+          "name": "target_component",
+          "type": "string"
+        },
+        {
+          "name": "data",
+          "type": "variant"
+        }
+      ],
+      "returns": {
+        "type": "variant"
+      },
+      "formula": {
+        "expression": "Component-specific transformation rules",
+        "note": "Custom transformations between geometric spaces"
+      },
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      }
+    },
+    {
+      "id": "QW-PM.16",
+      "name": "product_volume_element",
+      "description": "Compute volume element on product manifold",
+      "category": "advanced",
+      "parameters": [
+        {
+          "name": "base_point",
+          "type": "ProductPoint"
+        }
+      ],
+      "returns": {
+        "type": "float64"
+      },
+      "formula": {
+        "expression": "dV = dV_H\u2074 \u00d7 dV_S\u00b3 \u00d7 dV_E\u2075",
+        "note": "Product of component volume elements"
+      },
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      }
+    }
+  ],
+  "type_definitions": {
+    "ProductPoint": {
+      "description": "Point in H\u2074 \u00d7 S\u00b3 \u00d7 E\u2075 product manifold",
+      "fields": {
+        "h4_component": {
+          "type": "HyperboloidPoint",
+          "dimension": 4
+        },
+        "s3_component": {
+          "type": "S3Point",
+          "dimension": 3
+        },
+        "e5_component": {
+          "type": "E5Point",
+          "dimension": 5
+        }
+      },
+      "dimension": 12,
+      "metric": "Product metric: ds\u00b2 = ds\u00b2_H\u2074 + ds\u00b2_S\u00b3 + ds\u00b2_E\u2075"
+    },
+    "ProductTangentVector": {
+      "description": "Tangent vector on product manifold",
+      "fields": {
+        "base_point": {
+          "type": "ProductPoint"
+        },
+        "h4_tangent": {
+          "type": "HyperboloidTangentVector"
+        },
+        "s3_tangent": {
+          "type": "S3TangentVector"
+        },
+        "e5_tangent": {
+          "type": "E5Vector"
+        }
+      },
+      "dimension": 12
+    }
+  },
+  "geometric_properties": {
+    "manifold_dimension": 12,
+    "component_dimensions": {
+      "H4": 4,
+      "S3": 3,
+      "E5": 5
+    },
+    "curvature": {
+      "type": "Mixed curvature",
+      "h4_component": "Constant negative curvature -1",
+      "s3_component": "Constant positive curvature +1",
+      "e5_component": "Zero curvature (flat)"
+    },
+    "topology": {
+      "product_topology": "H\u2074 \u00d7 S\u00b3 \u00d7 E\u2075",
+      "h4_topology": "Non-compact, simply connected",
+      "s3_topology": "Compact, simply connected",
+      "e5_topology": "Non-compact, contractible"
+    },
+    "metric": {
+      "type": "Product Riemannian metric",
+      "signature": "Riemannian (all positive definite in tangent spaces)"
+    }
+  },
+  "integration": {
+    "agua_unification": "Complete AGUA 12D unified manifold",
+    "coordinate_representation": "Point12D in agua_integration_spec.json",
+    "conversion": "Bijection between ProductPoint and Point12D",
+    "relationships": {
+      "h4_operations": "Use Wave 1-5 H\u2074 operations on h4_component",
+      "s3_operations": "Use Wave 6A S\u00b3 operations on s3_component",
+      "e5_operations": "Use Wave 6B E\u2075 operations on e5_component"
+    }
+  },
+  "metadata": {
+    "license": {
+      "type": "AGPLv3",
+      "name": "GNU Affero General Public License v3.0",
+      "url": "https://www.gnu.org/licenses/agpl-3.0.html",
+      "description": "This specification is licensed under AGPLv3. Any implementation or derivative work must also be licensed under AGPLv3 and source code must be made available."
+    }
+  }
+}

@@ -1,0 +1,522 @@
+{
+  "name": "sdl_integration_layer",
+  "version": "3.1.0",
+  "description": "SDL Integration Layer specification - Integration with HVS, VNES, NVM, Bootstrap, and other HyperSync subsystems",
+  "license": {
+    "type": "AGPLv3",
+    "text": "This specification is licensed under the GNU Affero General Public License v3.0. See https://www.gnu.org/licenses/agpl-3.0.html for full license text.",
+    "copyright": "Copyright (c) 2024-2026 HyperSync Project"
+  },
+  "subsystem": "SDL",
+  "category": "integration",
+  "stunir_compatible": true,
+  "dependencies": [
+    "sdl_core_infrastructure@3.1.0",
+    "hypersync_vector_storage@3.0.0",
+    "hypersync_vnes@3.0.0",
+    "hypersync_nvm@3.0.0",
+    "hypersync_bootstrap@3.0.0"
+  ],
+  "integration_architecture": {
+    "overview": "SDL integrates with all major HyperSync subsystems to provide unified semantic discovery and storage",
+    "subsystem_relationships": {
+      "hvs": {
+        "type": "foundation",
+        "description": "HVS provides storage backend for SDL",
+        "direction": "SDL uses HVS"
+      },
+      "vnes": {
+        "type": "client",
+        "description": "VNES uses SDL for extension storage and discovery",
+        "direction": "VNES uses SDL"
+      },
+      "nvm": {
+        "type": "sibling",
+        "description": "NVM and SDL share HVS, can cross-reference",
+        "direction": "bidirectional"
+      },
+      "bootstrap": {
+        "type": "orchestrator",
+        "description": "Bootstrap initializes and coordinates SDL",
+        "direction": "Bootstrap orchestrates SDL"
+      },
+      "capsule_system": {
+        "type": "client",
+        "description": "Capsules are stored and discovered via SDL",
+        "direction": "Capsule uses SDL"
+      },
+      "make_x_for_y": {
+        "type": "heavy_client",
+        "description": "MXFY heavily uses SDL for building block discovery",
+        "direction": "MXFY uses SDL extensively"
+      }
+    }
+  },
+  "hvs_integration": {
+    "overview": "SDL uses HVS as its primary storage and indexing backend",
+    "operation_mapping": {
+      "sdl_ingest_shard": {
+        "hvs_operations": ["hvs_store_vector", "hvs_store_metadata"],
+        "data_flow": "Shard → Vector extraction → HVS storage"
+      },
+      "sdl_discover_shards": {
+        "hvs_operations": ["hvs_semantic_search"],
+        "data_flow": "Query → Vector → HVS k-NN → Results"
+      },
+      "sdl_activate_shard": {
+        "hvs_operations": ["hvs_retrieve_vector", "hvs_retrieve_content"],
+        "data_flow": "Shard ID → HVS retrieval → Memory load"
+      },
+      "sdl_remove_shard": {
+        "hvs_operations": ["hvs_delete_vector", "hvs_delete_metadata"],
+        "data_flow": "Shard ID → HVS deletion"
+      },
+      "sdl_index_lake": {
+        "hvs_operations": ["hvs_build_index", "hvs_optimize_index"],
+        "data_flow": "All shards → Reindex in HVS"
+      },
+      "sdl_optimize_lake": {
+        "hvs_operations": ["hvs_compact_storage", "hvs_rebalance_index"],
+        "data_flow": "Optimize HVS storage"
+      }
+    },
+    "storage_schema": {
+      "shard_storage": {
+        "key_format": "sdl:shard:{shard_id}",
+        "value_structure": {
+          "content": "bytes",
+          "metadata": "json",
+          "capabilities": "json array",
+          "dependencies": "uuid array"
+        }
+      },
+      "vector_storage": {
+        "key_format": "sdl:vector:{shard_id}",
+        "value_structure": {
+          "vector": "float64 array",
+          "manifold_component": "enum",
+          "manifold_location": "coordinates"
+        }
+      },
+      "capability_index": {
+        "key_format": "sdl:capability:{capability_name}",
+        "value_structure": "array of shard_ids"
+      }
+    },
+    "geometric_features": {
+      "manifold_projection": "SDL vectors projected to AGUA H⁴ × S³ × E⁵ manifold",
+      "geodesic_queries": "HVS supports geodesic distance queries",
+      "curvature_aware": "Distance metrics respect manifold curvature"
+    }
+  },
+  "vnes_integration": {
+    "overview": "VNES (Vector Native Extension System) uses SDL for extension storage and discovery",
+    "integration_pattern": {
+      "description": "Extensions are stored as SDL shards with special metadata",
+      "shard_type": "code",
+      "metadata_requirements": {
+        "type": "extension",
+        "capabilities": "array of extension capabilities",
+        "version": "semantic version",
+        "interface": "extension interface specification"
+      }
+    },
+    "operation_mapping": {
+      "vnes_register_extension": {
+        "sdl_operation": "sdl_ingest_shard",
+        "additional_steps": [
+          "Validate extension interface",
+          "Register extension capabilities",
+          "Update extension registry"
+        ]
+      },
+      "vnes_discover_extensions": {
+        "sdl_operation": "sdl_discover_shards",
+        "filters": {
+          "metadata.type": "extension"
+        }
+      },
+      "vnes_load_extension": {
+        "sdl_operation": "sdl_activate_shard",
+        "additional_steps": [
+          "Load extension dependencies",
+          "Initialize extension runtime",
+          "Register hooks"
+        ]
+      },
+      "vnes_unload_extension": {
+        "sdl_operation": "sdl_deactivate_shard",
+        "additional_steps": [
+          "Cleanup extension state",
+          "Unregister hooks"
+        ]
+      }
+    },
+    "extension_lifecycle": {
+      "stages": [
+        {
+          "stage": "register",
+          "sdl_state": "ingested, indexed",
+          "vnes_state": "available"
+        },
+        {
+          "stage": "discover",
+          "sdl_state": "searchable",
+          "vnes_state": "discoverable"
+        },
+        {
+          "stage": "load",
+          "sdl_state": "active",
+          "vnes_state": "loaded, running"
+        },
+        {
+          "stage": "unload",
+          "sdl_state": "inactive",
+          "vnes_state": "unloaded"
+        }
+      ]
+    },
+    "policy_integration": {
+      "description": "VNES policies can influence SDL search results",
+      "examples": [
+        "Prefer extensions matching hardware capabilities",
+        "Prefer newer versions",
+        "Prefer trusted sources"
+      ]
+    }
+  },
+  "nvm_integration": {
+    "overview": "NVM (Non-Volatile Memory) and SDL are sibling systems sharing HVS backend",
+    "relationship": {
+      "shared_backend": "Both use HVS for vector storage",
+      "cross_referencing": "NVM items can reference SDL shard IDs",
+      "vector_reuse": "Can reuse shard vectors in memory items"
+    },
+    "integration_patterns": {
+      "shard_usage_memory": {
+        "description": "Remember which shards were used for tasks",
+        "flow": [
+          "Task uses SDL shards",
+          "Store usage context in NVM",
+          "Future tasks can recall useful shards"
+        ],
+        "nvm_item_structure": {
+          "key": "shard_usage:{shard_id}",
+          "value": {
+            "shard_id": "UUID",
+            "usage_context": "description",
+            "effectiveness_score": "float",
+            "timestamp": "datetime"
+          },
+          "vector": "reuse shard vector"
+        }
+      },
+      "context_aware_discovery": {
+        "description": "Use NVM context to improve SDL searches",
+        "flow": [
+          "Retrieve relevant NVM memories",
+          "Extract previously used shards",
+          "Boost those shards in SDL search"
+        ]
+      }
+    },
+    "operations": {
+      "store_shard_reference": {
+        "description": "Store shard usage in NVM for future recall",
+        "inputs": ["shard_id", "context", "effectiveness"],
+        "outputs": ["memory_id"]
+      },
+      "recall_shard_usage": {
+        "description": "Recall past shard usage from NVM",
+        "inputs": ["context_query"],
+        "outputs": ["array of shard references with contexts"]
+      }
+    }
+  },
+  "bootstrap_integration": {
+    "overview": "Bootstrap orchestrates SDL initialization and lifecycle",
+    "initialization_order": {
+      "position": 3,
+      "description": "SDL initialized after HVS (1) and NVM (2), before VNES (4)",
+      "dependencies": ["HVS must be ready", "NVM available for cross-reference"]
+    },
+    "initialization_steps": [
+      {
+        "step": 1,
+        "action": "Load SDL configuration",
+        "config_source": "bootstrap config → sdl_config section"
+      },
+      {
+        "step": 2,
+        "action": "Connect to HVS backend",
+        "operation": "hvs_connect()"
+      },
+      {
+        "step": 3,
+        "action": "Load or create lake",
+        "operation": "sdl_get_lake() or sdl_create_lake()"
+      },
+      {
+        "step": 4,
+        "action": "Verify index health",
+        "operation": "sdl_lake_statistics()"
+      },
+      {
+        "step": 5,
+        "action": "Run incremental index if needed",
+        "operation": "sdl_index_lake(mode=INCREMENTAL)"
+      },
+      {
+        "step": 6,
+        "action": "Register with VNES",
+        "operation": "Ready for VNES extension loading"
+      }
+    ],
+    "health_check": {
+      "operation": "sdl_lake_statistics",
+      "checks": [
+        "Shard count > 0 or expected empty",
+        "Index quality > 0.8",
+        "No orphaned shards",
+        "Dependency graph valid"
+      ]
+    },
+    "shutdown_steps": [
+      {
+        "step": 1,
+        "action": "Deactivate all active shards",
+        "operation": "for each active: sdl_deactivate_shard()"
+      },
+      {
+        "step": 2,
+        "action": "Flush pending writes",
+        "operation": "hvs_flush()"
+      },
+      {
+        "step": 3,
+        "action": "Update statistics",
+        "operation": "sdl_lake_statistics(detailed=true)"
+      },
+      {
+        "step": 4,
+        "action": "Disconnect from HVS",
+        "operation": "hvs_disconnect()"
+      }
+    ],
+    "hot_reload": {
+      "description": "Support for runtime SDL configuration changes",
+      "supported_changes": [
+        "Index parameters",
+        "Search parameters",
+        "Performance tuning"
+      ],
+      "unsupported_changes": [
+        "Storage backend",
+        "Manifold configuration"
+      ]
+    }
+  },
+  "capsule_integration": {
+    "overview": "HyperSync Capsules map directly to SDL shards",
+    "mapping": {
+      "capsule": "SDLShard with type=code and metadata.type=capsule",
+      "capsule_manifest": "Shard capabilities + metadata",
+      "capsule_dependencies": "Shard dependencies",
+      "capsule_components": "Shard capabilities"
+    },
+    "operations": {
+      "load_capsule": {
+        "sdl_equivalent": "sdl_activate_shard",
+        "additional": "Fractal loading of nested capsules"
+      },
+      "unload_capsule": {
+        "sdl_equivalent": "sdl_deactivate_shard"
+      },
+      "discover_capsules": {
+        "sdl_equivalent": "sdl_discover_shards with filters.metadata.type=capsule"
+      },
+      "compose_capsules": {
+        "sdl_operations": [
+          "sdl_discover_shards (find building blocks)",
+          "sdl_dependency_discovery (resolve deps)",
+          "sdl_activate_shard (load each)"
+        ]
+      }
+    },
+    "fractal_support": {
+      "description": "Capsules containing capsules = nested shards",
+      "implementation": "Recursive activation with dependency resolution"
+    }
+  },
+  "make_x_for_y_integration": {
+    "overview": "Make X for Y heavily uses SDL for building block discovery and composition",
+    "workflow": {
+      "understand": {
+        "description": "Parse user intent",
+        "sdl_operations": ["sdl_semantic_query (understand context)"]
+      },
+      "discover": {
+        "description": "Find relevant building blocks",
+        "sdl_operations": [
+          "sdl_discover_shards (find code primitives)",
+          "sdl_capability_discovery (find specific functions)",
+          "sdl_similar_search (find alternatives)"
+        ]
+      },
+      "compose": {
+        "description": "Assemble building blocks",
+        "sdl_operations": [
+          "sdl_dependency_discovery (resolve deps)",
+          "sdl_activate_shard (load blocks)"
+        ]
+      },
+      "generate": {
+        "description": "Generate new application",
+        "sdl_operations": ["sdl_ingest_shard (store generated code)"]
+      },
+      "iterate": {
+        "description": "Refine based on feedback",
+        "sdl_operations": ["sdl_similar_search (find improvements)"]
+      }
+    },
+    "sdl_content_types": {
+      "code_primitives": "Functions, classes, modules for composition",
+      "ui_components": "Widgets, layouts for UI generation",
+      "templates": "Code generation templates",
+      "configs": "Configuration templates",
+      "examples": "Example implementations for reference"
+    }
+  },
+  "api_specification": {
+    "internal_api": {
+      "description": "API for HyperSync subsystems",
+      "access": "Direct function calls within HyperSync process",
+      "authentication": "None (internal)",
+      "operations": "All SDL operations"
+    },
+    "extension_api": {
+      "description": "API for VNES extensions",
+      "access": "Through VNES extension context",
+      "authentication": "Extension token",
+      "operations": ["discover", "search", "get_shard", "get_capability"],
+      "restrictions": ["No direct write access", "Rate limited"]
+    },
+    "external_api": {
+      "description": "API for external tools (future)",
+      "access": "REST/gRPC",
+      "authentication": "API key",
+      "operations": ["search", "get_shard", "list_capabilities"],
+      "restrictions": ["Read-only by default", "Rate limited"]
+    }
+  },
+  "event_system": {
+    "description": "SDL emits events for subsystem coordination",
+    "events": {
+      "shard_ingested": {
+        "payload": { "shard_id": "UUID", "type": "string", "capabilities": "array" },
+        "subscribers": ["VNES", "NVM", "Capsule"]
+      },
+      "shard_activated": {
+        "payload": { "shard_id": "UUID" },
+        "subscribers": ["VNES", "Make X for Y"]
+      },
+      "shard_deactivated": {
+        "payload": { "shard_id": "UUID" },
+        "subscribers": ["VNES"]
+      },
+      "shard_removed": {
+        "payload": { "shard_id": "UUID" },
+        "subscribers": ["VNES", "NVM", "Capsule"]
+      },
+      "index_rebuilt": {
+        "payload": { "indexed_count": "int", "duration": "float" },
+        "subscribers": ["Bootstrap", "Monitoring"]
+      },
+      "capability_registered": {
+        "payload": { "capability_name": "string", "shard_id": "UUID" },
+        "subscribers": ["VNES", "Make X for Y"]
+      }
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "SDL-INT-001",
+      "name": "sdl_hvs_store",
+      "category": "HVS Integration",
+      "description": "Store shard in HVS backend",
+      "signature": {
+        "inputs": {
+          "shard": { "type": "SDLShard" }
+        },
+        "outputs": {
+          "success": { "type": "bool" },
+          "hvs_key": { "type": "string" }
+        }
+      },
+      "implementation": {
+        "hvs_operations": [
+          "hvs_store_vector(shard.id, shard.vector, manifold_location)",
+          "hvs_store_metadata(shard.id, shard.metadata)",
+          "hvs_store_content(shard.id, shard.content)"
+        ]
+      }
+    },
+    {
+      "operation_id": "SDL-INT-002",
+      "name": "sdl_vnes_register_extension",
+      "category": "VNES Integration",
+      "description": "Register VNES extension via SDL",
+      "signature": {
+        "inputs": {
+          "name": { "type": "string" },
+          "version": { "type": "string" },
+          "capabilities": { "type": "array" },
+          "implementation": { "type": "bytes" }
+        },
+        "outputs": {
+          "extension_id": { "type": "UUID" },
+          "shard_id": { "type": "UUID" }
+        }
+      },
+      "implementation": {
+        "steps": [
+          "1. Validate extension interface",
+          "2. Create shard with type=code, metadata.type=extension",
+          "3. Call sdl_ingest_shard",
+          "4. Register in VNES extension registry"
+        ]
+      }
+    },
+    {
+      "operation_id": "SDL-INT-003",
+      "name": "sdl_bootstrap_initialize",
+      "category": "Bootstrap Integration",
+      "description": "Initialize SDL during bootstrap",
+      "signature": {
+        "inputs": {
+          "config": { "type": "SDLConfig" }
+        },
+        "outputs": {
+          "success": { "type": "bool" },
+          "lake_id": { "type": "UUID" },
+          "statistics": { "type": "SDLStatistics" }
+        }
+      }
+    },
+    {
+      "operation_id": "SDL-INT-004",
+      "name": "sdl_emit_event",
+      "category": "Event System",
+      "description": "Emit SDL event for subsystem coordination",
+      "signature": {
+        "inputs": {
+          "event_type": { "type": "string" },
+          "payload": { "type": "dict" }
+        },
+        "outputs": {
+          "delivered_to": { "type": "array[string]" }
+        }
+      }
+    }
+  ]
+}

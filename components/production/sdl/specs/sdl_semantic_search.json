@@ -1,0 +1,586 @@
+{
+  "name": "sdl_semantic_search",
+  "version": "3.1.0",
+  "description": "SDL Semantic Search specification - Query processing, vector similarity, result fusion, and ranking mechanisms",
+  "license": {
+    "type": "AGPLv3",
+    "text": "This specification is licensed under the GNU Affero General Public License v3.0. See https://www.gnu.org/licenses/agpl-3.0.html for full license text.",
+    "copyright": "Copyright (c) 2024-2026 HyperSync Project"
+  },
+  "subsystem": "SDL",
+  "category": "search",
+  "stunir_compatible": true,
+  "dependencies": [
+    "sdl_core_infrastructure@3.1.0",
+    "sdl_indexing_system@3.1.0",
+    "sdl_vectorization_engine@3.1.0",
+    "hypersync_vector_storage@3.0.0"
+  ],
+  "search_architecture": {
+    "overview": "Multi-stage semantic search pipeline with geometric-aware similarity computation and intelligent result fusion",
+    "pipeline_stages": [
+      {
+        "stage": 1,
+        "name": "Query Processing",
+        "description": "Parse and vectorize search query"
+      },
+      {
+        "stage": 2,
+        "name": "Scope Selection",
+        "description": "Determine which indices to search"
+      },
+      {
+        "stage": 3,
+        "name": "Vector Search",
+        "description": "Execute ANN search on selected indices"
+      },
+      {
+        "stage": 4,
+        "name": "Filtering",
+        "description": "Apply metadata and type filters"
+      },
+      {
+        "stage": 5,
+        "name": "Ranking",
+        "description": "Rank results by relevance"
+      },
+      {
+        "stage": 6,
+        "name": "Result Fusion",
+        "description": "Combine results from multiple sources"
+      }
+    ],
+    "search_scopes": {
+      "shards": {
+        "description": "Search shard-level semantic vectors",
+        "index": "Primary semantic index",
+        "use_case": "Find relevant modules/files"
+      },
+      "capabilities": {
+        "description": "Search capability vectors",
+        "index": "Capability registry + capability vectors",
+        "use_case": "Find specific functionality"
+      },
+      "content": {
+        "description": "Search within shard content",
+        "index": "Content chunks index",
+        "use_case": "Find specific code/text within shards"
+      },
+      "all": {
+        "description": "Multi-level search with fusion",
+        "indices": ["shards", "capabilities", "content"],
+        "use_case": "Comprehensive search"
+      }
+    }
+  },
+  "type_definitions": {
+    "SearchQuery": {
+      "description": "Search query specification",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "text": { "type": "string", "description": "Natural language query" },
+          "vector": { "type": "array[float64]", "description": "Pre-computed query vector", "optional": true },
+          "scope": {
+            "type": "enum",
+            "values": ["shards", "capabilities", "content", "all"],
+            "default": "all"
+          },
+          "filters": { "type": "SearchFilters", "optional": true },
+          "k": { "type": "int", "default": 10, "description": "Number of results" },
+          "threshold": { "type": "float64", "default": 0.0, "description": "Minimum similarity score" }
+        }
+      }
+    },
+    "SearchFilters": {
+      "description": "Filters for search results",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "shard_type": {
+            "type": "enum",
+            "values": ["code", "data", "model", "config", "all"],
+            "default": "all"
+          },
+          "metadata_filters": {
+            "type": "dict",
+            "description": "Key-value filters on metadata",
+            "examples": { "metadata.language": "python", "metadata.version": "3.9" }
+          },
+          "capability_type": {
+            "type": "enum",
+            "values": ["function", "model", "data", "config", "any"],
+            "optional": true
+          },
+          "active_only": { "type": "bool", "default": false },
+          "date_range": {
+            "type": "object",
+            "properties": {
+              "after": { "type": "datetime" },
+              "before": { "type": "datetime" }
+            },
+            "optional": true
+          }
+        }
+      }
+    },
+    "SearchResult": {
+      "description": "Individual search result",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "shard": { "type": "SDLShard" },
+          "score": { "type": "float64", "description": "Relevance score [0, 1]" },
+          "match_type": {
+            "type": "enum",
+            "values": ["shard", "capability", "content"]
+          },
+          "matched_capability": { "type": "SDLCapability", "optional": true },
+          "content_snippet": { "type": "string", "optional": true },
+          "provenance": {
+            "type": "object",
+            "properties": {
+              "source_index": { "type": "string" },
+              "rank_in_source": { "type": "int" },
+              "fusion_contribution": { "type": "float64" }
+            }
+          },
+          "explanation": {
+            "type": "object",
+            "description": "Explanation of why this result matched",
+            "properties": {
+              "matched_terms": { "type": "array[string]" },
+              "similarity_breakdown": { "type": "dict" }
+            }
+          }
+        }
+      }
+    },
+    "FusionConfig": {
+      "description": "Configuration for result fusion",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "method": {
+            "type": "enum",
+            "values": ["RRF", "WEIGHTED", "LEARNED", "MAX", "BORDA"],
+            "default": "RRF"
+          },
+          "rrf_k": { "type": "int", "default": 60, "description": "RRF constant" },
+          "weights": {
+            "type": "object",
+            "description": "Weights for WEIGHTED fusion",
+            "properties": {
+              "shards": { "type": "float64", "default": 0.4 },
+              "capabilities": { "type": "float64", "default": 0.35 },
+              "content": { "type": "float64", "default": 0.25 }
+            }
+          },
+          "deduplication": { "type": "bool", "default": true }
+        }
+      }
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "SDL-SEARCH-001",
+      "name": "sdl_semantic_search",
+      "category": "Search",
+      "description": "Execute semantic search across SDL",
+      "signature": {
+        "inputs": {
+          "query": { "type": "SearchQuery" },
+          "fusion_config": { "type": "FusionConfig", "optional": true }
+        },
+        "outputs": {
+          "results": { "type": "array[SearchResult]" },
+          "search_metadata": {
+            "type": "object",
+            "properties": {
+              "total_candidates": { "type": "int" },
+              "search_time_ms": { "type": "float64" },
+              "indices_searched": { "type": "array[string]" }
+            }
+          }
+        }
+      },
+      "implementation": {
+        "pipeline": [
+          {
+            "step": "query_vectorization",
+            "description": "Convert text query to vector",
+            "operation": "sdl_vectorize_content(query.text)",
+            "skip_if": "query.vector provided"
+          },
+          {
+            "step": "scope_expansion",
+            "description": "Determine indices to search based on scope",
+            "mapping": {
+              "shards": ["shard_index"],
+              "capabilities": ["capability_index"],
+              "content": ["content_chunk_index"],
+              "all": ["shard_index", "capability_index", "content_chunk_index"]
+            }
+          },
+          {
+            "step": "parallel_search",
+            "description": "Search each index in parallel",
+            "operation": "hvs_semantic_search(query_vector, k*2)"
+          },
+          {
+            "step": "filter_application",
+            "description": "Apply metadata and type filters",
+            "operations": [
+              "Filter by shard_type",
+              "Apply metadata_filters",
+              "Filter by capability_type",
+              "Filter by date_range",
+              "Filter by active_only"
+            ]
+          },
+          {
+            "step": "result_fusion",
+            "description": "Fuse results from multiple indices",
+            "methods": {
+              "RRF": "Reciprocal Rank Fusion",
+              "WEIGHTED": "Weighted score combination",
+              "LEARNED": "ML-based optimal fusion"
+            }
+          },
+          {
+            "step": "deduplication",
+            "description": "Remove duplicate shards from results"
+          },
+          {
+            "step": "final_ranking",
+            "description": "Apply final ranking and truncate to k"
+          }
+        ]
+      },
+      "complexity": "O(log n) per index + O(r log r) for fusion where r is total results",
+      "test_cases": [
+        {
+          "test_id": "SDL-SEARCH-001-T01",
+          "description": "Basic text search",
+          "input": {
+            "query": { "text": "parse JSON data", "scope": "all", "k": 5 }
+          },
+          "expected": {
+            "results.length": "<= 5",
+            "search_metadata.search_time_ms": "< 300"
+          }
+        },
+        {
+          "test_id": "SDL-SEARCH-001-T02",
+          "description": "Filtered search",
+          "input": {
+            "query": {
+              "text": "data processing",
+              "filters": { "shard_type": "code", "metadata_filters": { "language": "python" } }
+            }
+          },
+          "expected": {
+            "results[*].shard.type": "code"
+          }
+        },
+        {
+          "test_id": "SDL-SEARCH-001-T03",
+          "description": "Empty results",
+          "input": { "query": { "text": "nonexistent functionality xyz123" } },
+          "expected": { "results": [] }
+        },
+        {
+          "test_id": "SDL-SEARCH-001-T04",
+          "description": "Vector query",
+          "input": {
+            "query": { "vector": "[0.1, 0.2, ...]", "scope": "shards" }
+          },
+          "expected": {
+            "results[0].match_type": "shard"
+          }
+        },
+        {
+          "test_id": "SDL-SEARCH-001-T05",
+          "description": "Performance with 10k shards",
+          "setup": "Lake with 10k shards",
+          "expected": { "search_metadata.search_time_ms": "< 200" }
+        }
+      ]
+    },
+    {
+      "operation_id": "SDL-SEARCH-002",
+      "name": "sdl_capability_search",
+      "category": "Search",
+      "description": "Search for shards by capability",
+      "signature": {
+        "inputs": {
+          "capability_name": { "type": "string", "description": "Exact or fuzzy capability name" },
+          "capability_type": {
+            "type": "enum",
+            "values": ["function", "model", "data", "config", "any"],
+            "default": "any"
+          },
+          "fuzzy": { "type": "bool", "default": false, "description": "Enable fuzzy matching" },
+          "k": { "type": "int", "default": 10 }
+        },
+        "outputs": {
+          "results": { "type": "array[SearchResult]" },
+          "suggestions": { "type": "array[string]", "description": "Suggested capability names if no exact match" }
+        }
+      },
+      "implementation": {
+        "exact_match": {
+          "description": "O(1) lookup in capability registry",
+          "operation": "capability_registry.get(capability_name)"
+        },
+        "fuzzy_match": {
+          "description": "Semantic search on capability vectors",
+          "steps": [
+            "1. Vectorize capability_name",
+            "2. Search capability vector index",
+            "3. Return similar capabilities"
+          ]
+        },
+        "suggestion_generation": {
+          "description": "Generate suggestions when no match",
+          "methods": ["Edit distance", "Semantic similarity", "Prefix matching"]
+        }
+      },
+      "complexity": {
+        "exact": "O(1)",
+        "fuzzy": "O(log c) where c is capability count"
+      },
+      "test_cases": [
+        {
+          "test_id": "SDL-SEARCH-002-T01",
+          "description": "Exact capability match",
+          "input": { "capability_name": "parse_json", "fuzzy": false },
+          "expected": { "results[0].matched_capability.name": "parse_json" }
+        },
+        {
+          "test_id": "SDL-SEARCH-002-T02",
+          "description": "Fuzzy capability match",
+          "input": { "capability_name": "parse_jsn", "fuzzy": true },
+          "expected": {
+            "suggestions": "contains 'parse_json'"
+          }
+        },
+        {
+          "test_id": "SDL-SEARCH-002-T03",
+          "description": "Multiple providers",
+          "setup": "Multiple shards provide 'sort_list' capability",
+          "input": { "capability_name": "sort_list" },
+          "expected": { "results.length": "> 1" }
+        }
+      ]
+    },
+    {
+      "operation_id": "SDL-SEARCH-003",
+      "name": "sdl_similar_search",
+      "category": "Search",
+      "description": "Find shards similar to a given shard",
+      "signature": {
+        "inputs": {
+          "shard_id": { "type": "UUID", "description": "Reference shard" },
+          "similarity_type": {
+            "type": "enum",
+            "values": ["semantic", "structural", "hybrid"],
+            "default": "semantic"
+          },
+          "k": { "type": "int", "default": 10 },
+          "exclude_self": { "type": "bool", "default": true }
+        },
+        "outputs": {
+          "results": { "type": "array[SearchResult]" }
+        }
+      },
+      "implementation": {
+        "similarity_types": {
+          "semantic": {
+            "description": "Vector similarity in embedding space",
+            "operation": "k-NN on shard vector"
+          },
+          "structural": {
+            "description": "Code/data structure similarity",
+            "features": ["AST shape", "Function count", "Class hierarchy", "Data schema"]
+          },
+          "hybrid": {
+            "description": "Combined semantic and structural",
+            "formula": "score = α × semantic_sim + (1-α) × structural_sim",
+            "default_alpha": 0.7
+          }
+        }
+      },
+      "use_cases": ["Duplicate detection", "Alternative recommendations", "Refactoring suggestions"],
+      "test_cases": [
+        {
+          "test_id": "SDL-SEARCH-003-T01",
+          "description": "Semantic similarity search",
+          "input": { "shard_id": "uuid", "similarity_type": "semantic", "k": 5 },
+          "expected": { "results.length": "<= 5", "results[0].score": "> 0.5" }
+        },
+        {
+          "test_id": "SDL-SEARCH-003-T02",
+          "description": "Exclude self",
+          "input": { "shard_id": "uuid", "exclude_self": true },
+          "expected": { "results[*].shard.id": "!= input.shard_id" }
+        }
+      ]
+    },
+    {
+      "operation_id": "SDL-SEARCH-004",
+      "name": "sdl_cross_shard_search",
+      "category": "Search",
+      "description": "Unified search across all shards with advanced fusion",
+      "signature": {
+        "inputs": {
+          "query": { "type": "SearchQuery" },
+          "fusion_config": { "type": "FusionConfig" }
+        },
+        "outputs": {
+          "results": { "type": "array[SearchResult]" },
+          "per_shard_results": {
+            "type": "dict",
+            "description": "Results grouped by source shard"
+          }
+        }
+      },
+      "implementation": {
+        "steps": [
+          "1. Search each shard index separately",
+          "2. Collect results from each shard",
+          "3. Apply fusion method",
+          "4. Deduplicate across shards",
+          "5. Apply final ranking"
+        ],
+        "fusion_methods": {
+          "RRF": {
+            "name": "Reciprocal Rank Fusion",
+            "formula": "score(d) = Σ 1/(k + rank_i(d))",
+            "description": "Robust fusion based on rank positions"
+          },
+          "WEIGHTED": {
+            "name": "Weighted Score Combination",
+            "formula": "score(d) = Σ w_i × score_i(d)",
+            "description": "Weighted average of source scores"
+          },
+          "LEARNED": {
+            "name": "ML-based Fusion",
+            "description": "Trained model for optimal fusion",
+            "features": ["Source scores", "Query type", "Content type"]
+          },
+          "BORDA": {
+            "name": "Borda Count",
+            "formula": "score(d) = Σ (n - rank_i(d))",
+            "description": "Sum of inverse ranks"
+          }
+        }
+      },
+      "complexity": "O(s × log n) where s is shard count",
+      "test_cases": [
+        {
+          "test_id": "SDL-SEARCH-004-T01",
+          "description": "RRF fusion",
+          "input": {
+            "query": { "text": "data processing" },
+            "fusion_config": { "method": "RRF", "rrf_k": 60 }
+          },
+          "expected": { "results.length": "> 0" }
+        }
+      ]
+    },
+    {
+      "operation_id": "SDL-SEARCH-005",
+      "name": "sdl_dependency_search",
+      "category": "Search",
+      "description": "Search for shard dependencies",
+      "signature": {
+        "inputs": {
+          "shard_id": { "type": "UUID" },
+          "direction": {
+            "type": "enum",
+            "values": ["dependencies", "dependents", "both"],
+            "default": "dependencies"
+          },
+          "recursive": { "type": "bool", "default": false },
+          "max_depth": { "type": "int", "default": 10 }
+        },
+        "outputs": {
+          "shards": { "type": "array[SDLShard]" },
+          "graph": {
+            "type": "object",
+            "description": "Dependency graph structure",
+            "properties": {
+              "nodes": { "type": "array[UUID]" },
+              "edges": { "type": "array[object]" }
+            }
+          },
+          "warnings": {
+            "type": "array[object]",
+            "description": "Warnings like circular dependencies"
+          }
+        }
+      },
+      "implementation": {
+        "algorithms": {
+          "dependencies": "Follow outgoing edges in dependency graph",
+          "dependents": "Follow incoming edges in dependency graph",
+          "recursive": "BFS/DFS traversal with cycle detection"
+        },
+        "cycle_detection": {
+          "algorithm": "DFS with visited set",
+          "handling": "Report cycle path as warning"
+        }
+      },
+      "complexity": "O(V + E) for graph traversal",
+      "test_cases": [
+        {
+          "test_id": "SDL-SEARCH-005-T01",
+          "description": "Direct dependencies",
+          "input": { "shard_id": "uuid", "direction": "dependencies", "recursive": false },
+          "expected": { "shards": "direct deps only" }
+        },
+        {
+          "test_id": "SDL-SEARCH-005-T02",
+          "description": "Recursive with cycle",
+          "setup": "Shards with circular dependency",
+          "input": { "recursive": true },
+          "expected": { "warnings": "contains CIRCULAR_DEPENDENCY" }
+        }
+      ]
+    }
+  ],
+  "ranking_algorithms": {
+    "primary_ranking": {
+      "description": "Initial ranking based on vector similarity",
+      "formula": "score = 1 / (1 + distance)",
+      "range": "[0, 1]"
+    },
+    "reranking": {
+      "description": "Optional reranking for improved relevance",
+      "methods": {
+        "cross_encoder": "Deep model scoring query-document pairs",
+        "bm25_hybrid": "Combine semantic with keyword matching",
+        "recency_boost": "Boost recent content",
+        "popularity_boost": "Boost frequently accessed shards"
+      }
+    },
+    "diversity_ranking": {
+      "description": "Ensure result diversity",
+      "algorithm": "MMR (Maximal Marginal Relevance)",
+      "formula": "MMR(d) = λ × sim(q,d) - (1-λ) × max(sim(d,d_i))"
+    }
+  },
+  "performance_characteristics": {
+    "latency_targets": {
+      "single_scope_search": "< 100ms",
+      "multi_scope_search": "< 200ms",
+      "cross_shard_search": "< 300ms"
+    },
+    "scalability": {
+      "shards_10k": "< 200ms",
+      "shards_100k": "< 500ms",
+      "shards_1m": "< 1000ms"
+    }
+  }
+}
