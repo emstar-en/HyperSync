@@ -11,19 +11,20 @@ Enable community-driven development of transparent, ethical, and locally-executa
 ## ✨ Core Components
 
 ### Foundation Layer
-- **AGUA** (Adaptive Unified Geometric Architecture) - Geometric substrate for deterministic state management
-- **PCT** (Propositional Concept Theory) - Formal logic and symbolic reasoning
-- **SDL** (Stochastic Decision Logic) - Probabilistic reasoning under uncertainty
+- **AGUA** (Automated Geometric Universal Architecture) - Geometric substrate for deterministic state management
+- **PCT** (Pathfinder → Cartographer → Trailblazer) - Spatial reasoning and navigation architecture
+- **SDL** (Semantic Data Lake) - Unified semantic data management
 
 ### Memory & State
-- **HVS-NVM** (Hierarchical Vector Store with Non-Volatile Memory) - Persistent memory architecture
-- **VNES** (Vector-based Natural Evolution System) - Adaptive state evolution
+- **HVS** (HyperVector/Visual System) - High-performance vector operations
+- **NVS** (Non-Volatile Memory) - Persistent memory architecture
+- **VNES** (Vector Native Extension System) - Vector-based extensibility layer
 
 ### Orchestration & Ethics
-- **MOM** (Multi-Model Orchestration Manager) - Multi-model coordination and resource management
+- **MOM** (Machine Orchestration Management) - Multi-model coordination and resource management
 - **HAW** (Human-AI Workspace) - Human-agent interaction and collaborative workflows
-- **ASCIF** (Adaptive Safety Constraint Integration Framework) - Ethical guidelines and safety constraints
-- **MXFY** (Maxify) - Intent parsing and template-based synthesis
+- **ASCIF** (Adaptive Social-Consciousness Integration Framework) - Ethical guidelines and social awareness
+- **MXFY** (Make X for Y) - Intent parsing and template-based synthesis
 
 ## 🚀 Key Features
 
