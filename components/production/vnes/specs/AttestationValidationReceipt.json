@@ -1,0 +1,25 @@
+{
+  "$id": "schema://receipts/AttestationValidationReceipt.json",
+  "$schema": "ext://fcbd7642ed3f",
+  "properties": {
+    "chain_digest": {
+      "type": "string"
+    },
+    "depth": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "receipt_kind": {
+      "const": "AttestationValidationReceipt"
+    },
+    "validated": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "receipt_kind",
+    "validated",
+    "chain_digest"
+  ],
+  "type": "object"
+}

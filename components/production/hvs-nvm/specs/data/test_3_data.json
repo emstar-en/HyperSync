@@ -1,0 +1,213 @@
+{
+  "test_name": "Geodesic Accuracy",
+  "timestamp": "2026-01-13 05:43:42",
+  "dimensions_tested": [
+    2,
+    4,
+    8,
+    16,
+    32,
+    64
+  ],
+  "tests": {
+    "shortest_path": [
+      {
+        "dimension": 2,
+        "n_trials": 50,
+        "n_violations": 0,
+        "violation_rate": 0.0,
+        "max_violation": 0.0,
+        "passed": true
+      },
+      {
+        "dimension": 4,
+        "n_trials": 50,
+        "n_violations": 0,
+        "violation_rate": 0.0,
+        "max_violation": 0.0,
+        "passed": true
+      },
+      {
+        "dimension": 8,
+        "n_trials": 50,
+        "n_violations": 0,
+        "violation_rate": 0.0,
+        "max_violation": 0.0,
+        "passed": true
+      },
+      {
+        "dimension": 16,
+        "n_trials": 50,
+        "n_violations": 0,
+        "violation_rate": 0.0,
+        "max_violation": 0.0,
+        "passed": true
+      },
+      {
+        "dimension": 32,
+        "n_trials": 50,
+        "n_violations": 0,
+        "violation_rate": 0.0,
+        "max_violation": 0.0,
+        "passed": true
+      },
+      {
+        "dimension": 64,
+        "n_trials": 50,
+        "n_violations": 0,
+        "violation_rate": 0.0,
+        "max_violation": 0.0,
+        "passed": true
+      }
+    ],
+    "geodesic_properties": [
+      {
+        "dimension": 2,
+        "n_trials": 50,
+        "start_error_mean": 0.0,
+        "start_error_max": 0.0,
+        "end_error_mean": 2.6564510579873966e-06,
+        "end_error_max": 4.910062489216216e-05,
+        "manifold_violation_mean": 1.3580322265625e-05,
+        "manifold_violation_max": 0.00023937225341796875,
+        "speed_variation_mean": 0.0002475389875985441,
+        "speed_variation_max": 0.0022355989314807073,
+        "passed": true
+      },
+      {
+        "dimension": 4,
+        "n_trials": 50,
+        "start_error_mean": 0.0,
+        "start_error_max": 0.0,
+        "end_error_mean": 5.4635097760069586e-06,
+        "end_error_max": 4.494411405175924e-05,
+        "manifold_violation_mean": 2.3348331451416017e-05,
+        "manifold_violation_max": 0.00022125244140625,
+        "speed_variation_mean": 0.00032261116139516003,
+        "speed_variation_max": 0.0019469689383949016,
+        "passed": true
+      },
+      {
+        "dimension": 8,
+        "n_trials": 50,
+        "start_error_mean": 0.0,
+        "start_error_max": 0.0,
+        "end_error_mean": 1.8010999156103935e-05,
+        "end_error_max": 5.689070530934259e-05,
+        "manifold_violation_mean": 0.00011072158813476562,
+        "manifold_violation_max": 0.00040531158447265625,
+        "speed_variation_mean": 0.0008950951274170382,
+        "speed_variation_max": 0.003378309188316522,
+        "passed": true
+      },
+      {
+        "dimension": 16,
+        "n_trials": 50,
+        "start_error_mean": 0.0,
+        "start_error_max": 0.0,
+        "end_error_mean": 0.0001032391066883065,
+        "end_error_max": 0.000678340089507401,
+        "manifold_violation_mean": 0.0007941055297851562,
+        "manifold_violation_max": 0.0046138763427734375,
+        "speed_variation_mean": 0.0044664924906981434,
+        "speed_variation_max": 0.018384382818760602,
+        "passed": false
+      },
+      {
+        "dimension": 32,
+        "n_trials": 50,
+        "start_error_mean": 0.0,
+        "start_error_max": 0.0,
+        "end_error_mean": 0.0004731697121314937,
+        "end_error_max": 0.0016826535575091839,
+        "manifold_violation_mean": 0.004603462219238281,
+        "manifold_violation_max": 0.015707015991210938,
+        "speed_variation_mean": 0.018168992929543035,
+        "speed_variation_max": 0.0629146805321558,
+        "passed": false
+      },
+      {
+        "dimension": 64,
+        "n_trials": 50,
+        "start_error_mean": 0.0,
+        "start_error_max": 0.0,
+        "end_error_mean": 0.002686405604326865,
+        "end_error_max": 0.01567087136209011,
+        "manifold_violation_mean": 0.034646100997924804,
+        "manifold_violation_max": 0.21744537353515625,
+        "speed_variation_mean": 0.11026977899094033,
+        "speed_variation_max": 0.4941028585412449,
+        "passed": false
+      }
+    ],
+    "numerical_accuracy": [
+      {
+        "dimension": 2,
+        "n_trials": 50,
+        "close_distance_error_mean": 0.0018868411846443508,
+        "medium_distance_error_mean": 0.0007351311195100367,
+        "far_distance_error_mean": 0.004327148181501822,
+        "overall_error_mean": 0.0011321880163192573,
+        "passed": true
+      },
+      {
+        "dimension": 4,
+        "n_trials": 50,
+        "close_distance_error_mean": 0.0012667743119934942,
+        "medium_distance_error_mean": 0.000991394827750662,
+        "far_distance_error_mean": 0.002352278776201249,
+        "overall_error_mean": 0.0010513377753735421,
+        "passed": true
+      },
+      {
+        "dimension": 8,
+        "n_trials": 50,
+        "close_distance_error_mean": null,
+        "medium_distance_error_mean": 0.002374195129556002,
+        "far_distance_error_mean": 0.005380757608964759,
+        "overall_error_mean": 0.0033964263725549796,
+        "passed": true
+      },
+      {
+        "dimension": 16,
+        "n_trials": 50,
+        "close_distance_error_mean": null,
+        "medium_distance_error_mean": 0.006695645147635487,
+        "far_distance_error_mean": 0.018115321510487874,
+        "overall_error_mean": 0.016744960346945587,
+        "passed": false
+      },
+      {
+        "dimension": 32,
+        "n_trials": 50,
+        "close_distance_error_mean": null,
+        "medium_distance_error_mean": null,
+        "far_distance_error_mean": 0.07109206124735752,
+        "overall_error_mean": 0.07109206124735752,
+        "passed": false
+      },
+      {
+        "dimension": 64,
+        "n_trials": 50,
+        "close_distance_error_mean": null,
+        "medium_distance_error_mean": null,
+        "far_distance_error_mean": 0.21011822033854352,
+        "overall_error_mean": 0.21011822033854352,
+        "passed": false
+      }
+    ]
+  },
+  "summary": {
+    "overall_pass_rate": {
+      "shortest_path": 1.0,
+      "geodesic_properties": 0.5,
+      "numerical_accuracy": 0.5
+    }
+  },
+  "metadata": {
+    "license": {
+      "name": "AGPLv3",
+      "url": "https://www.gnu.org/licenses/agpl-3.0.html"
+    }
+  }
+}

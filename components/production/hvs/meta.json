@@ -1,0 +1,143 @@
+{
+  "component": {
+    "name": "hvs",
+    "full_name": "HyperVector/Visual System",
+    "version": "2.0.0",
+    "status": "production",
+    "maturity": "stable",
+    "created": "2024-01-01",
+    "last_updated": "2026-02-19"
+  },
+  
+  "lifecycle": {
+    "stage": "production",
+    "promotion_history": [
+      {"from": "experimental", "to": "stable", "date": "2024-05-01"},
+      {"from": "stable", "to": "production", "date": "2024-12-01"}
+    ],
+    "next_review": "2026-05-01"
+  },
+  
+  "classification": {
+    "type": "foundation",
+    "layer": "communication-substrate",
+    "domain": ["vectors", "geometry", "model-communication", "synchronization", "bridging"]
+  },
+  
+  "relationships": {
+    "depends_on": ["agua"],
+    "used_by": ["pct", "mom", "haw", "ascif", "sdl", "vnes", "mxfy"],
+    "integrates_with": ["nvm", "stunir"],
+    "derived_from": null,
+    "derives": []
+  },
+  
+  "files": {
+    "specs": {
+      "location": "./specs",
+      "count": 15,
+      "format": ["json"],
+      "categories": ["geometry", "communication", "synchronization", "indexing", "bridging", "consensus"]
+    },
+    "reference": {
+      "location": "./reference",
+      "languages": ["rust", "python", "c"],
+      "purpose": "Examples for STUNIR process",
+      "note": "NOT generated code - reference implementations",
+      "index": "./reference/index.json"
+    },
+    "generated": {
+      "location": "./generated",
+      "targets": ["rust", "python", "c"],
+      "auto_generated": true,
+      "do_not_edit": true
+    },
+    "analysis": {
+      "location": "./analysis",
+      "types": ["performance", "usage", "feedback"],
+      "updated": "2026-02-19"
+    },
+    "docs": {
+      "location": "./docs",
+      "files": [
+        "HVS_CORE_SPECIFICATION.md",
+        "HVS_API_SPECIFICATIONS.md",
+        "HVS_ARCHITECTURE_DIAGRAMS.md",
+        "HVS_EXAMPLES_AND_PATTERNS.md",
+        "HVS_NVM_INTEGRATION_README.md"
+      ],
+      "count": 5
+    }
+  },
+  
+  "ai_metadata": {
+    "keywords": [
+      "hyperbolic", "vector", "geometry", "communication",
+      "hyperboloid", "poincare", "euclidean", "lorentzian",
+      "synchronization", "bridging", "model-communication",
+      "semantic-search", "ram-speed", "multi-geometry"
+    ],
+    "primary_functions": [
+      "model_communication",
+      "vector_storage",
+      "geometry_operations",
+      "semantic_search",
+      "synchronization",
+      "network_bridging"
+    ],
+    "use_cases": [
+      "model_to_model_communication",
+      "vector_indexing",
+      "hyperbolic_embeddings",
+      "cross_network_bridging",
+      "distributed_synchronization"
+    ],
+    "complexity": "high",
+    "learning_curve": "steep",
+    "documentation_quality": "excellent"
+  },
+  
+  "performance": {
+    "target_latency": "sub-millisecond",
+    "storage_type": "RAM",
+    "scalability": "horizontal",
+    "performance_tier": "fast",
+    "benchmarks": {
+      "vector_operations": "< 1ms",
+      "semantic_search": "< 5ms",
+      "synchronization": "13.5x faster than baseline"
+    }
+  },
+  
+  "development": {
+    "active_work": true,
+    "contributors": ["system"],
+    "issues_open": 0,
+    "next_milestone": "multi-geometry-optimization-v3"
+  },
+  
+  "stunir": {
+    "uses_stunir": true,
+    "spec_to_ir": true,
+    "ir_to_code": true,
+    "targets": ["rust", "python", "c"],
+    "last_generation": null,
+    "priority": {
+      "tier_a": ["Rust", "Python"],
+      "tier_b": ["C", "WASM"]
+    }
+  },
+  
+  "architecture": {
+    "role": "THE BACKBONE of HyperSync",
+    "description": "Multi-geometry vector system for model-to-model communication",
+    "key_features": [
+      "Multi-geometry support (Hyperboloid, Poincaré, Euclidean, Lorentzian)",
+      "RAM-speed vector operations",
+      "Model communication substrate",
+      "Network bridging",
+      "Dimension-specific synchronization",
+      "10-40x compression vs Euclidean embeddings"
+    ]
+  }
+}

@@ -1,0 +1,243 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "VNES Capsule Manifest (Enhanced)",
+  "type": "object",
+  "required": [
+    "id",
+    "version",
+    "type",
+    "description",
+    "capabilities",
+    "governance"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+    "type": "string",
+    "description": "Version of the manifest schema itself.",
+    "pattern": "^v[0-9]+(\.[0-9]+)*$"
+    },
+    "id": {
+    "type": "string",
+    "pattern": "^[a-z0-9_]+(\.[a-z0-9_]+)*$",
+    "description": "Hierarchical capsule identifier (without version)."
+    },
+    "version": {
+    "type": "string",
+    "pattern": "^\d+\.\d+\.\d+$",
+    "description": "Semantic version of the capsule (major.minor.patch)."
+    },
+    "type": {
+    "type": "string",
+    "description": "High-level classification of the capsule.",
+    "enum": [
+    "logic",
+    "pipeline",
+    "resource",
+    "policy",
+    "driver",
+    "ui",
+    "dataset",
+    "test"
+    ]
+    },
+    "description": {
+    "type": "string",
+    "description": "Human-readable description of the capsule's purpose."
+    },
+    "summary": {
+    "type": "string",
+    "description": "Optional short summary for UIs and quick overviews."
+    },
+    "tags": {
+    "type": "array",
+    "description": "Free-form tags for search and filtering.",
+    "items": {
+    "type": "string"
+    }
+    },
+    "capabilities": {
+    "type": "object",
+    "required": ["provides"],
+    "additionalProperties": false,
+    "properties": {
+    "provides": {
+    "type": "array",
+    "description": "Capabilities or interfaces that this capsule provides.",
+    "items": {
+    "type": "string"
+    }
+    },
+    "requires": {
+    "type": "array",
+    "description": "Capabilities or interfaces that this capsule depends on.",
+    "items": {
+    "type": "string"
+    }
+    },
+    "input_schemas": {
+    "type": "array",
+    "description": "References to input schema IDs used by this capsule.",
+    "items": {
+    "type": "string"
+    }
+    },
+    "output_schemas": {
+    "type": "array",
+    "description": "References to output schema IDs produced by this capsule.",
+    "items": {
+    "type": "string"
+    }
+    },
+    "determinism_tier": {
+    "type": "string",
+    "description": "Declared determinism tier (e.g., D0_bit_exact, D1_numerically_stable)."
+    },
+    "latency_class": {
+    "type": "string",
+    "description": "Intended latency class for this capsule.",
+    "enum": [
+    "offline",
+    "batch",
+    "interactive",
+    "realtime"
+    ]
+    }
+    }
+    },
+    "interfaces": {
+    "type": "object",
+    "description": "Language- or protocol-specific entry points.",
+    "additionalProperties": true,
+    "properties": {
+    "python": {
+    "type": "string",
+    "description": "Python entry point, e.g., 'impl.src.main:run'."
+    },
+    "wasm": {
+    "type": "string",
+    "description": "WASM module reference or export name."
+    },
+    "rest": {
+    "type": "string",
+    "description": "Base path or OpenAPI operation ID for REST exposure."
+    },
+    "cli": {
+    "type": "string",
+    "description": "CLI entry point, if applicable."
+    },
+    "tui": {
+    "type": "string",
+    "description": "TUI integration entry (e.g., a layout or projection ID)."
+    }
+    }
+    },
+    "governance": {
+    "type": "object",
+    "required": ["tier", "audit_level"],
+    "additionalProperties": true,
+    "properties": {
+    "tier": {
+    "type": "string",
+    "description": "Governance tier of the capsule.",
+    "enum": [
+    "core",
+    "platform",
+    "extension",
+    "experimental",
+    "local"
+    ]
+    },
+    "audit_level": {
+    "type": "string",
+    "description": "Required audit depth for this capsule.",
+    "enum": [
+    "none",
+    "low",
+    "standard",
+    "elevated",
+    "critical"
+    ]
+    },
+    "owner": {
+    "type": "string",
+    "description": "Owning team, organization, or tenant."
+    },
+    "reviewed_by": {
+    "type": "array",
+    "description": "Identities of reviewers who have approved this capsule.",
+    "items": {
+    "type": "string"
+    }
+    }
+    }
+    },
+    "runtime": {
+    "type": "object",
+    "additionalProperties": true,
+    "description": "Runtime and resource-related hints.",
+    "properties": {
+    "language": {
+    "type": "string",
+    "description": "Primary implementation language (e.g., python, rust, wasm)."
+    },
+    "requires_gpu": {
+    "type": "boolean",
+    "description": "Whether this capsule requires GPU access."
+    },
+    "timeout_ms": {
+    "type": "integer",
+    "minimum": 1,
+    "description": "Suggested maximum execution time per invocation, in milliseconds."
+    },
+    "memory_limit_mb": {
+    "type": "integer",
+    "minimum": 1,
+    "description": "Suggested memory ceiling for this capsule, in megabytes."
+    }
+    }
+    },
+    "security": {
+    "type": "object",
+    "additionalProperties": true,
+    "description": "Security- and isolation-related hints.",
+    "properties": {
+    "trust_zone": {
+    "type": "string",
+    "description": "Trust zone for this capsule.",
+    "enum": [
+    "system",
+    "tenant",
+    "session",
+    "ephemeral"
+    ]
+    },
+    "sandbox_class": {
+    "type": "string",
+    "description": "Sandbox profile or class name used for this capsule."
+    }
+    }
+    },
+    "lineage": {
+    "type": "object",
+    "additionalProperties": true,
+    "description": "Optional lineage and derivation metadata.",
+    "properties": {
+    "derived_from": {
+    "type": "array",
+    "description": "IDs (optionally with versions) of capsules this one is derived from.",
+    "items": {
+    "type": "string"
+    }
+    },
+    "supersedes": {
+    "type": "array",
+    "description": "IDs (optionally with versions) of capsules this one supersedes.",
+    "items": {
+    "type": "string"
+    }
+    }
+    }
+    }
+  }
+}

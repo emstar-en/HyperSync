@@ -1,0 +1,570 @@
+{
+  "test_name": "Fiber Bundle Augmentation",
+  "timestamp": "2026-01-13 05:46:51",
+  "base_dimensions": [
+    4,
+    8,
+    16,
+    32
+  ],
+  "fiber_dimensions": [
+    2,
+    4,
+    8
+  ],
+  "tests": {
+    "dimension_consistency": [
+      {
+        "base_dim": 4,
+        "fiber_dim": 2,
+        "n_trials": 50,
+        "total_dim_expected": 7,
+        "all_dimensions_match": true,
+        "passed": true
+      },
+      {
+        "base_dim": 4,
+        "fiber_dim": 4,
+        "n_trials": 50,
+        "total_dim_expected": 9,
+        "all_dimensions_match": true,
+        "passed": true
+      },
+      {
+        "base_dim": 4,
+        "fiber_dim": 8,
+        "n_trials": 50,
+        "total_dim_expected": 13,
+        "all_dimensions_match": true,
+        "passed": true
+      },
+      {
+        "base_dim": 8,
+        "fiber_dim": 2,
+        "n_trials": 50,
+        "total_dim_expected": 11,
+        "all_dimensions_match": true,
+        "passed": true
+      },
+      {
+        "base_dim": 8,
+        "fiber_dim": 4,
+        "n_trials": 50,
+        "total_dim_expected": 13,
+        "all_dimensions_match": true,
+        "passed": true
+      },
+      {
+        "base_dim": 8,
+        "fiber_dim": 8,
+        "n_trials": 50,
+        "total_dim_expected": 17,
+        "all_dimensions_match": true,
+        "passed": true
+      },
+      {
+        "base_dim": 16,
+        "fiber_dim": 2,
+        "n_trials": 50,
+        "total_dim_expected": 19,
+        "all_dimensions_match": true,
+        "passed": true
+      },
+      {
+        "base_dim": 16,
+        "fiber_dim": 4,
+        "n_trials": 50,
+        "total_dim_expected": 21,
+        "all_dimensions_match": true,
+        "passed": true
+      },
+      {
+        "base_dim": 16,
+        "fiber_dim": 8,
+        "n_trials": 50,
+        "total_dim_expected": 25,
+        "all_dimensions_match": true,
+        "passed": true
+      },
+      {
+        "base_dim": 32,
+        "fiber_dim": 2,
+        "n_trials": 50,
+        "total_dim_expected": 35,
+        "all_dimensions_match": true,
+        "passed": true
+      },
+      {
+        "base_dim": 32,
+        "fiber_dim": 4,
+        "n_trials": 50,
+        "total_dim_expected": 37,
+        "all_dimensions_match": true,
+        "passed": true
+      },
+      {
+        "base_dim": 32,
+        "fiber_dim": 8,
+        "n_trials": 50,
+        "total_dim_expected": 41,
+        "all_dimensions_match": true,
+        "passed": true
+      }
+    ],
+    "projection_accuracy": [
+      {
+        "base_dim": 4,
+        "fiber_dim": 2,
+        "n_trials": 50,
+        "projection_error_mean": 0.0,
+        "projection_error_max": 0.0,
+        "projection_error_std": 0.0,
+        "passed": true
+      },
+      {
+        "base_dim": 4,
+        "fiber_dim": 4,
+        "n_trials": 50,
+        "projection_error_mean": 0.0,
+        "projection_error_max": 0.0,
+        "projection_error_std": 0.0,
+        "passed": true
+      },
+      {
+        "base_dim": 4,
+        "fiber_dim": 8,
+        "n_trials": 50,
+        "projection_error_mean": 0.0,
+        "projection_error_max": 0.0,
+        "projection_error_std": 0.0,
+        "passed": true
+      },
+      {
+        "base_dim": 8,
+        "fiber_dim": 2,
+        "n_trials": 50,
+        "projection_error_mean": 0.0,
+        "projection_error_max": 0.0,
+        "projection_error_std": 0.0,
+        "passed": true
+      },
+      {
+        "base_dim": 8,
+        "fiber_dim": 4,
+        "n_trials": 50,
+        "projection_error_mean": 0.0,
+        "projection_error_max": 0.0,
+        "projection_error_std": 0.0,
+        "passed": true
+      },
+      {
+        "base_dim": 8,
+        "fiber_dim": 8,
+        "n_trials": 50,
+        "projection_error_mean": 0.0,
+        "projection_error_max": 0.0,
+        "projection_error_std": 0.0,
+        "passed": true
+      },
+      {
+        "base_dim": 16,
+        "fiber_dim": 2,
+        "n_trials": 50,
+        "projection_error_mean": 0.0,
+        "projection_error_max": 0.0,
+        "projection_error_std": 0.0,
+        "passed": true
+      },
+      {
+        "base_dim": 16,
+        "fiber_dim": 4,
+        "n_trials": 50,
+        "projection_error_mean": 0.0,
+        "projection_error_max": 0.0,
+        "projection_error_std": 0.0,
+        "passed": true
+      },
+      {
+        "base_dim": 16,
+        "fiber_dim": 8,
+        "n_trials": 50,
+        "projection_error_mean": 0.0,
+        "projection_error_max": 0.0,
+        "projection_error_std": 0.0,
+        "passed": true
+      },
+      {
+        "base_dim": 32,
+        "fiber_dim": 2,
+        "n_trials": 50,
+        "projection_error_mean": 0.0,
+        "projection_error_max": 0.0,
+        "projection_error_std": 0.0,
+        "passed": true
+      },
+      {
+        "base_dim": 32,
+        "fiber_dim": 4,
+        "n_trials": 50,
+        "projection_error_mean": 0.0,
+        "projection_error_max": 0.0,
+        "projection_error_std": 0.0,
+        "passed": true
+      },
+      {
+        "base_dim": 32,
+        "fiber_dim": 8,
+        "n_trials": 50,
+        "projection_error_mean": 0.0,
+        "projection_error_max": 0.0,
+        "projection_error_std": 0.0,
+        "passed": true
+      }
+    ],
+    "fiber_extraction": [
+      {
+        "base_dim": 4,
+        "fiber_dim": 2,
+        "n_trials": 50,
+        "extraction_error_mean": 0.0,
+        "extraction_error_max": 0.0,
+        "extraction_error_std": 0.0,
+        "passed": true
+      },
+      {
+        "base_dim": 4,
+        "fiber_dim": 4,
+        "n_trials": 50,
+        "extraction_error_mean": 0.0,
+        "extraction_error_max": 0.0,
+        "extraction_error_std": 0.0,
+        "passed": true
+      },
+      {
+        "base_dim": 4,
+        "fiber_dim": 8,
+        "n_trials": 50,
+        "extraction_error_mean": 0.0,
+        "extraction_error_max": 0.0,
+        "extraction_error_std": 0.0,
+        "passed": true
+      },
+      {
+        "base_dim": 8,
+        "fiber_dim": 2,
+        "n_trials": 50,
+        "extraction_error_mean": 0.0,
+        "extraction_error_max": 0.0,
+        "extraction_error_std": 0.0,
+        "passed": true
+      },
+      {
+        "base_dim": 8,
+        "fiber_dim": 4,
+        "n_trials": 50,
+        "extraction_error_mean": 0.0,
+        "extraction_error_max": 0.0,
+        "extraction_error_std": 0.0,
+        "passed": true
+      },
+      {
+        "base_dim": 8,
+        "fiber_dim": 8,
+        "n_trials": 50,
+        "extraction_error_mean": 0.0,
+        "extraction_error_max": 0.0,
+        "extraction_error_std": 0.0,
+        "passed": true
+      },
+      {
+        "base_dim": 16,
+        "fiber_dim": 2,
+        "n_trials": 50,
+        "extraction_error_mean": 0.0,
+        "extraction_error_max": 0.0,
+        "extraction_error_std": 0.0,
+        "passed": true
+      },
+      {
+        "base_dim": 16,
+        "fiber_dim": 4,
+        "n_trials": 50,
+        "extraction_error_mean": 0.0,
+        "extraction_error_max": 0.0,
+        "extraction_error_std": 0.0,
+        "passed": true
+      },
+      {
+        "base_dim": 16,
+        "fiber_dim": 8,
+        "n_trials": 50,
+        "extraction_error_mean": 0.0,
+        "extraction_error_max": 0.0,
+        "extraction_error_std": 0.0,
+        "passed": true
+      },
+      {
+        "base_dim": 32,
+        "fiber_dim": 2,
+        "n_trials": 50,
+        "extraction_error_mean": 0.0,
+        "extraction_error_max": 0.0,
+        "extraction_error_std": 0.0,
+        "passed": true
+      },
+      {
+        "base_dim": 32,
+        "fiber_dim": 4,
+        "n_trials": 50,
+        "extraction_error_mean": 0.0,
+        "extraction_error_max": 0.0,
+        "extraction_error_std": 0.0,
+        "passed": true
+      },
+      {
+        "base_dim": 32,
+        "fiber_dim": 8,
+        "n_trials": 50,
+        "extraction_error_mean": 0.0,
+        "extraction_error_max": 0.0,
+        "extraction_error_std": 0.0,
+        "passed": true
+      }
+    ],
+    "information_preservation": [
+      {
+        "base_dim": 4,
+        "fiber_dim": 2,
+        "n_trials": 50,
+        "reconstruction_quality_mean": 1.0000000071525574,
+        "reconstruction_quality_min": 0.9999998807907104,
+        "reconstruction_quality_std": 5.796072855540856e-08,
+        "passed": true
+      },
+      {
+        "base_dim": 4,
+        "fiber_dim": 4,
+        "n_trials": 50,
+        "reconstruction_quality_mean": 0.9999999797344208,
+        "reconstruction_quality_min": 0.9999998509883881,
+        "reconstruction_quality_std": 6.48678200741424e-08,
+        "passed": true
+      },
+      {
+        "base_dim": 4,
+        "fiber_dim": 8,
+        "n_trials": 50,
+        "reconstruction_quality_mean": 1.0000000083446503,
+        "reconstruction_quality_min": 0.9999998807907104,
+        "reconstruction_quality_std": 6.020954274737545e-08,
+        "passed": true
+      },
+      {
+        "base_dim": 8,
+        "fiber_dim": 2,
+        "n_trials": 50,
+        "reconstruction_quality_mean": 0.9999999845027924,
+        "reconstruction_quality_min": 0.9999998807907104,
+        "reconstruction_quality_std": 4.664420496586287e-08,
+        "passed": true
+      },
+      {
+        "base_dim": 8,
+        "fiber_dim": 4,
+        "n_trials": 50,
+        "reconstruction_quality_mean": 1.000000006556511,
+        "reconstruction_quality_min": 0.9999998807907104,
+        "reconstruction_quality_std": 6.958443412744837e-08,
+        "passed": true
+      },
+      {
+        "base_dim": 8,
+        "fiber_dim": 8,
+        "n_trials": 50,
+        "reconstruction_quality_mean": 1.0000000011920929,
+        "reconstruction_quality_min": 0.9999998807907104,
+        "reconstruction_quality_std": 6.250251163920559e-08,
+        "passed": true
+      },
+      {
+        "base_dim": 16,
+        "fiber_dim": 2,
+        "n_trials": 50,
+        "reconstruction_quality_mean": 1.0000000089406966,
+        "reconstruction_quality_min": 0.9999997913837433,
+        "reconstruction_quality_std": 7.521766104772069e-08,
+        "passed": true
+      },
+      {
+        "base_dim": 16,
+        "fiber_dim": 4,
+        "n_trials": 50,
+        "reconstruction_quality_mean": 0.9999999922513961,
+        "reconstruction_quality_min": 0.9999998807907104,
+        "reconstruction_quality_std": 5.120798732934785e-08,
+        "passed": true
+      },
+      {
+        "base_dim": 16,
+        "fiber_dim": 8,
+        "n_trials": 50,
+        "reconstruction_quality_mean": 0.9999999856948852,
+        "reconstruction_quality_min": 0.9999998509883881,
+        "reconstruction_quality_std": 6.616920989216765e-08,
+        "passed": true
+      },
+      {
+        "base_dim": 32,
+        "fiber_dim": 2,
+        "n_trials": 50,
+        "reconstruction_quality_mean": 0.9999999994039536,
+        "reconstruction_quality_min": 0.9999998807907104,
+        "reconstruction_quality_std": 6.26529595765968e-08,
+        "passed": true
+      },
+      {
+        "base_dim": 32,
+        "fiber_dim": 4,
+        "n_trials": 50,
+        "reconstruction_quality_mean": 0.9999999982118607,
+        "reconstruction_quality_min": 0.9999999105930328,
+        "reconstruction_quality_std": 5.0014654864783704e-08,
+        "passed": true
+      },
+      {
+        "base_dim": 32,
+        "fiber_dim": 8,
+        "n_trials": 50,
+        "reconstruction_quality_mean": 0.9999999916553497,
+        "reconstruction_quality_min": 0.9999998807907104,
+        "reconstruction_quality_std": 6.252524395915677e-08,
+        "passed": true
+      }
+    ],
+    "augmentation_properties": [
+      {
+        "base_dim": 4,
+        "fiber_dim": 2,
+        "n_trials": 50,
+        "vector_space_property": true,
+        "base_fiber_independence": true,
+        "base_distance_sample": 2.3568930625915527,
+        "passed": true
+      },
+      {
+        "base_dim": 4,
+        "fiber_dim": 4,
+        "n_trials": 50,
+        "vector_space_property": true,
+        "base_fiber_independence": true,
+        "base_distance_sample": 2.8370723724365234,
+        "passed": true
+      },
+      {
+        "base_dim": 4,
+        "fiber_dim": 8,
+        "n_trials": 50,
+        "vector_space_property": true,
+        "base_fiber_independence": true,
+        "base_distance_sample": 2.090836763381958,
+        "passed": true
+      },
+      {
+        "base_dim": 8,
+        "fiber_dim": 2,
+        "n_trials": 50,
+        "vector_space_property": true,
+        "base_fiber_independence": true,
+        "base_distance_sample": 3.1218760013580322,
+        "passed": true
+      },
+      {
+        "base_dim": 8,
+        "fiber_dim": 4,
+        "n_trials": 50,
+        "vector_space_property": true,
+        "base_fiber_independence": true,
+        "base_distance_sample": 2.858473300933838,
+        "passed": true
+      },
+      {
+        "base_dim": 8,
+        "fiber_dim": 8,
+        "n_trials": 50,
+        "vector_space_property": true,
+        "base_fiber_independence": true,
+        "base_distance_sample": 2.065924882888794,
+        "passed": true
+      },
+      {
+        "base_dim": 16,
+        "fiber_dim": 2,
+        "n_trials": 50,
+        "vector_space_property": true,
+        "base_fiber_independence": true,
+        "base_distance_sample": 3.827580451965332,
+        "passed": true
+      },
+      {
+        "base_dim": 16,
+        "fiber_dim": 4,
+        "n_trials": 50,
+        "vector_space_property": true,
+        "base_fiber_independence": true,
+        "base_distance_sample": 3.410917282104492,
+        "passed": true
+      },
+      {
+        "base_dim": 16,
+        "fiber_dim": 8,
+        "n_trials": 50,
+        "vector_space_property": true,
+        "base_fiber_independence": true,
+        "base_distance_sample": 3.5674421787261963,
+        "passed": true
+      },
+      {
+        "base_dim": 32,
+        "fiber_dim": 2,
+        "n_trials": 50,
+        "vector_space_property": true,
+        "base_fiber_independence": true,
+        "base_distance_sample": 4.253658294677734,
+        "passed": true
+      },
+      {
+        "base_dim": 32,
+        "fiber_dim": 4,
+        "n_trials": 50,
+        "vector_space_property": true,
+        "base_fiber_independence": true,
+        "base_distance_sample": 4.741774559020996,
+        "passed": true
+      },
+      {
+        "base_dim": 32,
+        "fiber_dim": 8,
+        "n_trials": 50,
+        "vector_space_property": true,
+        "base_fiber_independence": true,
+        "base_distance_sample": 4.078734874725342,
+        "passed": true
+      }
+    ]
+  },
+  "summary": {
+    "overall_pass_rate": {
+      "dimension_consistency": 1.0,
+      "projection_accuracy": 1.0,
+      "fiber_extraction": 1.0,
+      "information_preservation": 1.0,
+      "augmentation_properties": 1.0
+    }
+  },
+  "metadata": {
+    "license": {
+      "name": "AGPLv3",
+      "url": "https://www.gnu.org/licenses/agpl-3.0.html"
+    }
+  }
+}

@@ -1,0 +1,229 @@
+{
+  "test_name": "Parallel Transport Consistency",
+  "timestamp": "2026-01-13 06:43:34",
+  "dimensions_tested": [
+    2,
+    4,
+    8,
+    16,
+    32,
+    64
+  ],
+  "model": "Poincar\u00e9 Ball (hyperbolic space)",
+  "tests": {
+    "norm_preservation": [
+      {
+        "dimension": 2,
+        "n_trials": 50,
+        "norm_error_mean": 3.610383757290947e-08,
+        "norm_error_std": 4.861070838125357e-08,
+        "norm_error_max": 1.519996430943138e-07,
+        "passed": true
+      },
+      {
+        "dimension": 4,
+        "n_trials": 50,
+        "norm_error_mean": 2.353061006488133e-08,
+        "norm_error_std": 4.271794861984261e-08,
+        "norm_error_max": 1.735592576324052e-07,
+        "passed": true
+      },
+      {
+        "dimension": 8,
+        "n_trials": 50,
+        "norm_error_mean": 2.9305629567488724e-08,
+        "norm_error_std": 4.0733179293707866e-08,
+        "norm_error_max": 1.3058301817636675e-07,
+        "passed": true
+      },
+      {
+        "dimension": 16,
+        "n_trials": 50,
+        "norm_error_mean": 3.6163103089847935e-08,
+        "norm_error_std": 4.8717184865334693e-08,
+        "norm_error_max": 1.722542606330535e-07,
+        "passed": true
+      },
+      {
+        "dimension": 32,
+        "n_trials": 50,
+        "norm_error_mean": 3.979840926149336e-08,
+        "norm_error_std": 4.507038754703172e-08,
+        "norm_error_max": 1.5428258848260157e-07,
+        "passed": true
+      },
+      {
+        "dimension": 64,
+        "n_trials": 50,
+        "norm_error_mean": 2.538392308792936e-08,
+        "norm_error_std": 4.332588148732354e-08,
+        "norm_error_max": 1.1465013471934071e-07,
+        "passed": true
+      }
+    ],
+    "angle_preservation": [
+      {
+        "dimension": 2,
+        "n_trials": 50,
+        "angle_error_mean": 6.09084963798523e-08,
+        "angle_error_std": 5.080379583226879e-08,
+        "angle_error_max": 1.7881393432617188e-07,
+        "passed": true
+      },
+      {
+        "dimension": 4,
+        "n_trials": 50,
+        "angle_error_mean": 4.4964253902435304e-08,
+        "angle_error_std": 4.071660495793204e-08,
+        "angle_error_max": 1.7881393432617188e-07,
+        "passed": true
+      },
+      {
+        "dimension": 8,
+        "n_trials": 50,
+        "angle_error_mean": 3.505498170852661e-08,
+        "angle_error_std": 3.414577596132275e-08,
+        "angle_error_max": 1.7881393432617188e-07,
+        "passed": true
+      },
+      {
+        "dimension": 16,
+        "n_trials": 50,
+        "angle_error_mean": 2.294778823852539e-08,
+        "angle_error_std": 1.9753490122343906e-08,
+        "angle_error_max": 5.960464477539063e-08,
+        "passed": true
+      },
+      {
+        "dimension": 32,
+        "n_trials": 50,
+        "angle_error_mean": 1.63959339261055e-08,
+        "angle_error_std": 1.451355676722852e-08,
+        "angle_error_max": 5.960464477539063e-08,
+        "passed": true
+      },
+      {
+        "dimension": 64,
+        "n_trials": 50,
+        "angle_error_mean": 2.0954757928848267e-08,
+        "angle_error_std": 1.6290692771405145e-08,
+        "angle_error_max": 8.940696716308594e-08,
+        "passed": true
+      }
+    ],
+    "round_trip": [
+      {
+        "dimension": 2,
+        "n_trials": 50,
+        "round_trip_error_mean": 4.971883234894392e-08,
+        "round_trip_error_std": 4.0724304183344774e-08,
+        "round_trip_error_max": 1.5834103805900668e-07,
+        "passed": true
+      },
+      {
+        "dimension": 4,
+        "n_trials": 50,
+        "round_trip_error_mean": 7.455487978980101e-08,
+        "round_trip_error_std": 4.2594901268381506e-08,
+        "round_trip_error_max": 1.868909293989418e-07,
+        "passed": true
+      },
+      {
+        "dimension": 8,
+        "n_trials": 50,
+        "round_trip_error_mean": 8.794544200441123e-08,
+        "round_trip_error_std": 3.577036169601249e-08,
+        "round_trip_error_max": 1.8807529045261617e-07,
+        "passed": true
+      },
+      {
+        "dimension": 16,
+        "n_trials": 50,
+        "round_trip_error_mean": 9.534930931920372e-08,
+        "round_trip_error_std": 4.053090986104281e-08,
+        "round_trip_error_max": 2.570610320162814e-07,
+        "passed": true
+      },
+      {
+        "dimension": 32,
+        "n_trials": 50,
+        "round_trip_error_mean": 7.8505833371878e-08,
+        "round_trip_error_std": 2.479727266453458e-08,
+        "round_trip_error_max": 1.86545975111585e-07,
+        "passed": true
+      },
+      {
+        "dimension": 64,
+        "n_trials": 50,
+        "round_trip_error_mean": 6.791297352037873e-08,
+        "round_trip_error_std": 1.9246882155345977e-08,
+        "round_trip_error_max": 1.1503382779665117e-07,
+        "passed": true
+      }
+    ],
+    "transport_consistency": [
+      {
+        "dimension": 2,
+        "n_trials": 50,
+        "consistency_error_mean": 6.244779046893356e-07,
+        "consistency_error_std": 3.8003814740676093e-06,
+        "consistency_error_max": 2.722258614085149e-05,
+        "passed": true
+      },
+      {
+        "dimension": 4,
+        "n_trials": 50,
+        "consistency_error_mean": 5.113973831829099e-05,
+        "consistency_error_std": 0.00024383268518936004,
+        "consistency_error_max": 0.0016232647467404604,
+        "passed": true
+      },
+      {
+        "dimension": 8,
+        "n_trials": 50,
+        "consistency_error_mean": 5.357008834762311e-05,
+        "consistency_error_std": 0.00013935218894674454,
+        "consistency_error_max": 0.0006945498753339052,
+        "passed": true
+      },
+      {
+        "dimension": 16,
+        "n_trials": 50,
+        "consistency_error_mean": 0.00035578373335265923,
+        "consistency_error_std": 0.0003807663893951614,
+        "consistency_error_max": 0.0015640530036762357,
+        "passed": true
+      },
+      {
+        "dimension": 32,
+        "n_trials": 50,
+        "consistency_error_mean": 0.00025458147057179305,
+        "consistency_error_std": 0.0002241418742979242,
+        "consistency_error_max": 0.0011414824984967709,
+        "passed": true
+      },
+      {
+        "dimension": 64,
+        "n_trials": 50,
+        "consistency_error_mean": 0.00019362093752533837,
+        "consistency_error_std": 0.00019685603155829027,
+        "consistency_error_max": 0.0009039566502906382,
+        "passed": true
+      }
+    ]
+  },
+  "summary": {
+    "overall_pass_rate": {
+      "norm_preservation": 1.0,
+      "angle_preservation": 1.0,
+      "round_trip": 1.0,
+      "transport_consistency": 1.0
+    }
+  },
+  "metadata": {
+    "license": {
+      "name": "AGPLv3",
+      "url": "https://www.gnu.org/licenses/agpl-3.0.html"
+    }
+  }
+}

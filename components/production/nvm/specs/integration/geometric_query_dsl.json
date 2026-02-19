@@ -1,0 +1,2377 @@
+{
+  "metadata": {
+    "name": "geometric_query_dsl",
+    "version": "1.0.0",
+    "description": "Geometric Query DSL for HyperSync - SQL-like query language for hyperbolic space operations including SELECT, WHERE, JOIN on geometric properties, with query optimization and hyperbolic space indexing",
+    "author": "HyperSync Framework",
+    "created": "2026-01-16T00:00:00Z",
+    "updated": "2026-01-16T00:00:00Z",
+    "stunir_version": "1.0",
+    "domain": "hypersync.query.geometric_dsl",
+    "conformance_level": 2,
+    "dependencies": [
+      "hyperbolic_core",
+      "manifold_operations",
+      "index_structures"
+    ],
+    "license": {
+      "name": "AGPLv3",
+      "url": "https://www.gnu.org/licenses/agpl-3.0.html"
+    },
+    "authors": [
+      "HyperSync Query Team"
+    ],
+    "operational_model": {
+      "query_paradigm": "Declarative SQL-like syntax for hyperbolic geometry",
+      "optimization": "Cost-based query optimization with geometric awareness",
+      "indexing": "Hyperbolic-adapted R-tree and KD-tree structures",
+      "validation": "Query result geometric consistency validation"
+    },
+    "tags": [
+      "query-language",
+      "dsl",
+      "geometric-indexing",
+      "hyperbolic-search",
+      "geometric"
+    ]
+  },
+  "types": {
+    "GeometricQuery": {
+      "description": "Complete geometric query specification",
+      "base_type": "object",
+      "properties": {
+        "query_id": {
+          "type": "string"
+        },
+        "query_type": {
+          "type": "string",
+          "enum": [
+            "select",
+            "aggregate",
+            "join",
+            "nearest",
+            "range",
+            "path"
+          ]
+        },
+        "select_clause": {
+          "type": "SelectClause"
+        },
+        "from_clause": {
+          "type": "FromClause"
+        },
+        "where_clause": {
+          "type": "WhereClause"
+        },
+        "join_clauses": {
+          "type": "array",
+          "items": {
+            "type": "JoinClause"
+          }
+        },
+        "group_by": {
+          "type": "GroupByClause"
+        },
+        "having": {
+          "type": "HavingClause"
+        },
+        "order_by": {
+          "type": "OrderByClause"
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "offset": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "hints": {
+          "type": "QueryHints"
+        }
+      }
+    },
+    "SelectClause": {
+      "description": "SELECT clause with geometric expressions",
+      "base_type": "object",
+      "properties": {
+        "distinct": {
+          "type": "boolean",
+          "default": false
+        },
+        "expressions": {
+          "type": "array",
+          "items": {
+            "type": "SelectExpression"
+          }
+        },
+        "into": {
+          "type": "string",
+          "description": "Target for query results"
+        }
+      }
+    },
+    "SelectExpression": {
+      "description": "Expression in SELECT clause",
+      "base_type": "object",
+      "properties": {
+        "expression": {
+          "type": "GeometricExpression"
+        },
+        "alias": {
+          "type": "string"
+        },
+        "aggregate": {
+          "type": "AggregateFunction"
+        }
+      }
+    },
+    "GeometricExpression": {
+      "description": "Expression involving geometric operations",
+      "base_type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "field",
+            "function",
+            "literal",
+            "subquery",
+            "case"
+          ]
+        },
+        "field_ref": {
+          "type": "FieldReference"
+        },
+        "function": {
+          "type": "GeometricFunction"
+        },
+        "literal": {
+          "type": "GeometricLiteral"
+        },
+        "subquery": {
+          "type": "GeometricQuery"
+        },
+        "case_expr": {
+          "type": "CaseExpression"
+        }
+      }
+    },
+    "FieldReference": {
+      "description": "Reference to a field in a geometric entity",
+      "base_type": "object",
+      "properties": {
+        "table": {
+          "type": "string"
+        },
+        "field": {
+          "type": "string"
+        },
+        "component": {
+          "type": "string",
+          "description": "For vector fields: x, y, z, t, or index"
+        }
+      }
+    },
+    "GeometricFunction": {
+      "description": "Geometric function call",
+      "base_type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "enum": [
+            "hyperbolic_distance",
+            "geodesic_midpoint",
+            "exponential_map",
+            "logarithmic_map",
+            "parallel_transport",
+            "lorentz_inner_product",
+            "hyperbolic_centroid",
+            "frechet_mean",
+            "geodesic_interpolate",
+            "project_to_manifold",
+            "lift_to_hyperboloid",
+            "poincare_to_lorentz",
+            "lorentz_to_poincare",
+            "tangent_at_point",
+            "curvature_at_point",
+            "geodesic_path",
+            "hyperbolic_angle",
+            "sector_area",
+            "triangle_area",
+            "voronoi_cell"
+          ]
+        },
+        "arguments": {
+          "type": "array",
+          "items": {
+            "type": "GeometricExpression"
+          }
+        },
+        "options": {
+          "type": "object"
+        }
+      }
+    },
+    "GeometricLiteral": {
+      "description": "Literal geometric value",
+      "base_type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "point",
+            "vector",
+            "scalar",
+            "region",
+            "path"
+          ]
+        },
+        "coordinates": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        },
+        "manifold": {
+          "type": "string",
+          "enum": [
+            "hyperboloid",
+            "poincare_ball",
+            "half_space"
+          ]
+        },
+        "curvature": {
+          "type": "number",
+          "default": -1.0
+        }
+      }
+    },
+    "CaseExpression": {
+      "description": "CASE expression for conditional logic",
+      "base_type": "object",
+      "properties": {
+        "when_clauses": {
+          "type": "array",
+          "items": {
+            "type": "WhenClause"
+          }
+        },
+        "else_result": {
+          "type": "GeometricExpression"
+        }
+      }
+    },
+    "WhenClause": {
+      "description": "WHEN clause in CASE expression",
+      "base_type": "object",
+      "properties": {
+        "condition": {
+          "type": "GeometricPredicate"
+        },
+        "result": {
+          "type": "GeometricExpression"
+        }
+      }
+    },
+    "AggregateFunction": {
+      "description": "Aggregate function for geometric data",
+      "base_type": "object",
+      "properties": {
+        "function": {
+          "type": "string",
+          "enum": [
+            "count",
+            "sum",
+            "avg",
+            "min",
+            "max",
+            "geometric_mean",
+            "frechet_mean",
+            "weiszfeld_median",
+            "hyperbolic_variance",
+            "bounding_ball",
+            "convex_hull"
+          ]
+        },
+        "distinct": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    "FromClause": {
+      "description": "FROM clause specifying data sources",
+      "base_type": "object",
+      "properties": {
+        "sources": {
+          "type": "array",
+          "items": {
+            "type": "DataSource"
+          }
+        }
+      }
+    },
+    "DataSource": {
+      "description": "Data source in FROM clause",
+      "base_type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "table",
+            "subquery",
+            "function",
+            "index"
+          ]
+        },
+        "name": {
+          "type": "string"
+        },
+        "alias": {
+          "type": "string"
+        },
+        "subquery": {
+          "type": "GeometricQuery"
+        },
+        "function_call": {
+          "type": "TableFunction"
+        },
+        "index_hint": {
+          "type": "string"
+        }
+      }
+    },
+    "TableFunction": {
+      "description": "Table-valued function",
+      "base_type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "enum": [
+            "generate_geodesic",
+            "expand_voronoi",
+            "sample_ball",
+            "enumerate_neighbors"
+          ]
+        },
+        "arguments": {
+          "type": "array",
+          "items": {
+            "type": "GeometricExpression"
+          }
+        }
+      }
+    },
+    "WhereClause": {
+      "description": "WHERE clause with geometric predicates",
+      "base_type": "object",
+      "properties": {
+        "predicate": {
+          "type": "GeometricPredicate"
+        }
+      }
+    },
+    "GeometricPredicate": {
+      "description": "Predicate for filtering geometric data",
+      "base_type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "comparison",
+            "spatial",
+            "logical",
+            "exists",
+            "in",
+            "between"
+          ]
+        },
+        "comparison": {
+          "type": "ComparisonPredicate"
+        },
+        "spatial": {
+          "type": "SpatialPredicate"
+        },
+        "logical": {
+          "type": "LogicalPredicate"
+        },
+        "exists": {
+          "type": "ExistsPredicate"
+        },
+        "in_predicate": {
+          "type": "InPredicate"
+        },
+        "between": {
+          "type": "BetweenPredicate"
+        }
+      }
+    },
+    "ComparisonPredicate": {
+      "description": "Comparison predicate",
+      "base_type": "object",
+      "properties": {
+        "left": {
+          "type": "GeometricExpression"
+        },
+        "operator": {
+          "type": "string",
+          "enum": [
+            "=",
+            "!=",
+            "<",
+            "<=",
+            ">",
+            ">=",
+            "~="
+          ]
+        },
+        "right": {
+          "type": "GeometricExpression"
+        },
+        "tolerance": {
+          "type": "number",
+          "description": "For approximate equality"
+        }
+      }
+    },
+    "SpatialPredicate": {
+      "description": "Spatial predicate for geometric filtering",
+      "base_type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "within_distance",
+            "within_ball",
+            "within_sector",
+            "within_cone",
+            "intersects_geodesic",
+            "on_boundary",
+            "in_voronoi_cell",
+            "k_nearest",
+            "approximate_nearest"
+          ]
+        },
+        "subject": {
+          "type": "GeometricExpression"
+        },
+        "reference": {
+          "type": "GeometricExpression"
+        },
+        "parameters": {
+          "type": "object"
+        }
+      }
+    },
+    "LogicalPredicate": {
+      "description": "Logical combination of predicates",
+      "base_type": "object",
+      "properties": {
+        "operator": {
+          "type": "string",
+          "enum": [
+            "AND",
+            "OR",
+            "NOT"
+          ]
+        },
+        "operands": {
+          "type": "array",
+          "items": {
+            "type": "GeometricPredicate"
+          }
+        }
+      }
+    },
+    "ExistsPredicate": {
+      "description": "EXISTS subquery predicate",
+      "base_type": "object",
+      "properties": {
+        "subquery": {
+          "type": "GeometricQuery"
+        },
+        "negated": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    "InPredicate": {
+      "description": "IN predicate",
+      "base_type": "object",
+      "properties": {
+        "expression": {
+          "type": "GeometricExpression"
+        },
+        "values": {
+          "type": "array",
+          "items": {
+            "type": "GeometricExpression"
+          }
+        },
+        "subquery": {
+          "type": "GeometricQuery"
+        },
+        "negated": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    "BetweenPredicate": {
+      "description": "BETWEEN predicate for ranges",
+      "base_type": "object",
+      "properties": {
+        "expression": {
+          "type": "GeometricExpression"
+        },
+        "lower": {
+          "type": "GeometricExpression"
+        },
+        "upper": {
+          "type": "GeometricExpression"
+        },
+        "negated": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    "JoinClause": {
+      "description": "JOIN clause for geometric joins",
+      "base_type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "inner",
+            "left",
+            "right",
+            "full",
+            "cross",
+            "spatial"
+          ]
+        },
+        "source": {
+          "type": "DataSource"
+        },
+        "condition": {
+          "type": "JoinCondition"
+        },
+        "spatial_join": {
+          "type": "SpatialJoinSpec"
+        }
+      }
+    },
+    "JoinCondition": {
+      "description": "Condition for join",
+      "base_type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "on",
+            "using",
+            "natural"
+          ]
+        },
+        "predicate": {
+          "type": "GeometricPredicate"
+        },
+        "columns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "SpatialJoinSpec": {
+      "description": "Specification for spatial join",
+      "base_type": "object",
+      "properties": {
+        "join_type": {
+          "type": "string",
+          "enum": [
+            "distance",
+            "knn",
+            "range",
+            "geodesic_intersection"
+          ]
+        },
+        "left_geometry": {
+          "type": "FieldReference"
+        },
+        "right_geometry": {
+          "type": "FieldReference"
+        },
+        "threshold": {
+          "type": "number"
+        },
+        "k": {
+          "type": "integer"
+        }
+      }
+    },
+    "GroupByClause": {
+      "description": "GROUP BY clause",
+      "base_type": "object",
+      "properties": {
+        "expressions": {
+          "type": "array",
+          "items": {
+            "type": "GeometricExpression"
+          }
+        },
+        "rollup": {
+          "type": "boolean",
+          "default": false
+        },
+        "cube": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    "HavingClause": {
+      "description": "HAVING clause for group filtering",
+      "base_type": "object",
+      "properties": {
+        "predicate": {
+          "type": "GeometricPredicate"
+        }
+      }
+    },
+    "OrderByClause": {
+      "description": "ORDER BY clause",
+      "base_type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "OrderByItem"
+          }
+        }
+      }
+    },
+    "OrderByItem": {
+      "description": "Item in ORDER BY clause",
+      "base_type": "object",
+      "properties": {
+        "expression": {
+          "type": "GeometricExpression"
+        },
+        "direction": {
+          "type": "string",
+          "enum": [
+            "ASC",
+            "DESC"
+          ],
+          "default": "ASC"
+        },
+        "nulls": {
+          "type": "string",
+          "enum": [
+            "FIRST",
+            "LAST"
+          ]
+        }
+      }
+    },
+    "QueryHints": {
+      "description": "Hints for query optimizer",
+      "base_type": "object",
+      "properties": {
+        "use_index": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "force_scan": {
+          "type": "boolean",
+          "default": false
+        },
+        "parallel_degree": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max_memory_mb": {
+          "type": "integer"
+        },
+        "timeout_ms": {
+          "type": "integer"
+        },
+        "approximate": {
+          "type": "boolean",
+          "default": false
+        },
+        "approximation_factor": {
+          "type": "number",
+          "minimum": 1.0
+        }
+      }
+    },
+    "QueryPlan": {
+      "description": "Execution plan for a query",
+      "base_type": "object",
+      "properties": {
+        "plan_id": {
+          "type": "string"
+        },
+        "query_id": {
+          "type": "string"
+        },
+        "root_operator": {
+          "type": "PlanOperator"
+        },
+        "estimated_cost": {
+          "type": "CostEstimate"
+        },
+        "statistics": {
+          "type": "PlanStatistics"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "PlanOperator": {
+      "description": "Operator in query plan",
+      "base_type": "object",
+      "properties": {
+        "operator_id": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "table_scan",
+            "index_scan",
+            "index_seek",
+            "spatial_index_scan",
+            "knn_scan",
+            "filter",
+            "project",
+            "sort",
+            "limit",
+            "hash_join",
+            "merge_join",
+            "nested_loop_join",
+            "spatial_join",
+            "hash_aggregate",
+            "stream_aggregate",
+            "union",
+            "intersect",
+            "except",
+            "materialize",
+            "spool"
+          ]
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "type": "PlanOperator"
+          }
+        },
+        "properties": {
+          "type": "object"
+        },
+        "estimated_rows": {
+          "type": "integer"
+        },
+        "estimated_cost": {
+          "type": "number"
+        }
+      }
+    },
+    "CostEstimate": {
+      "description": "Cost estimate for query execution",
+      "base_type": "object",
+      "properties": {
+        "cpu_cost": {
+          "type": "number"
+        },
+        "io_cost": {
+          "type": "number"
+        },
+        "memory_cost": {
+          "type": "number"
+        },
+        "network_cost": {
+          "type": "number"
+        },
+        "total_cost": {
+          "type": "number"
+        }
+      }
+    },
+    "PlanStatistics": {
+      "description": "Statistics for query plan",
+      "base_type": "object",
+      "properties": {
+        "estimated_rows": {
+          "type": "integer"
+        },
+        "estimated_bytes": {
+          "type": "integer"
+        },
+        "distinct_values": {
+          "type": "integer"
+        },
+        "null_fraction": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "GeometricIndex": {
+      "description": "Index structure for geometric data",
+      "base_type": "object",
+      "properties": {
+        "index_id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "hyperbolic_rtree",
+            "hyperbolic_kdtree",
+            "ball_tree",
+            "vantage_point_tree",
+            "cover_tree"
+          ]
+        },
+        "table": {
+          "type": "string"
+        },
+        "columns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "parameters": {
+          "type": "IndexParameters"
+        },
+        "statistics": {
+          "type": "IndexStatistics"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "IndexParameters": {
+      "description": "Parameters for index construction",
+      "base_type": "object",
+      "properties": {
+        "manifold": {
+          "type": "string",
+          "enum": [
+            "hyperboloid",
+            "poincare_ball"
+          ]
+        },
+        "curvature": {
+          "type": "number",
+          "default": -1.0
+        },
+        "dimension": {
+          "type": "integer",
+          "minimum": 2
+        },
+        "fanout": {
+          "type": "integer",
+          "minimum": 2,
+          "default": 50
+        },
+        "fill_factor": {
+          "type": "number",
+          "minimum": 0.1,
+          "maximum": 1.0,
+          "default": 0.7
+        },
+        "split_strategy": {
+          "type": "string",
+          "enum": [
+            "quadratic",
+            "linear",
+            "rstartree"
+          ]
+        },
+        "distance_function": {
+          "type": "string",
+          "enum": [
+            "hyperbolic",
+            "lorentz_ip",
+            "poincare"
+          ]
+        }
+      }
+    },
+    "IndexStatistics": {
+      "description": "Statistics for a geometric index",
+      "base_type": "object",
+      "properties": {
+        "entry_count": {
+          "type": "integer"
+        },
+        "height": {
+          "type": "integer"
+        },
+        "leaf_pages": {
+          "type": "integer"
+        },
+        "internal_pages": {
+          "type": "integer"
+        },
+        "average_fill": {
+          "type": "number"
+        },
+        "last_rebuild": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "QueryResult": {
+      "description": "Result of query execution",
+      "base_type": "object",
+      "properties": {
+        "result_id": {
+          "type": "string"
+        },
+        "query_id": {
+          "type": "string"
+        },
+        "columns": {
+          "type": "array",
+          "items": {
+            "type": "ResultColumn"
+          }
+        },
+        "rows": {
+          "type": "array",
+          "items": {
+            "type": "array"
+          }
+        },
+        "row_count": {
+          "type": "integer"
+        },
+        "has_more": {
+          "type": "boolean"
+        },
+        "continuation_token": {
+          "type": "string"
+        },
+        "execution_stats": {
+          "type": "ExecutionStats"
+        },
+        "validation_result": {
+          "type": "ValidationResult"
+        }
+      }
+    },
+    "ResultColumn": {
+      "description": "Column in query result",
+      "base_type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "geometric_type": {
+          "type": "string"
+        },
+        "nullable": {
+          "type": "boolean"
+        }
+      }
+    },
+    "ExecutionStats": {
+      "description": "Statistics from query execution",
+      "base_type": "object",
+      "properties": {
+        "elapsed_ms": {
+          "type": "integer"
+        },
+        "cpu_time_ms": {
+          "type": "integer"
+        },
+        "rows_scanned": {
+          "type": "integer"
+        },
+        "rows_returned": {
+          "type": "integer"
+        },
+        "index_seeks": {
+          "type": "integer"
+        },
+        "index_scans": {
+          "type": "integer"
+        },
+        "memory_used_mb": {
+          "type": "number"
+        },
+        "geometric_ops": {
+          "type": "integer"
+        }
+      }
+    },
+    "ValidationResult": {
+      "description": "Result of geometric validation on query results",
+      "base_type": "object",
+      "properties": {
+        "valid": {
+          "type": "boolean"
+        },
+        "checks_performed": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "violations": {
+          "type": "array",
+          "items": {
+            "type": "ValidationViolation"
+          }
+        }
+      }
+    },
+    "ValidationViolation": {
+      "description": "Violation detected during validation",
+      "base_type": "object",
+      "properties": {
+        "check": {
+          "type": "string"
+        },
+        "row_index": {
+          "type": "integer"
+        },
+        "column": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "severity": {
+          "type": "string",
+          "enum": [
+            "warning",
+            "error"
+          ]
+        }
+      }
+    }
+  },
+  "operations": {
+    "parse_query": {
+      "description": "Parse a geometric query string into AST",
+      "inputs": {
+        "query_string": {
+          "type": "string",
+          "required": true
+        },
+        "options": {
+          "type": "ParseOptions",
+          "required": false
+        }
+      },
+      "outputs": {
+        "query": {
+          "type": "GeometricQuery"
+        },
+        "parse_errors": {
+          "type": "array",
+          "items": {
+            "type": "ParseError"
+          }
+        }
+      },
+      "preconditions": [
+        "query_string is not empty",
+        "query_string uses valid GQDSL syntax"
+      ],
+      "postconditions": [
+        "query AST is semantically valid",
+        "all table and column references are resolved"
+      ],
+      "error_conditions": [
+        {
+          "code": "SYNTAX_ERROR",
+          "description": "Query syntax is invalid"
+        },
+        {
+          "code": "UNKNOWN_TABLE",
+          "description": "Referenced table does not exist"
+        },
+        {
+          "code": "UNKNOWN_COLUMN",
+          "description": "Referenced column does not exist"
+        },
+        {
+          "code": "TYPE_MISMATCH",
+          "description": "Type mismatch in expression"
+        }
+      ],
+      "performance_characteristics": {
+        "latency_p50_ms": 5,
+        "latency_p99_ms": 50,
+        "idempotent": true
+      }
+    },
+    "optimize_query": {
+      "description": "Optimize query and generate execution plan",
+      "inputs": {
+        "query": {
+          "type": "GeometricQuery",
+          "required": true
+        },
+        "optimization_level": {
+          "type": "string",
+          "enum": [
+            "minimal",
+            "standard",
+            "aggressive"
+          ],
+          "default": "standard"
+        },
+        "statistics": {
+          "type": "TableStatistics",
+          "required": false
+        }
+      },
+      "outputs": {
+        "plan": {
+          "type": "QueryPlan"
+        },
+        "alternatives": {
+          "type": "array",
+          "items": {
+            "type": "QueryPlan"
+          }
+        },
+        "optimization_notes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "preconditions": [
+        "query is semantically valid",
+        "referenced tables have statistics"
+      ],
+      "postconditions": [
+        "plan is executable",
+        "plan uses available indexes where beneficial"
+      ],
+      "error_conditions": [
+        {
+          "code": "OPTIMIZATION_TIMEOUT",
+          "description": "Optimization took too long"
+        },
+        {
+          "code": "NO_VALID_PLAN",
+          "description": "Could not generate valid plan"
+        }
+      ],
+      "performance_characteristics": {
+        "latency_p50_ms": 20,
+        "latency_p99_ms": 200,
+        "idempotent": true
+      }
+    },
+    "execute_query": {
+      "description": "Execute a query plan and return results",
+      "inputs": {
+        "plan": {
+          "type": "QueryPlan",
+          "required": true
+        },
+        "parameters": {
+          "type": "object",
+          "required": false
+        },
+        "fetch_size": {
+          "type": "integer",
+          "default": 1000
+        },
+        "timeout_ms": {
+          "type": "integer",
+          "default": 30000
+        }
+      },
+      "outputs": {
+        "result": {
+          "type": "QueryResult"
+        },
+        "execution_id": {
+          "type": "string"
+        }
+      },
+      "preconditions": [
+        "plan is valid and not expired",
+        "required resources are available"
+      ],
+      "postconditions": [
+        "results are geometrically valid",
+        "execution metrics are recorded"
+      ],
+      "error_conditions": [
+        {
+          "code": "EXECUTION_TIMEOUT",
+          "description": "Query execution timed out"
+        },
+        {
+          "code": "RESOURCE_EXHAUSTED",
+          "description": "Insufficient memory or CPU"
+        },
+        {
+          "code": "PLAN_INVALIDATED",
+          "description": "Plan was invalidated due to schema change"
+        }
+      ],
+      "performance_characteristics": {
+        "latency_p50_ms": 100,
+        "latency_p99_ms": 5000,
+        "idempotent": true
+      }
+    },
+    "create_index": {
+      "description": "Create a geometric index on a table",
+      "inputs": {
+        "table": {
+          "type": "string",
+          "required": true
+        },
+        "columns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "index_type": {
+          "type": "string",
+          "enum": [
+            "hyperbolic_rtree",
+            "hyperbolic_kdtree",
+            "ball_tree",
+            "cover_tree"
+          ],
+          "default": "hyperbolic_rtree"
+        },
+        "parameters": {
+          "type": "IndexParameters",
+          "required": false
+        },
+        "name": {
+          "type": "string",
+          "required": false
+        }
+      },
+      "outputs": {
+        "index": {
+          "type": "GeometricIndex"
+        },
+        "build_stats": {
+          "type": "IndexBuildStats"
+        }
+      },
+      "preconditions": [
+        "table exists",
+        "columns are geometric types",
+        "no conflicting index exists"
+      ],
+      "postconditions": [
+        "index is built and registered",
+        "index statistics are populated"
+      ],
+      "error_conditions": [
+        {
+          "code": "TABLE_NOT_FOUND",
+          "description": "Table does not exist"
+        },
+        {
+          "code": "INVALID_COLUMN",
+          "description": "Column is not a geometric type"
+        },
+        {
+          "code": "INDEX_EXISTS",
+          "description": "Index with same name already exists"
+        },
+        {
+          "code": "BUILD_FAILED",
+          "description": "Index build failed"
+        }
+      ],
+      "performance_characteristics": {
+        "latency_p50_ms": 5000,
+        "latency_p99_ms": 60000,
+        "idempotent": false
+      }
+    },
+    "drop_index": {
+      "description": "Drop a geometric index",
+      "inputs": {
+        "index_name": {
+          "type": "string",
+          "required": true
+        },
+        "if_exists": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "outputs": {
+        "success": {
+          "type": "boolean"
+        }
+      },
+      "preconditions": [
+        "index exists or if_exists is true"
+      ],
+      "postconditions": [
+        "index is removed from catalog",
+        "disk space is reclaimed"
+      ],
+      "error_conditions": [
+        {
+          "code": "INDEX_NOT_FOUND",
+          "description": "Index does not exist"
+        }
+      ],
+      "performance_characteristics": {
+        "latency_p50_ms": 100,
+        "latency_p99_ms": 1000,
+        "idempotent": true
+      }
+    },
+    "rebuild_index": {
+      "description": "Rebuild a geometric index for better performance",
+      "inputs": {
+        "index_name": {
+          "type": "string",
+          "required": true
+        },
+        "online": {
+          "type": "boolean",
+          "default": true
+        },
+        "new_parameters": {
+          "type": "IndexParameters",
+          "required": false
+        }
+      },
+      "outputs": {
+        "index": {
+          "type": "GeometricIndex"
+        },
+        "rebuild_stats": {
+          "type": "IndexBuildStats"
+        }
+      },
+      "preconditions": [
+        "index exists",
+        "if online, table is not locked"
+      ],
+      "postconditions": [
+        "index is rebuilt with current data",
+        "statistics are updated"
+      ],
+      "error_conditions": [
+        {
+          "code": "INDEX_NOT_FOUND",
+          "description": "Index does not exist"
+        },
+        {
+          "code": "REBUILD_FAILED",
+          "description": "Rebuild operation failed"
+        },
+        {
+          "code": "CONCURRENT_MODIFICATION",
+          "description": "Table modified during rebuild"
+        }
+      ],
+      "performance_characteristics": {
+        "latency_p50_ms": 10000,
+        "latency_p99_ms": 120000,
+        "idempotent": false
+      }
+    },
+    "analyze_table": {
+      "description": "Analyze table and update statistics for query optimization",
+      "inputs": {
+        "table": {
+          "type": "string",
+          "required": true
+        },
+        "columns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "required": false
+        },
+        "sample_rate": {
+          "type": "number",
+          "minimum": 0.01,
+          "maximum": 1.0,
+          "default": 0.1
+        }
+      },
+      "outputs": {
+        "statistics": {
+          "type": "TableStatistics"
+        },
+        "column_stats": {
+          "type": "array",
+          "items": {
+            "type": "ColumnStatistics"
+          }
+        }
+      },
+      "preconditions": [
+        "table exists"
+      ],
+      "postconditions": [
+        "statistics are updated in catalog",
+        "query optimizer can use new statistics"
+      ],
+      "error_conditions": [
+        {
+          "code": "TABLE_NOT_FOUND",
+          "description": "Table does not exist"
+        },
+        {
+          "code": "ANALYSIS_FAILED",
+          "description": "Statistical analysis failed"
+        }
+      ],
+      "performance_characteristics": {
+        "latency_p50_ms": 1000,
+        "latency_p99_ms": 30000,
+        "idempotent": true
+      }
+    },
+    "explain_query": {
+      "description": "Explain query execution plan",
+      "inputs": {
+        "query": {
+          "type": "GeometricQuery",
+          "required": true
+        },
+        "format": {
+          "type": "string",
+          "enum": [
+            "text",
+            "json",
+            "graphviz"
+          ],
+          "default": "text"
+        },
+        "analyze": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "outputs": {
+        "explanation": {
+          "type": "string"
+        },
+        "plan": {
+          "type": "QueryPlan"
+        },
+        "actual_stats": {
+          "type": "ExecutionStats"
+        }
+      },
+      "preconditions": [
+        "query is valid"
+      ],
+      "postconditions": [
+        "explanation includes cost estimates",
+        "if analyze, actual execution stats are included"
+      ],
+      "error_conditions": [
+        {
+          "code": "INVALID_QUERY",
+          "description": "Query is not valid"
+        },
+        {
+          "code": "EXPLANATION_FAILED",
+          "description": "Could not generate explanation"
+        }
+      ],
+      "performance_characteristics": {
+        "latency_p50_ms": 50,
+        "latency_p99_ms": 500,
+        "idempotent": true
+      }
+    },
+    "validate_result": {
+      "description": "Validate geometric consistency of query results",
+      "inputs": {
+        "result": {
+          "type": "QueryResult",
+          "required": true
+        },
+        "validation_level": {
+          "type": "string",
+          "enum": [
+            "basic",
+            "standard",
+            "strict"
+          ],
+          "default": "standard"
+        }
+      },
+      "outputs": {
+        "validation_result": {
+          "type": "ValidationResult"
+        }
+      },
+      "preconditions": [
+        "result contains geometric data"
+      ],
+      "postconditions": [
+        "all geometric constraints are checked",
+        "violations are reported"
+      ],
+      "error_conditions": [
+        {
+          "code": "VALIDATION_ERROR",
+          "description": "Validation process failed"
+        }
+      ],
+      "performance_characteristics": {
+        "latency_p50_ms": 10,
+        "latency_p99_ms": 100,
+        "idempotent": true
+      }
+    },
+    "nearest_neighbor_query": {
+      "description": "Execute optimized k-nearest neighbor query",
+      "inputs": {
+        "table": {
+          "type": "string",
+          "required": true
+        },
+        "column": {
+          "type": "string",
+          "required": true
+        },
+        "query_point": {
+          "type": "GeometricLiteral",
+          "required": true
+        },
+        "k": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 10
+        },
+        "filter": {
+          "type": "GeometricPredicate",
+          "required": false
+        },
+        "max_distance": {
+          "type": "number",
+          "required": false
+        }
+      },
+      "outputs": {
+        "neighbors": {
+          "type": "array",
+          "items": {
+            "type": "NeighborResult"
+          }
+        },
+        "execution_stats": {
+          "type": "ExecutionStats"
+        }
+      },
+      "preconditions": [
+        "table and column exist",
+        "query_point is on same manifold as data"
+      ],
+      "postconditions": [
+        "results are sorted by distance",
+        "at most k results returned"
+      ],
+      "error_conditions": [
+        {
+          "code": "COLUMN_NOT_GEOMETRIC",
+          "description": "Column is not a geometric type"
+        },
+        {
+          "code": "MANIFOLD_MISMATCH",
+          "description": "Query point manifold does not match data"
+        }
+      ],
+      "performance_characteristics": {
+        "latency_p50_ms": 20,
+        "latency_p99_ms": 200,
+        "idempotent": true
+      }
+    },
+    "range_query": {
+      "description": "Execute range query within hyperbolic ball",
+      "inputs": {
+        "table": {
+          "type": "string",
+          "required": true
+        },
+        "column": {
+          "type": "string",
+          "required": true
+        },
+        "center": {
+          "type": "GeometricLiteral",
+          "required": true
+        },
+        "radius": {
+          "type": "number",
+          "required": true
+        },
+        "filter": {
+          "type": "GeometricPredicate",
+          "required": false
+        }
+      },
+      "outputs": {
+        "results": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "count": {
+          "type": "integer"
+        },
+        "execution_stats": {
+          "type": "ExecutionStats"
+        }
+      },
+      "preconditions": [
+        "table and column exist",
+        "radius is positive"
+      ],
+      "postconditions": [
+        "all results within specified distance",
+        "results are complete (no false negatives)"
+      ],
+      "error_conditions": [
+        {
+          "code": "INVALID_RADIUS",
+          "description": "Radius must be positive"
+        },
+        {
+          "code": "INDEX_UNAVAILABLE",
+          "description": "No suitable index for range query"
+        }
+      ],
+      "performance_characteristics": {
+        "latency_p50_ms": 30,
+        "latency_p99_ms": 300,
+        "idempotent": true
+      }
+    }
+  },
+  "tests": {
+    "conformance_blocks": [
+      {
+        "schema_version": "block-uni-1",
+        "block_id": "gqdsl.parse.basic",
+        "metadata": {
+          "title": "GQDSL Basic Parsing Conformance",
+          "description": "Validates parsing of basic geometric queries",
+          "created_at": "2026-01-16T00:00:00Z",
+          "authors": [
+            "HyperSync Query Team"
+          ],
+          "tags": [
+            "parsing",
+            "dsl",
+            "basic"
+          ]
+        },
+        "integrity": {
+          "manifest": [
+            {
+              "path": "test_data/basic_queries.json",
+              "sha256": "abcdef0123456789012345678901234567890123456789012345678901234567",
+              "role": "fixture"
+            }
+          ],
+          "dir_merkle_root": "bcdef01234567890123456789012345678901234567890123456789012345678",
+          "canonicalization": {
+            "field_order": "lex",
+            "byte_encoding": "utf8",
+            "float_format": "scientific",
+            "normalize_sign": true
+          },
+          "integrity_policy": {
+            "must_match_manifest": true,
+            "deny_unknown_files": true,
+            "allow_out_of_dir": false
+          }
+        },
+        "environment": {
+          "os": "linux",
+          "arch": "x86_64",
+          "accel": "cpu",
+          "precision": "fp64",
+          "deterministic_reductions": true,
+          "blas_threads": 1
+        },
+        "manifold": {
+          "model": "hyperboloid",
+          "dimension": 64,
+          "curvature_K": -1.0
+        },
+        "numeric_policy": {
+          "rounding_mode": "nearest_even",
+          "denormals": "preserve",
+          "rng_impl": "xoshiro256**",
+          "tolerances": {
+            "distance_abs": "1.0e-10",
+            "distance_rel": "1.0e-8"
+          },
+          "retraction_native": "exponential_map_intrinsic",
+          "vector_transport_native": "levi_civita_intrinsic"
+        },
+        "substrate": {
+          "topology": {
+            "nodes": [
+              "query_parser"
+            ],
+            "edges": []
+          },
+          "queues": {
+            "policy": "fifo",
+            "drop": "tail"
+          },
+          "flow_control": {
+            "algorithm": "none"
+          },
+          "time_model": {
+            "clock": "physical"
+          },
+          "crypto_capabilities": {
+            "enc": "none",
+            "auth": "none",
+            "hash": "sha256"
+          },
+          "observability": {
+            "tracing": "basic",
+            "export": "stdout"
+          }
+        },
+        "semantics": {
+          "message_types": [
+            {
+              "type_id": "query_request",
+              "sensitivity": "public"
+            }
+          ],
+          "topics": [
+            {
+              "topic_id": "query.parse",
+              "intent": "custom",
+              "qos": "at_most_once",
+              "ordering": "none"
+            }
+          ],
+          "headers": {
+            "causality": "lamport",
+            "trace": "disabled",
+            "clearance_levels": [
+              "public"
+            ],
+            "required_headers": [
+              "msg_id"
+            ]
+          },
+          "policies": {
+            "clearance_rules": [],
+            "shadow_ops_policy": {
+              "enabled": false,
+              "on_violation": "log"
+            },
+            "privacy_budget": {
+              "epsilon": 10.0,
+              "delta": 0.001,
+              "mechanism": "gaussian"
+            }
+          }
+        },
+        "fixtures": {
+          "data": {
+            "points": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.1,
+                0.0
+              ]
+            ]
+          }
+        },
+        "program": [
+          {
+            "name": "parse_select",
+            "op": "sem.request_response",
+            "args": {
+              "from": "query_parser",
+              "to": "query_parser",
+              "request": {
+                "action": "parse",
+                "query": "SELECT embedding, hyperbolic_distance(embedding, POINT(1,0,0)) AS dist FROM embeddings WHERE dist < 5.0"
+              },
+              "timeout_ms": 1000
+            },
+            "save_as": "parse_result"
+          }
+        ],
+        "checks": {
+          "invariants": [
+            {
+              "id": "INV.DIST.CORRECTNESS",
+              "metric": "lorentz"
+            }
+          ],
+          "ops": [
+            {
+              "kind": "routing.success",
+              "target": "$parse_result",
+              "expected": {
+                "success": true
+              }
+            }
+          ],
+          "transport": [],
+          "security": [],
+          "performance": {
+            "max_runtime_ms": 1000,
+            "max_memory_mb": 128
+          }
+        },
+        "coverage": {
+          "claims": [
+            "GQDSL-001",
+            "GQDSL-002"
+          ],
+          "matrix": [
+            {
+              "claim_id": "GQDSL-001",
+              "step": "parse_select",
+              "check": "routing.success"
+            }
+          ]
+        },
+        "receipts": {
+          "per_step": [],
+          "per_check": []
+        }
+      },
+      {
+        "schema_version": "block-uni-1",
+        "block_id": "gqdsl.index.hyperbolic_rtree",
+        "metadata": {
+          "title": "Hyperbolic R-tree Index Conformance",
+          "description": "Validates hyperbolic R-tree index operations",
+          "created_at": "2026-01-16T00:00:00Z",
+          "authors": [
+            "HyperSync Query Team"
+          ],
+          "tags": [
+            "index",
+            "rtree",
+            "hyperbolic"
+          ]
+        },
+        "integrity": {
+          "manifest": [
+            {
+              "path": "test_data/index_data.json",
+              "sha256": "cdef012345678901234567890123456789012345678901234567890123456789",
+              "role": "fixture"
+            }
+          ],
+          "dir_merkle_root": "def0123456789012345678901234567890123456789012345678901234567890",
+          "canonicalization": {
+            "field_order": "lex",
+            "byte_encoding": "utf8",
+            "float_format": "scientific",
+            "normalize_sign": true
+          },
+          "integrity_policy": {
+            "must_match_manifest": true,
+            "deny_unknown_files": true,
+            "allow_out_of_dir": false
+          }
+        },
+        "environment": {
+          "os": "linux",
+          "arch": "x86_64",
+          "accel": "cpu",
+          "precision": "fp64",
+          "deterministic_reductions": true,
+          "blas_threads": 1
+        },
+        "manifold": {
+          "model": "hyperboloid",
+          "dimension": 64,
+          "curvature_K": -1.0
+        },
+        "numeric_policy": {
+          "rounding_mode": "nearest_even",
+          "denormals": "preserve",
+          "rng_impl": "xoshiro256**",
+          "tolerances": {
+            "distance_abs": "1.0e-10",
+            "distance_rel": "1.0e-8"
+          },
+          "retraction_native": "exponential_map_intrinsic",
+          "vector_transport_native": "levi_civita_intrinsic"
+        },
+        "substrate": {
+          "topology": {
+            "nodes": [
+              "index_manager"
+            ],
+            "edges": []
+          },
+          "queues": {
+            "policy": "fifo",
+            "drop": "tail"
+          },
+          "flow_control": {
+            "algorithm": "none"
+          },
+          "time_model": {
+            "clock": "physical"
+          },
+          "crypto_capabilities": {
+            "enc": "none",
+            "auth": "none",
+            "hash": "sha256"
+          },
+          "observability": {
+            "tracing": "basic",
+            "export": "stdout"
+          }
+        },
+        "semantics": {
+          "message_types": [
+            {
+              "type_id": "index_request",
+              "sensitivity": "internal"
+            }
+          ],
+          "topics": [
+            {
+              "topic_id": "index.operations",
+              "intent": "control",
+              "qos": "at_least_once",
+              "ordering": "per_key"
+            }
+          ],
+          "headers": {
+            "causality": "lamport",
+            "trace": "enabled",
+            "clearance_levels": [
+              "internal"
+            ],
+            "required_headers": [
+              "msg_id",
+              "table_name"
+            ]
+          },
+          "policies": {
+            "clearance_rules": [],
+            "shadow_ops_policy": {
+              "enabled": false,
+              "on_violation": "log"
+            },
+            "privacy_budget": {
+              "epsilon": 10.0,
+              "delta": 0.001,
+              "mechanism": "gaussian"
+            }
+          }
+        },
+        "fixtures": {
+          "data": {
+            "points": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.1,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.1
+              ],
+              [
+                1.0,
+                0.1,
+                0.1
+              ]
+            ]
+          }
+        },
+        "program": [
+          {
+            "name": "create_rtree",
+            "op": "sem.request_response",
+            "args": {
+              "from": "index_manager",
+              "to": "index_manager",
+              "request": {
+                "action": "create_index",
+                "table": "embeddings",
+                "columns": [
+                  "embedding"
+                ],
+                "type": "hyperbolic_rtree"
+              },
+              "timeout_ms": 30000
+            },
+            "save_as": "index_result"
+          },
+          {
+            "name": "query_nearest",
+            "op": "sem.request_response",
+            "args": {
+              "from": "index_manager",
+              "to": "index_manager",
+              "request": {
+                "action": "knn_query",
+                "query_point": [
+                  1.0,
+                  0.05,
+                  0.05
+                ],
+                "k": 2
+              },
+              "timeout_ms": 5000
+            },
+            "save_as": "knn_result"
+          }
+        ],
+        "checks": {
+          "invariants": [
+            {
+              "id": "INV.DIST.CORRECTNESS",
+              "metric": "lorentz"
+            }
+          ],
+          "ops": [
+            {
+              "kind": "routing.success",
+              "target": "$index_result",
+              "expected": {
+                "success": true
+              }
+            },
+            {
+              "kind": "routing.success",
+              "target": "$knn_result",
+              "expected": {
+                "success": true
+              }
+            }
+          ],
+          "transport": [
+            {
+              "kind": "delivery.qos_satisfied",
+              "target": "index.operations",
+              "expected": {
+                "satisfied": true
+              }
+            }
+          ],
+          "security": [],
+          "performance": {
+            "max_runtime_ms": 60000,
+            "max_memory_mb": 512
+          }
+        },
+        "coverage": {
+          "claims": [
+            "GQDSL-003",
+            "GQDSL-004",
+            "GQDSL-005"
+          ],
+          "matrix": [
+            {
+              "claim_id": "GQDSL-003",
+              "step": "create_rtree",
+              "check": "routing.success"
+            },
+            {
+              "claim_id": "GQDSL-004",
+              "step": "query_nearest",
+              "check": "INV.DIST.CORRECTNESS"
+            }
+          ]
+        },
+        "receipts": {
+          "per_step": [],
+          "per_check": []
+        }
+      },
+      {
+        "schema_version": "block-uni-1",
+        "block_id": "gqdsl.optimization.cost_based",
+        "metadata": {
+          "title": "Cost-Based Query Optimization",
+          "description": "Validates cost-based query optimizer generates efficient plans",
+          "created_at": "2026-01-16T00:00:00Z",
+          "authors": [
+            "HyperSync Query Team"
+          ],
+          "tags": [
+            "optimization",
+            "cost-based",
+            "planning"
+          ]
+        },
+        "integrity": {
+          "manifest": [
+            {
+              "path": "test_data/optimization_queries.json",
+              "sha256": "ef01234567890123456789012345678901234567890123456789012345678901",
+              "role": "fixture"
+            }
+          ],
+          "dir_merkle_root": "f012345678901234567890123456789012345678901234567890123456789012",
+          "canonicalization": {
+            "field_order": "lex",
+            "byte_encoding": "utf8",
+            "float_format": "scientific",
+            "normalize_sign": true
+          },
+          "integrity_policy": {
+            "must_match_manifest": true,
+            "deny_unknown_files": true,
+            "allow_out_of_dir": false
+          }
+        },
+        "environment": {
+          "os": "linux",
+          "arch": "x86_64",
+          "accel": "cpu",
+          "precision": "fp64",
+          "deterministic_reductions": true,
+          "blas_threads": 1
+        },
+        "manifold": {
+          "model": "hyperboloid",
+          "dimension": 64,
+          "curvature_K": -1.0
+        },
+        "numeric_policy": {
+          "rounding_mode": "nearest_even",
+          "denormals": "preserve",
+          "rng_impl": "xoshiro256**",
+          "tolerances": {
+            "distance_abs": "1.0e-10",
+            "distance_rel": "1.0e-8"
+          },
+          "retraction_native": "exponential_map_intrinsic",
+          "vector_transport_native": "levi_civita_intrinsic"
+        },
+        "substrate": {
+          "topology": {
+            "nodes": [
+              "optimizer"
+            ],
+            "edges": []
+          },
+          "queues": {
+            "policy": "fifo",
+            "drop": "tail"
+          },
+          "flow_control": {
+            "algorithm": "none"
+          },
+          "time_model": {
+            "clock": "physical"
+          },
+          "crypto_capabilities": {
+            "enc": "none",
+            "auth": "none",
+            "hash": "sha256"
+          },
+          "observability": {
+            "tracing": "basic",
+            "export": "stdout"
+          }
+        },
+        "semantics": {
+          "message_types": [
+            {
+              "type_id": "optimize_request",
+              "sensitivity": "public"
+            }
+          ],
+          "topics": [
+            {
+              "topic_id": "query.optimize",
+              "intent": "custom",
+              "qos": "at_most_once",
+              "ordering": "none"
+            }
+          ],
+          "headers": {
+            "causality": "lamport",
+            "trace": "disabled",
+            "clearance_levels": [
+              "public"
+            ],
+            "required_headers": [
+              "msg_id"
+            ]
+          },
+          "policies": {
+            "clearance_rules": [],
+            "shadow_ops_policy": {
+              "enabled": false,
+              "on_violation": "log"
+            },
+            "privacy_budget": {
+              "epsilon": 10.0,
+              "delta": 0.001,
+              "mechanism": "gaussian"
+            }
+          }
+        },
+        "fixtures": {
+          "data": {
+            "points": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ]
+            ]
+          }
+        },
+        "program": [
+          {
+            "name": "optimize_join",
+            "op": "sem.request_response",
+            "args": {
+              "from": "optimizer",
+              "to": "optimizer",
+              "request": {
+                "action": "optimize",
+                "query": "$fixtures.join_query"
+              },
+              "timeout_ms": 5000
+            },
+            "save_as": "plan"
+          }
+        ],
+        "checks": {
+          "invariants": [],
+          "ops": [
+            {
+              "kind": "routing.success",
+              "target": "$plan",
+              "expected": {
+                "success": true
+              }
+            }
+          ],
+          "transport": [],
+          "security": [],
+          "performance": {
+            "max_runtime_ms": 5000,
+            "max_memory_mb": 256
+          }
+        },
+        "coverage": {
+          "claims": [
+            "GQDSL-006",
+            "GQDSL-007"
+          ],
+          "matrix": [
+            {
+              "claim_id": "GQDSL-006",
+              "step": "optimize_join",
+              "check": "routing.success"
+            }
+          ]
+        },
+        "receipts": {
+          "per_step": [],
+          "per_check": []
+        }
+      }
+    ]
+  },
+  "implementation_notes": {
+    "query_syntax": {
+      "description": "GQDSL query syntax",
+      "guidance": [
+        "GQDSL extends SQL with geometric functions and predicates",
+        "All geometric literals must specify manifold and coordinates",
+        "Distance functions default to hyperbolic distance on the hyperboloid model",
+        "Approximate equality (~=) uses numeric_policy tolerances"
+      ]
+    },
+    "index_selection": {
+      "description": "Choosing appropriate indexes",
+      "guidance": [
+        "Use hyperbolic R-tree for range queries and spatial joins",
+        "Use ball tree or cover tree for k-NN queries",
+        "Consider data distribution when choosing fanout",
+        "Rebuild indexes periodically for heavily updated tables"
+      ]
+    },
+    "optimization_strategies": {
+      "description": "Query optimization strategies",
+      "guidance": [
+        "Push down geometric predicates to index when possible",
+        "Use spatial joins instead of cross-join + filter",
+        "Consider approximate algorithms for large k-NN queries",
+        "Statistics should be updated after significant data changes"
+      ]
+    },
+    "result_validation": {
+      "description": "Validating query results",
+      "guidance": [
+        "All returned points must satisfy manifold constraints",
+        "Distance results must be non-negative",
+        "K-NN results must be sorted by ascending distance",
+        "Range query results must all be within specified radius"
+      ]
+    }
+  }
+}

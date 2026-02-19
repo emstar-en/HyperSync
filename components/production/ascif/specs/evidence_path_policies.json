@@ -1,0 +1,48 @@
+{
+  "version": "1.0.0",
+  "description": "Evidence storage, retention, and redaction policies",
+  "base_path": "/var/hypersync/evidence",
+  "resolution_rules": {
+    "relative_paths": "resolve_from_base",
+    "absolute_paths": "reject",
+    "symlinks": "reject",
+    "path_traversal": "reject"
+  },
+  "globbing": {
+    "enabled": true,
+    "patterns": {
+      "*.json": "all JSON receipts",
+      "receipts/**/*.json": "all receipts recursively",
+      "proofs/*/proof.json": "all proof files"
+    }
+  },
+  "mathematical_foundations": {
+    "path_canonicalization": {
+      "formal_grammar": "Path -> Segment ('/' Segment)*; Segment != '..'",
+      "security_proof": "Canonical(Path) starts with Base_Path"
+    },
+    "storage_quotas": {
+      "allocation_logic": "Fair queuing for disk I/O"
+    }
+  },
+  "fault_detection": {
+    "traversal_attempt": {
+      "logic": "Regex match for '\\.\\.' or absolute path indicators",
+      "action": "Log security event and block"
+    },
+    "storage_exhaustion": {
+      "logic": "Used_Space > 90% of Quota",
+      "action": "Trigger retention policy (pruning)"
+    }
+  },
+  "detailed_mechanisms": {
+    "filesystem_locking": "flock() for atomic writes",
+    "scrubbing_algorithms": "DoD 5220.22-M for secure deletion (optional)"
+  },
+  "meta": {
+    "id": "spec.policies.evidence",
+    "version": "1.0.0",
+    "description": "Evidence storage, retention, and redaction policies",
+    "status": "ALPHA"
+  }
+}

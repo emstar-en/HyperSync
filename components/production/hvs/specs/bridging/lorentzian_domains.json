@@ -1,0 +1,1603 @@
+{
+  "metadata": {
+    "name": "lorentzian_domains",
+    "version": "1.0.0",
+    "description": "Core Lorentzian Domain (LD) architecture for HyperSync - defines domain types, lifecycle, geometric properties, and LD-specific operations based on Lorentzian manifold geometry",
+    "author": "HyperSync Framework",
+    "created": "2026-01-16",
+    "updated": "2026-01-16",
+    "stunir_version": "1.0",
+    "domain": "hypersync.domains.lorentzian",
+    "dependencies": [
+      "agua_geometry_spec",
+      "agua_mathematical_foundation",
+      "hyperbolic_core"
+    ],
+    "mathematical_foundation": {
+      "basis": "Lorentzian Manifold Geometry",
+      "signature": "(-,+,+,+) Minkowski-like metric",
+      "key_properties": [
+        "Causal structure preservation",
+        "Light cone boundaries for isolation",
+        "Timelike geodesic paths for communication",
+        "Spacelike separation for security"
+      ]
+    },
+    "tags": [
+      "domain",
+      "lorentzian",
+      "geometry",
+      "security",
+      "isolation"
+    ],
+    "license": {
+      "name": "AGPLv3",
+      "url": "https://www.gnu.org/licenses/agpl-3.0.html"
+    }
+  },
+  "types": {
+    "LorentzianSignature": {
+      "description": "Metric signature for Lorentzian geometry",
+      "base_type": "enum",
+      "values": [
+        "MINKOWSKI_STANDARD",
+        "MINKOWSKI_OPPOSITE",
+        "CUSTOM"
+      ],
+      "default": "MINKOWSKI_STANDARD",
+      "mathematical_note": "Standard signature (-,+,+,+) with one timelike and three spacelike dimensions"
+    },
+    "DomainLevel": {
+      "description": "Hierarchical level of the Lorentzian Domain",
+      "base_type": "integer",
+      "constraints": {
+        "minimum": 0,
+        "maximum": 255
+      },
+      "semantic_meaning": {
+        "0": "LD(0) - Base/root domain, maximum curvature",
+        "1-10": "Primary operational domains",
+        "11-100": "Secondary/tenant domains",
+        "101-255": "Ephemeral/temporary domains"
+      }
+    },
+    "DomainState": {
+      "description": "Lifecycle state of a Lorentzian Domain",
+      "base_type": "enum",
+      "values": [
+        "INITIALIZING",
+        "ACTIVE",
+        "SUSPENDED",
+        "MIGRATING",
+        "DEGRADED",
+        "TERMINATING",
+        "TERMINATED"
+      ],
+      "transitions": {
+        "INITIALIZING": [
+          "ACTIVE",
+          "TERMINATED"
+        ],
+        "ACTIVE": [
+          "SUSPENDED",
+          "MIGRATING",
+          "DEGRADED",
+          "TERMINATING"
+        ],
+        "SUSPENDED": [
+          "ACTIVE",
+          "TERMINATING"
+        ],
+        "MIGRATING": [
+          "ACTIVE",
+          "DEGRADED",
+          "TERMINATING"
+        ],
+        "DEGRADED": [
+          "ACTIVE",
+          "TERMINATING"
+        ],
+        "TERMINATING": [
+          "TERMINATED"
+        ],
+        "TERMINATED": []
+      }
+    },
+    "CurvatureType": {
+      "description": "Type of geometric curvature defining domain properties",
+      "base_type": "enum",
+      "values": [
+        "NEGATIVE",
+        "ZERO",
+        "POSITIVE",
+        "VARIABLE"
+      ],
+      "geometric_interpretation": {
+        "NEGATIVE": "Hyperbolic geometry - infinite parallel lines, security isolation",
+        "ZERO": "Flat/Euclidean - standard computational space",
+        "POSITIVE": "Spherical geometry - bounded, finite domains",
+        "VARIABLE": "Mixed curvature - adaptive security boundaries"
+      }
+    },
+    "MetricTensor": {
+      "description": "4x4 metric tensor defining the Lorentzian geometry",
+      "base_type": "object",
+      "properties": {
+        "components": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "length": 4
+          },
+          "length": 4
+        },
+        "signature": {
+          "type": "LorentzianSignature"
+        },
+        "determinant": {
+          "type": "number"
+        },
+        "is_degenerate": {
+          "type": "boolean"
+        }
+      },
+      "invariants": [
+        "det(g) < 0 for valid Lorentzian metric",
+        "Signature must have exactly one negative eigenvalue"
+      ]
+    },
+    "LightCone": {
+      "description": "Causal structure boundary defining domain isolation",
+      "base_type": "object",
+      "properties": {
+        "apex": {
+          "type": "Point4D",
+          "description": "Apex point of the light cone"
+        },
+        "future_boundary": {
+          "type": "Hypersurface",
+          "description": "Future light cone boundary"
+        },
+        "past_boundary": {
+          "type": "Hypersurface",
+          "description": "Past light cone boundary"
+        },
+        "interior_type": {
+          "type": "enum",
+          "values": [
+            "TIMELIKE_FUTURE",
+            "TIMELIKE_PAST",
+            "SPACELIKE"
+          ]
+        }
+      },
+      "security_property": "Points outside light cone are causally disconnected - fundamental isolation guarantee"
+    },
+    "DomainBoundary": {
+      "description": "Geometric boundary of a Lorentzian Domain",
+      "base_type": "object",
+      "properties": {
+        "boundary_type": {
+          "type": "enum",
+          "values": [
+            "LIGHT_CONE",
+            "GEODESIC_SURFACE",
+            "CURVATURE_DISCONTINUITY",
+            "HORIZON"
+          ]
+        },
+        "geometry": {
+          "type": "Hypersurface"
+        },
+        "permeability": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "description": "0 = impermeable, 1 = fully permeable"
+        },
+        "crossing_protocol": {
+          "type": "string"
+        },
+        "enforcement_level": {
+          "type": "enum",
+          "values": [
+            "GEOMETRIC",
+            "CRYPTOGRAPHIC",
+            "HYBRID"
+          ]
+        }
+      }
+    },
+    "LorentzianDomainConfig": {
+      "description": "Configuration parameters for creating a Lorentzian Domain",
+      "base_type": "object",
+      "properties": {
+        "domain_id": {
+          "type": "DomainIdentifier",
+          "required": true
+        },
+        "level": {
+          "type": "DomainLevel",
+          "required": true
+        },
+        "curvature": {
+          "type": "CurvatureType",
+          "default": "NEGATIVE"
+        },
+        "curvature_parameter": {
+          "type": "number",
+          "description": "Gaussian curvature K, typically K < 0 for hyperbolic",
+          "default": -1.0
+        },
+        "metric": {
+          "type": "MetricTensor",
+          "description": "Custom metric tensor, uses Minkowski if not specified"
+        },
+        "boundary_config": {
+          "type": "DomainBoundary"
+        },
+        "parent_domain": {
+          "type": "DomainIdentifier",
+          "description": "Parent domain for nested domains, null for LD(0)"
+        },
+        "isolation_level": {
+          "type": "enum",
+          "values": [
+            "NONE",
+            "SOFT",
+            "HARD",
+            "ABSOLUTE"
+          ],
+          "default": "HARD"
+        },
+        "capacity": {
+          "type": "object",
+          "properties": {
+            "max_networks": {
+              "type": "integer",
+              "default": 1000
+            },
+            "max_entities": {
+              "type": "integer",
+              "default": 1000000
+            },
+            "max_connections": {
+              "type": "integer",
+              "default": 10000000
+            }
+          }
+        },
+        "ttl": {
+          "type": "Duration",
+          "description": "Time-to-live for ephemeral domains, null for permanent"
+        }
+      }
+    },
+    "LorentzianDomain": {
+      "description": "A Lorentzian Domain instance - the fundamental isolation and security unit",
+      "base_type": "object",
+      "properties": {
+        "id": {
+          "type": "DomainIdentifier",
+          "required": true
+        },
+        "level": {
+          "type": "DomainLevel",
+          "required": true
+        },
+        "state": {
+          "type": "DomainState",
+          "required": true
+        },
+        "config": {
+          "type": "LorentzianDomainConfig",
+          "required": true
+        },
+        "metric_tensor": {
+          "type": "MetricTensor",
+          "required": true
+        },
+        "light_cone": {
+          "type": "LightCone",
+          "required": true
+        },
+        "boundary": {
+          "type": "DomainBoundary",
+          "required": true
+        },
+        "creation_timestamp": {
+          "type": "Timestamp",
+          "required": true
+        },
+        "parent": {
+          "type": "DomainIdentifier"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "type": "DomainIdentifier"
+          }
+        },
+        "resident_networks": {
+          "type": "array",
+          "items": {
+            "type": "NetworkIdentifier"
+          }
+        },
+        "geometric_invariants": {
+          "type": "object",
+          "properties": {
+            "ricci_scalar": {
+              "type": "number"
+            },
+            "weyl_tensor_norm": {
+              "type": "number"
+            },
+            "geodesic_completeness": {
+              "type": "boolean"
+            }
+          }
+        },
+        "statistics": {
+          "type": "DomainStatistics"
+        }
+      },
+      "invariants": [
+        "LD(0) has no parent",
+        "level > parent.level",
+        "All children have this domain as parent",
+        "metric_tensor determinant < 0"
+      ]
+    },
+    "DomainStatistics": {
+      "description": "Runtime statistics for a Lorentzian Domain",
+      "base_type": "object",
+      "properties": {
+        "network_count": {
+          "type": "integer"
+        },
+        "entity_count": {
+          "type": "integer"
+        },
+        "connection_count": {
+          "type": "integer"
+        },
+        "boundary_crossings": {
+          "type": "integer"
+        },
+        "security_violations_blocked": {
+          "type": "integer"
+        },
+        "average_geodesic_length": {
+          "type": "number"
+        },
+        "curvature_stability": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "DomainIdentifier": {
+      "description": "Unique identifier for a Lorentzian Domain",
+      "base_type": "object",
+      "properties": {
+        "organization": {
+          "type": "string",
+          "required": true
+        },
+        "stack": {
+          "type": "string",
+          "required": true
+        },
+        "domain_name": {
+          "type": "string",
+          "required": true
+        },
+        "level": {
+          "type": "DomainLevel",
+          "required": true
+        }
+      },
+      "serialization": "ld://{organization}/{stack}/{domain_name}",
+      "examples": [
+        "ld://acme/production/core-services",
+        "ld://acme/staging/test-isolated",
+        "ld://system/root/ld0"
+      ]
+    },
+    "GeodesicPath": {
+      "description": "Path of shortest proper time through Lorentzian Domain",
+      "base_type": "object",
+      "properties": {
+        "start_point": {
+          "type": "Point4D"
+        },
+        "end_point": {
+          "type": "Point4D"
+        },
+        "path_type": {
+          "type": "enum",
+          "values": [
+            "TIMELIKE",
+            "SPACELIKE",
+            "NULL"
+          ]
+        },
+        "proper_length": {
+          "type": "number"
+        },
+        "crosses_boundaries": {
+          "type": "array",
+          "items": {
+            "type": "DomainIdentifier"
+          }
+        }
+      },
+      "note": "Timelike geodesics are valid communication paths; spacelike paths indicate isolation"
+    },
+    "Point4D": {
+      "description": "Point in 4D Lorentzian spacetime",
+      "base_type": "object",
+      "properties": {
+        "t": {
+          "type": "number",
+          "description": "Timelike coordinate"
+        },
+        "x": {
+          "type": "number",
+          "description": "Spacelike coordinate 1"
+        },
+        "y": {
+          "type": "number",
+          "description": "Spacelike coordinate 2"
+        },
+        "z": {
+          "type": "number",
+          "description": "Spacelike coordinate 3"
+        }
+      }
+    },
+    "Hypersurface": {
+      "description": "3D hypersurface in 4D Lorentzian manifold",
+      "base_type": "object",
+      "properties": {
+        "defining_equation": {
+          "type": "string"
+        },
+        "induced_metric": {
+          "type": "MetricTensor"
+        },
+        "normal_vector": {
+          "type": "Vector4D"
+        },
+        "extrinsic_curvature": {
+          "type": "Tensor"
+        }
+      }
+    }
+  },
+  "operations": {
+    "create_base_domain": {
+      "description": "Create the LD(0) base domain - the root of all domain hierarchies",
+      "category": "lifecycle",
+      "inputs": {
+        "organization": {
+          "type": "string",
+          "required": true,
+          "description": "Organization identifier"
+        },
+        "stack": {
+          "type": "string",
+          "required": true,
+          "description": "Stack/environment identifier"
+        },
+        "curvature_parameter": {
+          "type": "number",
+          "default": -1.0,
+          "description": "Base curvature K for hyperbolic geometry"
+        },
+        "custom_metric": {
+          "type": "MetricTensor",
+          "required": false,
+          "description": "Custom metric tensor, defaults to Minkowski"
+        }
+      },
+      "outputs": {
+        "domain": {
+          "type": "LorentzianDomain",
+          "description": "Created LD(0) base domain"
+        },
+        "initialization_proof": {
+          "type": "GeometricProof",
+          "description": "Proof of valid geometric initialization"
+        }
+      },
+      "preconditions": [
+        "No LD(0) exists for this organization/stack combination",
+        "Organization has domain creation privileges",
+        "Curvature parameter satisfies K <= 0 constraint"
+      ],
+      "postconditions": [
+        "Domain state is ACTIVE",
+        "Domain level is 0",
+        "Parent is null",
+        "Metric tensor has valid Lorentzian signature",
+        "Light cone is properly initialized at origin"
+      ],
+      "error_conditions": {
+        "DOMAIN_EXISTS": "LD(0) already exists for organization/stack",
+        "INVALID_CURVATURE": "Curvature parameter violates geometric constraints",
+        "INVALID_METRIC": "Metric tensor does not have valid Lorentzian signature",
+        "INSUFFICIENT_PRIVILEGES": "Organization lacks domain creation rights"
+      },
+      "complexity": "O(1)",
+      "geometric_note": "LD(0) establishes the reference frame for all nested domains"
+    },
+    "create_isolated_domain": {
+      "description": "Create an LD(n) isolated domain within a parent domain",
+      "category": "lifecycle",
+      "inputs": {
+        "config": {
+          "type": "LorentzianDomainConfig",
+          "required": true,
+          "description": "Domain configuration"
+        },
+        "parent_domain_id": {
+          "type": "DomainIdentifier",
+          "required": true,
+          "description": "Parent domain to nest within"
+        },
+        "isolation_proof_required": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether to generate geometric isolation proof"
+        }
+      },
+      "outputs": {
+        "domain": {
+          "type": "LorentzianDomain",
+          "description": "Created isolated domain"
+        },
+        "isolation_proof": {
+          "type": "GeometricProof",
+          "description": "Proof of causal isolation from siblings"
+        },
+        "boundary_certificate": {
+          "type": "BoundaryCertificate",
+          "description": "Certificate of valid boundary construction"
+        }
+      },
+      "preconditions": [
+        "Parent domain exists and is ACTIVE",
+        "config.level > parent.level",
+        "Parent has capacity for child domains",
+        "Domain ID is unique within parent"
+      ],
+      "postconditions": [
+        "Domain state is ACTIVE",
+        "Domain is registered as child of parent",
+        "Boundary is geometrically disjoint from siblings",
+        "Light cone is properly contained within parent"
+      ],
+      "error_conditions": {
+        "PARENT_NOT_FOUND": "Parent domain does not exist",
+        "PARENT_INACTIVE": "Parent domain is not active",
+        "LEVEL_VIOLATION": "Domain level not greater than parent level",
+        "CAPACITY_EXCEEDED": "Parent domain at maximum child capacity",
+        "BOUNDARY_OVERLAP": "Proposed boundary overlaps with existing domain",
+        "ISOLATION_FAILURE": "Cannot guarantee causal isolation"
+      },
+      "complexity": "O(n) where n is number of sibling domains for boundary verification"
+    },
+    "initialize_metric_tensor": {
+      "description": "Initialize or update the metric tensor for a domain",
+      "category": "geometry",
+      "inputs": {
+        "domain_id": {
+          "type": "DomainIdentifier",
+          "required": true
+        },
+        "signature": {
+          "type": "LorentzianSignature",
+          "default": "MINKOWSKI_STANDARD"
+        },
+        "curvature_type": {
+          "type": "CurvatureType",
+          "default": "NEGATIVE"
+        },
+        "curvature_parameter": {
+          "type": "number",
+          "default": -1.0
+        }
+      },
+      "outputs": {
+        "metric": {
+          "type": "MetricTensor",
+          "description": "Initialized metric tensor"
+        },
+        "christoffel_symbols": {
+          "type": "ChristoffelSymbols",
+          "description": "Connection coefficients for geodesic computation"
+        }
+      },
+      "preconditions": [
+        "Domain exists",
+        "Domain state allows metric modification (INITIALIZING or SUSPENDED)",
+        "Curvature parameter is valid for curvature type"
+      ],
+      "postconditions": [
+        "Metric has valid Lorentzian signature",
+        "Determinant is negative",
+        "Christoffel symbols are consistent with metric"
+      ],
+      "error_conditions": {
+        "DOMAIN_NOT_FOUND": "Domain does not exist",
+        "INVALID_STATE": "Domain state does not allow metric modification",
+        "SIGNATURE_INVALID": "Cannot construct valid Lorentzian signature",
+        "CURVATURE_INCONSISTENT": "Curvature parameter inconsistent with type"
+      }
+    },
+    "compute_light_cone": {
+      "description": "Compute the light cone structure for domain isolation",
+      "category": "geometry",
+      "inputs": {
+        "domain_id": {
+          "type": "DomainIdentifier",
+          "required": true
+        },
+        "apex_point": {
+          "type": "Point4D",
+          "required": true,
+          "description": "Apex of the light cone"
+        }
+      },
+      "outputs": {
+        "light_cone": {
+          "type": "LightCone",
+          "description": "Computed light cone structure"
+        },
+        "causal_future": {
+          "type": "Region",
+          "description": "Set of points in causal future"
+        },
+        "causal_past": {
+          "type": "Region",
+          "description": "Set of points in causal past"
+        }
+      },
+      "preconditions": [
+        "Domain exists and has valid metric",
+        "Apex point is within domain boundary"
+      ],
+      "postconditions": [
+        "Light cone partitions spacetime into causal regions",
+        "Future and past cones are null hypersurfaces"
+      ],
+      "error_conditions": {
+        "DOMAIN_NOT_FOUND": "Domain does not exist",
+        "INVALID_METRIC": "Domain metric not initialized",
+        "POINT_OUTSIDE": "Apex point outside domain boundary"
+      },
+      "geometric_note": "Light cones define causal structure - fundamental to security isolation"
+    },
+    "verify_causal_isolation": {
+      "description": "Verify that two domains are causally isolated (no timelike paths exist)",
+      "category": "security",
+      "inputs": {
+        "domain_a": {
+          "type": "DomainIdentifier",
+          "required": true
+        },
+        "domain_b": {
+          "type": "DomainIdentifier",
+          "required": true
+        },
+        "verification_depth": {
+          "type": "enum",
+          "values": [
+            "QUICK",
+            "STANDARD",
+            "EXHAUSTIVE"
+          ],
+          "default": "STANDARD"
+        }
+      },
+      "outputs": {
+        "is_isolated": {
+          "type": "boolean",
+          "description": "True if domains are causally isolated"
+        },
+        "proof": {
+          "type": "IsolationProof",
+          "description": "Geometric proof of isolation or counterexample"
+        },
+        "minimum_spacelike_separation": {
+          "type": "number",
+          "description": "Minimum spacelike distance between domains"
+        }
+      },
+      "preconditions": [
+        "Both domains exist",
+        "Both domains have valid metrics"
+      ],
+      "postconditions": [
+        "Result is deterministic for same inputs",
+        "Proof is verifiable"
+      ],
+      "error_conditions": {
+        "DOMAIN_NOT_FOUND": "One or both domains not found",
+        "METRIC_INCOMPATIBLE": "Domain metrics cannot be compared"
+      },
+      "security_property": "Zero runtime overhead - isolation is geometric property verified at domain creation"
+    },
+    "compute_geodesic": {
+      "description": "Compute geodesic path between two points within a domain",
+      "category": "geometry",
+      "inputs": {
+        "domain_id": {
+          "type": "DomainIdentifier",
+          "required": true
+        },
+        "start": {
+          "type": "Point4D",
+          "required": true
+        },
+        "end": {
+          "type": "Point4D",
+          "required": true
+        },
+        "path_constraint": {
+          "type": "enum",
+          "values": [
+            "ANY",
+            "TIMELIKE_ONLY",
+            "SPACELIKE_ONLY",
+            "NULL_ONLY"
+          ],
+          "default": "ANY"
+        }
+      },
+      "outputs": {
+        "geodesic": {
+          "type": "GeodesicPath",
+          "description": "Computed geodesic path"
+        },
+        "exists": {
+          "type": "boolean",
+          "description": "Whether valid geodesic exists with constraints"
+        },
+        "proper_time": {
+          "type": "number",
+          "description": "Proper time/length along geodesic"
+        }
+      },
+      "preconditions": [
+        "Domain exists with valid metric",
+        "Both points are within domain boundary"
+      ],
+      "postconditions": [
+        "Geodesic satisfies geodesic equation",
+        "Path respects constraint if specified"
+      ],
+      "error_conditions": {
+        "DOMAIN_NOT_FOUND": "Domain does not exist",
+        "POINT_OUTSIDE": "Start or end point outside domain",
+        "NO_VALID_PATH": "No geodesic satisfies constraints"
+      }
+    },
+    "get_domain_hierarchy": {
+      "description": "Retrieve the full domain hierarchy from LD(0) to specified domain",
+      "category": "query",
+      "inputs": {
+        "domain_id": {
+          "type": "DomainIdentifier",
+          "required": true
+        },
+        "include_siblings": {
+          "type": "boolean",
+          "default": false
+        },
+        "include_statistics": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "outputs": {
+        "hierarchy": {
+          "type": "array",
+          "items": {
+            "type": "LorentzianDomain"
+          },
+          "description": "Domains from LD(0) to target"
+        },
+        "depth": {
+          "type": "integer",
+          "description": "Depth of domain in hierarchy"
+        }
+      },
+      "preconditions": [
+        "Domain exists"
+      ],
+      "postconditions": [
+        "First element is LD(0)",
+        "Last element is requested domain",
+        "Each element is parent of next"
+      ],
+      "error_conditions": {
+        "DOMAIN_NOT_FOUND": "Domain does not exist",
+        "HIERARCHY_CORRUPTED": "Parent chain is broken"
+      }
+    },
+    "place_network_in_domain": {
+      "description": "Place a network into a Lorentzian Domain",
+      "category": "management",
+      "inputs": {
+        "domain_id": {
+          "type": "DomainIdentifier",
+          "required": true
+        },
+        "network_id": {
+          "type": "NetworkIdentifier",
+          "required": true
+        },
+        "placement_config": {
+          "type": "object",
+          "properties": {
+            "position_hint": {
+              "type": "Point4D"
+            },
+            "resource_allocation": {
+              "type": "ResourceAllocation"
+            },
+            "isolation_requirements": {
+              "type": "IsolationRequirements"
+            }
+          }
+        }
+      },
+      "outputs": {
+        "placement": {
+          "type": "NetworkPlacement",
+          "description": "Network placement details"
+        },
+        "assigned_region": {
+          "type": "Region",
+          "description": "Geometric region assigned to network"
+        }
+      },
+      "preconditions": [
+        "Domain exists and is ACTIVE",
+        "Network is not already placed in another domain",
+        "Domain has capacity for network"
+      ],
+      "postconditions": [
+        "Network is registered in domain",
+        "Network region does not overlap with other networks",
+        "Domain statistics updated"
+      ],
+      "error_conditions": {
+        "DOMAIN_NOT_FOUND": "Domain does not exist",
+        "DOMAIN_INACTIVE": "Domain is not active",
+        "NETWORK_ALREADY_PLACED": "Network exists in another domain",
+        "CAPACITY_EXCEEDED": "Domain cannot accommodate network",
+        "REGION_CONFLICT": "Cannot allocate non-overlapping region"
+      }
+    },
+    "transition_domain_state": {
+      "description": "Transition domain to a new lifecycle state",
+      "category": "lifecycle",
+      "inputs": {
+        "domain_id": {
+          "type": "DomainIdentifier",
+          "required": true
+        },
+        "target_state": {
+          "type": "DomainState",
+          "required": true
+        },
+        "force": {
+          "type": "boolean",
+          "default": false,
+          "description": "Force transition even if preconditions not ideal"
+        },
+        "reason": {
+          "type": "string",
+          "required": false,
+          "description": "Reason for state transition"
+        }
+      },
+      "outputs": {
+        "previous_state": {
+          "type": "DomainState"
+        },
+        "new_state": {
+          "type": "DomainState"
+        },
+        "transition_timestamp": {
+          "type": "Timestamp"
+        }
+      },
+      "preconditions": [
+        "Domain exists",
+        "Transition is valid according to state machine",
+        "If TERMINATING: no active children or networks (unless forced)"
+      ],
+      "postconditions": [
+        "Domain state matches target_state",
+        "State transition is recorded in audit log"
+      ],
+      "error_conditions": {
+        "DOMAIN_NOT_FOUND": "Domain does not exist",
+        "INVALID_TRANSITION": "Transition not allowed by state machine",
+        "HAS_DEPENDENTS": "Domain has active children or networks",
+        "FORCE_REQUIRED": "Transition requires force flag"
+      }
+    },
+    "compute_curvature_tensor": {
+      "description": "Compute the Riemann curvature tensor for a domain",
+      "category": "geometry",
+      "inputs": {
+        "domain_id": {
+          "type": "DomainIdentifier",
+          "required": true
+        },
+        "point": {
+          "type": "Point4D",
+          "required": false,
+          "description": "Point at which to compute, null for global"
+        }
+      },
+      "outputs": {
+        "riemann_tensor": {
+          "type": "RiemannTensor",
+          "description": "Full Riemann curvature tensor"
+        },
+        "ricci_tensor": {
+          "type": "RicciTensor",
+          "description": "Ricci curvature tensor (contraction of Riemann)"
+        },
+        "ricci_scalar": {
+          "type": "number",
+          "description": "Ricci scalar curvature"
+        },
+        "weyl_tensor": {
+          "type": "WeylTensor",
+          "description": "Weyl conformal curvature tensor"
+        }
+      },
+      "preconditions": [
+        "Domain exists with valid metric",
+        "Point is within domain (if specified)"
+      ],
+      "postconditions": [
+        "Tensors satisfy symmetry properties",
+        "Ricci scalar matches configured curvature"
+      ],
+      "error_conditions": {
+        "DOMAIN_NOT_FOUND": "Domain does not exist",
+        "INVALID_METRIC": "Metric not properly initialized",
+        "POINT_OUTSIDE": "Specified point outside domain"
+      },
+      "mathematical_note": "Curvature tensors fully characterize domain geometry and security properties"
+    },
+    "verify_domain_integrity": {
+      "description": "Verify geometric and operational integrity of a domain",
+      "category": "validation",
+      "inputs": {
+        "domain_id": {
+          "type": "DomainIdentifier",
+          "required": true
+        },
+        "verification_level": {
+          "type": "enum",
+          "values": [
+            "BASIC",
+            "FULL",
+            "PARANOID"
+          ],
+          "default": "FULL"
+        }
+      },
+      "outputs": {
+        "is_valid": {
+          "type": "boolean"
+        },
+        "metric_valid": {
+          "type": "boolean"
+        },
+        "boundary_valid": {
+          "type": "boolean"
+        },
+        "isolation_valid": {
+          "type": "boolean"
+        },
+        "hierarchy_valid": {
+          "type": "boolean"
+        },
+        "issues": {
+          "type": "array",
+          "items": {
+            "type": "IntegrityIssue"
+          }
+        }
+      },
+      "preconditions": [
+        "Domain exists"
+      ],
+      "postconditions": [
+        "All checks performed according to verification_level"
+      ],
+      "error_conditions": {
+        "DOMAIN_NOT_FOUND": "Domain does not exist"
+      }
+    },
+    "serialize_domain": {
+      "description": "Serialize domain state for persistence or migration",
+      "category": "serialization",
+      "inputs": {
+        "domain_id": {
+          "type": "DomainIdentifier",
+          "required": true
+        },
+        "include_children": {
+          "type": "boolean",
+          "default": false
+        },
+        "include_networks": {
+          "type": "boolean",
+          "default": false
+        },
+        "format": {
+          "type": "enum",
+          "values": [
+            "BINARY",
+            "JSON",
+            "CBOR"
+          ],
+          "default": "BINARY"
+        }
+      },
+      "outputs": {
+        "serialized_data": {
+          "type": "bytes"
+        },
+        "checksum": {
+          "type": "string"
+        },
+        "schema_version": {
+          "type": "string"
+        }
+      },
+      "preconditions": [
+        "Domain exists",
+        "Domain state allows serialization"
+      ],
+      "postconditions": [
+        "Serialized data is complete and valid",
+        "Checksum matches content"
+      ],
+      "error_conditions": {
+        "DOMAIN_NOT_FOUND": "Domain does not exist",
+        "SERIALIZATION_FAILED": "Could not serialize domain state"
+      }
+    },
+    "deserialize_domain": {
+      "description": "Deserialize and restore domain from persisted state",
+      "category": "serialization",
+      "inputs": {
+        "serialized_data": {
+          "type": "bytes",
+          "required": true
+        },
+        "target_parent": {
+          "type": "DomainIdentifier",
+          "required": false,
+          "description": "Parent domain for restoration, null for LD(0)"
+        },
+        "verify_checksum": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "outputs": {
+        "domain": {
+          "type": "LorentzianDomain"
+        },
+        "restoration_report": {
+          "type": "RestorationReport"
+        }
+      },
+      "preconditions": [
+        "Serialized data is valid",
+        "Checksum matches (if verification enabled)",
+        "Target parent exists (if specified)"
+      ],
+      "postconditions": [
+        "Domain is restored with original configuration",
+        "Domain state is ACTIVE or SUSPENDED"
+      ],
+      "error_conditions": {
+        "INVALID_DATA": "Serialized data is corrupted or invalid",
+        "CHECKSUM_MISMATCH": "Checksum verification failed",
+        "PARENT_NOT_FOUND": "Target parent does not exist",
+        "VERSION_INCOMPATIBLE": "Schema version not supported"
+      }
+    }
+  },
+  "tests": {
+    "test_create_base_domain": {
+      "description": "Test LD(0) creation with default parameters",
+      "category": "unit",
+      "operation": "create_base_domain",
+      "inputs": {
+        "organization": "test-org",
+        "stack": "test-stack"
+      },
+      "expected": {
+        "domain.level": 0,
+        "domain.state": "ACTIVE",
+        "domain.parent": null,
+        "domain.metric_tensor.signature": "MINKOWSKI_STANDARD"
+      },
+      "assertions": [
+        "domain.id.organization == 'test-org'",
+        "domain.id.stack == 'test-stack'",
+        "domain.metric_tensor.determinant < 0",
+        "initialization_proof is not null"
+      ]
+    },
+    "test_create_base_domain_duplicate": {
+      "description": "Test that duplicate LD(0) creation fails",
+      "category": "unit",
+      "operation": "create_base_domain",
+      "setup": {
+        "existing_domain": {
+          "organization": "test-org",
+          "stack": "test-stack",
+          "level": 0
+        }
+      },
+      "inputs": {
+        "organization": "test-org",
+        "stack": "test-stack"
+      },
+      "expected_error": "DOMAIN_EXISTS"
+    },
+    "test_create_isolated_domain": {
+      "description": "Test creating an LD(1) isolated domain",
+      "category": "unit",
+      "operation": "create_isolated_domain",
+      "setup": {
+        "parent_domain": {
+          "id": "ld://test-org/test-stack/base",
+          "level": 0,
+          "state": "ACTIVE"
+        }
+      },
+      "inputs": {
+        "config": {
+          "domain_id": {
+            "organization": "test-org",
+            "stack": "test-stack",
+            "domain_name": "isolated-1"
+          },
+          "level": 1,
+          "curvature": "NEGATIVE",
+          "curvature_parameter": -1.0
+        },
+        "parent_domain_id": "ld://test-org/test-stack/base"
+      },
+      "expected": {
+        "domain.level": 1,
+        "domain.state": "ACTIVE",
+        "domain.parent": "ld://test-org/test-stack/base"
+      },
+      "assertions": [
+        "isolation_proof is not null",
+        "boundary_certificate is not null"
+      ]
+    },
+    "test_create_domain_level_violation": {
+      "description": "Test that domain level must exceed parent level",
+      "category": "unit",
+      "operation": "create_isolated_domain",
+      "setup": {
+        "parent_domain": {
+          "level": 5,
+          "state": "ACTIVE"
+        }
+      },
+      "inputs": {
+        "config": {
+          "level": 3
+        },
+        "parent_domain_id": "ld://test-org/test-stack/parent"
+      },
+      "expected_error": "LEVEL_VIOLATION"
+    },
+    "test_verify_causal_isolation_isolated_domains": {
+      "description": "Test that sibling domains are causally isolated",
+      "category": "unit",
+      "operation": "verify_causal_isolation",
+      "setup": {
+        "domain_a": {
+          "id": "ld://org/stack/domain-a",
+          "level": 1,
+          "boundary": {
+            "permeability": 0
+          }
+        },
+        "domain_b": {
+          "id": "ld://org/stack/domain-b",
+          "level": 1,
+          "boundary": {
+            "permeability": 0
+          }
+        }
+      },
+      "inputs": {
+        "domain_a": "ld://org/stack/domain-a",
+        "domain_b": "ld://org/stack/domain-b"
+      },
+      "expected": {
+        "is_isolated": true
+      },
+      "assertions": [
+        "proof is not null",
+        "minimum_spacelike_separation > 0"
+      ]
+    },
+    "test_compute_geodesic_timelike": {
+      "description": "Test computing a timelike geodesic (valid communication path)",
+      "category": "unit",
+      "operation": "compute_geodesic",
+      "setup": {
+        "domain": {
+          "id": "ld://org/stack/domain",
+          "metric_tensor": "MINKOWSKI_STANDARD"
+        }
+      },
+      "inputs": {
+        "domain_id": "ld://org/stack/domain",
+        "start": {
+          "t": 0,
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "end": {
+          "t": 10,
+          "x": 3,
+          "y": 4,
+          "z": 0
+        },
+        "path_constraint": "TIMELIKE_ONLY"
+      },
+      "expected": {
+        "exists": true,
+        "geodesic.path_type": "TIMELIKE"
+      },
+      "assertions": [
+        "proper_time > 0",
+        "geodesic.proper_length == proper_time"
+      ]
+    },
+    "test_compute_geodesic_spacelike_isolation": {
+      "description": "Test that spacelike separation indicates isolation",
+      "category": "unit",
+      "operation": "compute_geodesic",
+      "setup": {
+        "domain": {
+          "id": "ld://org/stack/domain",
+          "metric_tensor": "MINKOWSKI_STANDARD"
+        }
+      },
+      "inputs": {
+        "domain_id": "ld://org/stack/domain",
+        "start": {
+          "t": 0,
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "end": {
+          "t": 0,
+          "x": 10,
+          "y": 0,
+          "z": 0
+        },
+        "path_constraint": "TIMELIKE_ONLY"
+      },
+      "expected": {
+        "exists": false
+      },
+      "assertions": [
+        "Points are spacelike separated - no causal connection possible"
+      ]
+    },
+    "test_place_network_in_domain": {
+      "description": "Test placing a network in an active domain",
+      "category": "unit",
+      "operation": "place_network_in_domain",
+      "setup": {
+        "domain": {
+          "id": "ld://org/stack/domain",
+          "state": "ACTIVE",
+          "capacity": {
+            "max_networks": 100
+          }
+        },
+        "network": {
+          "id": "net://org/network-1"
+        }
+      },
+      "inputs": {
+        "domain_id": "ld://org/stack/domain",
+        "network_id": "net://org/network-1"
+      },
+      "expected": {
+        "placement is not null": true
+      },
+      "assertions": [
+        "assigned_region is within domain boundary",
+        "domain.resident_networks contains network_id"
+      ]
+    },
+    "test_state_transition_valid": {
+      "description": "Test valid state transition ACTIVE -> SUSPENDED",
+      "category": "unit",
+      "operation": "transition_domain_state",
+      "setup": {
+        "domain": {
+          "id": "ld://org/stack/domain",
+          "state": "ACTIVE"
+        }
+      },
+      "inputs": {
+        "domain_id": "ld://org/stack/domain",
+        "target_state": "SUSPENDED",
+        "reason": "Maintenance window"
+      },
+      "expected": {
+        "previous_state": "ACTIVE",
+        "new_state": "SUSPENDED"
+      }
+    },
+    "test_state_transition_invalid": {
+      "description": "Test invalid state transition TERMINATED -> ACTIVE",
+      "category": "unit",
+      "operation": "transition_domain_state",
+      "setup": {
+        "domain": {
+          "id": "ld://org/stack/domain",
+          "state": "TERMINATED"
+        }
+      },
+      "inputs": {
+        "domain_id": "ld://org/stack/domain",
+        "target_state": "ACTIVE"
+      },
+      "expected_error": "INVALID_TRANSITION"
+    },
+    "test_domain_integrity_valid": {
+      "description": "Test integrity verification on a valid domain",
+      "category": "unit",
+      "operation": "verify_domain_integrity",
+      "setup": {
+        "domain": {
+          "id": "ld://org/stack/domain",
+          "state": "ACTIVE",
+          "metric_tensor": "valid",
+          "boundary": "valid"
+        }
+      },
+      "inputs": {
+        "domain_id": "ld://org/stack/domain",
+        "verification_level": "FULL"
+      },
+      "expected": {
+        "is_valid": true,
+        "metric_valid": true,
+        "boundary_valid": true,
+        "isolation_valid": true,
+        "hierarchy_valid": true
+      }
+    },
+    "test_serialize_deserialize_roundtrip": {
+      "description": "Test that domain serialization/deserialization preserves state",
+      "category": "integration",
+      "operations": [
+        "serialize_domain",
+        "deserialize_domain"
+      ],
+      "setup": {
+        "domain": {
+          "id": "ld://org/stack/domain",
+          "state": "ACTIVE",
+          "config": {
+            "curvature": "NEGATIVE",
+            "curvature_parameter": -1.5
+          }
+        }
+      },
+      "steps": [
+        {
+          "operation": "serialize_domain",
+          "inputs": {
+            "domain_id": "ld://org/stack/domain",
+            "format": "BINARY"
+          }
+        },
+        {
+          "operation": "deserialize_domain",
+          "inputs": {
+            "serialized_data": "from_step_1",
+            "verify_checksum": true
+          }
+        }
+      ],
+      "assertions": [
+        "restored_domain.config == original_domain.config",
+        "restored_domain.metric_tensor == original_domain.metric_tensor"
+      ]
+    },
+    "test_deep_hierarchy_creation": {
+      "description": "Test creating a deep domain hierarchy (LD(0) through LD(5))",
+      "category": "integration",
+      "operations": [
+        "create_base_domain",
+        "create_isolated_domain"
+      ],
+      "steps": [
+        {
+          "operation": "create_base_domain",
+          "level": 0
+        },
+        {
+          "operation": "create_isolated_domain",
+          "level": 1,
+          "parent_level": 0
+        },
+        {
+          "operation": "create_isolated_domain",
+          "level": 2,
+          "parent_level": 1
+        },
+        {
+          "operation": "create_isolated_domain",
+          "level": 3,
+          "parent_level": 2
+        },
+        {
+          "operation": "create_isolated_domain",
+          "level": 4,
+          "parent_level": 3
+        },
+        {
+          "operation": "create_isolated_domain",
+          "level": 5,
+          "parent_level": 4
+        }
+      ],
+      "assertions": [
+        "All domains created successfully",
+        "Each domain has correct parent",
+        "Hierarchy is traversable from LD(5) to LD(0)"
+      ]
+    },
+    "test_concurrent_domain_creation": {
+      "description": "Test concurrent creation of sibling domains maintains isolation",
+      "category": "stress",
+      "operation": "create_isolated_domain",
+      "setup": {
+        "parent_domain": {
+          "level": 0,
+          "state": "ACTIVE"
+        }
+      },
+      "parallel_invocations": 100,
+      "assertions": [
+        "All 100 domains created successfully",
+        "No boundary overlaps detected",
+        "All pairs are causally isolated"
+      ]
+    },
+    "test_curvature_consistency": {
+      "description": "Test that curvature tensors match configured parameters",
+      "category": "unit",
+      "operations": [
+        "create_isolated_domain",
+        "compute_curvature_tensor"
+      ],
+      "setup": {
+        "parent_domain": {
+          "level": 0
+        }
+      },
+      "steps": [
+        {
+          "operation": "create_isolated_domain",
+          "config": {
+            "curvature": "NEGATIVE",
+            "curvature_parameter": -2.0
+          }
+        },
+        {
+          "operation": "compute_curvature_tensor",
+          "inputs": {
+            "domain_id": "created_domain"
+          }
+        }
+      ],
+      "assertions": [
+        "ricci_scalar approximately equals 4 * curvature_parameter (for 4D)",
+        "weyl_tensor is consistent with Lorentzian signature"
+      ]
+    }
+  },
+  "implementation_notes": {
+    "geometric_foundation": {
+      "description": "Lorentzian Domains are based on Lorentzian manifold geometry with metric signature (-,+,+,+)",
+      "key_concepts": [
+        "Lorentzian manifolds generalize special relativity's Minkowski spacetime",
+        "The negative signature component represents the timelike dimension",
+        "Causal structure (light cones) provides natural isolation boundaries",
+        "Geodesics in Lorentzian geometry can be timelike, spacelike, or null"
+      ],
+      "references": [
+        "O'Neill, B. (1983). Semi-Riemannian Geometry",
+        "Hawking, S.W. & Ellis, G.F.R. (1973). The Large Scale Structure of Space-Time"
+      ]
+    },
+    "security_model": {
+      "description": "Security through geometry - isolation is a mathematical property, not a runtime check",
+      "properties": [
+        "Causal isolation: No timelike path exists between isolated domains",
+        "Zero runtime overhead: Isolation verified at domain creation time",
+        "Cryptographic binding: Domain boundaries cryptographically committed",
+        "Hierarchical containment: Child domains are geometrically contained in parents"
+      ]
+    },
+    "performance_considerations": {
+      "domain_creation": "O(n) where n is number of sibling domains for boundary verification",
+      "isolation_verification": "O(1) for cached results, O(log n) for fresh computation",
+      "geodesic_computation": "O(1) for flat metrics, O(n) for complex curved metrics",
+      "memory_overhead": "Approximately 2KB per domain for core state"
+    },
+    "language_bindings": {
+      "rust": {
+        "crate": "hypersync-domains",
+        "key_traits": [
+          "LorentzianDomain",
+          "DomainBoundary",
+          "CausalStructure"
+        ]
+      },
+      "python": {
+        "package": "hypersync.domains",
+        "key_classes": [
+          "LorentzianDomain",
+          "DomainConfig",
+          "MetricTensor"
+        ]
+      },
+      "typescript": {
+        "package": "@hypersync/domains",
+        "key_interfaces": [
+          "ILorentzianDomain",
+          "IDomainBoundary"
+        ]
+      }
+    },
+    "integration_points": {
+      "agua_geometry": "Domains extend AGUA's hyperbolic geometry foundation",
+      "network_placement": "Networks are placed in domains via the domain management API",
+      "addressing": "See domain_addressing.json for address format specifications",
+      "security": "See domain_security.json for detailed security model"
+    }
+  }
+}

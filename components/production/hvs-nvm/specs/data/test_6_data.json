@@ -1,0 +1,341 @@
+{
+  "test_name": "Dimensional Scaling Performance",
+  "timestamp": "2026-01-13 05:46:04",
+  "dimensions_tested": [
+    2,
+    4,
+    8,
+    12,
+    16,
+    24,
+    32,
+    48,
+    64
+  ],
+  "operations": {
+    "distance_computation": [
+      {
+        "dimension": 2,
+        "n_operations": 1000,
+        "total_time_ms": 20.256757736206055,
+        "time_per_op_us": 20.256757736206055,
+        "memory_used_mb": 4.6796875,
+        "throughput_ops_per_sec": 49366.24177583183
+      },
+      {
+        "dimension": 4,
+        "n_operations": 1000,
+        "total_time_ms": 19.034862518310547,
+        "time_per_op_us": 19.034862518310547,
+        "memory_used_mb": 0.0,
+        "throughput_ops_per_sec": 52535.18374708785
+      },
+      {
+        "dimension": 8,
+        "n_operations": 1000,
+        "total_time_ms": 19.010305404663086,
+        "time_per_op_us": 19.010305404663086,
+        "memory_used_mb": 0.0,
+        "throughput_ops_per_sec": 52603.04759515896
+      },
+      {
+        "dimension": 12,
+        "n_operations": 1000,
+        "total_time_ms": 19.121408462524414,
+        "time_per_op_us": 19.121408462524414,
+        "memory_used_mb": 0.2578125,
+        "throughput_ops_per_sec": 52297.40277552649
+      },
+      {
+        "dimension": 16,
+        "n_operations": 1000,
+        "total_time_ms": 18.97907257080078,
+        "time_per_op_us": 18.97907257080078,
+        "memory_used_mb": 0.0,
+        "throughput_ops_per_sec": 52689.61358725692
+      },
+      {
+        "dimension": 24,
+        "n_operations": 1000,
+        "total_time_ms": 18.914461135864258,
+        "time_per_op_us": 18.914461135864258,
+        "memory_used_mb": 0.2578125,
+        "throughput_ops_per_sec": 52869.600292438205
+      },
+      {
+        "dimension": 32,
+        "n_operations": 1000,
+        "total_time_ms": 19.204378128051758,
+        "time_per_op_us": 19.204378128051758,
+        "memory_used_mb": 0.0,
+        "throughput_ops_per_sec": 52071.4596084371
+      },
+      {
+        "dimension": 48,
+        "n_operations": 1000,
+        "total_time_ms": 19.205093383789062,
+        "time_per_op_us": 19.205093383789062,
+        "memory_used_mb": 0.0,
+        "throughput_ops_per_sec": 52069.52030986195
+      },
+      {
+        "dimension": 64,
+        "n_operations": 1000,
+        "total_time_ms": 19.9124813079834,
+        "time_per_op_us": 19.9124813079834,
+        "memory_used_mb": 0.0,
+        "throughput_ops_per_sec": 50219.75837833308
+      }
+    ],
+    "geodesic_computation": [
+      {
+        "dimension": 2,
+        "n_operations": 100,
+        "total_time_ms": 2.5942325592041016,
+        "time_per_op_ms": 0.025942325592041016,
+        "memory_used_mb": 0.0,
+        "throughput_ops_per_sec": 38547.04530833563
+      },
+      {
+        "dimension": 4,
+        "n_operations": 100,
+        "total_time_ms": 2.4907588958740234,
+        "time_per_op_ms": 0.024907588958740234,
+        "memory_used_mb": 0.0,
+        "throughput_ops_per_sec": 40148.40624102613
+      },
+      {
+        "dimension": 8,
+        "n_operations": 100,
+        "total_time_ms": 2.4819374084472656,
+        "time_per_op_ms": 0.024819374084472656,
+        "memory_used_mb": 0.0,
+        "throughput_ops_per_sec": 40291.10470701249
+      },
+      {
+        "dimension": 12,
+        "n_operations": 100,
+        "total_time_ms": 2.469778060913086,
+        "time_per_op_ms": 0.02469778060913086,
+        "memory_used_mb": 0.0,
+        "throughput_ops_per_sec": 40489.468095376
+      },
+      {
+        "dimension": 16,
+        "n_operations": 100,
+        "total_time_ms": 2.4721622467041016,
+        "time_per_op_ms": 0.024721622467041016,
+        "memory_used_mb": 0.0,
+        "throughput_ops_per_sec": 40450.41951972225
+      },
+      {
+        "dimension": 24,
+        "n_operations": 100,
+        "total_time_ms": 2.483844757080078,
+        "time_per_op_ms": 0.02483844757080078,
+        "memory_used_mb": 0.0,
+        "throughput_ops_per_sec": 40260.16509886734
+      },
+      {
+        "dimension": 32,
+        "n_operations": 100,
+        "total_time_ms": 2.470254898071289,
+        "time_per_op_ms": 0.02470254898071289,
+        "memory_used_mb": 0.0,
+        "throughput_ops_per_sec": 40481.65235015925
+      },
+      {
+        "dimension": 48,
+        "n_operations": 100,
+        "total_time_ms": 2.5053024291992188,
+        "time_per_op_ms": 0.025053024291992188,
+        "memory_used_mb": 0.0,
+        "throughput_ops_per_sec": 39915.34069280548
+      },
+      {
+        "dimension": 64,
+        "n_operations": 100,
+        "total_time_ms": 2.517223358154297,
+        "time_per_op_ms": 0.02517223358154297,
+        "memory_used_mb": 0.0,
+        "throughput_ops_per_sec": 39726.311801477554
+      }
+    ],
+    "parallel_transport": [
+      {
+        "dimension": 2,
+        "n_operations": 100,
+        "total_time_ms": 46.28276824951172,
+        "time_per_op_ms": 0.4628276824951172,
+        "memory_used_mb": 4.8984375,
+        "throughput_ops_per_sec": 2160.631349034638
+      },
+      {
+        "dimension": 4,
+        "n_operations": 100,
+        "total_time_ms": 9.391069412231445,
+        "time_per_op_ms": 0.09391069412231445,
+        "memory_used_mb": 0.2578125,
+        "throughput_ops_per_sec": 10648.414531975932
+      },
+      {
+        "dimension": 8,
+        "n_operations": 100,
+        "total_time_ms": 9.224653244018555,
+        "time_per_op_ms": 0.09224653244018555,
+        "memory_used_mb": 0.0,
+        "throughput_ops_per_sec": 10840.515882246516
+      },
+      {
+        "dimension": 12,
+        "n_operations": 100,
+        "total_time_ms": 9.266376495361328,
+        "time_per_op_ms": 0.09266376495361328,
+        "memory_used_mb": 0.0,
+        "throughput_ops_per_sec": 10791.704831986826
+      },
+      {
+        "dimension": 16,
+        "n_operations": 100,
+        "total_time_ms": 9.198904037475586,
+        "time_per_op_ms": 0.09198904037475586,
+        "memory_used_mb": 0.0,
+        "throughput_ops_per_sec": 10870.860223414456
+      },
+      {
+        "dimension": 24,
+        "n_operations": 100,
+        "total_time_ms": 9.328365325927734,
+        "time_per_op_ms": 0.09328365325927734,
+        "memory_used_mb": 0.0,
+        "throughput_ops_per_sec": 10719.991821295302
+      },
+      {
+        "dimension": 32,
+        "n_operations": 100,
+        "total_time_ms": 9.317874908447266,
+        "time_per_op_ms": 0.09317874908447266,
+        "memory_used_mb": 0.0,
+        "throughput_ops_per_sec": 10732.06079525101
+      },
+      {
+        "dimension": 48,
+        "n_operations": 100,
+        "total_time_ms": 9.490013122558594,
+        "time_per_op_ms": 0.09490013122558594,
+        "memory_used_mb": 0.0,
+        "throughput_ops_per_sec": 10537.393226811375
+      },
+      {
+        "dimension": 64,
+        "n_operations": 100,
+        "total_time_ms": 9.477615356445312,
+        "time_per_op_ms": 0.09477615356445312,
+        "memory_used_mb": 0.0,
+        "throughput_ops_per_sec": 10551.177299255383
+      }
+    ],
+    "exp_log_operations": [
+      {
+        "dimension": 2,
+        "n_operations": 100,
+        "total_time_ms": 18.617868423461914,
+        "time_per_op_ms": 0.18617868423461914,
+        "memory_used_mb": 1.1640625,
+        "throughput_ops_per_sec": 5371.184161661694
+      },
+      {
+        "dimension": 4,
+        "n_operations": 100,
+        "total_time_ms": 9.659290313720703,
+        "time_per_op_ms": 0.09659290313720703,
+        "memory_used_mb": 0.0,
+        "throughput_ops_per_sec": 10352.727452238732
+      },
+      {
+        "dimension": 8,
+        "n_operations": 100,
+        "total_time_ms": 9.592056274414062,
+        "time_per_op_ms": 0.09592056274414062,
+        "memory_used_mb": 0.0,
+        "throughput_ops_per_sec": 10425.293298866574
+      },
+      {
+        "dimension": 12,
+        "n_operations": 100,
+        "total_time_ms": 9.558439254760742,
+        "time_per_op_ms": 0.09558439254760742,
+        "memory_used_mb": 0.0,
+        "throughput_ops_per_sec": 10461.959043176772
+      },
+      {
+        "dimension": 16,
+        "n_operations": 100,
+        "total_time_ms": 9.707927703857422,
+        "time_per_op_ms": 0.09707927703857422,
+        "memory_used_mb": 0.0,
+        "throughput_ops_per_sec": 10300.85957070583
+      },
+      {
+        "dimension": 24,
+        "n_operations": 100,
+        "total_time_ms": 9.792804718017578,
+        "time_per_op_ms": 0.09792804718017578,
+        "memory_used_mb": 0.0,
+        "throughput_ops_per_sec": 10211.579101134537
+      },
+      {
+        "dimension": 32,
+        "n_operations": 100,
+        "total_time_ms": 9.824514389038086,
+        "time_per_op_ms": 0.09824514389038086,
+        "memory_used_mb": 0.0,
+        "throughput_ops_per_sec": 10178.620137355303
+      },
+      {
+        "dimension": 48,
+        "n_operations": 100,
+        "total_time_ms": 9.844303131103516,
+        "time_per_op_ms": 0.09844303131103516,
+        "memory_used_mb": 0.0,
+        "throughput_ops_per_sec": 10158.159360620004
+      },
+      {
+        "dimension": 64,
+        "n_operations": 100,
+        "total_time_ms": 9.764432907104492,
+        "time_per_op_ms": 0.09764432907104492,
+        "memory_used_mb": 0.0,
+        "throughput_ops_per_sec": 10241.250152606519
+      }
+    ]
+  },
+  "scaling_analysis": {
+    "distance_computation": {
+      "exponent": -0.004050579315525058,
+      "scaling_type": "linear",
+      "r_squared": 0.03780048856012751
+    },
+    "geodesic_computation": {
+      "exponent": -0.006001017129183514,
+      "scaling_type": "linear",
+      "r_squared": 0.19486868979154215
+    },
+    "parallel_transport": {
+      "exponent": -0.2986617545490135,
+      "scaling_type": "linear",
+      "r_squared": 0.4109712505550249
+    },
+    "exp_log_operations": {
+      "exponent": -0.11771151007149194,
+      "scaling_type": "linear",
+      "r_squared": 0.38628386871554443
+    }
+  },
+  "metadata": {
+    "license": {
+      "name": "AGPLv3",
+      "url": "https://www.gnu.org/licenses/agpl-3.0.html"
+    }
+  }
+}

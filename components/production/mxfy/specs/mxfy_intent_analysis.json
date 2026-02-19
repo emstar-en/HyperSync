@@ -1,0 +1,213 @@
+{
+  "name": "mxfy_intent_analysis",
+  "version": "1.0.0",
+  "description": "MXFY Intent Analysis Specification - Natural language parsing and understanding for 'Make X for Y' requests including entity extraction, parameter identification, and context understanding",
+  "license": {
+    "type": "AGPLv3",
+    "text": "This specification is licensed under the GNU Affero General Public License v3.0. See https://www.gnu.org/licenses/agpl-3.0.html for full license text.",
+    "copyright": "Copyright (c) 2024-2026 HyperSync Project"
+  },
+  "subsystem": "MXFY",
+  "category": "intent_analysis",
+  "stunir_compatible": true,
+  "dependencies": [
+    "mxfy_core_system@1.0.0",
+    "hypersync_nlp_engine@1.0.0"
+  ],
+  "architecture": {
+    "overview": "Intent Analysis is Phase 1 of MXFY - parsing natural language requests into structured intent objects",
+    "pipeline": {
+      "tokenization": "Break input into tokens",
+      "entity_extraction": "Identify X (application type) and Y (use case)",
+      "parameter_detection": "Extract explicit and implicit parameters",
+      "context_integration": "Merge with session context",
+      "ambiguity_resolution": "Handle unclear requests",
+      "validation": "Ensure intent is actionable"
+    },
+    "nlp_components": {
+      "tokenizer": {
+        "description": "Break natural language into processable tokens",
+        "techniques": ["BPE", "WordPiece", "Custom domain tokenizer"]
+      },
+      "entity_recognizer": {
+        "description": "Identify application types and use cases",
+        "entity_types": ["APPLICATION_TYPE", "USE_CASE", "PARAMETER", "CONSTRAINT"]
+      },
+      "semantic_parser": {
+        "description": "Parse semantic structure of request",
+        "patterns": ["Make X for Y", "Create X to Y", "Build X that Y", "I need X for Y"]
+      },
+      "context_resolver": {
+        "description": "Resolve references to session context",
+        "context_types": ["user_history", "current_workspace", "available_data"]
+      }
+    }
+  },
+  "type_definitions": {
+    "IntentToken": {
+      "description": "Tokenized element of user request",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "text": {"type": "string"},
+          "type": {"type": "string", "enum": ["KEYWORD", "NOUN", "VERB", "MODIFIER", "PREPOSITION"]},
+          "position": {"type": "integer"},
+          "confidence": {"type": "number"}
+        }
+      }
+    },
+    "ExtractedEntity": {
+      "description": "Entity extracted from request",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "text": {"type": "string"},
+          "entity_type": {"type": "string", "enum": ["APPLICATION_TYPE", "USE_CASE", "PARAMETER", "CONSTRAINT", "DATA_SOURCE", "TARGET_USER"]},
+          "normalized_value": {"type": "string"},
+          "span": {"type": "object", "properties": {"start": {"type": "integer"}, "end": {"type": "integer"}}},
+          "confidence": {"type": "number"}
+        }
+      }
+    },
+    "IntentPattern": {
+      "description": "Recognized pattern in request",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "pattern_id": {"type": "string"},
+          "template": {"type": "string"},
+          "slots": {"type": "object"},
+          "match_score": {"type": "number"}
+        }
+      }
+    },
+    "AmbiguityReport": {
+      "description": "Report of ambiguities found in request",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "ambiguous_elements": {"type": "array", "items": {"type": "string"}},
+          "possible_interpretations": {"type": "array", "items": {"type": "object"}},
+          "clarification_questions": {"type": "array", "items": {"type": "string"}},
+          "severity": {"type": "string", "enum": ["low", "medium", "high", "blocking"]}
+        }
+      }
+    },
+    "SessionContext": {
+      "description": "Context from current user session",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "user_id": {"type": "UUID"},
+          "skill_level": {"type": "string", "enum": ["novice", "intermediate", "expert"]},
+          "recent_requests": {"type": "array", "items": {"type": "string"}},
+          "active_workspace": {"type": "string"},
+          "available_data": {"type": "array", "items": {"type": "string"}},
+          "preferences": {"type": "object"}
+        }
+      }
+    }
+  },
+  "operations": [
+    {
+      "name": "intent_tokenize",
+      "description": "Tokenize natural language input",
+      "signature": "intent_tokenize(text: string) -> array[IntentToken]",
+      "complexity": "O(n)",
+      "determinism": "D0"
+    },
+    {
+      "name": "intent_extract_entities",
+      "description": "Extract entities from tokenized input",
+      "signature": "intent_extract_entities(tokens: array[IntentToken]) -> array[ExtractedEntity]",
+      "complexity": "O(n)",
+      "determinism": "D2"
+    },
+    {
+      "name": "intent_match_pattern",
+      "description": "Match input against known intent patterns",
+      "signature": "intent_match_pattern(text: string) -> array[IntentPattern]",
+      "complexity": "O(p) where p = pattern count",
+      "determinism": "D0"
+    },
+    {
+      "name": "intent_detect_ambiguity",
+      "description": "Detect ambiguities requiring clarification",
+      "signature": "intent_detect_ambiguity(entities: array[ExtractedEntity], patterns: array[IntentPattern]) -> AmbiguityReport",
+      "complexity": "O(n)",
+      "determinism": "D0"
+    },
+    {
+      "name": "intent_resolve_ambiguity",
+      "description": "Attempt to resolve ambiguities using context",
+      "signature": "intent_resolve_ambiguity(report: AmbiguityReport, context: SessionContext) -> ParsedIntent",
+      "complexity": "O(n)",
+      "determinism": "D2"
+    },
+    {
+      "name": "intent_extract_parameters",
+      "description": "Extract parameters from entities and context",
+      "signature": "intent_extract_parameters(entities: array[ExtractedEntity], context: SessionContext) -> object",
+      "complexity": "O(n)",
+      "determinism": "D2"
+    },
+    {
+      "name": "intent_infer_features",
+      "description": "Infer implied features from intent",
+      "signature": "intent_infer_features(intent: ParsedIntent) -> array[string]",
+      "complexity": "O(1)",
+      "determinism": "D2"
+    },
+    {
+      "name": "intent_validate",
+      "description": "Validate parsed intent is actionable",
+      "signature": "intent_validate(intent: ParsedIntent) -> ValidationResult",
+      "complexity": "O(1)",
+      "determinism": "D0"
+    },
+    {
+      "name": "intent_generate_clarification",
+      "description": "Generate clarification questions for user",
+      "signature": "intent_generate_clarification(report: AmbiguityReport) -> array[string]",
+      "complexity": "O(n)",
+      "determinism": "D2"
+    }
+  ],
+  "intent_patterns": {
+    "description": "Common patterns for Make X for Y requests",
+    "patterns": [
+      {"template": "Make a/an {X} for {Y}", "example": "Make a file browser for managing datasets"},
+      {"template": "Create a/an {X} to {Y}", "example": "Create a dashboard to monitor system health"},
+      {"template": "Build a/an {X} that {Y}", "example": "Build a tool that tracks deployments"},
+      {"template": "I need a/an {X} for {Y}", "example": "I need a viewer for log files"},
+      {"template": "Generate a/an {X} to help with {Y}", "example": "Generate a form to help with data entry"},
+      {"template": "{X} for {Y}", "example": "Dashboard for sales metrics"}
+    ],
+    "application_type_taxonomy": [
+      {"category": "viewers", "types": ["file browser", "log viewer", "data viewer", "image viewer"]},
+      {"category": "dashboards", "types": ["dashboard", "monitor", "analytics panel", "status board"]},
+      {"category": "editors", "types": ["editor", "form", "configuration tool", "builder"]},
+      {"category": "utilities", "types": ["converter", "validator", "generator", "calculator"]},
+      {"category": "managers", "types": ["manager", "organizer", "tracker", "scheduler"]}
+    ]
+  },
+  "test_cases": [
+    {
+      "id": "INTENT_TC_001",
+      "input": "Make a file browser for managing datasets",
+      "expected": {
+        "application_type": "file browser",
+        "target_use_case": "managing datasets",
+        "confidence": 0.95
+      }
+    },
+    {
+      "id": "INTENT_TC_002",
+      "input": "I need something for my data",
+      "expected": {
+        "ambiguity_detected": true,
+        "clarification_needed": true
+      }
+    }
+  ]
+}

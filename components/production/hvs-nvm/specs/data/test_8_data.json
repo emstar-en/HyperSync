@@ -1,0 +1,269 @@
+{
+  "test_name": "Synchronization Efficiency",
+  "timestamp": "2026-01-13 05:47:05",
+  "hvs_dimensions": [
+    8,
+    16,
+    32,
+    64
+  ],
+  "model_counts": [
+    2,
+    4,
+    8,
+    16,
+    32
+  ],
+  "tests": {
+    "sync_time_scaling": [
+      {
+        "hvs_dim": 8,
+        "n_trials": 20,
+        "sync_times_by_count": {
+          "2": {
+            "mean_ms": 20.110905170440674,
+            "std_ms": 8.40096292643802,
+            "median_ms": 18.16880702972412
+          },
+          "4": {
+            "mean_ms": 28.665482997894287,
+            "std_ms": 0.20478529242403776,
+            "median_ms": 28.62250804901123
+          },
+          "8": {
+            "mean_ms": 49.96856451034546,
+            "std_ms": 0.37734408620849275,
+            "median_ms": 49.808382987976074
+          },
+          "16": {
+            "mean_ms": 91.68844223022461,
+            "std_ms": 0.7116739338352065,
+            "median_ms": 91.48848056793213
+          },
+          "32": {
+            "mean_ms": 174.13188219070435,
+            "std_ms": 0.5561686297961377,
+            "median_ms": 174.09777641296387
+          }
+        }
+      },
+      {
+        "hvs_dim": 16,
+        "n_trials": 20,
+        "sync_times_by_count": {
+          "2": {
+            "mean_ms": 18.5005784034729,
+            "std_ms": 0.09765039631665948,
+            "median_ms": 18.48316192626953
+          },
+          "4": {
+            "mean_ms": 29.027116298675537,
+            "std_ms": 0.10721138934925223,
+            "median_ms": 29.00385856628418
+          },
+          "8": {
+            "mean_ms": 50.140380859375,
+            "std_ms": 0.1376549262931474,
+            "median_ms": 50.12011528015137
+          },
+          "16": {
+            "mean_ms": 90.66702127456665,
+            "std_ms": 0.2743110917386847,
+            "median_ms": 90.65580368041992
+          },
+          "32": {
+            "mean_ms": 172.89732694625854,
+            "std_ms": 0.36294283768880425,
+            "median_ms": 172.93238639831543
+          }
+        }
+      },
+      {
+        "hvs_dim": 32,
+        "n_trials": 20,
+        "sync_times_by_count": {
+          "2": {
+            "mean_ms": 18.281543254852295,
+            "std_ms": 0.0906885569321597,
+            "median_ms": 18.259167671203613
+          },
+          "4": {
+            "mean_ms": 28.98104190826416,
+            "std_ms": 0.2404208045679827,
+            "median_ms": 28.931021690368652
+          },
+          "8": {
+            "mean_ms": 50.34536123275757,
+            "std_ms": 1.380281308860645,
+            "median_ms": 49.65031147003174
+          },
+          "16": {
+            "mean_ms": 91.22774600982666,
+            "std_ms": 1.1535177635997382,
+            "median_ms": 90.8973217010498
+          },
+          "32": {
+            "mean_ms": 174.58792924880981,
+            "std_ms": 2.070903380448786,
+            "median_ms": 173.5551357269287
+          }
+        }
+      },
+      {
+        "hvs_dim": 64,
+        "n_trials": 20,
+        "sync_times_by_count": {
+          "2": {
+            "mean_ms": 18.421387672424316,
+            "std_ms": 0.04990453976432139,
+            "median_ms": 18.416404724121094
+          },
+          "4": {
+            "mean_ms": 29.088985919952393,
+            "std_ms": 0.296042521491377,
+            "median_ms": 29.03270721435547
+          },
+          "8": {
+            "mean_ms": 51.506030559539795,
+            "std_ms": 1.6029595948853588,
+            "median_ms": 51.00083351135254
+          },
+          "16": {
+            "mean_ms": 94.00484561920166,
+            "std_ms": 2.2178455016391974,
+            "median_ms": 93.44267845153809
+          },
+          "32": {
+            "mean_ms": 178.42092514038086,
+            "std_ms": 2.949977806785881,
+            "median_ms": 177.4914264678955
+          }
+        }
+      }
+    ],
+    "sync_overhead": [
+      {
+        "hvs_dim": 8,
+        "model_count": 8,
+        "n_trials": 20,
+        "baseline_time_per_model_ms": 0.030536949634552002,
+        "sync_time_mean_ms": 50.03206729888916,
+        "overhead_ms": 49.787771701812744,
+        "overhead_percent": 20380.13468013468
+      },
+      {
+        "hvs_dim": 16,
+        "model_count": 8,
+        "n_trials": 20,
+        "baseline_time_per_model_ms": 0.02927035093307495,
+        "sync_time_mean_ms": 49.34276342391968,
+        "overhead_ms": 49.10860061645508,
+        "overhead_percent": 20971.99002189075
+      },
+      {
+        "hvs_dim": 32,
+        "model_count": 8,
+        "n_trials": 20,
+        "baseline_time_per_model_ms": 0.029355287551879883,
+        "sync_time_mean_ms": 50.10988712310791,
+        "overhead_ms": 49.87504482269287,
+        "overhead_percent": 21237.675126903552
+      },
+      {
+        "hvs_dim": 64,
+        "model_count": 8,
+        "n_trials": 20,
+        "baseline_time_per_model_ms": 0.029677152633666992,
+        "sync_time_mean_ms": 50.47175884246826,
+        "overhead_ms": 50.234341621398926,
+        "overhead_percent": 21158.67644105242
+      }
+    ],
+    "communication_efficiency": [
+      {
+        "hvs_dim": 8,
+        "model_count": 16,
+        "original_dim": 768,
+        "full_comm_mb": 0.703125,
+        "hvs_comm_mb": 0.00823974609375,
+        "bandwidth_saving_mb": 0.69488525390625,
+        "bandwidth_saving_percent": 98.828125,
+        "compression_ratio": 85.33333333333333
+      },
+      {
+        "hvs_dim": 16,
+        "model_count": 16,
+        "original_dim": 768,
+        "full_comm_mb": 0.703125,
+        "hvs_comm_mb": 0.01556396484375,
+        "bandwidth_saving_mb": 0.68756103515625,
+        "bandwidth_saving_percent": 97.78645833333334,
+        "compression_ratio": 45.1764705882353
+      },
+      {
+        "hvs_dim": 32,
+        "model_count": 16,
+        "original_dim": 768,
+        "full_comm_mb": 0.703125,
+        "hvs_comm_mb": 0.03021240234375,
+        "bandwidth_saving_mb": 0.67291259765625,
+        "bandwidth_saving_percent": 95.703125,
+        "compression_ratio": 23.272727272727273
+      },
+      {
+        "hvs_dim": 64,
+        "model_count": 16,
+        "original_dim": 768,
+        "full_comm_mb": 0.703125,
+        "hvs_comm_mb": 0.05950927734375,
+        "bandwidth_saving_mb": 0.64361572265625,
+        "bandwidth_saving_percent": 91.53645833333334,
+        "compression_ratio": 11.815384615384616
+      }
+    ],
+    "sync_quality": [
+      {
+        "hvs_dim": 8,
+        "model_count": 8,
+        "n_trials": 20,
+        "mean_distance_avg": 1.6581061124801635,
+        "variance_distance_avg": 0.07577418605074478,
+        "quality_score_avg": 0.930128288139976,
+        "quality_score_std": 0.022822779298982236
+      },
+      {
+        "hvs_dim": 16,
+        "model_count": 8,
+        "n_trials": 20,
+        "mean_distance_avg": 2.0134197533130647,
+        "variance_distance_avg": 0.025852666198130224,
+        "quality_score_avg": 0.9749011659128218,
+        "quality_score_std": 0.009915852912610218
+      },
+      {
+        "hvs_dim": 32,
+        "model_count": 8,
+        "n_trials": 20,
+        "mean_distance_avg": 2.347830979526043,
+        "variance_distance_avg": 0.015277250976863365,
+        "quality_score_avg": 0.9850060817167806,
+        "quality_score_std": 0.007257276103309614
+      },
+      {
+        "hvs_dim": 64,
+        "model_count": 8,
+        "n_trials": 20,
+        "mean_distance_avg": 2.7106851175427438,
+        "variance_distance_avg": 0.007225394249910577,
+        "quality_score_avg": 0.9928428780757776,
+        "quality_score_std": 0.00403102081482732
+      }
+    ]
+  },
+  "metadata": {
+    "license": {
+      "name": "AGPLv3",
+      "url": "https://www.gnu.org/licenses/agpl-3.0.html"
+    }
+  }
+}

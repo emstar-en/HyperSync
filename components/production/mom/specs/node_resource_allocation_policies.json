@@ -1,0 +1,3304 @@
+{
+  "component": "node_resource_allocation_policies",
+  "version": "1.0.0",
+  "description": "Comprehensive resource allocation policies for AI nodes with adaptive strategies, quota management, and AI-driven optimization",
+  "subsystem": "AI Management",
+  "dependencies": [
+    "iam_agent_handoff_protocol",
+    "model_versioning_strategy"
+  ],
+  "type_definitions": {
+    "ResourceType": {
+      "type": "enum",
+      "values": [
+        "CPU",
+        "Memory",
+        "GPU",
+        "Storage",
+        "Network",
+        "Custom"
+      ],
+      "description": "Type of resource to allocate"
+    },
+    "AllocationStrategy": {
+      "type": "enum",
+      "values": [
+        "Fair",
+        "Priority",
+        "Adaptive",
+        "Custom"
+      ],
+      "description": "Strategy for resource allocation"
+    },
+    "ResourceLimit": {
+      "type": "object",
+      "description": "Resource limit specification",
+      "properties": {
+        "min": {
+          "type": "float64",
+          "description": "Minimum allocation"
+        },
+        "max": {
+          "type": "float64",
+          "description": "Maximum allocation"
+        },
+        "quota": {
+          "type": "float64",
+          "description": "Total quota",
+          "optional": true
+        },
+        "unit": {
+          "type": "string",
+          "description": "Resource unit (cores, GB, IOPS, etc.)"
+        }
+      }
+    },
+    "ResourceMetrics": {
+      "type": "object",
+      "description": "Resource usage metrics",
+      "properties": {
+        "usage": {
+          "type": "float64",
+          "description": "Current usage"
+        },
+        "available": {
+          "type": "float64",
+          "description": "Available resources"
+        },
+        "reserved": {
+          "type": "float64",
+          "description": "Reserved resources"
+        },
+        "utilization": {
+          "type": "float64",
+          "description": "Utilization percentage (0-100)"
+        },
+        "timestamp": {
+          "type": "ISO8601",
+          "description": "Measurement timestamp"
+        }
+      }
+    },
+    "AllocationPolicy": {
+      "type": "object",
+      "description": "Resource allocation policy definition",
+      "properties": {
+        "policy_id": {
+          "type": "UUID",
+          "description": "Policy identifier"
+        },
+        "name": {
+          "type": "string",
+          "description": "Policy name"
+        },
+        "strategy": {
+          "type": "AllocationStrategy",
+          "description": "Allocation strategy"
+        },
+        "rules": {
+          "type": "array[PolicyRule]",
+          "description": "Policy rules"
+        },
+        "priority": {
+          "type": "integer",
+          "description": "Policy priority (1-100)"
+        }
+      }
+    },
+    "PolicyRule": {
+      "type": "object",
+      "properties": {
+        "condition": {
+          "type": "string",
+          "description": "Rule condition (expression)"
+        },
+        "action": {
+          "type": "string",
+          "description": "Action to take when condition met"
+        },
+        "parameters": {
+          "type": "dict[string, any]",
+          "description": "Action parameters"
+        }
+      }
+    },
+    "ResourceAllocation": {
+      "type": "object",
+      "description": "Allocated resources for a node",
+      "properties": {
+        "node_id": {
+          "type": "UUID",
+          "description": "Node identifier"
+        },
+        "allocations": {
+          "type": "dict[ResourceType, float64]",
+          "description": "Resource allocations by type"
+        },
+        "policy_id": {
+          "type": "UUID",
+          "description": "Applied policy"
+        },
+        "timestamp": {
+          "type": "ISO8601",
+          "description": "Allocation timestamp"
+        }
+      }
+    },
+    "ContentionStrategy": {
+      "type": "enum",
+      "values": [
+        "Preemption",
+        "Queuing",
+        "Scaling",
+        "DynamicPriority"
+      ],
+      "description": "Strategy for handling resource contention"
+    },
+    "Reservation": {
+      "type": "object",
+      "properties": {
+        "reservation_id": {
+          "type": "UUID",
+          "description": "Reservation identifier"
+        },
+        "node_id": {
+          "type": "UUID",
+          "description": "Node requesting reservation"
+        },
+        "resources": {
+          "type": "dict[ResourceType, float64]",
+          "description": "Reserved resources"
+        },
+        "start_time": {
+          "type": "ISO8601",
+          "description": "Reservation start time"
+        },
+        "end_time": {
+          "type": "ISO8601",
+          "description": "Reservation end time"
+        }
+      }
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "NRAP-001",
+      "name": "allocate_resources",
+      "category": "Resource Management",
+      "description": "Allocate resources to node using specified strategy with AI-managed optimization",
+      "signature": {
+        "inputs": {
+          "node_id": {
+            "type": "UUID",
+            "description": "Node to allocate resources to"
+          },
+          "requested_resources": {
+            "type": "dict[ResourceType, float64]",
+            "description": "Requested resource amounts"
+          },
+          "strategy": {
+            "type": "AllocationStrategy",
+            "description": "Allocation strategy",
+            "default": "Adaptive"
+          },
+          "priority": {
+            "type": "integer",
+            "description": "Node priority (1-100)",
+            "default": 50
+          },
+          "policy_id": {
+            "type": "UUID",
+            "description": "Specific policy to apply",
+            "optional": true
+          }
+        },
+        "outputs": {
+          "allocation": {
+            "type": "ResourceAllocation",
+            "description": "Allocated resources"
+          },
+          "granted": {
+            "type": "dict[ResourceType, float64]",
+            "description": "Actually granted resources (may differ from requested)"
+          },
+          "warnings": {
+            "type": "array[string]",
+            "description": "Allocation warnings",
+            "optional": true
+          }
+        }
+      },
+      "formula": {
+        "description": "Resource allocation algorithm",
+        "steps": [
+          "1. Validate requested_resources are within limits",
+          "2. Get current system resource availability: A_sys",
+          "3. If policy_id provided: use specific policy",
+          "   Else: select policy based on strategy and priority",
+          "4. Apply allocation strategy:",
+          "   Fair: A_granted = requested \u00d7 (A_sys / \u03a3 requested_all_nodes)",
+          "   Priority: A_granted = requested \u00d7 priority_weight",
+          "   Adaptive: A_granted = f(requested, usage_history, predicted_demand)",
+          "   Custom: A_granted = custom_policy(requested)",
+          "5. Check constraints:",
+          "   A_granted \u2264 A_sys (system availability)",
+          "   A_granted \u2265 min_allocation (minimum guarantee)",
+          "   A_granted \u2264 max_allocation (quota limit)",
+          "6. Reserve resources in system",
+          "7. Update allocation metadata",
+          "8. Generate warnings if granted < requested",
+          "9. Return allocation result"
+        ],
+        "allocation_strategies": {
+          "Fair": "Equal share: share_i = total / n_nodes",
+          "Priority": "Weighted by priority: share_i = total \u00d7 (priority_i / \u03a3 priority_j)",
+          "Adaptive": "ML-based prediction: share_i = predict(usage_pattern_i, system_load)",
+          "Custom": "User-defined policy function"
+        },
+        "adaptive_formula": "A_adaptive = \u03b1\u00b7requested + \u03b2\u00b7historical_avg + \u03b3\u00b7predicted_future + \u03b4\u00b7priority"
+      },
+      "properties": {
+        "idempotency": "No (each call may produce different allocation based on system state)",
+        "atomicity": "Yes (all-or-nothing allocation)",
+        "ai_managed": "Yes (adaptive strategy uses AI)",
+        "time_complexity": "O(1) for simple strategies, O(n) for adaptive",
+        "space_complexity": "O(1)"
+      },
+      "edge_cases": [
+        {
+          "case": "Insufficient resources available",
+          "handling": "Allocate partial resources or queue request",
+          "warning": "INSUFFICIENT_RESOURCES"
+        },
+        {
+          "case": "Requested exceeds quota",
+          "handling": "Cap at quota limit",
+          "warning": "QUOTA_EXCEEDED"
+        },
+        {
+          "case": "Invalid resource type",
+          "handling": "Reject with error",
+          "error": "INVALID_RESOURCE_TYPE"
+        },
+        {
+          "case": "Node already has allocation",
+          "handling": "Update existing allocation",
+          "result": "Allocation modified"
+        },
+        {
+          "case": "Zero resources requested",
+          "handling": "Return empty allocation",
+          "warning": "ZERO_ALLOCATION"
+        },
+        {
+          "case": "System oversubscribed",
+          "handling": "Apply oversubscription policy or reject",
+          "warning": "SYSTEM_OVERSUBSCRIBED"
+        }
+      ],
+      "test_cases": [
+        {
+          "test_id": "NRAP-001-T01",
+          "description": "Fair allocation with sufficient resources",
+          "input": {
+            "node_id": "node-1",
+            "requested_resources": {
+              "CPU": 4.0,
+              "Memory": 8.0
+            },
+            "strategy": "Fair"
+          },
+          "precondition": "System has 16 CPU cores and 32 GB memory available",
+          "expected_output": {
+            "granted": {
+              "CPU": 4.0,
+              "Memory": 8.0
+            }
+          }
+        },
+        {
+          "test_id": "NRAP-001-T02",
+          "description": "Priority-based allocation",
+          "input": {
+            "node_id": "node-high-priority",
+            "requested_resources": {
+              "CPU": 8.0
+            },
+            "strategy": "Priority",
+            "priority": 90
+          },
+          "expected_output": {
+            "granted": {
+              "CPU": "Higher allocation due to priority"
+            }
+          }
+        },
+        {
+          "test_id": "NRAP-001-T03",
+          "description": "Adaptive allocation based on usage history",
+          "input": {
+            "node_id": "node-2",
+            "requested_resources": {
+              "CPU": 4.0,
+              "Memory": 8.0
+            },
+            "strategy": "Adaptive"
+          },
+          "precondition": "Node has historical usage pattern",
+          "expected_output": {
+            "granted": "AI-optimized allocation based on patterns"
+          }
+        },
+        {
+          "test_id": "NRAP-001-T04",
+          "description": "Insufficient resources (partial allocation)",
+          "input": {
+            "node_id": "node-3",
+            "requested_resources": {
+              "CPU": 20.0,
+              "Memory": 50.0
+            }
+          },
+          "precondition": "System only has 10 CPU and 20 GB available",
+          "expected_output": {
+            "granted": {
+              "CPU": 10.0,
+              "Memory": 20.0
+            },
+            "warnings": [
+              "INSUFFICIENT_RESOURCES"
+            ]
+          }
+        },
+        {
+          "test_id": "NRAP-001-T05",
+          "description": "Quota exceeded",
+          "input": {
+            "node_id": "node-4",
+            "requested_resources": {
+              "CPU": 100.0
+            }
+          },
+          "precondition": "Node quota is 50 CPU cores",
+          "expected_output": {
+            "granted": {
+              "CPU": 50.0
+            },
+            "warnings": [
+              "QUOTA_EXCEEDED"
+            ]
+          }
+        },
+        {
+          "test_id": "NRAP-001-T06",
+          "description": "Update existing allocation",
+          "input": {
+            "node_id": "node-1",
+            "requested_resources": {
+              "CPU": 8.0,
+              "Memory": 16.0
+            }
+          },
+          "precondition": "Node already has CPU: 4.0, Memory: 8.0",
+          "expected_output": {
+            "granted": {
+              "CPU": 8.0,
+              "Memory": 16.0
+            }
+          }
+        },
+        {
+          "test_id": "NRAP-001-T07",
+          "description": "Zero resources requested",
+          "input": {
+            "node_id": "node-5",
+            "requested_resources": {}
+          },
+          "expected_output": {
+            "granted": {},
+            "warnings": [
+              "ZERO_ALLOCATION"
+            ]
+          }
+        },
+        {
+          "test_id": "NRAP-001-T08",
+          "description": "Invalid resource type",
+          "input": {
+            "node_id": "node-6",
+            "requested_resources": {
+              "InvalidType": 10.0
+            }
+          },
+          "expected_error": "INVALID_RESOURCE_TYPE"
+        },
+        {
+          "test_id": "NRAP-001-T09",
+          "description": "Custom policy allocation",
+          "input": {
+            "node_id": "node-7",
+            "requested_resources": {
+              "CPU": 4.0
+            },
+            "policy_id": "custom-policy-1"
+          },
+          "expected_output": {
+            "granted": "Allocation per custom policy rules"
+          }
+        },
+        {
+          "test_id": "NRAP-001-T10",
+          "description": "Multiple resource types",
+          "input": {
+            "node_id": "node-8",
+            "requested_resources": {
+              "CPU": 4.0,
+              "Memory": 8.0,
+              "GPU": 1.0,
+              "Storage": 100.0
+            }
+          },
+          "expected_output": {
+            "granted": "All resource types allocated"
+          }
+        }
+      ]
+    },
+    {
+      "operation_id": "NRAP-002",
+      "name": "deallocate_resources",
+      "category": "Resource Management",
+      "description": "Release resources allocated to node with graceful cleanup",
+      "signature": {
+        "inputs": {
+          "node_id": {
+            "type": "UUID",
+            "description": "Node to deallocate resources from"
+          },
+          "resource_types": {
+            "type": "array[ResourceType]",
+            "description": "Specific resource types to deallocate (optional - all if not specified)",
+            "optional": true
+          },
+          "graceful": {
+            "type": "boolean",
+            "description": "Graceful deallocation with cleanup",
+            "default": true
+          }
+        },
+        "outputs": {
+          "deallocated": {
+            "type": "dict[ResourceType, float64]",
+            "description": "Resources that were deallocated"
+          },
+          "success": {
+            "type": "boolean",
+            "description": "Whether deallocation succeeded"
+          }
+        }
+      },
+      "formula": {
+        "description": "Resource deallocation algorithm",
+        "steps": [
+          "1. Retrieve current allocation for node_id",
+          "2. If resource_types specified: filter to those types",
+          "   Else: deallocate all resources",
+          "3. If graceful=true:",
+          "   a. Notify node of pending deallocation",
+          "   b. Wait for cleanup completion or timeout",
+          "   c. Perform cleanup operations",
+          "4. Release resources back to system pool",
+          "5. Update allocation metadata",
+          "6. Trigger reallocation for waiting nodes if applicable",
+          "7. Return deallocated amounts"
+        ]
+      },
+      "properties": {
+        "idempotency": "Yes (deallocating already deallocated resources is no-op)",
+        "atomicity": "Yes",
+        "automatic_on_termination": "Yes",
+        "time_complexity": "O(1)",
+        "space_complexity": "O(1)"
+      },
+      "edge_cases": [
+        {
+          "case": "Node has no allocation",
+          "handling": "Return success with zero deallocation",
+          "warning": "NO_ALLOCATION"
+        },
+        {
+          "case": "Graceful cleanup timeout",
+          "handling": "Force deallocation after timeout",
+          "warning": "FORCED_DEALLOCATION"
+        },
+        {
+          "case": "Resources in use during deallocation",
+          "handling": "If graceful: wait, else: force terminate",
+          "result": "Depends on graceful flag"
+        },
+        {
+          "case": "Partial deallocation",
+          "handling": "Deallocate specified resources only",
+          "result": "Other allocations remain"
+        },
+        {
+          "case": "Invalid resource type specified",
+          "handling": "Skip invalid types, deallocate valid ones",
+          "warning": "INVALID_RESOURCE_TYPE_IGNORED"
+        },
+        {
+          "case": "Node terminated during deallocation",
+          "handling": "Complete deallocation anyway",
+          "result": "Resources released"
+        }
+      ],
+      "test_cases": [
+        {
+          "test_id": "NRAP-002-T01",
+          "description": "Deallocate all resources",
+          "input": {
+            "node_id": "node-1",
+            "graceful": true
+          },
+          "precondition": "Node has CPU: 4.0, Memory: 8.0",
+          "expected_output": {
+            "deallocated": {
+              "CPU": 4.0,
+              "Memory": 8.0
+            },
+            "success": true
+          }
+        },
+        {
+          "test_id": "NRAP-002-T02",
+          "description": "Deallocate specific resource types",
+          "input": {
+            "node_id": "node-2",
+            "resource_types": [
+              "CPU"
+            ]
+          },
+          "precondition": "Node has CPU: 4.0, Memory: 8.0",
+          "expected_output": {
+            "deallocated": {
+              "CPU": 4.0
+            },
+            "success": true
+          },
+          "postcondition": "Memory allocation remains"
+        },
+        {
+          "test_id": "NRAP-002-T03",
+          "description": "Force deallocation (not graceful)",
+          "input": {
+            "node_id": "node-3",
+            "graceful": false
+          },
+          "expected_output": {
+            "success": true
+          },
+          "note": "Immediate deallocation without cleanup wait"
+        },
+        {
+          "test_id": "NRAP-002-T04",
+          "description": "Node has no allocation",
+          "input": {
+            "node_id": "node-no-allocation"
+          },
+          "expected_output": {
+            "deallocated": {},
+            "success": true
+          },
+          "expected_warning": "NO_ALLOCATION"
+        },
+        {
+          "test_id": "NRAP-002-T05",
+          "description": "Graceful cleanup timeout",
+          "input": {
+            "node_id": "node-4",
+            "graceful": true
+          },
+          "inject_condition": "Cleanup takes longer than timeout",
+          "expected_output": {
+            "success": true,
+            "warnings": [
+              "FORCED_DEALLOCATION"
+            ]
+          }
+        },
+        {
+          "test_id": "NRAP-002-T06",
+          "description": "Idempotent deallocation",
+          "input": {
+            "node_id": "node-5"
+          },
+          "precondition": "Resources already deallocated",
+          "expected_output": {
+            "deallocated": {},
+            "success": true
+          }
+        },
+        {
+          "test_id": "NRAP-002-T07",
+          "description": "Partial deallocation with multiple types",
+          "input": {
+            "node_id": "node-6",
+            "resource_types": [
+              "CPU",
+              "GPU"
+            ]
+          },
+          "precondition": "Node has CPU, Memory, GPU, Storage",
+          "expected_output": {
+            "deallocated": {
+              "CPU": "...",
+              "GPU": "..."
+            }
+          },
+          "postcondition": "Memory and Storage remain allocated"
+        },
+        {
+          "test_id": "NRAP-002-T08",
+          "description": "Deallocation triggers reallocation",
+          "input": {
+            "node_id": "node-7"
+          },
+          "precondition": "Other nodes are waiting for resources",
+          "expected_output": {
+            "success": true
+          },
+          "postcondition": "Waiting nodes receive resources"
+        },
+        {
+          "test_id": "NRAP-002-T09",
+          "description": "Invalid resource type ignored",
+          "input": {
+            "node_id": "node-8",
+            "resource_types": [
+              "CPU",
+              "InvalidType",
+              "Memory"
+            ]
+          },
+          "expected_output": {
+            "deallocated": {
+              "CPU": "...",
+              "Memory": "..."
+            },
+            "success": true
+          },
+          "expected_warning": "INVALID_RESOURCE_TYPE_IGNORED"
+        },
+        {
+          "test_id": "NRAP-002-T10",
+          "description": "Automatic deallocation on node termination",
+          "input": {
+            "node_id": "node-9"
+          },
+          "trigger": "Node termination event",
+          "expected_output": {
+            "success": true
+          },
+          "note": "Automatic cleanup"
+        }
+      ]
+    },
+    {
+      "operation_id": "NRAP-003",
+      "name": "adjust_allocation",
+      "category": "Dynamic Management",
+      "description": "Dynamically adjust allocation based on usage patterns with AI optimization",
+      "signature": {
+        "inputs": {
+          "node_id": {
+            "type": "UUID",
+            "description": "Node to adjust allocation for"
+          },
+          "adjustment_factor": {
+            "type": "float64",
+            "description": "Adjustment factor (multiplier)",
+            "optional": true
+          },
+          "target_resources": {
+            "type": "dict[ResourceType, float64]",
+            "description": "Target resource levels",
+            "optional": true
+          },
+          "auto_adjust": {
+            "type": "boolean",
+            "description": "Enable automatic AI-based adjustment",
+            "default": true
+          }
+        },
+        "outputs": {
+          "new_allocation": {
+            "type": "ResourceAllocation",
+            "description": "Adjusted allocation"
+          },
+          "adjustment_made": {
+            "type": "dict[ResourceType, float64]",
+            "description": "Delta of adjustment"
+          }
+        }
+      },
+      "formula": {
+        "description": "Dynamic adjustment algorithm",
+        "steps": [
+          "1. Get current allocation: A_current",
+          "2. Get recent usage metrics: U_recent",
+          "3. If auto_adjust=true:",
+          "   a. Analyze usage patterns using AI",
+          "   b. Calculate optimal allocation: A_optimal = f(U_recent, predicted_demand)",
+          "   c. Compute adjustment: \u0394A = A_optimal - A_current",
+          "4. Else if adjustment_factor provided:",
+          "   \u0394A = A_current \u00d7 (adjustment_factor - 1)",
+          "5. Else if target_resources provided:",
+          "   \u0394A = target_resources - A_current",
+          "6. Validate new allocation within limits",
+          "7. Check system availability for increase",
+          "8. Apply adjustment atomically",
+          "9. Return new allocation and delta"
+        ],
+        "auto_adjustment_formula": "A_optimal = \u03b1\u00b7A_current + \u03b2\u00b7U_avg + \u03b3\u00b7U_peak + \u03b4\u00b7predicted_next",
+        "adjustment_triggers": {
+          "underutilization": "Usage < 50% for sustained period \u2192 reduce allocation",
+          "overutilization": "Usage > 90% for sustained period \u2192 increase allocation",
+          "spike_detected": "Sudden usage spike \u2192 temporary increase",
+          "predicted_demand": "ML predicts future demand change \u2192 proactive adjustment"
+        }
+      },
+      "properties": {
+        "idempotency": "No (adjustments are cumulative)",
+        "ai_managed": "Yes (auto_adjust mode)",
+        "respects_limits": "Yes (never exceeds quota)",
+        "time_complexity": "O(1)",
+        "space_complexity": "O(1)"
+      },
+      "edge_cases": [
+        {
+          "case": "Adjustment exceeds quota",
+          "handling": "Cap at quota limit",
+          "warning": "ADJUSTMENT_CAPPED"
+        },
+        {
+          "case": "Adjustment below minimum",
+          "handling": "Cap at minimum allocation",
+          "warning": "MINIMUM_ALLOCATION_ENFORCED"
+        },
+        {
+          "case": "Insufficient resources for increase",
+          "handling": "Allocate what's available",
+          "warning": "PARTIAL_ADJUSTMENT"
+        },
+        {
+          "case": "No usage history for auto-adjust",
+          "handling": "Use current allocation",
+          "warning": "NO_USAGE_HISTORY"
+        },
+        {
+          "case": "Conflicting parameters (multiple adjustment methods)",
+          "handling": "Prioritize: target_resources > adjustment_factor > auto_adjust",
+          "result": "Use highest priority method"
+        },
+        {
+          "case": "Zero or negative adjustment factor",
+          "handling": "Reject with error",
+          "error": "INVALID_ADJUSTMENT_FACTOR"
+        }
+      ],
+      "test_cases": [
+        {
+          "test_id": "NRAP-003-T01",
+          "description": "Auto-adjust based on low utilization",
+          "input": {
+            "node_id": "node-1",
+            "auto_adjust": true
+          },
+          "precondition": "Node using 30% of allocated resources consistently",
+          "expected_output": {
+            "new_allocation": "Reduced allocation",
+            "adjustment_made": "Negative delta"
+          }
+        },
+        {
+          "test_id": "NRAP-003-T02",
+          "description": "Auto-adjust based on high utilization",
+          "input": {
+            "node_id": "node-2",
+            "auto_adjust": true
+          },
+          "precondition": "Node using 95% of allocated resources",
+          "expected_output": {
+            "new_allocation": "Increased allocation",
+            "adjustment_made": "Positive delta"
+          }
+        },
+        {
+          "test_id": "NRAP-003-T03",
+          "description": "Manual adjustment with factor",
+          "input": {
+            "node_id": "node-3",
+            "adjustment_factor": 1.5,
+            "auto_adjust": false
+          },
+          "precondition": "Current allocation: CPU: 4.0",
+          "expected_output": {
+            "new_allocation": {
+              "CPU": 6.0
+            },
+            "adjustment_made": {
+              "CPU": 2.0
+            }
+          }
+        },
+        {
+          "test_id": "NRAP-003-T04",
+          "description": "Adjustment to specific target",
+          "input": {
+            "node_id": "node-4",
+            "target_resources": {
+              "CPU": 8.0,
+              "Memory": 16.0
+            }
+          },
+          "precondition": "Current allocation: CPU: 4.0, Memory: 8.0",
+          "expected_output": {
+            "new_allocation": {
+              "CPU": 8.0,
+              "Memory": 16.0
+            },
+            "adjustment_made": {
+              "CPU": 4.0,
+              "Memory": 8.0
+            }
+          }
+        },
+        {
+          "test_id": "NRAP-003-T05",
+          "description": "Adjustment capped at quota",
+          "input": {
+            "node_id": "node-5",
+            "adjustment_factor": 10.0
+          },
+          "precondition": "Current: 5.0, Quota: 20.0",
+          "expected_output": {
+            "new_allocation": "20.0 (capped at quota)",
+            "warnings": [
+              "ADJUSTMENT_CAPPED"
+            ]
+          }
+        },
+        {
+          "test_id": "NRAP-003-T06",
+          "description": "Adjustment capped at minimum",
+          "input": {
+            "node_id": "node-6",
+            "adjustment_factor": 0.1
+          },
+          "precondition": "Current: 10.0, Minimum: 2.0",
+          "expected_output": {
+            "new_allocation": "2.0 (capped at minimum)",
+            "warnings": [
+              "MINIMUM_ALLOCATION_ENFORCED"
+            ]
+          }
+        },
+        {
+          "test_id": "NRAP-003-T07",
+          "description": "Insufficient resources for increase",
+          "input": {
+            "node_id": "node-7",
+            "target_resources": {
+              "CPU": 100.0
+            }
+          },
+          "precondition": "System only has 50 CPU available",
+          "expected_output": {
+            "new_allocation": {
+              "CPU": "Current + 50"
+            },
+            "warnings": [
+              "PARTIAL_ADJUSTMENT"
+            ]
+          }
+        },
+        {
+          "test_id": "NRAP-003-T08",
+          "description": "No usage history warning",
+          "input": {
+            "node_id": "node-new",
+            "auto_adjust": true
+          },
+          "precondition": "Node has no usage history",
+          "expected_output": {
+            "new_allocation": "Unchanged",
+            "warnings": [
+              "NO_USAGE_HISTORY"
+            ]
+          }
+        },
+        {
+          "test_id": "NRAP-003-T09",
+          "description": "Invalid adjustment factor",
+          "input": {
+            "node_id": "node-8",
+            "adjustment_factor": -0.5
+          },
+          "expected_error": "INVALID_ADJUSTMENT_FACTOR"
+        },
+        {
+          "test_id": "NRAP-003-T10",
+          "description": "Proactive adjustment based on prediction",
+          "input": {
+            "node_id": "node-9",
+            "auto_adjust": true
+          },
+          "precondition": "AI predicts 3x demand increase in near future",
+          "expected_output": {
+            "new_allocation": "Proactively increased",
+            "adjustment_made": "Significant positive delta"
+          }
+        }
+      ]
+    },
+    {
+      "operation_id": "NRAP-004",
+      "name": "set_resource_limits",
+      "category": "Configuration",
+      "description": "Set resource limits and quotas for nodes, users, or system-wide",
+      "signature": {
+        "inputs": {
+          "scope": {
+            "type": "enum",
+            "values": [
+              "Node",
+              "User",
+              "System"
+            ],
+            "description": "Scope of limit"
+          },
+          "scope_id": {
+            "type": "UUID",
+            "description": "Node or user ID (null for system-wide)",
+            "optional": true
+          },
+          "limits": {
+            "type": "dict[ResourceType, ResourceLimit]",
+            "description": "Resource limits by type"
+          }
+        },
+        "outputs": {
+          "success": {
+            "type": "boolean",
+            "description": "Whether limits were set"
+          },
+          "applied_limits": {
+            "type": "dict[ResourceType, ResourceLimit]",
+            "description": "Limits that were applied"
+          }
+        }
+      },
+      "formula": {
+        "description": "Limit configuration algorithm",
+        "steps": [
+          "1. Validate scope and scope_id",
+          "2. For each resource type in limits:",
+          "   a. Validate min \u2264 max",
+          "   b. Validate quota \u2265 max (if specified)",
+          "   c. Check against parent scope limits (hierarchy)",
+          "3. Store limits in configuration",
+          "4. Apply limits to active allocations if necessary",
+          "5. Return applied limits"
+        ],
+        "limit_hierarchy": "System limits > User limits > Node limits",
+        "constraint_validation": "min \u2264 current_allocation \u2264 max \u2264 quota \u2264 parent_limit"
+      },
+      "properties": {
+        "idempotency": "Yes (setting same limits multiple times has no effect)",
+        "atomicity": "Yes",
+        "hierarchical": "Yes (respects parent scope limits)",
+        "time_complexity": "O(n) where n = number of resource types",
+        "space_complexity": "O(n)"
+      },
+      "edge_cases": [
+        {
+          "case": "Min > max",
+          "handling": "Reject with validation error",
+          "error": "INVALID_LIMIT_RANGE"
+        },
+        {
+          "case": "Quota < max",
+          "handling": "Reject with validation error",
+          "error": "QUOTA_LESS_THAN_MAX"
+        },
+        {
+          "case": "Limits exceed parent scope",
+          "handling": "Reject with error",
+          "error": "EXCEEDS_PARENT_LIMIT"
+        },
+        {
+          "case": "Current allocation exceeds new max",
+          "handling": "Adjust allocation down to new max",
+          "warning": "ALLOCATION_ADJUSTED"
+        },
+        {
+          "case": "Current allocation below new min",
+          "handling": "Adjust allocation up to new min",
+          "warning": "ALLOCATION_ADJUSTED"
+        },
+        {
+          "case": "Invalid scope",
+          "handling": "Reject with error",
+          "error": "INVALID_SCOPE"
+        }
+      ],
+      "test_cases": [
+        {
+          "test_id": "NRAP-004-T01",
+          "description": "Set node-specific limits",
+          "input": {
+            "scope": "Node",
+            "scope_id": "node-1",
+            "limits": {
+              "CPU": {
+                "min": 1.0,
+                "max": 8.0,
+                "quota": 10.0,
+                "unit": "cores"
+              }
+            }
+          },
+          "expected_output": {
+            "success": true,
+            "applied_limits": {
+              "CPU": {
+                "min": 1.0,
+                "max": 8.0,
+                "quota": 10.0
+              }
+            }
+          }
+        },
+        {
+          "test_id": "NRAP-004-T02",
+          "description": "Set user quota",
+          "input": {
+            "scope": "User",
+            "scope_id": "user-1",
+            "limits": {
+              "CPU": {
+                "quota": 100.0,
+                "unit": "cores"
+              },
+              "Memory": {
+                "quota": 200.0,
+                "unit": "GB"
+              }
+            }
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "test_id": "NRAP-004-T03",
+          "description": "Set system-wide limits",
+          "input": {
+            "scope": "System",
+            "limits": {
+              "CPU": {
+                "max": 1000.0,
+                "unit": "cores"
+              },
+              "Memory": {
+                "max": 2000.0,
+                "unit": "GB"
+              }
+            }
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "test_id": "NRAP-004-T04",
+          "description": "Invalid limit range (min > max)",
+          "input": {
+            "scope": "Node",
+            "scope_id": "node-2",
+            "limits": {
+              "CPU": {
+                "min": 10.0,
+                "max": 5.0
+              }
+            }
+          },
+          "expected_error": "INVALID_LIMIT_RANGE"
+        },
+        {
+          "test_id": "NRAP-004-T05",
+          "description": "Quota less than max",
+          "input": {
+            "scope": "Node",
+            "scope_id": "node-3",
+            "limits": {
+              "CPU": {
+                "max": 10.0,
+                "quota": 5.0
+              }
+            }
+          },
+          "expected_error": "QUOTA_LESS_THAN_MAX"
+        },
+        {
+          "test_id": "NRAP-004-T06",
+          "description": "Exceeds parent limit",
+          "input": {
+            "scope": "Node",
+            "scope_id": "node-4",
+            "limits": {
+              "CPU": {
+                "max": 200.0
+              }
+            }
+          },
+          "precondition": "User limit is 100 CPU cores",
+          "expected_error": "EXCEEDS_PARENT_LIMIT"
+        },
+        {
+          "test_id": "NRAP-004-T07",
+          "description": "Adjust allocation to new max",
+          "input": {
+            "scope": "Node",
+            "scope_id": "node-5",
+            "limits": {
+              "CPU": {
+                "max": 4.0
+              }
+            }
+          },
+          "precondition": "Node currently allocated 8 CPU cores",
+          "expected_output": {
+            "success": true,
+            "warnings": [
+              "ALLOCATION_ADJUSTED"
+            ]
+          },
+          "postcondition": "Node allocation reduced to 4 cores"
+        },
+        {
+          "test_id": "NRAP-004-T08",
+          "description": "Adjust allocation to new min",
+          "input": {
+            "scope": "Node",
+            "scope_id": "node-6",
+            "limits": {
+              "CPU": {
+                "min": 4.0
+              }
+            }
+          },
+          "precondition": "Node currently allocated 2 CPU cores",
+          "expected_output": {
+            "success": true,
+            "warnings": [
+              "ALLOCATION_ADJUSTED"
+            ]
+          },
+          "postcondition": "Node allocation increased to 4 cores"
+        },
+        {
+          "test_id": "NRAP-004-T09",
+          "description": "Update existing limits",
+          "input": {
+            "scope": "Node",
+            "scope_id": "node-7",
+            "limits": {
+              "CPU": {
+                "min": 2.0,
+                "max": 16.0
+              }
+            }
+          },
+          "precondition": "Node has existing limits",
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "test_id": "NRAP-004-T10",
+          "description": "Multiple resource type limits",
+          "input": {
+            "scope": "Node",
+            "scope_id": "node-8",
+            "limits": {
+              "CPU": {
+                "min": 1.0,
+                "max": 8.0
+              },
+              "Memory": {
+                "min": 2.0,
+                "max": 16.0
+              },
+              "GPU": {
+                "max": 2.0
+              }
+            }
+          },
+          "expected_output": {
+            "success": true,
+            "applied_limits": "All three resource types"
+          }
+        }
+      ]
+    },
+    {
+      "operation_id": "NRAP-005",
+      "name": "get_resource_usage",
+      "category": "Monitoring",
+      "description": "Get current resource usage with historical data and predictions",
+      "signature": {
+        "inputs": {
+          "node_id": {
+            "type": "UUID",
+            "description": "Node to query (null for system-wide)",
+            "optional": true
+          },
+          "resource_types": {
+            "type": "array[ResourceType]",
+            "description": "Specific resource types to query",
+            "optional": true
+          },
+          "include_history": {
+            "type": "boolean",
+            "description": "Include historical data",
+            "default": false
+          },
+          "include_predictions": {
+            "type": "boolean",
+            "description": "Include AI predictions",
+            "default": false
+          },
+          "time_range": {
+            "type": "object",
+            "description": "Time range for historical data",
+            "optional": true
+          }
+        },
+        "outputs": {
+          "metrics": {
+            "type": "dict[ResourceType, ResourceMetrics]",
+            "description": "Current resource metrics"
+          },
+          "history": {
+            "type": "array[ResourceMetrics]",
+            "description": "Historical data",
+            "optional": true
+          },
+          "predictions": {
+            "type": "array[ResourceMetrics]",
+            "description": "Predicted future usage",
+            "optional": true
+          }
+        }
+      },
+      "formula": {
+        "description": "Resource usage retrieval and prediction algorithm",
+        "steps": [
+          "1. Query current resource usage from system",
+          "2. Calculate utilization: U% = (usage / allocated) \u00d7 100",
+          "3. If include_history=true:",
+          "   a. Retrieve historical metrics for time_range",
+          "   b. Aggregate by time intervals",
+          "4. If include_predictions=true:",
+          "   a. Analyze historical patterns using ML",
+          "   b. Predict future usage: U_future = predict(U_history, trends)",
+          "   c. Generate prediction intervals",
+          "5. Compile and return metrics"
+        ],
+        "prediction_algorithm": "ARIMA or LSTM time-series forecasting",
+        "utilization_formula": "utilization% = (current_usage / total_allocated) \u00d7 100"
+      },
+      "properties": {
+        "idempotency": "Yes",
+        "real_time": "Yes (current metrics)",
+        "ai_managed": "Yes (predictions)",
+        "time_complexity": "O(1) for current, O(n) for history where n = time range",
+        "space_complexity": "O(n)"
+      },
+      "edge_cases": [
+        {
+          "case": "Node has no allocation",
+          "handling": "Return zero usage",
+          "result": "Empty metrics"
+        },
+        {
+          "case": "No historical data available",
+          "handling": "Return empty history",
+          "warning": "NO_HISTORICAL_DATA"
+        },
+        {
+          "case": "Insufficient history for predictions",
+          "handling": "Return null predictions",
+          "warning": "INSUFFICIENT_DATA_FOR_PREDICTION"
+        },
+        {
+          "case": "Invalid time range",
+          "handling": "Use default range (last 24 hours)",
+          "warning": "INVALID_TIME_RANGE"
+        },
+        {
+          "case": "Resource type not tracked",
+          "handling": "Skip that resource type",
+          "warning": "RESOURCE_NOT_TRACKED"
+        },
+        {
+          "case": "System-wide query (node_id=null)",
+          "handling": "Aggregate across all nodes",
+          "result": "System totals"
+        }
+      ],
+      "test_cases": [
+        {
+          "test_id": "NRAP-005-T01",
+          "description": "Get current usage for specific node",
+          "input": {
+            "node_id": "node-1"
+          },
+          "expected_output": {
+            "metrics": {
+              "CPU": {
+                "usage": 3.5,
+                "available": 0.5,
+                "utilization": 87.5
+              },
+              "Memory": {
+                "usage": 7.2,
+                "available": 0.8,
+                "utilization": 90.0
+              }
+            }
+          }
+        },
+        {
+          "test_id": "NRAP-005-T02",
+          "description": "Get system-wide usage",
+          "input": {
+            "node_id": null
+          },
+          "expected_output": {
+            "metrics": "Aggregated across all nodes"
+          }
+        },
+        {
+          "test_id": "NRAP-005-T03",
+          "description": "Get usage with historical data",
+          "input": {
+            "node_id": "node-2",
+            "include_history": true,
+            "time_range": {
+              "start": "2025-01-11T00:00:00Z",
+              "end": "2025-01-12T00:00:00Z"
+            }
+          },
+          "expected_output": {
+            "metrics": "Current usage",
+            "history": "24 hours of historical data"
+          }
+        },
+        {
+          "test_id": "NRAP-005-T04",
+          "description": "Get usage with predictions",
+          "input": {
+            "node_id": "node-3",
+            "include_predictions": true
+          },
+          "expected_output": {
+            "metrics": "Current usage",
+            "predictions": "Future usage predictions"
+          }
+        },
+        {
+          "test_id": "NRAP-005-T05",
+          "description": "Query specific resource types",
+          "input": {
+            "node_id": "node-4",
+            "resource_types": [
+              "CPU",
+              "GPU"
+            ]
+          },
+          "expected_output": {
+            "metrics": "Only CPU and GPU metrics"
+          }
+        },
+        {
+          "test_id": "NRAP-005-T06",
+          "description": "Node with no allocation",
+          "input": {
+            "node_id": "node-no-allocation"
+          },
+          "expected_output": {
+            "metrics": {}
+          }
+        },
+        {
+          "test_id": "NRAP-005-T07",
+          "description": "No historical data available",
+          "input": {
+            "node_id": "node-new",
+            "include_history": true
+          },
+          "expected_output": {
+            "metrics": "Current usage",
+            "history": []
+          },
+          "expected_warning": "NO_HISTORICAL_DATA"
+        },
+        {
+          "test_id": "NRAP-005-T08",
+          "description": "Insufficient data for predictions",
+          "input": {
+            "node_id": "node-5",
+            "include_predictions": true
+          },
+          "precondition": "Node has < 1 hour of history",
+          "expected_output": {
+            "predictions": null
+          },
+          "expected_warning": "INSUFFICIENT_DATA_FOR_PREDICTION"
+        },
+        {
+          "test_id": "NRAP-005-T09",
+          "description": "Invalid time range defaults",
+          "input": {
+            "node_id": "node-6",
+            "include_history": true,
+            "time_range": {
+              "start": "2025-01-12",
+              "end": "2025-01-11"
+            }
+          },
+          "expected_output": {
+            "history": "Last 24 hours (default)"
+          },
+          "expected_warning": "INVALID_TIME_RANGE"
+        },
+        {
+          "test_id": "NRAP-005-T10",
+          "description": "Real-time metrics update",
+          "input": {
+            "node_id": "node-7"
+          },
+          "expected_output": {
+            "metrics": "Most recent measurements"
+          },
+          "note": "Timestamp should be very recent"
+        }
+      ]
+    },
+    {
+      "operation_id": "NRAP-006",
+      "name": "register_allocation_policy",
+      "category": "Extensibility",
+      "description": "Register custom allocation policy for extensibility",
+      "signature": {
+        "inputs": {
+          "policy_name": {
+            "type": "string",
+            "description": "Name of custom policy"
+          },
+          "strategy": {
+            "type": "AllocationStrategy",
+            "description": "Base strategy type",
+            "default": "Custom"
+          },
+          "rules": {
+            "type": "array[PolicyRule]",
+            "description": "Policy rules"
+          },
+          "priority": {
+            "type": "integer",
+            "description": "Policy priority (1-100)",
+            "default": 50
+          },
+          "allocation_function": {
+            "type": "function",
+            "description": "Custom allocation function",
+            "optional": true
+          }
+        },
+        "outputs": {
+          "policy_id": {
+            "type": "UUID",
+            "description": "Registered policy identifier"
+          },
+          "success": {
+            "type": "boolean",
+            "description": "Whether registration succeeded"
+          }
+        }
+      },
+      "formula": {
+        "description": "Policy registration process",
+        "steps": [
+          "1. Validate policy_name is unique",
+          "2. Validate rules syntax and semantics",
+          "3. If allocation_function provided: test with sample inputs",
+          "4. Generate policy_id",
+          "5. Store policy in registry",
+          "6. Make policy available for allocation operations",
+          "7. Return policy_id"
+        ],
+        "rule_syntax": "condition: boolean expression, action: allocation directive",
+        "allocation_function_signature": "(node_id, requested, system_state) -> granted"
+      },
+      "properties": {
+        "idempotency": "No (duplicate names rejected)",
+        "extensibility": "Full (any custom logic)",
+        "time_complexity": "O(1)",
+        "space_complexity": "O(n) where n = number of rules"
+      },
+      "edge_cases": [
+        {
+          "case": "Policy name already exists",
+          "handling": "Reject with error",
+          "error": "POLICY_NAME_EXISTS"
+        },
+        {
+          "case": "Invalid rule syntax",
+          "handling": "Reject with validation error",
+          "error": "INVALID_RULE_SYNTAX"
+        },
+        {
+          "case": "Allocation function test failure",
+          "handling": "Reject with error",
+          "error": "FUNCTION_VALIDATION_FAILED"
+        },
+        {
+          "case": "Invalid priority",
+          "handling": "Clamp to valid range [1, 100]",
+          "warning": "PRIORITY_CLAMPED"
+        },
+        {
+          "case": "Empty rules list",
+          "handling": "Require allocation_function or reject",
+          "error": "EMPTY_POLICY"
+        },
+        {
+          "case": "Conflicting rules",
+          "handling": "Accept but warn",
+          "warning": "CONFLICTING_RULES"
+        }
+      ],
+      "test_cases": [
+        {
+          "test_id": "NRAP-006-T01",
+          "description": "Register rule-based policy",
+          "input": {
+            "policy_name": "TimeBasedPolicy",
+            "rules": [
+              {
+                "condition": "time.hour >= 9 AND time.hour <= 17",
+                "action": "multiply_allocation(1.5)"
+              },
+              {
+                "condition": "time.hour < 9 OR time.hour > 17",
+                "action": "multiply_allocation(0.5)"
+              }
+            ],
+            "priority": 70
+          },
+          "expected_output": {
+            "policy_id": "UUID",
+            "success": true
+          }
+        },
+        {
+          "test_id": "NRAP-006-T02",
+          "description": "Register function-based policy",
+          "input": {
+            "policy_name": "MLOptimizedPolicy",
+            "strategy": "Custom",
+            "allocation_function": "function(node, req, sys) { return ml_optimize(req, sys); }"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "test_id": "NRAP-006-T03",
+          "description": "Register priority-based policy",
+          "input": {
+            "policy_name": "ProductionFirst",
+            "rules": [
+              {
+                "condition": "node.env == 'production'",
+                "action": "set_priority(100)"
+              },
+              {
+                "condition": "node.env == 'development'",
+                "action": "set_priority(10)"
+              }
+            ]
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "test_id": "NRAP-006-T04",
+          "description": "Reject duplicate policy name",
+          "input": {
+            "policy_name": "ExistingPolicy",
+            "rules": [
+              {
+                "condition": "true",
+                "action": "no_op"
+              }
+            ]
+          },
+          "precondition": "Policy 'ExistingPolicy' already exists",
+          "expected_error": "POLICY_NAME_EXISTS"
+        },
+        {
+          "test_id": "NRAP-006-T05",
+          "description": "Invalid rule syntax",
+          "input": {
+            "policy_name": "InvalidPolicy",
+            "rules": [
+              {
+                "condition": "invalid syntax here",
+                "action": "do_something"
+              }
+            ]
+          },
+          "expected_error": "INVALID_RULE_SYNTAX"
+        },
+        {
+          "test_id": "NRAP-006-T06",
+          "description": "Function validation failure",
+          "input": {
+            "policy_name": "BrokenPolicy",
+            "allocation_function": "function() { throw new Error('broken'); }"
+          },
+          "expected_error": "FUNCTION_VALIDATION_FAILED"
+        },
+        {
+          "test_id": "NRAP-006-T07",
+          "description": "Priority clamping",
+          "input": {
+            "policy_name": "HighPriority",
+            "rules": [
+              {
+                "condition": "true",
+                "action": "allocate_all"
+              }
+            ],
+            "priority": 150
+          },
+          "expected_output": {
+            "success": true
+          },
+          "expected_warning": "PRIORITY_CLAMPED",
+          "note": "Priority clamped to 100"
+        },
+        {
+          "test_id": "NRAP-006-T08",
+          "description": "Empty policy rejected",
+          "input": {
+            "policy_name": "EmptyPolicy",
+            "rules": []
+          },
+          "expected_error": "EMPTY_POLICY"
+        },
+        {
+          "test_id": "NRAP-006-T09",
+          "description": "Conflicting rules warning",
+          "input": {
+            "policy_name": "ConflictPolicy",
+            "rules": [
+              {
+                "condition": "node.type == 'A'",
+                "action": "allocate(100)"
+              },
+              {
+                "condition": "node.type == 'A'",
+                "action": "allocate(50)"
+              }
+            ]
+          },
+          "expected_output": {
+            "success": true
+          },
+          "expected_warning": "CONFLICTING_RULES"
+        },
+        {
+          "test_id": "NRAP-006-T10",
+          "description": "Complex multi-rule policy",
+          "input": {
+            "policy_name": "ComprehensivePolicy",
+            "rules": [
+              {
+                "condition": "utilization < 0.5",
+                "action": "reduce_allocation(0.8)"
+              },
+              {
+                "condition": "utilization > 0.9",
+                "action": "increase_allocation(1.2)"
+              },
+              {
+                "condition": "priority > 80",
+                "action": "guarantee_minimum(10)"
+              }
+            ],
+            "priority": 60
+          },
+          "expected_output": {
+            "success": true,
+            "policy_id": "UUID"
+          }
+        }
+      ]
+    },
+    {
+      "operation_id": "NRAP-007",
+      "name": "evaluate_policy",
+      "category": "Optimization",
+      "description": "Evaluate policy effectiveness with AI-powered optimization suggestions",
+      "signature": {
+        "inputs": {
+          "policy_id": {
+            "type": "UUID",
+            "description": "Policy to evaluate"
+          },
+          "evaluation_period": {
+            "type": "object",
+            "description": "Time period for evaluation",
+            "optional": true
+          },
+          "metrics": {
+            "type": "array[string]",
+            "description": "Metrics to evaluate",
+            "default": [
+              "fairness",
+              "efficiency",
+              "satisfaction"
+            ]
+          }
+        },
+        "outputs": {
+          "evaluation_results": {
+            "type": "object",
+            "description": "Evaluation metrics and scores"
+          },
+          "recommendations": {
+            "type": "array[string]",
+            "description": "AI-generated optimization recommendations"
+          }
+        }
+      },
+      "formula": {
+        "description": "Policy evaluation algorithm",
+        "steps": [
+          "1. Collect allocation data for evaluation_period",
+          "2. Calculate evaluation metrics:",
+          "   Fairness: F = 1 - Gini(allocations)",
+          "   Efficiency: E = \u03a3(utilization_i) / n_nodes",
+          "   Satisfaction: S = \u03a3(granted_i / requested_i) / n_nodes",
+          "3. Compare with baseline and other policies",
+          "4. Analyze using AI for optimization opportunities",
+          "5. Generate recommendations",
+          "6. Return evaluation results"
+        ],
+        "fairness_metric": "Gini coefficient: G = (\u03a3 \u03a3 |x_i - x_j|) / (2n\u00b2 \u03bc)",
+        "efficiency_metric": "Average utilization: E = (\u03a3 utilization_i) / n",
+        "satisfaction_metric": "Request fulfillment ratio: S = (\u03a3 granted_i/requested_i) / n"
+      },
+      "properties": {
+        "idempotency": "Yes (same period yields same results)",
+        "ai_managed": "Yes (recommendations)",
+        "time_complexity": "O(n\u00b7m) where n = nodes, m = time points",
+        "space_complexity": "O(n\u00b7m)"
+      },
+      "edge_cases": [
+        {
+          "case": "Policy not found",
+          "handling": "Reject with error",
+          "error": "POLICY_NOT_FOUND"
+        },
+        {
+          "case": "Insufficient data for evaluation",
+          "handling": "Return low confidence results",
+          "warning": "INSUFFICIENT_DATA"
+        },
+        {
+          "case": "No allocations during period",
+          "handling": "Return N/A metrics",
+          "warning": "NO_ALLOCATIONS"
+        },
+        {
+          "case": "Invalid evaluation period",
+          "handling": "Use default (last 7 days)",
+          "warning": "INVALID_PERIOD"
+        },
+        {
+          "case": "Unknown metric requested",
+          "handling": "Skip unknown metrics",
+          "warning": "UNKNOWN_METRIC"
+        },
+        {
+          "case": "Policy never used",
+          "handling": "Return theoretical evaluation",
+          "warning": "POLICY_NOT_USED"
+        }
+      ],
+      "test_cases": [
+        {
+          "test_id": "NRAP-007-T01",
+          "description": "Evaluate policy with all metrics",
+          "input": {
+            "policy_id": "policy-1",
+            "metrics": [
+              "fairness",
+              "efficiency",
+              "satisfaction"
+            ]
+          },
+          "expected_output": {
+            "evaluation_results": {
+              "fairness": 0.85,
+              "efficiency": 0.78,
+              "satisfaction": 0.92
+            },
+            "recommendations": [
+              "AI-generated suggestions"
+            ]
+          }
+        },
+        {
+          "test_id": "NRAP-007-T02",
+          "description": "Evaluate over custom period",
+          "input": {
+            "policy_id": "policy-2",
+            "evaluation_period": {
+              "start": "2025-01-01",
+              "end": "2025-01-12"
+            }
+          },
+          "expected_output": {
+            "evaluation_results": "Metrics for specified period"
+          }
+        },
+        {
+          "test_id": "NRAP-007-T03",
+          "description": "High fairness, low efficiency",
+          "input": {
+            "policy_id": "policy-fair"
+          },
+          "precondition": "Policy distributes resources equally but wastefully",
+          "expected_output": {
+            "evaluation_results": {
+              "fairness": ">0.9",
+              "efficiency": "<0.6"
+            },
+            "recommendations": [
+              "Reduce over-allocation",
+              "Implement dynamic adjustment"
+            ]
+          }
+        },
+        {
+          "test_id": "NRAP-007-T04",
+          "description": "High efficiency, low fairness",
+          "input": {
+            "policy_id": "policy-efficient"
+          },
+          "precondition": "Policy prioritizes high-utilization nodes",
+          "expected_output": {
+            "evaluation_results": {
+              "fairness": "<0.6",
+              "efficiency": ">0.9"
+            },
+            "recommendations": [
+              "Improve fairness",
+              "Set minimum guarantees"
+            ]
+          }
+        },
+        {
+          "test_id": "NRAP-007-T05",
+          "description": "Policy not found",
+          "input": {
+            "policy_id": "nonexistent"
+          },
+          "expected_error": "POLICY_NOT_FOUND"
+        },
+        {
+          "test_id": "NRAP-007-T06",
+          "description": "Insufficient data warning",
+          "input": {
+            "policy_id": "policy-new",
+            "evaluation_period": {
+              "start": "2025-01-12T00:00:00Z",
+              "end": "2025-01-12T01:00:00Z"
+            }
+          },
+          "expected_output": {
+            "evaluation_results": "Low confidence"
+          },
+          "expected_warning": "INSUFFICIENT_DATA"
+        },
+        {
+          "test_id": "NRAP-007-T07",
+          "description": "No allocations during period",
+          "input": {
+            "policy_id": "policy-3",
+            "evaluation_period": {
+              "start": "2024-01-01",
+              "end": "2024-01-02"
+            }
+          },
+          "expected_output": {
+            "evaluation_results": {
+              "fairness": "N/A",
+              "efficiency": "N/A"
+            }
+          },
+          "expected_warning": "NO_ALLOCATIONS"
+        },
+        {
+          "test_id": "NRAP-007-T08",
+          "description": "Compare with baseline",
+          "input": {
+            "policy_id": "policy-custom"
+          },
+          "expected_output": {
+            "evaluation_results": {
+              "improvement_over_baseline": "+15%"
+            }
+          }
+        },
+        {
+          "test_id": "NRAP-007-T09",
+          "description": "AI optimization recommendations",
+          "input": {
+            "policy_id": "policy-4"
+          },
+          "expected_output": {
+            "recommendations": [
+              "Adjust priority weights",
+              "Implement predictive scaling",
+              "Reduce allocation overhead"
+            ]
+          }
+        },
+        {
+          "test_id": "NRAP-007-T10",
+          "description": "Policy never used",
+          "input": {
+            "policy_id": "policy-unused"
+          },
+          "precondition": "Policy registered but never applied",
+          "expected_output": {
+            "evaluation_results": "Theoretical evaluation"
+          },
+          "expected_warning": "POLICY_NOT_USED"
+        }
+      ]
+    },
+    {
+      "operation_id": "NRAP-008",
+      "name": "handle_resource_contention",
+      "category": "Contention Management",
+      "description": "Handle resource contention with multiple strategies and AI resolution",
+      "signature": {
+        "inputs": {
+          "contention_event": {
+            "type": "object",
+            "description": "Contention event details"
+          },
+          "strategy": {
+            "type": "ContentionStrategy",
+            "description": "Strategy to handle contention",
+            "default": "DynamicPriority"
+          },
+          "auto_resolve": {
+            "type": "boolean",
+            "description": "Enable AI auto-resolution",
+            "default": true
+          }
+        },
+        "outputs": {
+          "resolution": {
+            "type": "object",
+            "description": "Resolution actions taken"
+          },
+          "affected_nodes": {
+            "type": "array[UUID]",
+            "description": "Nodes affected by resolution"
+          }
+        }
+      },
+      "formula": {
+        "description": "Contention resolution algorithm",
+        "steps": [
+          "1. Analyze contention severity: S = demand / supply",
+          "2. Identify competing nodes",
+          "3. Apply resolution strategy:",
+          "   Preemption: Preempt low-priority nodes",
+          "   Queuing: Queue requests, serve FIFO or priority-based",
+          "   Scaling: Scale up resources if possible",
+          "   DynamicPriority: AI-based priority adjustment",
+          "4. If auto_resolve=true:",
+          "   a. Use AI to determine optimal resolution",
+          "   b. Consider: priorities, SLAs, historical patterns, urgency",
+          "5. Execute resolution actions",
+          "6. Notify affected nodes",
+          "7. Log contention event",
+          "8. Return resolution"
+        ],
+        "contention_severity": "S = (\u03a3 requested - available) / available",
+        "dynamic_priority_formula": "P_effective = \u03b1\u00b7P_static + \u03b2\u00b7urgency + \u03b3\u00b7sla_weight + \u03b4\u00b7historical_importance"
+      },
+      "properties": {
+        "idempotency": "No (resolves current contention)",
+        "ai_managed": "Yes (auto_resolve mode)",
+        "time_complexity": "O(n log n) where n = competing nodes",
+        "space_complexity": "O(n)"
+      },
+      "edge_cases": [
+        {
+          "case": "No contention (supply >= demand)",
+          "handling": "Return no action needed",
+          "result": "NO_CONTENTION"
+        },
+        {
+          "case": "Severe contention (demand >> supply)",
+          "handling": "Apply aggressive strategy (multiple preemptions or scaling)",
+          "warning": "SEVERE_CONTENTION"
+        },
+        {
+          "case": "All nodes have equal priority",
+          "handling": "Use FIFO or round-robin",
+          "result": "Fair resolution"
+        },
+        {
+          "case": "Cannot scale resources",
+          "handling": "Fall back to preemption or queuing",
+          "warning": "SCALING_UNAVAILABLE"
+        },
+        {
+          "case": "Preemption violates SLA",
+          "handling": "Avoid preemption, use queuing instead",
+          "warning": "SLA_VIOLATION_RISK"
+        },
+        {
+          "case": "Recursive contention",
+          "handling": "Detect and break recursion",
+          "warning": "RECURSIVE_CONTENTION"
+        }
+      ],
+      "test_cases": [
+        {
+          "test_id": "NRAP-008-T01",
+          "description": "Resolve contention with preemption",
+          "input": {
+            "contention_event": {
+              "resource": "CPU",
+              "demand": 100,
+              "supply": 80
+            },
+            "strategy": "Preemption"
+          },
+          "expected_output": {
+            "resolution": "Preempted low-priority nodes to free 20 CPU",
+            "affected_nodes": [
+              "node-low-priority-1",
+              "node-low-priority-2"
+            ]
+          }
+        },
+        {
+          "test_id": "NRAP-008-T02",
+          "description": "Resolve contention with queuing",
+          "input": {
+            "contention_event": {
+              "resource": "GPU",
+              "demand": 10,
+              "supply": 8
+            },
+            "strategy": "Queuing"
+          },
+          "expected_output": {
+            "resolution": "Queued 2 requests",
+            "affected_nodes": "Queued nodes"
+          }
+        },
+        {
+          "test_id": "NRAP-008-T03",
+          "description": "Resolve contention with scaling",
+          "input": {
+            "contention_event": {
+              "resource": "Memory",
+              "demand": 200,
+              "supply": 150
+            },
+            "strategy": "Scaling"
+          },
+          "precondition": "System can scale up",
+          "expected_output": {
+            "resolution": "Scaled up memory by 50 GB",
+            "affected_nodes": []
+          }
+        },
+        {
+          "test_id": "NRAP-008-T04",
+          "description": "AI dynamic priority resolution",
+          "input": {
+            "contention_event": {
+              "resource": "CPU",
+              "demand": 120,
+              "supply": 100
+            },
+            "strategy": "DynamicPriority",
+            "auto_resolve": true
+          },
+          "expected_output": {
+            "resolution": "AI-adjusted priorities and allocated optimally",
+            "affected_nodes": "Nodes with adjusted priorities"
+          }
+        },
+        {
+          "test_id": "NRAP-008-T05",
+          "description": "No contention",
+          "input": {
+            "contention_event": {
+              "resource": "Storage",
+              "demand": 80,
+              "supply": 100
+            }
+          },
+          "expected_output": {
+            "resolution": "NO_CONTENTION",
+            "affected_nodes": []
+          }
+        },
+        {
+          "test_id": "NRAP-008-T06",
+          "description": "Severe contention",
+          "input": {
+            "contention_event": {
+              "resource": "CPU",
+              "demand": 500,
+              "supply": 100
+            },
+            "strategy": "DynamicPriority"
+          },
+          "expected_output": {
+            "resolution": "Aggressive resolution applied"
+          },
+          "expected_warning": "SEVERE_CONTENTION"
+        },
+        {
+          "test_id": "NRAP-008-T07",
+          "description": "Equal priority nodes (FIFO)",
+          "input": {
+            "contention_event": {
+              "resource": "Memory",
+              "demand": 150,
+              "supply": 100
+            },
+            "strategy": "Queuing"
+          },
+          "precondition": "All competing nodes have priority=50",
+          "expected_output": {
+            "resolution": "FIFO queuing applied",
+            "affected_nodes": "Later arriving nodes queued"
+          }
+        },
+        {
+          "test_id": "NRAP-008-T08",
+          "description": "Scaling unavailable fallback",
+          "input": {
+            "contention_event": {
+              "resource": "GPU",
+              "demand": 12,
+              "supply": 8
+            },
+            "strategy": "Scaling"
+          },
+          "precondition": "System cannot scale GPU",
+          "expected_output": {
+            "resolution": "Fell back to queuing"
+          },
+          "expected_warning": "SCALING_UNAVAILABLE"
+        },
+        {
+          "test_id": "NRAP-008-T09",
+          "description": "Avoid SLA violation",
+          "input": {
+            "contention_event": {
+              "resource": "CPU",
+              "demand": 120,
+              "supply": 100
+            },
+            "strategy": "Preemption"
+          },
+          "precondition": "Preempting any node would violate SLA",
+          "expected_output": {
+            "resolution": "Used queuing instead of preemption"
+          },
+          "expected_warning": "SLA_VIOLATION_RISK"
+        },
+        {
+          "test_id": "NRAP-008-T10",
+          "description": "Recursive contention detection",
+          "input": {
+            "contention_event": {
+              "resource": "Memory",
+              "demand": 200,
+              "supply": 100
+            }
+          },
+          "inject_condition": "Resolution triggers new contention",
+          "expected_output": {
+            "resolution": "Recursive contention detected and resolved"
+          },
+          "expected_warning": "RECURSIVE_CONTENTION"
+        }
+      ]
+    },
+    {
+      "operation_id": "NRAP-009",
+      "name": "reserve_resources",
+      "category": "Reservation",
+      "description": "Reserve resources in advance with guaranteed allocation",
+      "signature": {
+        "inputs": {
+          "node_id": {
+            "type": "UUID",
+            "description": "Node requesting reservation"
+          },
+          "resources": {
+            "type": "dict[ResourceType, float64]",
+            "description": "Resources to reserve"
+          },
+          "start_time": {
+            "type": "ISO8601",
+            "description": "Reservation start time"
+          },
+          "end_time": {
+            "type": "ISO8601",
+            "description": "Reservation end time"
+          },
+          "priority": {
+            "type": "integer",
+            "description": "Reservation priority",
+            "default": 50
+          }
+        },
+        "outputs": {
+          "reservation": {
+            "type": "Reservation",
+            "description": "Created reservation"
+          }
+        }
+      },
+      "formula": {
+        "description": "Resource reservation algorithm",
+        "steps": [
+          "1. Validate start_time < end_time",
+          "2. Check resource availability for [start_time, end_time]",
+          "3. Check conflicts with existing reservations",
+          "4. If conflict and priority > existing: preempt lower priority",
+          "   Else if no conflict: create reservation",
+          "   Else: reject or queue",
+          "5. Generate reservation_id",
+          "6. Store reservation",
+          "7. Schedule automatic allocation at start_time",
+          "8. Schedule automatic deallocation at end_time",
+          "9. Return reservation"
+        ],
+        "availability_check": "For each time t \u2208 [start, end]: available(t) >= requested"
+      },
+      "properties": {
+        "idempotency": "No (each call creates new reservation)",
+        "atomicity": "Yes",
+        "guaranteed": "Yes (resources guaranteed at start_time)",
+        "time_complexity": "O(n) where n = existing reservations",
+        "space_complexity": "O(1)"
+      },
+      "edge_cases": [
+        {
+          "case": "End time before start time",
+          "handling": "Reject with error",
+          "error": "INVALID_TIME_RANGE"
+        },
+        {
+          "case": "Insufficient capacity for reservation",
+          "handling": "Reject or queue based on policy",
+          "error": "INSUFFICIENT_CAPACITY"
+        },
+        {
+          "case": "Conflicts with higher priority reservation",
+          "handling": "Reject reservation",
+          "error": "RESERVATION_CONFLICT"
+        },
+        {
+          "case": "Start time in past",
+          "handling": "Reject with error",
+          "error": "PAST_START_TIME"
+        },
+        {
+          "case": "Very long reservation duration",
+          "handling": "Apply maximum duration limit",
+          "warning": "DURATION_LIMITED"
+        },
+        {
+          "case": "Node already has overlapping reservation",
+          "handling": "Allow if resources don't overlap, else reject",
+          "result": "Depends on resource overlap"
+        }
+      ],
+      "test_cases": [
+        {
+          "test_id": "NRAP-009-T01",
+          "description": "Simple reservation",
+          "input": {
+            "node_id": "node-1",
+            "resources": {
+              "CPU": 8.0,
+              "Memory": 16.0
+            },
+            "start_time": "2025-01-13T10:00:00Z",
+            "end_time": "2025-01-13T12:00:00Z"
+          },
+          "expected_output": {
+            "reservation": {
+              "reservation_id": "UUID",
+              "resources": {
+                "CPU": 8.0,
+                "Memory": 16.0
+              }
+            }
+          }
+        },
+        {
+          "test_id": "NRAP-009-T02",
+          "description": "High priority reservation preempts low priority",
+          "input": {
+            "node_id": "node-2",
+            "resources": {
+              "GPU": 2.0
+            },
+            "start_time": "2025-01-13T14:00:00Z",
+            "end_time": "2025-01-13T16:00:00Z",
+            "priority": 90
+          },
+          "precondition": "Existing reservation with priority=40 for same time",
+          "expected_output": {
+            "reservation": "Created, lower priority reservation preempted"
+          }
+        },
+        {
+          "test_id": "NRAP-009-T03",
+          "description": "Invalid time range",
+          "input": {
+            "node_id": "node-3",
+            "resources": {
+              "CPU": 4.0
+            },
+            "start_time": "2025-01-13T12:00:00Z",
+            "end_time": "2025-01-13T10:00:00Z"
+          },
+          "expected_error": "INVALID_TIME_RANGE"
+        },
+        {
+          "test_id": "NRAP-009-T04",
+          "description": "Insufficient capacity",
+          "input": {
+            "node_id": "node-4",
+            "resources": {
+              "CPU": 1000.0
+            },
+            "start_time": "2025-01-13T10:00:00Z",
+            "end_time": "2025-01-13T11:00:00Z"
+          },
+          "expected_error": "INSUFFICIENT_CAPACITY"
+        },
+        {
+          "test_id": "NRAP-009-T05",
+          "description": "Conflict with higher priority",
+          "input": {
+            "node_id": "node-5",
+            "resources": {
+              "GPU": 1.0
+            },
+            "start_time": "2025-01-13T15:00:00Z",
+            "end_time": "2025-01-13T16:00:00Z",
+            "priority": 30
+          },
+          "precondition": "Existing reservation with priority=80",
+          "expected_error": "RESERVATION_CONFLICT"
+        },
+        {
+          "test_id": "NRAP-009-T06",
+          "description": "Past start time",
+          "input": {
+            "node_id": "node-6",
+            "resources": {
+              "CPU": 4.0
+            },
+            "start_time": "2025-01-10T10:00:00Z",
+            "end_time": "2025-01-10T11:00:00Z"
+          },
+          "expected_error": "PAST_START_TIME"
+        },
+        {
+          "test_id": "NRAP-009-T07",
+          "description": "Long duration limited",
+          "input": {
+            "node_id": "node-7",
+            "resources": {
+              "CPU": 4.0
+            },
+            "start_time": "2025-01-13T00:00:00Z",
+            "end_time": "2025-12-31T23:59:59Z"
+          },
+          "precondition": "Maximum reservation duration is 30 days",
+          "expected_output": {
+            "reservation": "Created with limited duration"
+          },
+          "expected_warning": "DURATION_LIMITED"
+        },
+        {
+          "test_id": "NRAP-009-T08",
+          "description": "Multiple non-overlapping reservations",
+          "input": {
+            "node_id": "node-8",
+            "resources": {
+              "CPU": 4.0
+            },
+            "start_time": "2025-01-13T14:00:00Z",
+            "end_time": "2025-01-13T15:00:00Z"
+          },
+          "precondition": "Node has reservation for 10:00-11:00",
+          "expected_output": {
+            "reservation": "Created successfully"
+          }
+        },
+        {
+          "test_id": "NRAP-009-T09",
+          "description": "Automatic allocation at start time",
+          "input": {
+            "node_id": "node-9",
+            "resources": {
+              "CPU": 4.0
+            },
+            "start_time": "2025-01-13T10:00:00Z",
+            "end_time": "2025-01-13T11:00:00Z"
+          },
+          "expected_output": {
+            "reservation": "Created"
+          },
+          "postcondition": "Resources allocated automatically at 10:00"
+        },
+        {
+          "test_id": "NRAP-009-T10",
+          "description": "Automatic deallocation at end time",
+          "input": {
+            "node_id": "node-10",
+            "resources": {
+              "CPU": 4.0
+            },
+            "start_time": "2025-01-13T10:00:00Z",
+            "end_time": "2025-01-13T11:00:00Z"
+          },
+          "expected_output": {
+            "reservation": "Created"
+          },
+          "postcondition": "Resources deallocated automatically at 11:00"
+        }
+      ]
+    },
+    {
+      "operation_id": "NRAP-010",
+      "name": "optimize_allocation",
+      "category": "Optimization",
+      "description": "AI-powered continuous optimization of resource allocation",
+      "signature": {
+        "inputs": {
+          "scope": {
+            "type": "enum",
+            "values": [
+              "Node",
+              "System",
+              "Cluster"
+            ],
+            "description": "Scope of optimization"
+          },
+          "scope_id": {
+            "type": "UUID",
+            "description": "Specific node/cluster ID",
+            "optional": true
+          },
+          "optimization_goals": {
+            "type": "array[string]",
+            "description": "Optimization objectives",
+            "default": [
+              "efficiency",
+              "fairness",
+              "performance"
+            ]
+          },
+          "constraints": {
+            "type": "object",
+            "description": "Optimization constraints",
+            "optional": true
+          }
+        },
+        "outputs": {
+          "optimizations": {
+            "type": "array[object]",
+            "description": "Optimization actions to apply"
+          },
+          "expected_improvement": {
+            "type": "object",
+            "description": "Expected metrics improvement"
+          }
+        }
+      },
+      "formula": {
+        "description": "AI optimization algorithm",
+        "steps": [
+          "1. Collect current allocation state and metrics",
+          "2. Analyze usage patterns and inefficiencies",
+          "3. Define optimization objective function:",
+          "   O = w\u2081\u00b7efficiency + w\u2082\u00b7fairness + w\u2083\u00b7performance - w\u2084\u00b7disruption",
+          "4. Run optimization algorithm (gradient descent, genetic algorithm, or RL)",
+          "5. Generate candidate optimizations",
+          "6. Filter by constraints",
+          "7. Estimate improvement for each optimization",
+          "8. Return top optimizations",
+          "9. Optionally: auto-apply if improvement > threshold"
+        ],
+        "objective_function": "max O(A) = \u03b1\u00b7E(A) + \u03b2\u00b7F(A) + \u03b3\u00b7P(A) - \u03b4\u00b7D(A)",
+        "where": "A=allocation, E=efficiency, F=fairness, P=performance, D=disruption"
+      },
+      "properties": {
+        "idempotency": "No (optimizations change over time)",
+        "ai_managed": "Yes (full AI optimization)",
+        "continuous": "Yes (can run periodically)",
+        "time_complexity": "O(n\u00b2) where n = nodes",
+        "space_complexity": "O(n)"
+      },
+      "edge_cases": [
+        {
+          "case": "Already optimal",
+          "handling": "Return no optimizations",
+          "result": "NO_OPTIMIZATION_NEEDED"
+        },
+        {
+          "case": "Conflicting optimization goals",
+          "handling": "Prioritize based on weights or policy",
+          "result": "Multi-objective optimization"
+        },
+        {
+          "case": "Optimization violates constraints",
+          "handling": "Filter out invalid optimizations",
+          "result": "Only valid optimizations returned"
+        },
+        {
+          "case": "High disruption optimizations",
+          "handling": "Penalize disruption in objective function",
+          "result": "Minimize disruption"
+        },
+        {
+          "case": "Insufficient data for optimization",
+          "handling": "Use heuristics instead of ML",
+          "warning": "HEURISTIC_OPTIMIZATION"
+        },
+        {
+          "case": "Optimization improvement below threshold",
+          "handling": "Don't apply optimization",
+          "result": "No action taken"
+        }
+      ],
+      "test_cases": [
+        {
+          "test_id": "NRAP-010-T01",
+          "description": "System-wide optimization",
+          "input": {
+            "scope": "System",
+            "optimization_goals": [
+              "efficiency",
+              "fairness"
+            ]
+          },
+          "expected_output": {
+            "optimizations": [
+              "Reduce allocation for underutilized node-3",
+              "Increase allocation for overutilized node-7"
+            ],
+            "expected_improvement": {
+              "efficiency": "+12%",
+              "fairness": "+8%"
+            }
+          }
+        },
+        {
+          "test_id": "NRAP-010-T02",
+          "description": "Node-specific optimization",
+          "input": {
+            "scope": "Node",
+            "scope_id": "node-5",
+            "optimization_goals": [
+              "performance"
+            ]
+          },
+          "expected_output": {
+            "optimizations": [
+              "Increase CPU allocation by 2 cores"
+            ],
+            "expected_improvement": {
+              "performance": "+15%"
+            }
+          }
+        },
+        {
+          "test_id": "NRAP-010-T03",
+          "description": "Optimization with constraints",
+          "input": {
+            "scope": "System",
+            "constraints": {
+              "max_disruption": 0.1,
+              "maintain_sla": true
+            }
+          },
+          "expected_output": {
+            "optimizations": "Low-disruption optimizations only"
+          }
+        },
+        {
+          "test_id": "NRAP-010-T04",
+          "description": "Already optimal",
+          "input": {
+            "scope": "System"
+          },
+          "precondition": "System is already optimally allocated",
+          "expected_output": {
+            "optimizations": [],
+            "result": "NO_OPTIMIZATION_NEEDED"
+          }
+        },
+        {
+          "test_id": "NRAP-010-T05",
+          "description": "Conflicting goals (efficiency vs fairness)",
+          "input": {
+            "scope": "System",
+            "optimization_goals": [
+              "efficiency",
+              "fairness"
+            ]
+          },
+          "expected_output": {
+            "optimizations": "Balanced multi-objective solution"
+          }
+        },
+        {
+          "test_id": "NRAP-010-T06",
+          "description": "Optimization violates constraints",
+          "input": {
+            "scope": "System",
+            "constraints": {
+              "no_preemption": true
+            }
+          },
+          "expected_output": {
+            "optimizations": "Only non-preemptive optimizations"
+          }
+        },
+        {
+          "test_id": "NRAP-010-T07",
+          "description": "High disruption penalty",
+          "input": {
+            "scope": "System",
+            "optimization_goals": [
+              "efficiency",
+              "minimize_disruption"
+            ]
+          },
+          "expected_output": {
+            "optimizations": "Gradual, low-disruption changes"
+          }
+        },
+        {
+          "test_id": "NRAP-010-T08",
+          "description": "Insufficient data fallback to heuristics",
+          "input": {
+            "scope": "Node",
+            "scope_id": "node-new"
+          },
+          "precondition": "Node has minimal usage history",
+          "expected_output": {
+            "optimizations": "Heuristic-based optimizations"
+          },
+          "expected_warning": "HEURISTIC_OPTIMIZATION"
+        },
+        {
+          "test_id": "NRAP-010-T09",
+          "description": "Cluster optimization",
+          "input": {
+            "scope": "Cluster",
+            "scope_id": "cluster-1"
+          },
+          "expected_output": {
+            "optimizations": "Cross-node optimizations within cluster"
+          }
+        },
+        {
+          "test_id": "NRAP-010-T10",
+          "description": "Continuous optimization",
+          "input": {
+            "scope": "System"
+          },
+          "note": "Run periodically (e.g., every hour)",
+          "expected_output": {
+            "optimizations": "Incremental improvements over time"
+          }
+        }
+      ]
+    },
+    {
+      "operation_id": "NRAP-011",
+      "name": "migrate_resources",
+      "category": "Migration",
+      "description": "Migrate resources between nodes for load balancing or maintenance",
+      "signature": {
+        "inputs": {
+          "source_node_id": {
+            "type": "UUID",
+            "description": "Source node"
+          },
+          "target_node_id": {
+            "type": "UUID",
+            "description": "Target node"
+          },
+          "resources": {
+            "type": "dict[ResourceType, float64]",
+            "description": "Resources to migrate (optional - all if not specified)",
+            "optional": true
+          },
+          "zero_downtime": {
+            "type": "boolean",
+            "description": "Ensure zero-downtime migration",
+            "default": true
+          }
+        },
+        "outputs": {
+          "success": {
+            "type": "boolean",
+            "description": "Whether migration succeeded"
+          },
+          "migrated": {
+            "type": "dict[ResourceType, float64]",
+            "description": "Resources that were migrated"
+          }
+        }
+      },
+      "formula": {
+        "description": "Resource migration algorithm",
+        "steps": [
+          "1. Validate target node can accommodate resources",
+          "2. If zero_downtime=true:",
+          "   a. Allocate resources on target node",
+          "   b. Copy/transfer state from source to target",
+          "   c. Switch traffic/workload to target",
+          "   d. Deallocate from source",
+          "3. Else:",
+          "   a. Deallocate from source",
+          "   b. Allocate on target",
+          "   c. Transfer state",
+          "4. Update node metadata",
+          "5. Return migration result"
+        ]
+      },
+      "properties": {
+        "idempotency": "No (migration changes state)",
+        "atomicity": "Yes (all-or-nothing)",
+        "zero_downtime_capable": "Yes",
+        "time_complexity": "O(data_size) for state transfer",
+        "space_complexity": "O(data_size)"
+      },
+      "edge_cases": [
+        {
+          "case": "Target node insufficient capacity",
+          "handling": "Reject migration",
+          "error": "INSUFFICIENT_TARGET_CAPACITY"
+        },
+        {
+          "case": "Source node has no allocation",
+          "handling": "No-op, return success",
+          "warning": "NO_ALLOCATION_TO_MIGRATE"
+        },
+        {
+          "case": "Migration timeout",
+          "handling": "Rollback migration",
+          "error": "MIGRATION_TIMEOUT"
+        },
+        {
+          "case": "State transfer failure",
+          "handling": "Rollback migration",
+          "error": "STATE_TRANSFER_FAILED"
+        },
+        {
+          "case": "Source and target are same",
+          "handling": "No-op, return success",
+          "warning": "SAME_SOURCE_TARGET"
+        },
+        {
+          "case": "Partial resource migration",
+          "handling": "Migrate specified resources only",
+          "result": "Partial migration"
+        }
+      ],
+      "test_cases": [
+        {
+          "test_id": "NRAP-011-T01",
+          "description": "Zero-downtime migration",
+          "input": {
+            "source_node_id": "node-1",
+            "target_node_id": "node-2",
+            "zero_downtime": true
+          },
+          "expected_output": {
+            "success": true,
+            "migrated": "All resources from node-1"
+          },
+          "note": "No service interruption"
+        },
+        {
+          "test_id": "NRAP-011-T02",
+          "description": "Partial resource migration",
+          "input": {
+            "source_node_id": "node-3",
+            "target_node_id": "node-4",
+            "resources": {
+              "CPU": 4.0
+            }
+          },
+          "precondition": "Node-3 has CPU: 8.0, Memory: 16.0",
+          "expected_output": {
+            "success": true,
+            "migrated": {
+              "CPU": 4.0
+            }
+          },
+          "postcondition": "Node-3 still has Memory: 16.0"
+        },
+        {
+          "test_id": "NRAP-011-T03",
+          "description": "Migration with downtime",
+          "input": {
+            "source_node_id": "node-5",
+            "target_node_id": "node-6",
+            "zero_downtime": false
+          },
+          "expected_output": {
+            "success": true
+          },
+          "note": "Faster but with brief downtime"
+        },
+        {
+          "test_id": "NRAP-011-T04",
+          "description": "Insufficient target capacity",
+          "input": {
+            "source_node_id": "node-7",
+            "target_node_id": "node-8"
+          },
+          "precondition": "Target node cannot accommodate source resources",
+          "expected_error": "INSUFFICIENT_TARGET_CAPACITY"
+        },
+        {
+          "test_id": "NRAP-011-T05",
+          "description": "No allocation to migrate",
+          "input": {
+            "source_node_id": "node-empty",
+            "target_node_id": "node-9"
+          },
+          "precondition": "Source node has no allocation",
+          "expected_output": {
+            "success": true,
+            "migrated": {}
+          },
+          "expected_warning": "NO_ALLOCATION_TO_MIGRATE"
+        },
+        {
+          "test_id": "NRAP-011-T06",
+          "description": "State transfer failure rollback",
+          "input": {
+            "source_node_id": "node-10",
+            "target_node_id": "node-11"
+          },
+          "inject_failure": "State transfer fails",
+          "expected_error": "STATE_TRANSFER_FAILED",
+          "postcondition": "Resources remain on source node"
+        },
+        {
+          "test_id": "NRAP-011-T07",
+          "description": "Same source and target",
+          "input": {
+            "source_node_id": "node-12",
+            "target_node_id": "node-12"
+          },
+          "expected_output": {
+            "success": true
+          },
+          "expected_warning": "SAME_SOURCE_TARGET"
+        },
+        {
+          "test_id": "NRAP-011-T08",
+          "description": "Migration for load balancing",
+          "input": {
+            "source_node_id": "node-overloaded",
+            "target_node_id": "node-underutilized",
+            "resources": {
+              "CPU": 4.0
+            }
+          },
+          "precondition": "Source at 95% utilization, target at 30%",
+          "expected_output": {
+            "success": true
+          },
+          "postcondition": "Both nodes at ~60% utilization"
+        },
+        {
+          "test_id": "NRAP-011-T09",
+          "description": "Migration for maintenance",
+          "input": {
+            "source_node_id": "node-maintenance",
+            "target_node_id": "node-available"
+          },
+          "note": "Drain node for maintenance",
+          "expected_output": {
+            "success": true,
+            "migrated": "All resources"
+          },
+          "postcondition": "Source node empty"
+        },
+        {
+          "test_id": "NRAP-011-T10",
+          "description": "Migration timeout rollback",
+          "input": {
+            "source_node_id": "node-13",
+            "target_node_id": "node-14"
+          },
+          "inject_condition": "Migration takes > timeout",
+          "expected_error": "MIGRATION_TIMEOUT",
+          "postcondition": "Migration rolled back"
+        }
+      ]
+    },
+    {
+      "operation_id": "NRAP-012",
+      "name": "audit_allocation",
+      "category": "Compliance",
+      "description": "Audit resource usage for compliance, cost tracking, and anomaly detection",
+      "signature": {
+        "inputs": {
+          "scope": {
+            "type": "enum",
+            "values": [
+              "Node",
+              "User",
+              "System",
+              "Cluster"
+            ],
+            "description": "Audit scope"
+          },
+          "scope_id": {
+            "type": "UUID",
+            "description": "Specific entity ID",
+            "optional": true
+          },
+          "audit_period": {
+            "type": "object",
+            "description": "Time period for audit"
+          },
+          "checks": {
+            "type": "array[string]",
+            "description": "Specific audit checks to perform",
+            "default": [
+              "compliance",
+              "cost",
+              "anomalies",
+              "violations"
+            ]
+          }
+        },
+        "outputs": {
+          "audit_report": {
+            "type": "object",
+            "description": "Comprehensive audit report"
+          },
+          "violations": {
+            "type": "array[object]",
+            "description": "Compliance violations found"
+          },
+          "anomalies": {
+            "type": "array[object]",
+            "description": "Usage anomalies detected"
+          },
+          "cost_summary": {
+            "type": "object",
+            "description": "Cost breakdown"
+          }
+        }
+      },
+      "formula": {
+        "description": "Audit algorithm",
+        "steps": [
+          "1. Collect allocation and usage data for audit_period",
+          "2. For each check in checks:",
+          "   Compliance: Verify against policies and limits",
+          "   Cost: Calculate costs based on usage",
+          "   Anomalies: Use ML to detect unusual patterns",
+          "   Violations: Identify quota/limit violations",
+          "3. Generate audit report with findings",
+          "4. Calculate cost summary: Cost = \u03a3(usage_i \u00d7 rate_i \u00d7 duration_i)",
+          "5. Return audit results"
+        ],
+        "cost_formula": "Total_Cost = \u03a3_resources (usage \u00d7 rate \u00d7 duration)",
+        "anomaly_detection": "Statistical deviation: |usage - \u03bc| > 3\u03c3 or ML-based outlier detection"
+      },
+      "properties": {
+        "idempotency": "Yes (same period yields same results)",
+        "ai_managed": "Yes (anomaly detection)",
+        "comprehensive": "Yes (multiple check types)",
+        "time_complexity": "O(n\u00b7m) where n = entities, m = time points",
+        "space_complexity": "O(n\u00b7m)"
+      },
+      "edge_cases": [
+        {
+          "case": "No data for audit period",
+          "handling": "Return empty audit",
+          "warning": "NO_DATA_FOR_PERIOD"
+        },
+        {
+          "case": "Invalid audit period",
+          "handling": "Use default (last 30 days)",
+          "warning": "INVALID_PERIOD"
+        },
+        {
+          "case": "Missing cost rates",
+          "handling": "Use default rates",
+          "warning": "DEFAULT_RATES_USED"
+        },
+        {
+          "case": "Anomaly detection insufficient data",
+          "handling": "Skip anomaly detection",
+          "warning": "INSUFFICIENT_DATA_FOR_ANOMALIES"
+        },
+        {
+          "case": "Unknown check type",
+          "handling": "Skip unknown checks",
+          "warning": "UNKNOWN_CHECK_TYPE"
+        },
+        {
+          "case": "Audit too large (too many entities)",
+          "handling": "Paginate results or sample",
+          "warning": "AUDIT_PAGINATED"
+        }
+      ],
+      "test_cases": [
+        {
+          "test_id": "NRAP-012-T01",
+          "description": "System-wide audit",
+          "input": {
+            "scope": "System",
+            "audit_period": {
+              "start": "2025-01-01",
+              "end": "2025-01-12"
+            }
+          },
+          "expected_output": {
+            "audit_report": "Comprehensive system audit",
+            "violations": "List of violations found",
+            "anomalies": "List of anomalies detected",
+            "cost_summary": "Total costs by resource type"
+          }
+        },
+        {
+          "test_id": "NRAP-012-T02",
+          "description": "Node-specific audit",
+          "input": {
+            "scope": "Node",
+            "scope_id": "node-1",
+            "audit_period": {
+              "start": "2025-01-01",
+              "end": "2025-01-12"
+            }
+          },
+          "expected_output": {
+            "audit_report": "Node-1 audit report"
+          }
+        },
+        {
+          "test_id": "NRAP-012-T03",
+          "description": "User audit for billing",
+          "input": {
+            "scope": "User",
+            "scope_id": "user-1",
+            "checks": [
+              "cost"
+            ]
+          },
+          "expected_output": {
+            "cost_summary": {
+              "total": 1234.56,
+              "breakdown": {
+                "CPU": 500,
+                "Memory": 400,
+                "GPU": 334.56
+              }
+            }
+          }
+        },
+        {
+          "test_id": "NRAP-012-T04",
+          "description": "Compliance violations detected",
+          "input": {
+            "scope": "System",
+            "checks": [
+              "compliance"
+            ]
+          },
+          "precondition": "Some nodes exceed quotas",
+          "expected_output": {
+            "violations": [
+              {
+                "node": "node-5",
+                "violation": "Quota exceeded",
+                "amount": "20%"
+              }
+            ]
+          }
+        },
+        {
+          "test_id": "NRAP-012-T05",
+          "description": "Anomaly detection",
+          "input": {
+            "scope": "System",
+            "checks": [
+              "anomalies"
+            ]
+          },
+          "expected_output": {
+            "anomalies": [
+              {
+                "node": "node-7",
+                "anomaly": "Sudden spike in usage",
+                "timestamp": "..."
+              }
+            ]
+          }
+        },
+        {
+          "test_id": "NRAP-012-T06",
+          "description": "No data for period",
+          "input": {
+            "scope": "Node",
+            "scope_id": "node-new",
+            "audit_period": {
+              "start": "2024-01-01",
+              "end": "2024-01-31"
+            }
+          },
+          "expected_output": {
+            "audit_report": {}
+          },
+          "expected_warning": "NO_DATA_FOR_PERIOD"
+        },
+        {
+          "test_id": "NRAP-012-T07",
+          "description": "Cost tracking with custom rates",
+          "input": {
+            "scope": "Cluster",
+            "scope_id": "cluster-1",
+            "checks": [
+              "cost"
+            ]
+          },
+          "expected_output": {
+            "cost_summary": "Calculated using custom rates"
+          }
+        },
+        {
+          "test_id": "NRAP-012-T08",
+          "description": "Comprehensive audit (all checks)",
+          "input": {
+            "scope": "System",
+            "checks": [
+              "compliance",
+              "cost",
+              "anomalies",
+              "violations"
+            ]
+          },
+          "expected_output": {
+            "audit_report": "Complete audit with all findings"
+          }
+        },
+        {
+          "test_id": "NRAP-012-T09",
+          "description": "Insufficient data for anomaly detection",
+          "input": {
+            "scope": "Node",
+            "scope_id": "node-recent",
+            "checks": [
+              "anomalies"
+            ]
+          },
+          "precondition": "Node has < 24 hours of data",
+          "expected_output": {
+            "anomalies": []
+          },
+          "expected_warning": "INSUFFICIENT_DATA_FOR_ANOMALIES"
+        },
+        {
+          "test_id": "NRAP-012-T10",
+          "description": "Audit for regulatory compliance",
+          "input": {
+            "scope": "System",
+            "checks": [
+              "compliance"
+            ],
+            "audit_period": {
+              "start": "2024-01-01",
+              "end": "2024-12-31"
+            }
+          },
+          "expected_output": {
+            "audit_report": "Annual compliance report",
+            "violations": "Any compliance violations"
+          }
+        }
+      ]
+    }
+  ],
+  "configuration": {
+    "default_strategy": "Adaptive",
+    "auto_scaling_enabled": true,
+    "contention_strategy": "DynamicPriority",
+    "reservation_enabled": true,
+    "continuous_optimization": true,
+    "audit_retention_days": 365
+  },
+  "license": {
+    "type": "AGPLv3",
+    "name": "GNU Affero General Public License v3.0",
+    "url": "https://www.gnu.org/licenses/agpl-3.0.html",
+    "description": "This specification is licensed under AGPLv3. Any implementation or derivative work must also be licensed under AGPLv3 and source code must be made available."
+  }
+}

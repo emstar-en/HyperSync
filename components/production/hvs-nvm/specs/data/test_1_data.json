@@ -1,0 +1,352 @@
+{
+  "test_name": "Hyperbolic Distance Preservation",
+  "timestamp": "2026-01-13 05:29:26",
+  "dimensions_tested": [
+    2,
+    4,
+    8,
+    12,
+    16,
+    24,
+    32,
+    48,
+    64
+  ],
+  "tests": {
+    "triangle_inequality": [
+      {
+        "dimension": 2,
+        "n_trials": 100,
+        "n_violations": 0,
+        "violation_rate": 0.0,
+        "max_violation": 0.0,
+        "passed": true
+      },
+      {
+        "dimension": 4,
+        "n_trials": 100,
+        "n_violations": 0,
+        "violation_rate": 0.0,
+        "max_violation": 0.0,
+        "passed": true
+      },
+      {
+        "dimension": 8,
+        "n_trials": 100,
+        "n_violations": 0,
+        "violation_rate": 0.0,
+        "max_violation": 0.0,
+        "passed": true
+      },
+      {
+        "dimension": 12,
+        "n_trials": 100,
+        "n_violations": 0,
+        "violation_rate": 0.0,
+        "max_violation": 0.0,
+        "passed": true
+      },
+      {
+        "dimension": 16,
+        "n_trials": 100,
+        "n_violations": 0,
+        "violation_rate": 0.0,
+        "max_violation": 0.0,
+        "passed": true
+      },
+      {
+        "dimension": 24,
+        "n_trials": 100,
+        "n_violations": 0,
+        "violation_rate": 0.0,
+        "max_violation": 0.0,
+        "passed": true
+      },
+      {
+        "dimension": 32,
+        "n_trials": 100,
+        "n_violations": 0,
+        "violation_rate": 0.0,
+        "max_violation": 0.0,
+        "passed": true
+      },
+      {
+        "dimension": 48,
+        "n_trials": 100,
+        "n_violations": 0,
+        "violation_rate": 0.0,
+        "max_violation": 0.0,
+        "passed": true
+      },
+      {
+        "dimension": 64,
+        "n_trials": 100,
+        "n_violations": 0,
+        "violation_rate": 0.0,
+        "max_violation": 0.0,
+        "passed": true
+      }
+    ],
+    "symmetry": [
+      {
+        "dimension": 2,
+        "n_trials": 100,
+        "n_asymmetries": 0,
+        "asymmetry_rate": 0.0,
+        "max_asymmetry": 0.0,
+        "passed": true
+      },
+      {
+        "dimension": 4,
+        "n_trials": 100,
+        "n_asymmetries": 0,
+        "asymmetry_rate": 0.0,
+        "max_asymmetry": 0.0,
+        "passed": true
+      },
+      {
+        "dimension": 8,
+        "n_trials": 100,
+        "n_asymmetries": 0,
+        "asymmetry_rate": 0.0,
+        "max_asymmetry": 0.0,
+        "passed": true
+      },
+      {
+        "dimension": 12,
+        "n_trials": 100,
+        "n_asymmetries": 0,
+        "asymmetry_rate": 0.0,
+        "max_asymmetry": 0.0,
+        "passed": true
+      },
+      {
+        "dimension": 16,
+        "n_trials": 100,
+        "n_asymmetries": 0,
+        "asymmetry_rate": 0.0,
+        "max_asymmetry": 0.0,
+        "passed": true
+      },
+      {
+        "dimension": 24,
+        "n_trials": 100,
+        "n_asymmetries": 0,
+        "asymmetry_rate": 0.0,
+        "max_asymmetry": 0.0,
+        "passed": true
+      },
+      {
+        "dimension": 32,
+        "n_trials": 100,
+        "n_asymmetries": 0,
+        "asymmetry_rate": 0.0,
+        "max_asymmetry": 0.0,
+        "passed": true
+      },
+      {
+        "dimension": 48,
+        "n_trials": 100,
+        "n_asymmetries": 0,
+        "asymmetry_rate": 0.0,
+        "max_asymmetry": 0.0,
+        "passed": true
+      },
+      {
+        "dimension": 64,
+        "n_trials": 100,
+        "n_asymmetries": 0,
+        "asymmetry_rate": 0.0,
+        "max_asymmetry": 0.0,
+        "passed": true
+      }
+    ],
+    "positive_definiteness": [
+      {
+        "dimension": 2,
+        "n_trials": 100,
+        "self_distance_errors": 100,
+        "max_self_distance_error": 0.00390624743886292,
+        "non_positive_distances": 0,
+        "passed": false
+      },
+      {
+        "dimension": 4,
+        "n_trials": 100,
+        "self_distance_errors": 100,
+        "max_self_distance_error": 0.011048487387597561,
+        "non_positive_distances": 0,
+        "passed": false
+      },
+      {
+        "dimension": 8,
+        "n_trials": 100,
+        "self_distance_errors": 100,
+        "max_self_distance_error": 0.013531544245779514,
+        "non_positive_distances": 0,
+        "passed": false
+      },
+      {
+        "dimension": 12,
+        "n_trials": 100,
+        "self_distance_errors": 100,
+        "max_self_distance_error": 0.031248729676008224,
+        "non_positive_distances": 0,
+        "passed": false
+      },
+      {
+        "dimension": 16,
+        "n_trials": 100,
+        "self_distance_errors": 100,
+        "max_self_distance_error": 0.054119981825351715,
+        "non_positive_distances": 0,
+        "passed": false
+      },
+      {
+        "dimension": 24,
+        "n_trials": 100,
+        "self_distance_errors": 100,
+        "max_self_distance_error": 0.21608570218086243,
+        "non_positive_distances": 0,
+        "passed": false
+      },
+      {
+        "dimension": 32,
+        "n_trials": 100,
+        "self_distance_errors": 100,
+        "max_self_distance_error": 0.3927554488182068,
+        "non_positive_distances": 0,
+        "passed": false
+      },
+      {
+        "dimension": 48,
+        "n_trials": 100,
+        "self_distance_errors": 100,
+        "max_self_distance_error": 2.063436985015869,
+        "non_positive_distances": 0,
+        "passed": false
+      },
+      {
+        "dimension": 64,
+        "n_trials": 100,
+        "self_distance_errors": 100,
+        "max_self_distance_error": 2.7686593532562256,
+        "non_positive_distances": 0,
+        "passed": false
+      }
+    ],
+    "numerical_stability": [
+      {
+        "dimension": 2,
+        "n_trials": 90,
+        "near_origin_mean": 1.3377945512533187,
+        "near_origin_std": 0.5814998450615649,
+        "far_from_origin_mean": 4.148680077989896,
+        "far_from_origin_std": 1.6946658370052463,
+        "n_valid_computations": 65,
+        "passed": true
+      },
+      {
+        "dimension": 4,
+        "n_trials": 90,
+        "near_origin_mean": 1.8890598634878795,
+        "near_origin_std": 0.7075048566804183,
+        "far_from_origin_mean": 6.651485880215962,
+        "far_from_origin_std": 1.7371294857387054,
+        "n_valid_computations": 65,
+        "passed": true
+      },
+      {
+        "dimension": 8,
+        "n_trials": 90,
+        "near_origin_mean": 2.6853705525398253,
+        "near_origin_std": 0.6249010602931121,
+        "far_from_origin_mean": 9.758663670221965,
+        "far_from_origin_std": 1.8169432484583141,
+        "n_valid_computations": 65,
+        "passed": true
+      },
+      {
+        "dimension": 12,
+        "n_trials": 90,
+        "near_origin_mean": 3.526670781771342,
+        "near_origin_std": 0.5432816945245675,
+        "far_from_origin_mean": 12.055299011866252,
+        "far_from_origin_std": 2.177879954336778,
+        "n_valid_computations": 65,
+        "passed": true
+      },
+      {
+        "dimension": 16,
+        "n_trials": 90,
+        "near_origin_mean": 4.059756143887838,
+        "near_origin_std": 0.5835135660771794,
+        "far_from_origin_mean": 14.342099634806315,
+        "far_from_origin_std": 2.387962771044504,
+        "n_valid_computations": 65,
+        "passed": true
+      },
+      {
+        "dimension": 24,
+        "n_trials": 90,
+        "near_origin_mean": 4.736843260129293,
+        "near_origin_std": 0.6733704163437313,
+        "far_from_origin_mean": 18.608110682169595,
+        "far_from_origin_std": 2.0257727168691297,
+        "n_valid_computations": 65,
+        "passed": true
+      },
+      {
+        "dimension": 32,
+        "n_trials": 90,
+        "near_origin_mean": 5.56057513554891,
+        "near_origin_std": 0.6856700407346734,
+        "far_from_origin_mean": 21.95217316945394,
+        "far_from_origin_std": 2.024604522304283,
+        "n_valid_computations": 65,
+        "passed": true
+      },
+      {
+        "dimension": 48,
+        "n_trials": 90,
+        "near_origin_mean": 6.816822020212809,
+        "near_origin_std": 0.6209977472448475,
+        "far_from_origin_mean": 26.47779801686605,
+        "far_from_origin_std": 2.372517715600415,
+        "n_valid_computations": 65,
+        "passed": true
+      },
+      {
+        "dimension": 64,
+        "n_trials": 90,
+        "near_origin_mean": 7.818359820048014,
+        "near_origin_std": 0.7827748770455066,
+        "far_from_origin_mean": 31.83808479309082,
+        "far_from_origin_std": 2.328482344450481,
+        "n_valid_computations": 65,
+        "passed": true
+      }
+    ]
+  },
+  "summary": {
+    "total_dimensions_tested": 9,
+    "test_types": [
+      "triangle_inequality",
+      "symmetry",
+      "positive_definiteness",
+      "numerical_stability"
+    ],
+    "overall_pass_rate": {
+      "triangle_inequality": 1.0,
+      "symmetry": 1.0,
+      "positive_definiteness": 0.0,
+      "numerical_stability": 1.0
+    }
+  },
+  "metadata": {
+    "license": {
+      "name": "AGPLv3",
+      "url": "https://www.gnu.org/licenses/agpl-3.0.html"
+    }
+  }
+}

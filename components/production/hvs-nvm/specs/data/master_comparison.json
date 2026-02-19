@@ -1,0 +1,2895 @@
+{
+  "metadata": {
+    "timestamp": "2026-01-13 08:33:37",
+    "dimensions_tested": [
+      2,
+      4,
+      8,
+      12,
+      16,
+      24,
+      32,
+      48,
+      64
+    ],
+    "trials_per_test": 100,
+    "models": [
+      "Lorentz Hyperboloid",
+      "Poincar\u00e9 Disc"
+    ],
+    "license": {
+      "name": "AGPLv3",
+      "url": "https://www.gnu.org/licenses/agpl-3.0.html"
+    }
+  },
+  "tests": {
+    "test_1_distance_preservation": {
+      "Lorentz": [
+        {
+          "model": "Lorentz",
+          "dimension": 2,
+          "tests": {
+            "triangle_inequality": {
+              "violations": 0,
+              "violation_rate": 0.0,
+              "max_violation": 0.0,
+              "time_seconds": 0.02922201156616211,
+              "passed": true
+            },
+            "symmetry": {
+              "asymmetries": 0,
+              "asymmetry_rate": 0.0,
+              "max_asymmetry": 0.0,
+              "time_seconds": 0.018524885177612305,
+              "passed": true
+            },
+            "numerical_stability": {
+              "valid_distances": 100,
+              "nan_count": 0,
+              "inf_count": 0,
+              "mean_distance": 1.8313997725218365,
+              "std_distance": 1.0715877031506873,
+              "time_seconds": 0.009735584259033203,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 4,
+          "tests": {
+            "triangle_inequality": {
+              "violations": 0,
+              "violation_rate": 0.0,
+              "max_violation": 0.0,
+              "time_seconds": 0.028177499771118164,
+              "passed": true
+            },
+            "symmetry": {
+              "asymmetries": 0,
+              "asymmetry_rate": 0.0,
+              "max_asymmetry": 0.0,
+              "time_seconds": 0.018647432327270508,
+              "passed": true
+            },
+            "numerical_stability": {
+              "valid_distances": 100,
+              "nan_count": 0,
+              "inf_count": 0,
+              "mean_distance": 2.977309397243551,
+              "std_distance": 0.9004257344210673,
+              "time_seconds": 0.00992131233215332,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 8,
+          "tests": {
+            "triangle_inequality": {
+              "violations": 0,
+              "violation_rate": 0.0,
+              "max_violation": 0.0,
+              "time_seconds": 0.028227567672729492,
+              "passed": true
+            },
+            "symmetry": {
+              "asymmetries": 0,
+              "asymmetry_rate": 0.0,
+              "max_asymmetry": 0.0,
+              "time_seconds": 0.018591880798339844,
+              "passed": true
+            },
+            "numerical_stability": {
+              "valid_distances": 100,
+              "nan_count": 0,
+              "inf_count": 0,
+              "mean_distance": 4.750640119154693,
+              "std_distance": 1.1486316201576634,
+              "time_seconds": 0.009817123413085938,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 12,
+          "tests": {
+            "triangle_inequality": {
+              "violations": 0,
+              "violation_rate": 0.0,
+              "max_violation": 0.0,
+              "time_seconds": 0.027971506118774414,
+              "passed": true
+            },
+            "symmetry": {
+              "asymmetries": 0,
+              "asymmetry_rate": 0.0,
+              "max_asymmetry": 0.0,
+              "time_seconds": 0.018855810165405273,
+              "passed": true
+            },
+            "numerical_stability": {
+              "valid_distances": 100,
+              "nan_count": 0,
+              "inf_count": 0,
+              "mean_distance": 5.994368644138258,
+              "std_distance": 0.9759628736102323,
+              "time_seconds": 0.009640693664550781,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 16,
+          "tests": {
+            "triangle_inequality": {
+              "violations": 0,
+              "violation_rate": 0.0,
+              "max_violation": 0.0,
+              "time_seconds": 0.028514385223388672,
+              "passed": true
+            },
+            "symmetry": {
+              "asymmetries": 0,
+              "asymmetry_rate": 0.0,
+              "max_asymmetry": 0.0,
+              "time_seconds": 0.018898963928222656,
+              "passed": true
+            },
+            "numerical_stability": {
+              "valid_distances": 100,
+              "nan_count": 0,
+              "inf_count": 0,
+              "mean_distance": 7.025452212075596,
+              "std_distance": 1.0231544394874055,
+              "time_seconds": 0.009986162185668945,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 24,
+          "tests": {
+            "triangle_inequality": {
+              "violations": 0,
+              "violation_rate": 0.0,
+              "max_violation": 0.0,
+              "time_seconds": 0.028570175170898438,
+              "passed": true
+            },
+            "symmetry": {
+              "asymmetries": 0,
+              "asymmetry_rate": 0.0,
+              "max_asymmetry": 0.0,
+              "time_seconds": 0.018865585327148438,
+              "passed": true
+            },
+            "numerical_stability": {
+              "valid_distances": 100,
+              "nan_count": 0,
+              "inf_count": 0,
+              "mean_distance": 8.9492879075166,
+              "std_distance": 0.9548700307427097,
+              "time_seconds": 0.009970426559448242,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 32,
+          "tests": {
+            "triangle_inequality": {
+              "violations": 0,
+              "violation_rate": 0.0,
+              "max_violation": 0.0,
+              "time_seconds": 0.028493404388427734,
+              "passed": true
+            },
+            "symmetry": {
+              "asymmetries": 0,
+              "asymmetry_rate": 0.0,
+              "max_asymmetry": 0.0,
+              "time_seconds": 0.018918752670288086,
+              "passed": true
+            },
+            "numerical_stability": {
+              "valid_distances": 100,
+              "nan_count": 0,
+              "inf_count": 0,
+              "mean_distance": 10.499014302597546,
+              "std_distance": 1.0741863505862612,
+              "time_seconds": 0.009988069534301758,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 48,
+          "tests": {
+            "triangle_inequality": {
+              "violations": 0,
+              "violation_rate": 0.0,
+              "max_violation": 0.0,
+              "time_seconds": 0.028862953186035156,
+              "passed": true
+            },
+            "symmetry": {
+              "asymmetries": 0,
+              "asymmetry_rate": 0.0,
+              "max_asymmetry": 0.0,
+              "time_seconds": 0.01898360252380371,
+              "passed": true
+            },
+            "numerical_stability": {
+              "valid_distances": 100,
+              "nan_count": 0,
+              "inf_count": 0,
+              "mean_distance": 12.913467936999266,
+              "std_distance": 0.9476108144647012,
+              "time_seconds": 0.010036468505859375,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 64,
+          "tests": {
+            "triangle_inequality": {
+              "violations": 0,
+              "violation_rate": 0.0,
+              "max_violation": 0.0,
+              "time_seconds": 0.02864837646484375,
+              "passed": true
+            },
+            "symmetry": {
+              "asymmetries": 0,
+              "asymmetry_rate": 0.0,
+              "max_asymmetry": 0.0,
+              "time_seconds": 0.019149303436279297,
+              "passed": true
+            },
+            "numerical_stability": {
+              "valid_distances": 100,
+              "nan_count": 0,
+              "inf_count": 0,
+              "mean_distance": 15.302273868549607,
+              "std_distance": 1.045339004102407,
+              "time_seconds": 0.010008573532104492,
+              "passed": true
+            }
+          }
+        }
+      ],
+      "Poincar\u00e9": [
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 2,
+          "tests": {
+            "triangle_inequality": {
+              "violations": 0,
+              "violation_rate": 0.0,
+              "max_violation": 0.0,
+              "time_seconds": 0.02353358268737793,
+              "passed": true
+            },
+            "symmetry": {
+              "asymmetries": 0,
+              "asymmetry_rate": 0.0,
+              "max_asymmetry": 0.0,
+              "time_seconds": 0.015915632247924805,
+              "passed": true
+            },
+            "numerical_stability": {
+              "valid_distances": 100,
+              "nan_count": 0,
+              "inf_count": 0,
+              "mean_distance": 2.164148320108652,
+              "std_distance": 1.2098072449321247,
+              "time_seconds": 0.00823354721069336,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 4,
+          "tests": {
+            "triangle_inequality": {
+              "violations": 0,
+              "violation_rate": 0.0,
+              "max_violation": 0.0,
+              "time_seconds": 0.023476362228393555,
+              "passed": true
+            },
+            "symmetry": {
+              "asymmetries": 0,
+              "asymmetry_rate": 0.0,
+              "max_asymmetry": 0.0,
+              "time_seconds": 0.016008377075195312,
+              "passed": true
+            },
+            "numerical_stability": {
+              "valid_distances": 100,
+              "nan_count": 0,
+              "inf_count": 0,
+              "mean_distance": 3.2932124769687654,
+              "std_distance": 0.9173580321887663,
+              "time_seconds": 0.008265018463134766,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 8,
+          "tests": {
+            "triangle_inequality": {
+              "violations": 0,
+              "violation_rate": 0.0,
+              "max_violation": 0.0,
+              "time_seconds": 0.023574352264404297,
+              "passed": true
+            },
+            "symmetry": {
+              "asymmetries": 0,
+              "asymmetry_rate": 0.0,
+              "max_asymmetry": 0.0,
+              "time_seconds": 0.01608872413635254,
+              "passed": true
+            },
+            "numerical_stability": {
+              "valid_distances": 100,
+              "nan_count": 0,
+              "inf_count": 0,
+              "mean_distance": 3.7046542811393737,
+              "std_distance": 0.43917240417467546,
+              "time_seconds": 0.008236408233642578,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 12,
+          "tests": {
+            "triangle_inequality": {
+              "violations": 0,
+              "violation_rate": 0.0,
+              "max_violation": 0.0,
+              "time_seconds": 0.02353954315185547,
+              "passed": true
+            },
+            "symmetry": {
+              "asymmetries": 0,
+              "asymmetry_rate": 0.0,
+              "max_asymmetry": 0.0,
+              "time_seconds": 0.015991687774658203,
+              "passed": true
+            },
+            "numerical_stability": {
+              "valid_distances": 100,
+              "nan_count": 0,
+              "inf_count": 0,
+              "mean_distance": 3.68641628742218,
+              "std_distance": 0.30162146611468454,
+              "time_seconds": 0.008255958557128906,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 16,
+          "tests": {
+            "triangle_inequality": {
+              "violations": 0,
+              "violation_rate": 0.0,
+              "max_violation": 0.0,
+              "time_seconds": 0.023629188537597656,
+              "passed": true
+            },
+            "symmetry": {
+              "asymmetries": 0,
+              "asymmetry_rate": 0.0,
+              "max_asymmetry": 0.0,
+              "time_seconds": 0.01610565185546875,
+              "passed": true
+            },
+            "numerical_stability": {
+              "valid_distances": 100,
+              "nan_count": 0,
+              "inf_count": 0,
+              "mean_distance": 3.653937599658966,
+              "std_distance": 0.2795472249302971,
+              "time_seconds": 0.008255720138549805,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 24,
+          "tests": {
+            "triangle_inequality": {
+              "violations": 0,
+              "violation_rate": 0.0,
+              "max_violation": 0.0,
+              "time_seconds": 0.02371525764465332,
+              "passed": true
+            },
+            "symmetry": {
+              "asymmetries": 0,
+              "asymmetry_rate": 0.0,
+              "max_asymmetry": 0.0,
+              "time_seconds": 0.016176462173461914,
+              "passed": true
+            },
+            "numerical_stability": {
+              "valid_distances": 100,
+              "nan_count": 0,
+              "inf_count": 0,
+              "mean_distance": 3.6762240862846376,
+              "std_distance": 0.21093742379282396,
+              "time_seconds": 0.008298873901367188,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 32,
+          "tests": {
+            "triangle_inequality": {
+              "violations": 0,
+              "violation_rate": 0.0,
+              "max_violation": 0.0,
+              "time_seconds": 0.02411651611328125,
+              "passed": true
+            },
+            "symmetry": {
+              "asymmetries": 0,
+              "asymmetry_rate": 0.0,
+              "max_asymmetry": 0.0,
+              "time_seconds": 0.016048669815063477,
+              "passed": true
+            },
+            "numerical_stability": {
+              "valid_distances": 100,
+              "nan_count": 0,
+              "inf_count": 0,
+              "mean_distance": 3.7017496967315675,
+              "std_distance": 0.17931298612808477,
+              "time_seconds": 0.008530616760253906,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 48,
+          "tests": {
+            "triangle_inequality": {
+              "violations": 0,
+              "violation_rate": 0.0,
+              "max_violation": 0.0,
+              "time_seconds": 0.024077892303466797,
+              "passed": true
+            },
+            "symmetry": {
+              "asymmetries": 0,
+              "asymmetry_rate": 0.0,
+              "max_asymmetry": 0.0,
+              "time_seconds": 0.01598525047302246,
+              "passed": true
+            },
+            "numerical_stability": {
+              "valid_distances": 100,
+              "nan_count": 0,
+              "inf_count": 0,
+              "mean_distance": 3.7222885060310364,
+              "std_distance": 0.14806858019917404,
+              "time_seconds": 0.008573055267333984,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 64,
+          "tests": {
+            "triangle_inequality": {
+              "violations": 0,
+              "violation_rate": 0.0,
+              "max_violation": 0.0,
+              "time_seconds": 0.024239778518676758,
+              "passed": true
+            },
+            "symmetry": {
+              "asymmetries": 0,
+              "asymmetry_rate": 0.0,
+              "max_asymmetry": 0.0,
+              "time_seconds": 0.016060590744018555,
+              "passed": true
+            },
+            "numerical_stability": {
+              "valid_distances": 100,
+              "nan_count": 0,
+              "inf_count": 0,
+              "mean_distance": 3.741519584655762,
+              "std_distance": 0.11662282890815659,
+              "time_seconds": 0.008731365203857422,
+              "passed": true
+            }
+          }
+        }
+      ]
+    },
+    "test_2_compression_ratio": {
+      "Lorentz": [
+        {
+          "model": "Lorentz",
+          "dimension": 2,
+          "tests": {
+            "compression_performance": {
+              "source_dim": 128,
+              "target_dim": 2,
+              "compression_ratio": 64.0,
+              "n_vectors": 50,
+              "embedding_time": 0.0015265941619873047,
+              "distance_time": 0.02043890953063965,
+              "total_time": 0.021965503692626953,
+              "distance_correlation": 0.11559798742510208,
+              "time_seconds": 0.021965503692626953,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 4,
+          "tests": {
+            "compression_performance": {
+              "source_dim": 128,
+              "target_dim": 4,
+              "compression_ratio": 32.0,
+              "n_vectors": 50,
+              "embedding_time": 0.0013895034790039062,
+              "distance_time": 0.020441293716430664,
+              "total_time": 0.02183079719543457,
+              "distance_correlation": 0.21866874843495143,
+              "time_seconds": 0.02183079719543457,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 8,
+          "tests": {
+            "compression_performance": {
+              "source_dim": 128,
+              "target_dim": 8,
+              "compression_ratio": 16.0,
+              "n_vectors": 50,
+              "embedding_time": 0.0013685226440429688,
+              "distance_time": 0.020433902740478516,
+              "total_time": 0.021802425384521484,
+              "distance_correlation": 0.226476792213496,
+              "time_seconds": 0.021802425384521484,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 12,
+          "tests": {
+            "compression_performance": {
+              "source_dim": 128,
+              "target_dim": 12,
+              "compression_ratio": 10.666666666666666,
+              "n_vectors": 50,
+              "embedding_time": 0.0013713836669921875,
+              "distance_time": 0.020480632781982422,
+              "total_time": 0.02185201644897461,
+              "distance_correlation": 0.41619921853487396,
+              "time_seconds": 0.02185201644897461,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 16,
+          "tests": {
+            "compression_performance": {
+              "source_dim": 128,
+              "target_dim": 16,
+              "compression_ratio": 8.0,
+              "n_vectors": 50,
+              "embedding_time": 0.0013654232025146484,
+              "distance_time": 0.020601749420166016,
+              "total_time": 0.021967172622680664,
+              "distance_correlation": 0.2372902157498939,
+              "time_seconds": 0.021967172622680664,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 24,
+          "tests": {
+            "compression_performance": {
+              "source_dim": 128,
+              "target_dim": 24,
+              "compression_ratio": 5.333333333333333,
+              "n_vectors": 50,
+              "embedding_time": 0.0013794898986816406,
+              "distance_time": 0.020554065704345703,
+              "total_time": 0.021933555603027344,
+              "distance_correlation": 0.3618876110932454,
+              "time_seconds": 0.021933555603027344,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 32,
+          "tests": {
+            "compression_performance": {
+              "source_dim": 128,
+              "target_dim": 32,
+              "compression_ratio": 4.0,
+              "n_vectors": 50,
+              "embedding_time": 0.0013742446899414062,
+              "distance_time": 0.02060842514038086,
+              "total_time": 0.021982669830322266,
+              "distance_correlation": 0.45930255304574036,
+              "time_seconds": 0.021982669830322266,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 48,
+          "tests": {
+            "compression_performance": {
+              "source_dim": 128,
+              "target_dim": 48,
+              "compression_ratio": 2.6666666666666665,
+              "n_vectors": 50,
+              "embedding_time": 0.001417398452758789,
+              "distance_time": 0.020715713500976562,
+              "total_time": 0.02213311195373535,
+              "distance_correlation": 0.5890378234931077,
+              "time_seconds": 0.02213311195373535,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 64,
+          "tests": {
+            "compression_performance": {
+              "source_dim": 128,
+              "target_dim": 64,
+              "compression_ratio": 2.0,
+              "n_vectors": 50,
+              "embedding_time": 0.0014157295227050781,
+              "distance_time": 0.020769596099853516,
+              "total_time": 0.022185325622558594,
+              "distance_correlation": 0.7329694869934967,
+              "time_seconds": 0.022185325622558594,
+              "passed": true
+            }
+          }
+        }
+      ],
+      "Poincar\u00e9": [
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 2,
+          "tests": {
+            "compression_performance": {
+              "source_dim": 128,
+              "target_dim": 2,
+              "compression_ratio": 64.0,
+              "n_vectors": 50,
+              "embedding_time": 0.0006310939788818359,
+              "distance_time": 0.017229318618774414,
+              "total_time": 0.01786041259765625,
+              "distance_correlation": 0.25069191579634253,
+              "time_seconds": 0.01786041259765625,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 4,
+          "tests": {
+            "compression_performance": {
+              "source_dim": 128,
+              "target_dim": 4,
+              "compression_ratio": 32.0,
+              "n_vectors": 50,
+              "embedding_time": 0.0006253719329833984,
+              "distance_time": 0.017181873321533203,
+              "total_time": 0.0178072452545166,
+              "distance_correlation": 0.0860640244476112,
+              "time_seconds": 0.0178072452545166,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 8,
+          "tests": {
+            "compression_performance": {
+              "source_dim": 128,
+              "target_dim": 8,
+              "compression_ratio": 16.0,
+              "n_vectors": 50,
+              "embedding_time": 0.0007033348083496094,
+              "distance_time": 0.01715540885925293,
+              "total_time": 0.01785874366760254,
+              "distance_correlation": -0.12471156127750072,
+              "time_seconds": 0.01785874366760254,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 12,
+          "tests": {
+            "compression_performance": {
+              "source_dim": 128,
+              "target_dim": 12,
+              "compression_ratio": 10.666666666666666,
+              "n_vectors": 50,
+              "embedding_time": 0.0007584095001220703,
+              "distance_time": 0.017117977142333984,
+              "total_time": 0.017876386642456055,
+              "distance_correlation": -0.030273602033940104,
+              "time_seconds": 0.017876386642456055,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 16,
+          "tests": {
+            "compression_performance": {
+              "source_dim": 128,
+              "target_dim": 16,
+              "compression_ratio": 8.0,
+              "n_vectors": 50,
+              "embedding_time": 0.0008249282836914062,
+              "distance_time": 0.017157316207885742,
+              "total_time": 0.01798224449157715,
+              "distance_correlation": 0.1056740231874167,
+              "time_seconds": 0.01798224449157715,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 24,
+          "tests": {
+            "compression_performance": {
+              "source_dim": 128,
+              "target_dim": 24,
+              "compression_ratio": 5.333333333333333,
+              "n_vectors": 50,
+              "embedding_time": 0.0008337497711181641,
+              "distance_time": 0.017247438430786133,
+              "total_time": 0.018081188201904297,
+              "distance_correlation": 0.42664507116757605,
+              "time_seconds": 0.018081188201904297,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 32,
+          "tests": {
+            "compression_performance": {
+              "source_dim": 128,
+              "target_dim": 32,
+              "compression_ratio": 4.0,
+              "n_vectors": 50,
+              "embedding_time": 0.0008265972137451172,
+              "distance_time": 0.01725149154663086,
+              "total_time": 0.018078088760375977,
+              "distance_correlation": 0.34290286912671336,
+              "time_seconds": 0.018078088760375977,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 48,
+          "tests": {
+            "compression_performance": {
+              "source_dim": 128,
+              "target_dim": 48,
+              "compression_ratio": 2.6666666666666665,
+              "n_vectors": 50,
+              "embedding_time": 0.0008332729339599609,
+              "distance_time": 0.017350196838378906,
+              "total_time": 0.018183469772338867,
+              "distance_correlation": 0.47310868060743294,
+              "time_seconds": 0.018183469772338867,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 64,
+          "tests": {
+            "compression_performance": {
+              "source_dim": 128,
+              "target_dim": 64,
+              "compression_ratio": 2.0,
+              "n_vectors": 50,
+              "embedding_time": 0.000820159912109375,
+              "distance_time": 0.017325401306152344,
+              "total_time": 0.01814556121826172,
+              "distance_correlation": 0.4400403936490784,
+              "time_seconds": 0.01814556121826172,
+              "passed": false
+            }
+          }
+        }
+      ]
+    },
+    "test_3_geodesic_accuracy": {
+      "Lorentz": [
+        {
+          "model": "Lorentz",
+          "dimension": 2,
+          "tests": {
+            "geodesic_accuracy": {
+              "mean_error": null,
+              "max_error": null,
+              "std_error": null,
+              "time_seconds": 0.0003216266632080078,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 4,
+          "tests": {
+            "geodesic_accuracy": {
+              "mean_error": null,
+              "max_error": null,
+              "std_error": null,
+              "time_seconds": 0.0003120899200439453,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 8,
+          "tests": {
+            "geodesic_accuracy": {
+              "mean_error": null,
+              "max_error": null,
+              "std_error": null,
+              "time_seconds": 0.000316619873046875,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 12,
+          "tests": {
+            "geodesic_accuracy": {
+              "mean_error": null,
+              "max_error": null,
+              "std_error": null,
+              "time_seconds": 0.00031495094299316406,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 16,
+          "tests": {
+            "geodesic_accuracy": {
+              "mean_error": null,
+              "max_error": null,
+              "std_error": null,
+              "time_seconds": 0.0003254413604736328,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 24,
+          "tests": {
+            "geodesic_accuracy": {
+              "mean_error": null,
+              "max_error": null,
+              "std_error": null,
+              "time_seconds": 0.00032019615173339844,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 32,
+          "tests": {
+            "geodesic_accuracy": {
+              "mean_error": null,
+              "max_error": null,
+              "std_error": null,
+              "time_seconds": 0.00031447410583496094,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 48,
+          "tests": {
+            "geodesic_accuracy": {
+              "mean_error": null,
+              "max_error": null,
+              "std_error": null,
+              "time_seconds": 0.0003173351287841797,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 64,
+          "tests": {
+            "geodesic_accuracy": {
+              "mean_error": null,
+              "max_error": null,
+              "std_error": null,
+              "time_seconds": 0.00033473968505859375,
+              "passed": false
+            }
+          }
+        }
+      ],
+      "Poincar\u00e9": [
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 2,
+          "tests": {
+            "geodesic_accuracy": {
+              "mean_error": null,
+              "max_error": null,
+              "std_error": null,
+              "time_seconds": 0.00030350685119628906,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 4,
+          "tests": {
+            "geodesic_accuracy": {
+              "mean_error": null,
+              "max_error": null,
+              "std_error": null,
+              "time_seconds": 0.0002987384796142578,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 8,
+          "tests": {
+            "geodesic_accuracy": {
+              "mean_error": null,
+              "max_error": null,
+              "std_error": null,
+              "time_seconds": 0.00029921531677246094,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 12,
+          "tests": {
+            "geodesic_accuracy": {
+              "mean_error": null,
+              "max_error": null,
+              "std_error": null,
+              "time_seconds": 0.0002999305725097656,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 16,
+          "tests": {
+            "geodesic_accuracy": {
+              "mean_error": null,
+              "max_error": null,
+              "std_error": null,
+              "time_seconds": 0.00029754638671875,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 24,
+          "tests": {
+            "geodesic_accuracy": {
+              "mean_error": null,
+              "max_error": null,
+              "std_error": null,
+              "time_seconds": 0.00029921531677246094,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 32,
+          "tests": {
+            "geodesic_accuracy": {
+              "mean_error": null,
+              "max_error": null,
+              "std_error": null,
+              "time_seconds": 0.00031495094299316406,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 48,
+          "tests": {
+            "geodesic_accuracy": {
+              "mean_error": null,
+              "max_error": null,
+              "std_error": null,
+              "time_seconds": 0.00029730796813964844,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 64,
+          "tests": {
+            "geodesic_accuracy": {
+              "mean_error": null,
+              "max_error": null,
+              "std_error": null,
+              "time_seconds": 0.0002961158752441406,
+              "passed": false
+            }
+          }
+        }
+      ]
+    },
+    "test_4_parallel_transport": {
+      "Lorentz": [
+        {
+          "model": "Lorentz",
+          "dimension": 2,
+          "tests": {
+            "parallel_transport": {
+              "mean_error": null,
+              "max_error": null,
+              "std_error": null,
+              "time_seconds": 0.007091522216796875,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 4,
+          "tests": {
+            "parallel_transport": {
+              "mean_error": null,
+              "max_error": null,
+              "std_error": null,
+              "time_seconds": 0.00730133056640625,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 8,
+          "tests": {
+            "parallel_transport": {
+              "mean_error": null,
+              "max_error": null,
+              "std_error": null,
+              "time_seconds": 0.007050037384033203,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 12,
+          "tests": {
+            "parallel_transport": {
+              "mean_error": null,
+              "max_error": null,
+              "std_error": null,
+              "time_seconds": 0.0068950653076171875,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 16,
+          "tests": {
+            "parallel_transport": {
+              "mean_error": null,
+              "max_error": null,
+              "std_error": null,
+              "time_seconds": 0.007219552993774414,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 24,
+          "tests": {
+            "parallel_transport": {
+              "mean_error": null,
+              "max_error": null,
+              "std_error": null,
+              "time_seconds": 0.007385730743408203,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 32,
+          "tests": {
+            "parallel_transport": {
+              "mean_error": null,
+              "max_error": null,
+              "std_error": null,
+              "time_seconds": 0.007602691650390625,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 48,
+          "tests": {
+            "parallel_transport": {
+              "mean_error": null,
+              "max_error": null,
+              "std_error": null,
+              "time_seconds": 0.007250308990478516,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 64,
+          "tests": {
+            "parallel_transport": {
+              "mean_error": null,
+              "max_error": null,
+              "std_error": null,
+              "time_seconds": 0.00717473030090332,
+              "passed": false
+            }
+          }
+        }
+      ],
+      "Poincar\u00e9": [
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 2,
+          "tests": {
+            "parallel_transport": {
+              "mean_error": 0.2217730576417556,
+              "max_error": 0.8990279138088226,
+              "std_error": 0.21178201492897722,
+              "time_seconds": 0.017620325088500977,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 4,
+          "tests": {
+            "parallel_transport": {
+              "mean_error": 0.18265404689743317,
+              "max_error": 0.7405421584844589,
+              "std_error": 0.1521004509983893,
+              "time_seconds": 0.016007184982299805,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 8,
+          "tests": {
+            "parallel_transport": {
+              "mean_error": 0.18295433749822346,
+              "max_error": 0.5935470163822174,
+              "std_error": 0.10656357867256577,
+              "time_seconds": 0.008804798126220703,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 12,
+          "tests": {
+            "parallel_transport": {
+              "mean_error": 0.338566757578216,
+              "max_error": 0.4827021211385727,
+              "std_error": 0.09296408271296491,
+              "time_seconds": 0.003650188446044922,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 16,
+          "tests": {
+            "parallel_transport": {
+              "mean_error": null,
+              "max_error": null,
+              "std_error": null,
+              "time_seconds": 0.0028667449951171875,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 24,
+          "tests": {
+            "parallel_transport": {
+              "mean_error": null,
+              "max_error": null,
+              "std_error": null,
+              "time_seconds": 0.0025844573974609375,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 32,
+          "tests": {
+            "parallel_transport": {
+              "mean_error": null,
+              "max_error": null,
+              "std_error": null,
+              "time_seconds": 0.0026292800903320312,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 48,
+          "tests": {
+            "parallel_transport": {
+              "mean_error": null,
+              "max_error": null,
+              "std_error": null,
+              "time_seconds": 0.002656698226928711,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 64,
+          "tests": {
+            "parallel_transport": {
+              "mean_error": null,
+              "max_error": null,
+              "std_error": null,
+              "time_seconds": 0.0026950836181640625,
+              "passed": false
+            }
+          }
+        }
+      ]
+    },
+    "test_5_exp/log_inverse": {
+      "Lorentz": [
+        {
+          "model": "Lorentz",
+          "dimension": 2,
+          "tests": {
+            "exp_log_inverse": {
+              "mean_error": 1.5308811316938063e-12,
+              "max_error": 9.323677741372999e-12,
+              "std_error": 1.640162856974036e-12,
+              "time_seconds": 0.030853986740112305,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 4,
+          "tests": {
+            "exp_log_inverse": {
+              "mean_error": 5.5261003047819556e-12,
+              "max_error": 2.220712315300502e-11,
+              "std_error": 4.690174574571426e-12,
+              "time_seconds": 0.03062891960144043,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 8,
+          "tests": {
+            "exp_log_inverse": {
+              "mean_error": 1.962228649740125e-11,
+              "max_error": 7.630473487383893e-11,
+              "std_error": 1.1426471160800214e-11,
+              "time_seconds": 0.030539989471435547,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 12,
+          "tests": {
+            "exp_log_inverse": {
+              "mean_error": 3.6021490632191404e-11,
+              "max_error": 7.974421647454199e-11,
+              "std_error": 1.5938262021793486e-11,
+              "time_seconds": 0.030734777450561523,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 16,
+          "tests": {
+            "exp_log_inverse": {
+              "mean_error": 6.541598152483226e-11,
+              "max_error": 1.3933265343299826e-10,
+              "std_error": 2.9381093761730364e-11,
+              "time_seconds": 0.030750751495361328,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 24,
+          "tests": {
+            "exp_log_inverse": {
+              "mean_error": 1.1476239646912853e-10,
+              "max_error": 2.3408432205853743e-10,
+              "std_error": 3.581851203590552e-11,
+              "time_seconds": 0.031041383743286133,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 32,
+          "tests": {
+            "exp_log_inverse": {
+              "mean_error": 2.0810893822744589e-10,
+              "max_error": 5.422219520737911e-10,
+              "std_error": 8.502405237760655e-11,
+              "time_seconds": 0.030936002731323242,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 48,
+          "tests": {
+            "exp_log_inverse": {
+              "mean_error": 3.8778724786940165e-10,
+              "max_error": 9.518711081426978e-10,
+              "std_error": 1.5073863334576974e-10,
+              "time_seconds": 0.03124237060546875,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 64,
+          "tests": {
+            "exp_log_inverse": {
+              "mean_error": 6.437868621952352e-10,
+              "max_error": 1.3707809278318745e-09,
+              "std_error": 2.1802588892373415e-10,
+              "time_seconds": 0.030985116958618164,
+              "passed": true
+            }
+          }
+        }
+      ],
+      "Poincar\u00e9": [
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 2,
+          "tests": {
+            "exp_log_inverse": {
+              "mean_error": 4.927926083051528e-07,
+              "max_error": 3.210515933460556e-05,
+              "std_error": 3.3131323728403907e-06,
+              "time_seconds": 0.028978347778320312,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 4,
+          "tests": {
+            "exp_log_inverse": {
+              "mean_error": 0.0020032280930949073,
+              "max_error": 0.14305564761161804,
+              "std_error": 0.01674036340835789,
+              "time_seconds": 0.022511005401611328,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 8,
+          "tests": {
+            "exp_log_inverse": {
+              "mean_error": 0.016349894616646616,
+              "max_error": 0.44127577543258667,
+              "std_error": 0.0818260773778253,
+              "time_seconds": 0.012270450592041016,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 12,
+          "tests": {
+            "exp_log_inverse": {
+              "mean_error": 9.204652585432476e-05,
+              "max_error": 0.0005428289296105504,
+              "std_error": 0.0001856143198681259,
+              "time_seconds": 0.005181312561035156,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 16,
+          "tests": {
+            "exp_log_inverse": {
+              "mean_error": 0.00021559859487751964,
+              "max_error": 0.00039292190922424197,
+              "std_error": 0.00017732331434672233,
+              "time_seconds": 0.0034339427947998047,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 24,
+          "tests": {
+            "exp_log_inverse": {
+              "mean_error": null,
+              "max_error": null,
+              "std_error": null,
+              "time_seconds": 0.0025434494018554688,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 32,
+          "tests": {
+            "exp_log_inverse": {
+              "mean_error": null,
+              "max_error": null,
+              "std_error": null,
+              "time_seconds": 0.0025539398193359375,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 48,
+          "tests": {
+            "exp_log_inverse": {
+              "mean_error": null,
+              "max_error": null,
+              "std_error": null,
+              "time_seconds": 0.002573728561401367,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 64,
+          "tests": {
+            "exp_log_inverse": {
+              "mean_error": null,
+              "max_error": null,
+              "std_error": null,
+              "time_seconds": 0.0025739669799804688,
+              "passed": false
+            }
+          }
+        }
+      ]
+    },
+    "test_6_dimensional_scaling": {
+      "Lorentz": [
+        {
+          "model": "Lorentz",
+          "dimension": 2,
+          "tests": {
+            "dimensional_scaling": {
+              "dimension": 2,
+              "n_points": 100,
+              "generation_time": 0.0030553340911865234,
+              "distance_computation_time": 0.04278135299682617,
+              "avg_distance_time": 9.834793792373832e-05,
+              "mean_distance": 0.8175903368621291,
+              "std_distance": 0.43146837098018764,
+              "time_seconds": 0.045836687088012695,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 4,
+          "tests": {
+            "dimensional_scaling": {
+              "dimension": 4,
+              "n_points": 100,
+              "generation_time": 0.0031080245971679688,
+              "distance_computation_time": 0.04312753677368164,
+              "avg_distance_time": 9.914376269811871e-05,
+              "mean_distance": 1.4514603355173716,
+              "std_distance": 0.5231604214257254,
+              "time_seconds": 0.04623556137084961,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 8,
+          "tests": {
+            "dimensional_scaling": {
+              "dimension": 8,
+              "n_points": 100,
+              "generation_time": 0.0030879974365234375,
+              "distance_computation_time": 0.043048858642578125,
+              "avg_distance_time": 9.896289343121408e-05,
+              "mean_distance": 2.3955141284501207,
+              "std_distance": 0.5513579487188683,
+              "time_seconds": 0.04613685607910156,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 12,
+          "tests": {
+            "dimensional_scaling": {
+              "dimension": 12,
+              "n_points": 100,
+              "generation_time": 0.0031387805938720703,
+              "distance_computation_time": 0.043081045150756836,
+              "avg_distance_time": 9.90368854040387e-05,
+              "mean_distance": 2.860756295112027,
+              "std_distance": 0.551855054802122,
+              "time_seconds": 0.046219825744628906,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 16,
+          "tests": {
+            "dimensional_scaling": {
+              "dimension": 16,
+              "n_points": 100,
+              "generation_time": 0.003088712692260742,
+              "distance_computation_time": 0.043138742446899414,
+              "avg_distance_time": 9.916952286643544e-05,
+              "mean_distance": 3.3478911626520143,
+              "std_distance": 0.6457288059686468,
+              "time_seconds": 0.046227455139160156,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 24,
+          "tests": {
+            "dimensional_scaling": {
+              "dimension": 24,
+              "n_points": 100,
+              "generation_time": 0.003155231475830078,
+              "distance_computation_time": 0.04330086708068848,
+              "avg_distance_time": 9.95422231739965e-05,
+              "mean_distance": 3.8565254492258414,
+              "std_distance": 0.4740744582304054,
+              "time_seconds": 0.046456098556518555,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 32,
+          "tests": {
+            "dimensional_scaling": {
+              "dimension": 32,
+              "n_points": 100,
+              "generation_time": 0.0031232833862304688,
+              "distance_computation_time": 0.04324960708618164,
+              "avg_distance_time": 9.94243841061647e-05,
+              "mean_distance": 5.005482532037502,
+              "std_distance": 0.4906331013339323,
+              "time_seconds": 0.04637289047241211,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 48,
+          "tests": {
+            "dimensional_scaling": {
+              "dimension": 48,
+              "n_points": 100,
+              "generation_time": 0.0032181739807128906,
+              "distance_computation_time": 0.043511152267456055,
+              "avg_distance_time": 0.0001000256373964507,
+              "mean_distance": 6.245599412400473,
+              "std_distance": 0.5551208879096144,
+              "time_seconds": 0.046729326248168945,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 64,
+          "tests": {
+            "dimensional_scaling": {
+              "dimension": 64,
+              "n_points": 100,
+              "generation_time": 0.0032274723052978516,
+              "distance_computation_time": 0.043677568435668945,
+              "avg_distance_time": 0.00010040820330038838,
+              "mean_distance": 7.038206955237553,
+              "std_distance": 0.4133030081379038,
+              "time_seconds": 0.0469050407409668,
+              "passed": true
+            }
+          }
+        }
+      ],
+      "Poincar\u00e9": [
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 2,
+          "tests": {
+            "dimensional_scaling": {
+              "dimension": 2,
+              "n_points": 100,
+              "generation_time": 0.0012619495391845703,
+              "distance_computation_time": 0.03693270683288574,
+              "avg_distance_time": 8.490277432847297e-05,
+              "mean_distance": 2.072855614245623,
+              "std_distance": 1.0204152490682543,
+              "time_seconds": 0.03819465637207031,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 4,
+          "tests": {
+            "dimensional_scaling": {
+              "dimension": 4,
+              "n_points": 100,
+              "generation_time": 0.0013346672058105469,
+              "distance_computation_time": 0.03715848922729492,
+              "avg_distance_time": 8.542181431562052e-05,
+              "mean_distance": 2.500515317779848,
+              "std_distance": 0.9109947024008151,
+              "time_seconds": 0.03849315643310547,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 8,
+          "tests": {
+            "dimensional_scaling": {
+              "dimension": 8,
+              "n_points": 100,
+              "generation_time": 0.0015861988067626953,
+              "distance_computation_time": 0.03728175163269043,
+              "avg_distance_time": 8.570517616710443e-05,
+              "mean_distance": 3.676554619032761,
+              "std_distance": 0.5129686617626995,
+              "time_seconds": 0.038867950439453125,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 12,
+          "tests": {
+            "dimensional_scaling": {
+              "dimension": 12,
+              "n_points": 100,
+              "generation_time": 0.0016436576843261719,
+              "distance_computation_time": 0.03739285469055176,
+              "avg_distance_time": 8.596058549552128e-05,
+              "mean_distance": 3.790909089713261,
+              "std_distance": 0.34404286055103017,
+              "time_seconds": 0.03903651237487793,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 16,
+          "tests": {
+            "dimensional_scaling": {
+              "dimension": 16,
+              "n_points": 100,
+              "generation_time": 0.0016260147094726562,
+              "distance_computation_time": 0.03742575645446777,
+              "avg_distance_time": 8.603622173440868e-05,
+              "mean_distance": 3.7549344983594173,
+              "std_distance": 0.32788830956623044,
+              "time_seconds": 0.03905177116394043,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 24,
+          "tests": {
+            "dimensional_scaling": {
+              "dimension": 24,
+              "n_points": 100,
+              "generation_time": 0.0016291141510009766,
+              "distance_computation_time": 0.03724408149719238,
+              "avg_distance_time": 8.561857815446525e-05,
+              "mean_distance": 3.713395816978367,
+              "std_distance": 0.19015729819365768,
+              "time_seconds": 0.03887319564819336,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 32,
+          "tests": {
+            "dimensional_scaling": {
+              "dimension": 32,
+              "n_points": 100,
+              "generation_time": 0.0016393661499023438,
+              "distance_computation_time": 0.03726315498352051,
+              "avg_distance_time": 8.566242524947243e-05,
+              "mean_distance": 3.708044042258427,
+              "std_distance": 0.1768119112515461,
+              "time_seconds": 0.03890252113342285,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 48,
+          "tests": {
+            "dimensional_scaling": {
+              "dimension": 48,
+              "n_points": 100,
+              "generation_time": 0.0016312599182128906,
+              "distance_computation_time": 0.03757762908935547,
+              "avg_distance_time": 8.638535422840337e-05,
+              "mean_distance": 3.7173061431139365,
+              "std_distance": 0.14297088681521,
+              "time_seconds": 0.03920888900756836,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 64,
+          "tests": {
+            "dimensional_scaling": {
+              "dimension": 64,
+              "n_points": 100,
+              "generation_time": 0.0016682147979736328,
+              "distance_computation_time": 0.0375521183013916,
+              "avg_distance_time": 8.632670873883127e-05,
+              "mean_distance": 3.719885630991267,
+              "std_distance": 0.1250749396777906,
+              "time_seconds": 0.039220333099365234,
+              "passed": true
+            }
+          }
+        }
+      ]
+    },
+    "test_7_fiber_bundle": {
+      "Lorentz": [
+        {
+          "model": "Lorentz",
+          "dimension": 2,
+          "tests": {
+            "fiber_bundle_consistency": {
+              "mean_roundtrip_error": null,
+              "max_roundtrip_error": null,
+              "time_seconds": 0.0020325183868408203,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 4,
+          "tests": {
+            "fiber_bundle_consistency": {
+              "mean_roundtrip_error": null,
+              "max_roundtrip_error": null,
+              "time_seconds": 0.002079010009765625,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 8,
+          "tests": {
+            "fiber_bundle_consistency": {
+              "mean_roundtrip_error": null,
+              "max_roundtrip_error": null,
+              "time_seconds": 0.002147674560546875,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 12,
+          "tests": {
+            "fiber_bundle_consistency": {
+              "mean_roundtrip_error": null,
+              "max_roundtrip_error": null,
+              "time_seconds": 0.0020542144775390625,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 16,
+          "tests": {
+            "fiber_bundle_consistency": {
+              "mean_roundtrip_error": null,
+              "max_roundtrip_error": null,
+              "time_seconds": 0.0019762516021728516,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 24,
+          "tests": {
+            "fiber_bundle_consistency": {
+              "mean_roundtrip_error": null,
+              "max_roundtrip_error": null,
+              "time_seconds": 0.002177715301513672,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 32,
+          "tests": {
+            "fiber_bundle_consistency": {
+              "mean_roundtrip_error": null,
+              "max_roundtrip_error": null,
+              "time_seconds": 0.0021779537200927734,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 48,
+          "tests": {
+            "fiber_bundle_consistency": {
+              "mean_roundtrip_error": null,
+              "max_roundtrip_error": null,
+              "time_seconds": 0.0019490718841552734,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 64,
+          "tests": {
+            "fiber_bundle_consistency": {
+              "mean_roundtrip_error": null,
+              "max_roundtrip_error": null,
+              "time_seconds": 0.0021212100982666016,
+              "passed": false
+            }
+          }
+        }
+      ],
+      "Poincar\u00e9": [
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 2,
+          "tests": {
+            "fiber_bundle_consistency": {
+              "mean_roundtrip_error": 0.38177470246265677,
+              "max_roundtrip_error": 0.8589096069335938,
+              "time_seconds": 0.010462045669555664,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 4,
+          "tests": {
+            "fiber_bundle_consistency": {
+              "mean_roundtrip_error": 0.34531600247411165,
+              "max_roundtrip_error": 0.6713651418685913,
+              "time_seconds": 0.00752568244934082,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 8,
+          "tests": {
+            "fiber_bundle_consistency": {
+              "mean_roundtrip_error": 0.3085370548069477,
+              "max_roundtrip_error": 0.42380696535110474,
+              "time_seconds": 0.0031633377075195312,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 12,
+          "tests": {
+            "fiber_bundle_consistency": {
+              "mean_roundtrip_error": 0.45075473189353943,
+              "max_roundtrip_error": 0.45075473189353943,
+              "time_seconds": 0.0016510486602783203,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 16,
+          "tests": {
+            "fiber_bundle_consistency": {
+              "mean_roundtrip_error": null,
+              "max_roundtrip_error": null,
+              "time_seconds": 0.000988006591796875,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 24,
+          "tests": {
+            "fiber_bundle_consistency": {
+              "mean_roundtrip_error": null,
+              "max_roundtrip_error": null,
+              "time_seconds": 0.0008027553558349609,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 32,
+          "tests": {
+            "fiber_bundle_consistency": {
+              "mean_roundtrip_error": null,
+              "max_roundtrip_error": null,
+              "time_seconds": 0.000797271728515625,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 48,
+          "tests": {
+            "fiber_bundle_consistency": {
+              "mean_roundtrip_error": null,
+              "max_roundtrip_error": null,
+              "time_seconds": 0.0008034706115722656,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 64,
+          "tests": {
+            "fiber_bundle_consistency": {
+              "mean_roundtrip_error": null,
+              "max_roundtrip_error": null,
+              "time_seconds": 0.0008141994476318359,
+              "passed": false
+            }
+          }
+        }
+      ]
+    },
+    "test_8_synchronization": {
+      "Lorentz": [
+        {
+          "model": "Lorentz",
+          "dimension": 2,
+          "tests": {
+            "synchronization_consistency": {
+              "mean_error": null,
+              "max_error": null,
+              "time_seconds": 0.00010228157043457031,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 4,
+          "tests": {
+            "synchronization_consistency": {
+              "mean_error": null,
+              "max_error": null,
+              "time_seconds": 9.655952453613281e-05,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 8,
+          "tests": {
+            "synchronization_consistency": {
+              "mean_error": null,
+              "max_error": null,
+              "time_seconds": 0.00010085105895996094,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 12,
+          "tests": {
+            "synchronization_consistency": {
+              "mean_error": null,
+              "max_error": null,
+              "time_seconds": 9.703636169433594e-05,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 16,
+          "tests": {
+            "synchronization_consistency": {
+              "mean_error": null,
+              "max_error": null,
+              "time_seconds": 9.846687316894531e-05,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 24,
+          "tests": {
+            "synchronization_consistency": {
+              "mean_error": null,
+              "max_error": null,
+              "time_seconds": 9.751319885253906e-05,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 32,
+          "tests": {
+            "synchronization_consistency": {
+              "mean_error": null,
+              "max_error": null,
+              "time_seconds": 9.584426879882812e-05,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 48,
+          "tests": {
+            "synchronization_consistency": {
+              "mean_error": null,
+              "max_error": null,
+              "time_seconds": 9.560585021972656e-05,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 64,
+          "tests": {
+            "synchronization_consistency": {
+              "mean_error": null,
+              "max_error": null,
+              "time_seconds": 9.72747802734375e-05,
+              "passed": false
+            }
+          }
+        }
+      ],
+      "Poincar\u00e9": [
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 2,
+          "tests": {
+            "synchronization_consistency": {
+              "mean_error": null,
+              "max_error": null,
+              "time_seconds": 9.179115295410156e-05,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 4,
+          "tests": {
+            "synchronization_consistency": {
+              "mean_error": null,
+              "max_error": null,
+              "time_seconds": 9.274482727050781e-05,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 8,
+          "tests": {
+            "synchronization_consistency": {
+              "mean_error": null,
+              "max_error": null,
+              "time_seconds": 9.202957153320312e-05,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 12,
+          "tests": {
+            "synchronization_consistency": {
+              "mean_error": null,
+              "max_error": null,
+              "time_seconds": 9.274482727050781e-05,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 16,
+          "tests": {
+            "synchronization_consistency": {
+              "mean_error": null,
+              "max_error": null,
+              "time_seconds": 9.036064147949219e-05,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 24,
+          "tests": {
+            "synchronization_consistency": {
+              "mean_error": null,
+              "max_error": null,
+              "time_seconds": 0.00010895729064941406,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 32,
+          "tests": {
+            "synchronization_consistency": {
+              "mean_error": null,
+              "max_error": null,
+              "time_seconds": 9.107589721679688e-05,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 48,
+          "tests": {
+            "synchronization_consistency": {
+              "mean_error": null,
+              "max_error": null,
+              "time_seconds": 9.036064147949219e-05,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 64,
+          "tests": {
+            "synchronization_consistency": {
+              "mean_error": null,
+              "max_error": null,
+              "time_seconds": 9.632110595703125e-05,
+              "passed": false
+            }
+          }
+        }
+      ]
+    },
+    "test_9_semantic_preservation": {
+      "Lorentz": [
+        {
+          "model": "Lorentz",
+          "dimension": 2,
+          "tests": {
+            "semantic_preservation": {
+              "mean_intra_cluster": 0.18095191394839427,
+              "mean_inter_cluster": 0.8555490782406088,
+              "separation_ratio": 4.7280465819477495,
+              "time_seconds": 0.010198354721069336,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 4,
+          "tests": {
+            "semantic_preservation": {
+              "mean_intra_cluster": 0.2779830042161894,
+              "mean_inter_cluster": 0.8102916996674608,
+              "separation_ratio": 2.9148965489893444,
+              "time_seconds": 0.010268449783325195,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 8,
+          "tests": {
+            "semantic_preservation": {
+              "mean_intra_cluster": 0.4632280891726971,
+              "mean_inter_cluster": 1.0195486971517553,
+              "separation_ratio": 2.2009647536111636,
+              "time_seconds": 0.010109901428222656,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 12,
+          "tests": {
+            "semantic_preservation": {
+              "mean_intra_cluster": 0.5840827811171284,
+              "mean_inter_cluster": 1.5317679893595137,
+              "separation_ratio": 2.6225186546842276,
+              "time_seconds": 0.010149955749511719,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 16,
+          "tests": {
+            "semantic_preservation": {
+              "mean_intra_cluster": 0.7424674354511115,
+              "mean_inter_cluster": 2.293421821814825,
+              "separation_ratio": 3.088919072149445,
+              "time_seconds": 0.010205745697021484,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 24,
+          "tests": {
+            "semantic_preservation": {
+              "mean_intra_cluster": 0.889577264757437,
+              "mean_inter_cluster": 2.393582490582731,
+              "separation_ratio": 2.6906965649975265,
+              "time_seconds": 0.01059412956237793,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 32,
+          "tests": {
+            "semantic_preservation": {
+              "mean_intra_cluster": 1.2048232961390966,
+              "mean_inter_cluster": 3.040548200465396,
+              "separation_ratio": 2.5236465880174728,
+              "time_seconds": 0.010682106018066406,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 48,
+          "tests": {
+            "semantic_preservation": {
+              "mean_intra_cluster": 1.6626721927876813,
+              "mean_inter_cluster": 3.596549532108998,
+              "separation_ratio": 2.16311402073726,
+              "time_seconds": 0.010280370712280273,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 64,
+          "tests": {
+            "semantic_preservation": {
+              "mean_intra_cluster": 2.3819866942307026,
+              "mean_inter_cluster": 4.747499110568277,
+              "separation_ratio": 1.9930838077588635,
+              "time_seconds": 0.01043558120727539,
+              "passed": true
+            }
+          }
+        }
+      ],
+      "Poincar\u00e9": [
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 2,
+          "tests": {
+            "semantic_preservation": {
+              "mean_intra_cluster": 0.22044500447809695,
+              "mean_inter_cluster": 1.3047110688686372,
+              "separation_ratio": 5.91853315958571,
+              "time_seconds": 0.009099721908569336,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 4,
+          "tests": {
+            "semantic_preservation": {
+              "mean_intra_cluster": 0.5517873585224151,
+              "mean_inter_cluster": 2.4233859411875405,
+              "separation_ratio": 4.39188376420388,
+              "time_seconds": 0.00910806655883789,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 8,
+          "tests": {
+            "semantic_preservation": {
+              "mean_intra_cluster": 1.2203202893336613,
+              "mean_inter_cluster": 4.349822591145833,
+              "separation_ratio": 3.5644925591796826,
+              "time_seconds": 0.008823156356811523,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 12,
+          "tests": {
+            "semantic_preservation": {
+              "mean_intra_cluster": 1.3837714970111847,
+              "mean_inter_cluster": 4.1553073978424075,
+              "separation_ratio": 3.002885524681985,
+              "time_seconds": 0.009086847305297852,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 16,
+          "tests": {
+            "semantic_preservation": {
+              "mean_intra_cluster": 1.0700781842072804,
+              "mean_inter_cluster": 3.926442880630493,
+              "separation_ratio": 3.669304671919111,
+              "time_seconds": 0.00884389877319336,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 24,
+          "tests": {
+            "semantic_preservation": {
+              "mean_intra_cluster": 1.1042716562747956,
+              "mean_inter_cluster": 3.87089573542277,
+              "separation_ratio": 3.505383583312317,
+              "time_seconds": 0.008823394775390625,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 32,
+          "tests": {
+            "semantic_preservation": {
+              "mean_intra_cluster": 1.0182354211807252,
+              "mean_inter_cluster": 3.7259250259399415,
+              "separation_ratio": 3.659198009061042,
+              "time_seconds": 0.00914764404296875,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 48,
+          "tests": {
+            "semantic_preservation": {
+              "mean_intra_cluster": 0.9930373688538869,
+              "mean_inter_cluster": 3.7411070505777997,
+              "separation_ratio": 3.767337632918683,
+              "time_seconds": 0.00923776626586914,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 64,
+          "tests": {
+            "semantic_preservation": {
+              "mean_intra_cluster": 0.9883509894212087,
+              "mean_inter_cluster": 3.7687458006540933,
+              "separation_ratio": 3.81316540479321,
+              "time_seconds": 0.009256362915039062,
+              "passed": true
+            }
+          }
+        }
+      ]
+    },
+    "test_10_real-world_embeddings": {
+      "Lorentz": [
+        {
+          "model": "Lorentz",
+          "dimension": 2,
+          "tests": {
+            "real_world_embeddings": {
+              "n_levels": 3,
+              "generation_time": 0.004232883453369141,
+              "hierarchy_time": 0.0014812946319580078,
+              "mean_dist_level1": 0.28204274833161574,
+              "mean_dist_level2": 0.39224001068351655,
+              "hierarchy_preserved": true,
+              "time_seconds": 0.0057141780853271484,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 4,
+          "tests": {
+            "real_world_embeddings": {
+              "n_levels": 3,
+              "generation_time": 0.003991603851318359,
+              "hierarchy_time": 0.001444101333618164,
+              "mean_dist_level1": 0.573723718404365,
+              "mean_dist_level2": 0.7028101433170292,
+              "hierarchy_preserved": true,
+              "time_seconds": 0.0054357051849365234,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 8,
+          "tests": {
+            "real_world_embeddings": {
+              "n_levels": 3,
+              "generation_time": 0.004040718078613281,
+              "hierarchy_time": 0.0014560222625732422,
+              "mean_dist_level1": 0.7899406248415853,
+              "mean_dist_level2": 0.7486817070520252,
+              "hierarchy_preserved": false,
+              "time_seconds": 0.0054967403411865234,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 12,
+          "tests": {
+            "real_world_embeddings": {
+              "n_levels": 3,
+              "generation_time": 0.004014730453491211,
+              "hierarchy_time": 0.0014405250549316406,
+              "mean_dist_level1": 1.1707545894797575,
+              "mean_dist_level2": 1.1224330805192435,
+              "hierarchy_preserved": false,
+              "time_seconds": 0.0054552555084228516,
+              "passed": false
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 16,
+          "tests": {
+            "real_world_embeddings": {
+              "n_levels": 3,
+              "generation_time": 0.004421234130859375,
+              "hierarchy_time": 0.0014798641204833984,
+              "mean_dist_level1": 1.2138184008783106,
+              "mean_dist_level2": 1.2944575318322964,
+              "hierarchy_preserved": true,
+              "time_seconds": 0.0059010982513427734,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 24,
+          "tests": {
+            "real_world_embeddings": {
+              "n_levels": 3,
+              "generation_time": 0.004061460494995117,
+              "hierarchy_time": 0.0014801025390625,
+              "mean_dist_level1": 1.2496152521381572,
+              "mean_dist_level2": 1.3473683836510002,
+              "hierarchy_preserved": true,
+              "time_seconds": 0.005541563034057617,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 32,
+          "tests": {
+            "real_world_embeddings": {
+              "n_levels": 3,
+              "generation_time": 0.004042148590087891,
+              "hierarchy_time": 0.0015001296997070312,
+              "mean_dist_level1": 1.660905215455751,
+              "mean_dist_level2": 1.9473681806626317,
+              "hierarchy_preserved": true,
+              "time_seconds": 0.005542278289794922,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 48,
+          "tests": {
+            "real_world_embeddings": {
+              "n_levels": 3,
+              "generation_time": 0.004071950912475586,
+              "hierarchy_time": 0.0015025138854980469,
+              "mean_dist_level1": 2.191125333008812,
+              "mean_dist_level2": 2.656542306677385,
+              "hierarchy_preserved": true,
+              "time_seconds": 0.005574464797973633,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Lorentz",
+          "dimension": 64,
+          "tests": {
+            "real_world_embeddings": {
+              "n_levels": 3,
+              "generation_time": 0.004127979278564453,
+              "hierarchy_time": 0.001508951187133789,
+              "mean_dist_level1": 2.444354879010185,
+              "mean_dist_level2": 2.799925801212527,
+              "hierarchy_preserved": true,
+              "time_seconds": 0.005636930465698242,
+              "passed": true
+            }
+          }
+        }
+      ],
+      "Poincar\u00e9": [
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 2,
+          "tests": {
+            "real_world_embeddings": {
+              "n_levels": 3,
+              "generation_time": 0.0004360675811767578,
+              "hierarchy_time": 0.001277923583984375,
+              "mean_dist_level1": 1.5782902866601944,
+              "mean_dist_level2": 1.8823642015457154,
+              "hierarchy_preserved": true,
+              "time_seconds": 0.0017139911651611328,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 4,
+          "tests": {
+            "real_world_embeddings": {
+              "n_levels": 3,
+              "generation_time": 0.00043773651123046875,
+              "hierarchy_time": 0.0012791156768798828,
+              "mean_dist_level1": 1.2386635780334472,
+              "mean_dist_level2": 1.3013036131858826,
+              "hierarchy_preserved": true,
+              "time_seconds": 0.0017168521881103516,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 8,
+          "tests": {
+            "real_world_embeddings": {
+              "n_levels": 3,
+              "generation_time": 0.00044083595275878906,
+              "hierarchy_time": 0.0013070106506347656,
+              "mean_dist_level1": 2.499367666244507,
+              "mean_dist_level2": 2.578018069267273,
+              "hierarchy_preserved": true,
+              "time_seconds": 0.0017478466033935547,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 12,
+          "tests": {
+            "real_world_embeddings": {
+              "n_levels": 3,
+              "generation_time": 0.0004620552062988281,
+              "hierarchy_time": 0.0012791156768798828,
+              "mean_dist_level1": 2.4764249324798584,
+              "mean_dist_level2": 2.7615972757339478,
+              "hierarchy_preserved": true,
+              "time_seconds": 0.001741170883178711,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 16,
+          "tests": {
+            "real_world_embeddings": {
+              "n_levels": 3,
+              "generation_time": 0.00043463706970214844,
+              "hierarchy_time": 0.001302957534790039,
+              "mean_dist_level1": 2.197224760055542,
+              "mean_dist_level2": 2.439708185195923,
+              "hierarchy_preserved": true,
+              "time_seconds": 0.0017375946044921875,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 24,
+          "tests": {
+            "real_world_embeddings": {
+              "n_levels": 3,
+              "generation_time": 0.0004398822784423828,
+              "hierarchy_time": 0.001299142837524414,
+              "mean_dist_level1": 2.19722466468811,
+              "mean_dist_level2": 2.4186742544174193,
+              "hierarchy_preserved": true,
+              "time_seconds": 0.0017390251159667969,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 32,
+          "tests": {
+            "real_world_embeddings": {
+              "n_levels": 3,
+              "generation_time": 0.0004336833953857422,
+              "hierarchy_time": 0.0012772083282470703,
+              "mean_dist_level1": 2.1972249031066893,
+              "mean_dist_level2": 2.6313648581504823,
+              "hierarchy_preserved": true,
+              "time_seconds": 0.0017108917236328125,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 48,
+          "tests": {
+            "real_world_embeddings": {
+              "n_levels": 3,
+              "generation_time": 0.00043392181396484375,
+              "hierarchy_time": 0.001619100570678711,
+              "mean_dist_level1": 2.1972247123718263,
+              "mean_dist_level2": 2.6511962056159972,
+              "hierarchy_preserved": true,
+              "time_seconds": 0.0020530223846435547,
+              "passed": true
+            }
+          }
+        },
+        {
+          "model": "Poincar\u00e9",
+          "dimension": 64,
+          "tests": {
+            "real_world_embeddings": {
+              "n_levels": 3,
+              "generation_time": 0.0004532337188720703,
+              "hierarchy_time": 0.001294851303100586,
+              "mean_dist_level1": 2.197224760055542,
+              "mean_dist_level2": 2.6759525775909423,
+              "hierarchy_preserved": true,
+              "time_seconds": 0.0017480850219726562,
+              "passed": true
+            }
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,201 @@
+{
+  "test_name": "Real-World Embedding",
+  "timestamp": "2026-01-13 05:49:16",
+  "hvs_dimensions": [
+    8,
+    16,
+    32,
+    64
+  ],
+  "tests": {
+    "semantic_similarity": [
+      {
+        "hvs_dim": 8,
+        "n_pairs": 10,
+        "original_correlation": 0.7112494861056756,
+        "reconstructed_correlation": 0.8389096502784891,
+        "preservation_correlation": 0.9272727272727272,
+        "quality_retention": 117.94871629038678,
+        "passed": true
+      },
+      {
+        "hvs_dim": 16,
+        "n_pairs": 10,
+        "original_correlation": 0.7112494861056756,
+        "reconstructed_correlation": 0.8328305948416885,
+        "preservation_correlation": 0.8666666666666665,
+        "quality_retention": 117.09401544770284,
+        "passed": true
+      },
+      {
+        "hvs_dim": 32,
+        "n_pairs": 10,
+        "original_correlation": 0.7112494861056756,
+        "reconstructed_correlation": 0.7112494861056756,
+        "preservation_correlation": 0.9999999999999999,
+        "quality_retention": 99.9999985940236,
+        "passed": true
+      },
+      {
+        "hvs_dim": 64,
+        "n_pairs": 10,
+        "original_correlation": 0.7112494861056756,
+        "reconstructed_correlation": 0.7112494861056756,
+        "preservation_correlation": 0.9999999999999999,
+        "quality_retention": 99.9999985940236,
+        "passed": true
+      }
+    ],
+    "semantic_search": [
+      {
+        "hvs_dim": 8,
+        "n_documents": 8,
+        "top_k": 4,
+        "ranking_overlap": 1.0,
+        "original_recall_at_k": 1.0,
+        "reconstructed_recall_at_k": 1.0,
+        "quality_retention": 99.99999900000002,
+        "passed": true
+      },
+      {
+        "hvs_dim": 16,
+        "n_documents": 8,
+        "top_k": 4,
+        "ranking_overlap": 1.0,
+        "original_recall_at_k": 1.0,
+        "reconstructed_recall_at_k": 1.0,
+        "quality_retention": 99.99999900000002,
+        "passed": true
+      },
+      {
+        "hvs_dim": 32,
+        "n_documents": 8,
+        "top_k": 4,
+        "ranking_overlap": 1.0,
+        "original_recall_at_k": 1.0,
+        "reconstructed_recall_at_k": 1.0,
+        "quality_retention": 99.99999900000002,
+        "passed": true
+      },
+      {
+        "hvs_dim": 64,
+        "n_documents": 8,
+        "top_k": 4,
+        "ranking_overlap": 1.0,
+        "original_recall_at_k": 1.0,
+        "reconstructed_recall_at_k": 1.0,
+        "quality_retention": 99.99999900000002,
+        "passed": true
+      }
+    ],
+    "classification": [
+      {
+        "hvs_dim": 8,
+        "n_samples": 10,
+        "n_classes": 3,
+        "original_accuracy": 1.0,
+        "reconstructed_accuracy": 1.0,
+        "prediction_agreement": 1.0,
+        "quality_retention": 99.99999900000002,
+        "passed": true
+      },
+      {
+        "hvs_dim": 16,
+        "n_samples": 10,
+        "n_classes": 3,
+        "original_accuracy": 1.0,
+        "reconstructed_accuracy": 1.0,
+        "prediction_agreement": 1.0,
+        "quality_retention": 99.99999900000002,
+        "passed": true
+      },
+      {
+        "hvs_dim": 32,
+        "n_samples": 10,
+        "n_classes": 3,
+        "original_accuracy": 1.0,
+        "reconstructed_accuracy": 1.0,
+        "prediction_agreement": 1.0,
+        "quality_retention": 99.99999900000002,
+        "passed": true
+      },
+      {
+        "hvs_dim": 64,
+        "n_samples": 10,
+        "n_classes": 3,
+        "original_accuracy": 1.0,
+        "reconstructed_accuracy": 1.0,
+        "prediction_agreement": 1.0,
+        "quality_retention": 99.99999900000002,
+        "passed": true
+      }
+    ],
+    "performance": [
+      {
+        "hvs_dim": 8,
+        "n_sentences": 100,
+        "original_dim": 384,
+        "compression_ratio": 48.0,
+        "encoding_time_ms": 1.1456012725830078,
+        "decoding_time_ms": 0.08630752563476562,
+        "throughput_sentences_per_sec": 81174.84033288175,
+        "memory_saving_percent": 97.65625,
+        "avg_reconstruction_similarity": 0.7602757811546326,
+        "reconstruction_quality_percent": 76.02757811546326
+      },
+      {
+        "hvs_dim": 16,
+        "n_sentences": 100,
+        "original_dim": 384,
+        "compression_ratio": 24.0,
+        "encoding_time_ms": 60.89067459106445,
+        "decoding_time_ms": 12.104034423828125,
+        "throughput_sentences_per_sec": 1369.962307536533,
+        "memory_saving_percent": 95.57291666666666,
+        "avg_reconstruction_similarity": 0.7771337032318115,
+        "reconstruction_quality_percent": 77.71337032318115
+      },
+      {
+        "hvs_dim": 32,
+        "n_sentences": 100,
+        "original_dim": 384,
+        "compression_ratio": 12.0,
+        "encoding_time_ms": 1.2459754943847656,
+        "decoding_time_ms": 0.07796287536621094,
+        "throughput_sentences_per_sec": 75532.21681973708,
+        "memory_saving_percent": 91.40625,
+        "avg_reconstruction_similarity": 0.7849525213241577,
+        "reconstruction_quality_percent": 78.49525213241577
+      },
+      {
+        "hvs_dim": 64,
+        "n_sentences": 100,
+        "original_dim": 384,
+        "compression_ratio": 6.0,
+        "encoding_time_ms": 51.36585235595703,
+        "decoding_time_ms": 0.08869171142578125,
+        "throughput_sentences_per_sec": 1943.4629499203024,
+        "memory_saving_percent": 83.07291666666666,
+        "avg_reconstruction_similarity": 0.7969667315483093,
+        "reconstruction_quality_percent": 79.69667315483093
+      }
+    ]
+  },
+  "model_info": {
+    "model_name": "all-MiniLM-L6-v2",
+    "embedding_dim": 384
+  },
+  "summary": {
+    "overall_pass_rate": {
+      "semantic_similarity": 1.0,
+      "semantic_search": 1.0,
+      "classification": 1.0
+    }
+  },
+  "metadata": {
+    "license": {
+      "name": "AGPLv3",
+      "url": "https://www.gnu.org/licenses/agpl-3.0.html"
+    }
+  }
+}

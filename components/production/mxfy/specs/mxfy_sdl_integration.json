@@ -1,0 +1,246 @@
+{
+  "name": "mxfy_sdl_integration",
+  "version": "1.0.0",
+  "description": "MXFY-SDL Integration Specification - How MXFY queries and utilizes SDL for primitive discovery, search strategies, caching, and SDL lake organization",
+  "license": {
+    "type": "AGPLv3",
+    "text": "This specification is licensed under the GNU Affero General Public License v3.0. See https://www.gnu.org/licenses/agpl-3.0.html for full license text.",
+    "copyright": "Copyright (c) 2024-2026 HyperSync Project"
+  },
+  "subsystem": "MXFY",
+  "category": "sdl_integration",
+  "stunir_compatible": true,
+  "dependencies": [
+    "mxfy_core_system@1.0.0",
+    "sdl_core_infrastructure@3.1.0",
+    "sdl_semantic_search@3.1.0",
+    "sdl_indexing_system@3.1.0"
+  ],
+  "architecture": {
+    "overview": "MXFY uses SDL as its primitive source - all building blocks come from semantically-discoverable SDL shards",
+    "integration_points": {
+      "blueprint_phase": "Query SDL for primitives matching intent",
+      "fabrication_phase": "Load primitive content from SDL",
+      "validation_phase": "Verify primitives exist and are compatible"
+    },
+    "query_strategy": {
+      "multi_stage_search": {
+        "stage_1_semantic": {
+          "description": "Broad semantic search by intent",
+          "method": "sdl_semantic_query",
+          "purpose": "Find potentially relevant primitives"
+        },
+        "stage_2_capability": {
+          "description": "Filter by required capabilities",
+          "method": "sdl_capability_discovery",
+          "purpose": "Narrow to primitives with needed features"
+        },
+        "stage_3_compatibility": {
+          "description": "Check type and version compatibility",
+          "method": "sdl_dependency_discovery",
+          "purpose": "Ensure primitives can work together"
+        }
+      }
+    },
+    "sdl_lake_organization": {
+      "description": "SDL lakes organized by content type for MXFY use",
+      "lakes": {
+        "code_primitives": {
+          "shard_types": ["code"],
+          "content": "Functions, modules, libraries",
+          "mxfy_use": "Application logic building blocks"
+        },
+        "ui_components": {
+          "shard_types": ["ui"],
+          "content": "Widgets, layouts, themes",
+          "mxfy_use": "User interface elements"
+        },
+        "data_handlers": {
+          "shard_types": ["data"],
+          "content": "Parsers, transformers, validators",
+          "mxfy_use": "Data processing logic"
+        },
+        "config_templates": {
+          "shard_types": ["config"],
+          "content": "Configuration templates, schemas",
+          "mxfy_use": "Application configuration"
+        },
+        "model_primitives": {
+          "shard_types": ["model"],
+          "content": "ML models, inference code",
+          "mxfy_use": "AI-powered features"
+        }
+      }
+    }
+  },
+  "type_definitions": {
+    "MXFYSearchQuery": {
+      "description": "Query structure for MXFY SDL searches",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "intent": {"$ref": "mxfy_core_system#/type_definitions/ParsedIntent"},
+          "required_types": {"type": "array", "items": {"type": "string"}},
+          "required_capabilities": {"type": "array", "items": {"type": "string"}},
+          "compatibility_constraints": {"type": "object"},
+          "max_results": {"type": "integer", "default": 50},
+          "search_scope": {"type": "string", "enum": ["all", "code", "ui", "data", "config", "model"]}
+        }
+      }
+    },
+    "PrimitiveSearchResult": {
+      "description": "Result from SDL primitive search",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "shards": {"type": "array", "items": {"$ref": "sdl_core_infrastructure#/type_definitions/SDLShard"}},
+          "scores": {"type": "array", "items": {"type": "number"}},
+          "search_metadata": {"type": "object"}
+        }
+      }
+    },
+    "CapabilityMap": {
+      "description": "Mapping of capabilities to primitives",
+      "schema": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "array",
+          "items": {"type": "string"}
+        }
+      }
+    },
+    "CompatibilityMatrix": {
+      "description": "Matrix of primitive compatibility",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "primitives": {"type": "array", "items": {"type": "string"}},
+          "matrix": {"type": "array", "items": {"type": "array", "items": {"type": "boolean"}}}
+        }
+      }
+    },
+    "CacheEntry": {
+      "description": "Cached search result",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "query_hash": {"type": "string"},
+          "results": {"$ref": "#/type_definitions/PrimitiveSearchResult"},
+          "timestamp": {"type": "string", "format": "date-time"},
+          "ttl_seconds": {"type": "integer"}
+        }
+      }
+    }
+  },
+  "operations": [
+    {
+      "name": "mxfy_sdl_search_primitives",
+      "description": "Search SDL for primitives matching intent",
+      "signature": "mxfy_sdl_search_primitives(query: MXFYSearchQuery) -> PrimitiveSearchResult",
+      "complexity": "O(log n)",
+      "determinism": "D0"
+    },
+    {
+      "name": "mxfy_sdl_semantic_search",
+      "description": "Semantic search for primitives by natural language",
+      "signature": "mxfy_sdl_semantic_search(text: string, scope: string) -> array[SDLShard]",
+      "complexity": "O(log n)",
+      "determinism": "D0"
+    },
+    {
+      "name": "mxfy_sdl_capability_search",
+      "description": "Find primitives by capability requirements",
+      "signature": "mxfy_sdl_capability_search(capabilities: array[string]) -> CapabilityMap",
+      "complexity": "O(c) where c = capability count",
+      "determinism": "D0"
+    },
+    {
+      "name": "mxfy_sdl_check_compatibility",
+      "description": "Check if primitives are compatible",
+      "signature": "mxfy_sdl_check_compatibility(primitives: array[SDLShard]) -> CompatibilityMatrix",
+      "complexity": "O(n²)",
+      "determinism": "D0"
+    },
+    {
+      "name": "mxfy_sdl_load_primitive",
+      "description": "Load primitive content from SDL",
+      "signature": "mxfy_sdl_load_primitive(shard_id: UUID) -> LoadedPrimitive",
+      "complexity": "O(1)",
+      "determinism": "D0"
+    },
+    {
+      "name": "mxfy_sdl_batch_load",
+      "description": "Load multiple primitives efficiently",
+      "signature": "mxfy_sdl_batch_load(shard_ids: array[UUID]) -> array[LoadedPrimitive]",
+      "complexity": "O(n)",
+      "determinism": "D0"
+    },
+    {
+      "name": "mxfy_sdl_resolve_dependencies",
+      "description": "Resolve all dependencies for primitives",
+      "signature": "mxfy_sdl_resolve_dependencies(shard_ids: array[UUID]) -> DependencyGraph",
+      "complexity": "O(V + E)",
+      "determinism": "D0"
+    },
+    {
+      "name": "mxfy_sdl_cache_query",
+      "description": "Cache a search query result",
+      "signature": "mxfy_sdl_cache_query(query: MXFYSearchQuery, result: PrimitiveSearchResult, ttl: integer) -> CacheEntry",
+      "complexity": "O(1)",
+      "determinism": "D0"
+    },
+    {
+      "name": "mxfy_sdl_get_cached",
+      "description": "Retrieve cached search result",
+      "signature": "mxfy_sdl_get_cached(query: MXFYSearchQuery) -> Optional[PrimitiveSearchResult]",
+      "complexity": "O(1)",
+      "determinism": "D0"
+    }
+  ],
+  "search_patterns": {
+    "intent_to_primitives": {
+      "description": "Convert parsed intent to primitive search",
+      "steps": [
+        "1. Extract keywords from application_type and target_use_case",
+        "2. Generate semantic query vector from intent",
+        "3. Search code primitives for logic components",
+        "4. Search UI primitives for interface elements",
+        "5. Search data primitives if data handling implied",
+        "6. Merge and rank results by relevance"
+      ]
+    },
+    "capability_matching": {
+      "description": "Match required capabilities to primitives",
+      "algorithm": {
+        "input": "Set of required capabilities",
+        "output": "Minimal set of primitives covering all capabilities",
+        "method": "Set cover approximation"
+      }
+    }
+  },
+  "caching_strategy": {
+    "query_cache": {
+      "description": "Cache search results by query hash",
+      "ttl": "300 seconds",
+      "max_size": "1000 entries"
+    },
+    "primitive_cache": {
+      "description": "Cache loaded primitive content",
+      "ttl": "3600 seconds",
+      "max_size": "100 MB"
+    },
+    "compatibility_cache": {
+      "description": "Cache compatibility checks",
+      "ttl": "86400 seconds",
+      "invalidation": "On primitive update"
+    }
+  },
+  "test_cases": [
+    {
+      "id": "SDL_INT_TC_001",
+      "description": "Search for file browser primitives",
+      "input": {"intent": {"application_type": "file browser", "target_use_case": "datasets"}},
+      "expected": {"found_ui_primitives": true, "found_code_primitives": true}
+    }
+  ]
+}

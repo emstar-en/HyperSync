@@ -1,0 +1,2850 @@
+{
+  "metadata": {
+    "name": "homomorphic_operations",
+    "version": "1.0.0",
+    "description": "Homomorphic Encryption Operations for HyperSync - Privacy-preserving geometric computations (distance, geodesics, parallel transport) without decryption using additive and multiplicative homomorphic schemes",
+    "author": "HyperSync Framework",
+    "created": "2026-01-16T00:00:00Z",
+    "updated": "2026-01-16T00:00:00Z",
+    "stunir_version": "1.0",
+    "domain": "hypersync.security.homomorphic",
+    "conformance_level": 4,
+    "dependencies": [
+      "hyperbolic_core",
+      "lorentz_distance_metrics",
+      "cryptographic_primitives"
+    ],
+    "license": {
+      "name": "AGPLv3",
+      "url": "https://www.gnu.org/licenses/agpl-3.0.html"
+    },
+    "authors": [
+      "HyperSync Team"
+    ],
+    "mathematical_foundation": {
+      "basis": "Homomorphic Encryption over Hyperbolic Geometry",
+      "key_equations": [
+        "Paillier Additively Homomorphic: E(m\u2081) \u00b7 E(m\u2082) = E(m\u2081 + m\u2082)",
+        "BFV Fully Homomorphic: E(m\u2081) \u2295 E(m\u2082) = E(m\u2081 + m\u2082), E(m\u2081) \u2297 E(m\u2082) = E(m\u2081 \u00b7 m\u2082)",
+        "CKKS Approximate: E(m\u2081 + m\u2082) \u2248 E(m\u2081) \u2295 E(m\u2082) with controlled error",
+        "Encrypted Lorentz Inner Product: \u27e8E(x), E(y)\u27e9_M = E(-x\u2080y\u2080 + \u03a3\u1d62x\u1d62y\u1d62)",
+        "Homomorphic Distance: E(d) = E(arcosh(-\u27e8x,y\u27e9_M))"
+      ],
+      "properties": [
+        "Semantic security under chosen-plaintext attack",
+        "Circuit depth management for FHE operations",
+        "Noise budget tracking and bootstrapping",
+        "Precision preservation in geometric computations"
+      ]
+    },
+    "tags": [
+      "homomorphic",
+      "encryption",
+      "privacy",
+      "security",
+      "fhe",
+      "phe",
+      "critical"
+    ]
+  },
+  "types": {
+    "EncryptionScheme": {
+      "description": "Homomorphic encryption scheme configuration",
+      "base_type": "object",
+      "properties": {
+        "scheme_type": {
+          "type": "string",
+          "enum": [
+            "paillier",
+            "bfv",
+            "bgv",
+            "ckks",
+            "tfhe"
+          ],
+          "description": "Encryption scheme family"
+        },
+        "security_level": {
+          "type": "integer",
+          "enum": [
+            128,
+            192,
+            256
+          ],
+          "default": 128,
+          "description": "Security level in bits"
+        },
+        "polynomial_degree": {
+          "type": "integer",
+          "minimum": 1024,
+          "maximum": 65536,
+          "default": 8192,
+          "description": "Ring dimension for lattice-based schemes"
+        },
+        "plaintext_modulus": {
+          "type": "integer",
+          "description": "Plaintext space modulus"
+        },
+        "ciphertext_modulus_bits": {
+          "type": "integer",
+          "minimum": 100,
+          "maximum": 1000,
+          "description": "Total bits in ciphertext modulus chain"
+        },
+        "scale": {
+          "type": "number",
+          "description": "Scaling factor for CKKS encoding"
+        }
+      }
+    },
+    "EncryptedPoint": {
+      "description": "Homomorphically encrypted point in hyperbolic space",
+      "base_type": "object",
+      "properties": {
+        "encrypted_coords": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Base64-encoded encrypted coordinates"
+        },
+        "dimension": {
+          "type": "integer",
+          "minimum": 2
+        },
+        "scheme": {
+          "type": "EncryptionScheme"
+        },
+        "noise_budget": {
+          "type": "integer",
+          "description": "Remaining noise budget in bits (for FHE)"
+        },
+        "chain_index": {
+          "type": "integer",
+          "description": "Current modulus chain index"
+        },
+        "coordinate_space": {
+          "type": "string",
+          "enum": [
+            "lorentz",
+            "poincare",
+            "klein"
+          ],
+          "default": "lorentz"
+        }
+      },
+      "constraints": [
+        "All coordinates encrypted under same key",
+        "Noise budget must be positive for valid operations",
+        "Dimension must match encryption parameters"
+      ]
+    },
+    "EncryptedScalar": {
+      "description": "Homomorphically encrypted scalar value",
+      "base_type": "object",
+      "properties": {
+        "ciphertext": {
+          "type": "string",
+          "description": "Base64-encoded ciphertext"
+        },
+        "scheme": {
+          "type": "EncryptionScheme"
+        },
+        "noise_budget": {
+          "type": "integer"
+        },
+        "is_distance": {
+          "type": "boolean",
+          "description": "Whether this represents a distance"
+        },
+        "precision_bits": {
+          "type": "integer",
+          "description": "Estimated precision after operations"
+        }
+      }
+    },
+    "EncryptedVector": {
+      "description": "Homomorphically encrypted tangent vector",
+      "base_type": "object",
+      "properties": {
+        "encrypted_components": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "base_point_hash": {
+          "type": "string",
+          "description": "Hash of encrypted base point for verification"
+        },
+        "scheme": {
+          "type": "EncryptionScheme"
+        },
+        "noise_budget": {
+          "type": "integer"
+        }
+      }
+    },
+    "PublicKey": {
+      "description": "Homomorphic encryption public key",
+      "base_type": "object",
+      "properties": {
+        "key_id": {
+          "type": "string"
+        },
+        "key_data": {
+          "type": "string",
+          "description": "Base64-encoded public key"
+        },
+        "scheme": {
+          "type": "EncryptionScheme"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "fingerprint": {
+          "type": "string",
+          "description": "SHA256 fingerprint of key"
+        }
+      }
+    },
+    "SecretKey": {
+      "description": "Homomorphic encryption secret key (never transmitted)",
+      "base_type": "object",
+      "properties": {
+        "key_id": {
+          "type": "string"
+        },
+        "scheme": {
+          "type": "EncryptionScheme"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "security_note": "Secret key material is never serialized or transmitted"
+    },
+    "RelinearizationKey": {
+      "description": "Relinearization key for multiplication operations",
+      "base_type": "object",
+      "properties": {
+        "key_id": {
+          "type": "string"
+        },
+        "key_data": {
+          "type": "string"
+        },
+        "scheme": {
+          "type": "EncryptionScheme"
+        },
+        "decomposition_bit_count": {
+          "type": "integer"
+        }
+      }
+    },
+    "GaloisKeys": {
+      "description": "Galois keys for rotation operations",
+      "base_type": "object",
+      "properties": {
+        "key_id": {
+          "type": "string"
+        },
+        "key_data": {
+          "type": "string"
+        },
+        "scheme": {
+          "type": "EncryptionScheme"
+        },
+        "rotation_steps": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "description": "Supported rotation step sizes"
+        }
+      }
+    },
+    "BootstrappingKey": {
+      "description": "Key for noise refreshing via bootstrapping",
+      "base_type": "object",
+      "properties": {
+        "key_id": {
+          "type": "string"
+        },
+        "key_data": {
+          "type": "string"
+        },
+        "scheme": {
+          "type": "EncryptionScheme"
+        },
+        "precision_loss_bits": {
+          "type": "integer"
+        }
+      }
+    },
+    "EncryptedDistanceResult": {
+      "description": "Result of encrypted distance computation",
+      "base_type": "object",
+      "properties": {
+        "encrypted_distance": {
+          "type": "EncryptedScalar"
+        },
+        "computation_depth": {
+          "type": "integer"
+        },
+        "operations_used": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "estimated_error": {
+          "type": "number"
+        },
+        "noise_consumed": {
+          "type": "integer"
+        }
+      }
+    },
+    "EncryptedGeodesicResult": {
+      "description": "Result of encrypted geodesic computation",
+      "base_type": "object",
+      "properties": {
+        "encrypted_point": {
+          "type": "EncryptedPoint"
+        },
+        "parameter_t": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "computation_depth": {
+          "type": "integer"
+        },
+        "is_approximate": {
+          "type": "boolean"
+        },
+        "taylor_order": {
+          "type": "integer",
+          "description": "Order of Taylor expansion used"
+        }
+      }
+    },
+    "EncryptedTransportResult": {
+      "description": "Result of encrypted parallel transport",
+      "base_type": "object",
+      "properties": {
+        "encrypted_transported_vector": {
+          "type": "EncryptedVector"
+        },
+        "along_geodesic_hash": {
+          "type": "string"
+        },
+        "computation_depth": {
+          "type": "integer"
+        },
+        "tangent_constraint_preserved": {
+          "type": "boolean"
+        }
+      }
+    },
+    "NoiseEstimate": {
+      "description": "Noise budget estimation after operations",
+      "base_type": "object",
+      "properties": {
+        "initial_budget": {
+          "type": "integer"
+        },
+        "consumed_budget": {
+          "type": "integer"
+        },
+        "remaining_budget": {
+          "type": "integer"
+        },
+        "operations_chain": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "needs_bootstrapping": {
+          "type": "boolean"
+        }
+      }
+    },
+    "PrivacyGuarantee": {
+      "description": "Privacy guarantees provided by the computation",
+      "base_type": "object",
+      "properties": {
+        "semantic_security": {
+          "type": "boolean"
+        },
+        "cpa_secure": {
+          "type": "boolean"
+        },
+        "cca_secure": {
+          "type": "boolean"
+        },
+        "leakage_model": {
+          "type": "string",
+          "enum": [
+            "none",
+            "access_pattern",
+            "result_size"
+          ]
+        },
+        "security_assumption": {
+          "type": "string",
+          "enum": [
+            "rlwe",
+            "lwe",
+            "dcr",
+            "qr"
+          ]
+        }
+      }
+    },
+    "BatchEncryptedPoints": {
+      "description": "Batch of encrypted points for SIMD operations",
+      "base_type": "object",
+      "properties": {
+        "encrypted_batch": {
+          "type": "string"
+        },
+        "num_points": {
+          "type": "integer"
+        },
+        "dimension": {
+          "type": "integer"
+        },
+        "scheme": {
+          "type": "EncryptionScheme"
+        },
+        "slot_count": {
+          "type": "integer"
+        }
+      }
+    },
+    "HomomorphicCircuit": {
+      "description": "Arithmetic circuit for homomorphic evaluation",
+      "base_type": "object",
+      "properties": {
+        "circuit_id": {
+          "type": "string"
+        },
+        "operations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "op": {
+                "type": "string",
+                "enum": [
+                  "add",
+                  "mul",
+                  "rotate",
+                  "bootstrap"
+                ]
+              },
+              "inputs": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "output": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "multiplicative_depth": {
+          "type": "integer"
+        },
+        "additive_operations": {
+          "type": "integer"
+        },
+        "rotation_operations": {
+          "type": "integer"
+        }
+      }
+    }
+  },
+  "operations": {
+    "generate_keys": {
+      "description": "Generate homomorphic encryption key set",
+      "inputs": {
+        "scheme": {
+          "type": "EncryptionScheme",
+          "required": true
+        },
+        "include_relin_keys": {
+          "type": "boolean",
+          "default": true
+        },
+        "include_galois_keys": {
+          "type": "boolean",
+          "default": false
+        },
+        "galois_steps": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "include_bootstrapping_keys": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "outputs": {
+        "public_key": {
+          "type": "PublicKey"
+        },
+        "relin_keys": {
+          "type": "RelinearizationKey"
+        },
+        "galois_keys": {
+          "type": "GaloisKeys"
+        },
+        "bootstrapping_key": {
+          "type": "BootstrappingKey"
+        },
+        "key_generation_time_ms": {
+          "type": "integer"
+        }
+      },
+      "preconditions": [
+        "scheme.security_level >= 128",
+        "scheme.polynomial_degree is power of 2"
+      ],
+      "postconditions": [
+        "public_key.scheme == scheme",
+        "all keys have matching key_id prefix"
+      ],
+      "error_conditions": [
+        "INVALID_PARAMETERS: Security parameters invalid",
+        "INSUFFICIENT_MEMORY: Not enough memory for key generation"
+      ],
+      "security_properties": {
+        "key_independence": "Each key generation uses fresh randomness",
+        "secure_prng": "CSPRNG used for all randomness"
+      },
+      "complexity": {
+        "time": "O(N\u00b2 log N) where N is polynomial degree",
+        "space": "O(N \u00b7 L) where L is modulus chain length"
+      }
+    },
+    "encrypt_point": {
+      "description": "Encrypt a hyperbolic point for homomorphic operations",
+      "inputs": {
+        "point": {
+          "type": "object",
+          "description": "Plaintext LorentzPoint or PoincarePoint",
+          "required": true
+        },
+        "public_key": {
+          "type": "PublicKey",
+          "required": true
+        },
+        "encoding_precision": {
+          "type": "number",
+          "default": 40,
+          "description": "Bits of precision for CKKS"
+        }
+      },
+      "outputs": {
+        "encrypted_point": {
+          "type": "EncryptedPoint"
+        },
+        "encryption_time_us": {
+          "type": "integer"
+        }
+      },
+      "preconditions": [
+        "point satisfies manifold constraint",
+        "public_key.scheme supports geometric operations",
+        "encoding_precision <= scheme.scale_bits"
+      ],
+      "postconditions": [
+        "encrypted_point.dimension == point.dimension",
+        "encrypted_point.noise_budget > 0",
+        "decryption recovers point within precision"
+      ],
+      "error_conditions": [
+        "INVALID_POINT: Point not on manifold",
+        "PRECISION_OVERFLOW: Value exceeds plaintext space"
+      ],
+      "security_properties": {
+        "semantic_security": true,
+        "randomized_encryption": "Fresh randomness per encryption"
+      }
+    },
+    "encrypt_vector": {
+      "description": "Encrypt a tangent vector for homomorphic transport",
+      "inputs": {
+        "vector": {
+          "type": "object",
+          "required": true
+        },
+        "base_point": {
+          "type": "object",
+          "required": true
+        },
+        "public_key": {
+          "type": "PublicKey",
+          "required": true
+        }
+      },
+      "outputs": {
+        "encrypted_vector": {
+          "type": "EncryptedVector"
+        }
+      },
+      "preconditions": [
+        "vector is tangent to base_point",
+        "\u27e8vector, base_point\u27e9_M = 0"
+      ],
+      "postconditions": [
+        "encrypted_vector.base_point_hash == hash(encrypt(base_point))"
+      ],
+      "error_conditions": [
+        "NOT_TANGENT: Vector not in tangent space"
+      ]
+    },
+    "encrypted_distance": {
+      "description": "Compute distance between two encrypted points without decryption",
+      "inputs": {
+        "encrypted_p1": {
+          "type": "EncryptedPoint",
+          "required": true
+        },
+        "encrypted_p2": {
+          "type": "EncryptedPoint",
+          "required": true
+        },
+        "relin_keys": {
+          "type": "RelinearizationKey",
+          "required": true
+        },
+        "approximation_order": {
+          "type": "integer",
+          "default": 5,
+          "description": "Taylor series order for arcosh"
+        }
+      },
+      "outputs": {
+        "result": {
+          "type": "EncryptedDistanceResult"
+        }
+      },
+      "preconditions": [
+        "encrypted_p1.scheme == encrypted_p2.scheme",
+        "encrypted_p1.dimension == encrypted_p2.dimension",
+        "Both points have sufficient noise budget"
+      ],
+      "postconditions": [
+        "result.encrypted_distance.noise_budget > 0",
+        "Decrypted result approximates true distance within Taylor error"
+      ],
+      "error_conditions": [
+        "SCHEME_MISMATCH: Points encrypted under different schemes",
+        "NOISE_EXHAUSTED: Insufficient noise budget for operation",
+        "DIMENSION_MISMATCH: Points have different dimensions"
+      ],
+      "security_properties": {
+        "no_plaintext_leakage": true,
+        "result_encrypted": "Distance remains encrypted"
+      },
+      "implementation_notes": {
+        "lorentz_method": "Compute encrypted Lorentz inner product then Taylor expand arcosh",
+        "circuit_depth": "Multiplicative depth = 2 (inner product) + approximation_order",
+        "precision": "Error bounded by Taylor remainder: O(x^(2n+1)/(2n+1)!)"
+      }
+    },
+    "encrypted_lorentz_inner_product": {
+      "description": "Compute Lorentz inner product of two encrypted points",
+      "inputs": {
+        "encrypted_p1": {
+          "type": "EncryptedPoint",
+          "required": true
+        },
+        "encrypted_p2": {
+          "type": "EncryptedPoint",
+          "required": true
+        },
+        "relin_keys": {
+          "type": "RelinearizationKey",
+          "required": true
+        }
+      },
+      "outputs": {
+        "encrypted_inner_product": {
+          "type": "EncryptedScalar"
+        },
+        "noise_consumed": {
+          "type": "integer"
+        }
+      },
+      "preconditions": [
+        "encrypted_p1.coordinate_space == 'lorentz'",
+        "encrypted_p2.coordinate_space == 'lorentz'"
+      ],
+      "postconditions": [
+        "Result equals E(-x\u2080y\u2080 + \u03a3\u1d62x\u1d62y\u1d62)"
+      ],
+      "complexity": {
+        "multiplicative_depth": 1,
+        "additions": "dimension",
+        "multiplications": "dimension"
+      }
+    },
+    "encrypted_geodesic_interpolation": {
+      "description": "Compute point along geodesic between two encrypted points",
+      "inputs": {
+        "encrypted_start": {
+          "type": "EncryptedPoint",
+          "required": true
+        },
+        "encrypted_end": {
+          "type": "EncryptedPoint",
+          "required": true
+        },
+        "t": {
+          "type": "number",
+          "required": true,
+          "minimum": 0,
+          "maximum": 1
+        },
+        "relin_keys": {
+          "type": "RelinearizationKey",
+          "required": true
+        },
+        "galois_keys": {
+          "type": "GaloisKeys"
+        },
+        "method": {
+          "type": "string",
+          "enum": [
+            "taylor_slerp",
+            "linear_approximation",
+            "rational_approximation"
+          ],
+          "default": "taylor_slerp"
+        }
+      },
+      "outputs": {
+        "result": {
+          "type": "EncryptedGeodesicResult"
+        }
+      },
+      "preconditions": [
+        "0 <= t <= 1",
+        "Both points on same manifold"
+      ],
+      "postconditions": [
+        "Result lies on geodesic (approximately)",
+        "t=0 recovers start, t=1 recovers end"
+      ],
+      "error_conditions": [
+        "PARAMETER_OUT_OF_RANGE: t not in [0,1]",
+        "NOISE_EXHAUSTED: Insufficient budget for geodesic computation"
+      ],
+      "implementation_notes": {
+        "taylor_slerp": "Uses Taylor expansion of sinh/cosh for SLERP formula",
+        "circuit_depth": "Depends on Taylor order, typically 6-10 multiplicative depth"
+      }
+    },
+    "encrypted_parallel_transport": {
+      "description": "Parallel transport encrypted vector along encrypted geodesic",
+      "inputs": {
+        "encrypted_vector": {
+          "type": "EncryptedVector",
+          "required": true
+        },
+        "encrypted_start": {
+          "type": "EncryptedPoint",
+          "required": true
+        },
+        "encrypted_end": {
+          "type": "EncryptedPoint",
+          "required": true
+        },
+        "relin_keys": {
+          "type": "RelinearizationKey",
+          "required": true
+        },
+        "galois_keys": {
+          "type": "GaloisKeys"
+        }
+      },
+      "outputs": {
+        "result": {
+          "type": "EncryptedTransportResult"
+        }
+      },
+      "preconditions": [
+        "encrypted_vector is tangent at encrypted_start",
+        "All inputs under same encryption key"
+      ],
+      "postconditions": [
+        "Result is tangent at encrypted_end",
+        "Vector norm preserved (within approximation error)"
+      ],
+      "error_conditions": [
+        "TANGENT_MISMATCH: Vector not tangent at start point"
+      ],
+      "implementation_notes": {
+        "method": "Schild's ladder approximation via encrypted midpoint computations",
+        "circuit_depth": "3\u00d7 geodesic interpolation depth"
+      }
+    },
+    "encrypted_batch_distances": {
+      "description": "Compute distances from query to multiple encrypted database points",
+      "inputs": {
+        "encrypted_query": {
+          "type": "EncryptedPoint",
+          "required": true
+        },
+        "encrypted_database": {
+          "type": "BatchEncryptedPoints",
+          "required": true
+        },
+        "relin_keys": {
+          "type": "RelinearizationKey",
+          "required": true
+        },
+        "galois_keys": {
+          "type": "GaloisKeys",
+          "required": true
+        }
+      },
+      "outputs": {
+        "encrypted_distances": {
+          "type": "array",
+          "items": {
+            "type": "EncryptedScalar"
+          }
+        },
+        "total_computation_time_ms": {
+          "type": "integer"
+        }
+      },
+      "preconditions": [
+        "Query and database use same scheme",
+        "Galois keys support required rotations"
+      ],
+      "postconditions": [
+        "encrypted_distances.length == encrypted_database.num_points"
+      ],
+      "implementation_notes": {
+        "simd_batching": "Uses slot rotation for parallel distance computation",
+        "throughput": "Up to slot_count/dimension distances per ciphertext operation"
+      }
+    },
+    "encrypted_centroid": {
+      "description": "Compute Fr\u00e9chet mean of encrypted points (geometric centroid)",
+      "inputs": {
+        "encrypted_points": {
+          "type": "array",
+          "items": {
+            "type": "EncryptedPoint"
+          },
+          "required": true
+        },
+        "weights": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        },
+        "relin_keys": {
+          "type": "RelinearizationKey",
+          "required": true
+        },
+        "max_iterations": {
+          "type": "integer",
+          "default": 10
+        },
+        "convergence_threshold": {
+          "type": "number",
+          "default": 1e-06
+        }
+      },
+      "outputs": {
+        "encrypted_centroid": {
+          "type": "EncryptedPoint"
+        },
+        "iterations_used": {
+          "type": "integer"
+        },
+        "final_residual_encrypted": {
+          "type": "EncryptedScalar"
+        }
+      },
+      "preconditions": [
+        "All points under same key",
+        "weights.sum() = 1.0 if provided",
+        "weights.length == encrypted_points.length"
+      ],
+      "postconditions": [
+        "Centroid minimizes weighted sum of squared distances"
+      ],
+      "implementation_notes": {
+        "algorithm": "Encrypted gradient descent with fixed step size",
+        "convergence": "Cannot check convergence on encrypted values - use fixed iterations"
+      }
+    },
+    "noise_estimation": {
+      "description": "Estimate remaining noise budget for encrypted value",
+      "inputs": {
+        "encrypted_value": {
+          "type": "object",
+          "required": true
+        },
+        "operations_to_perform": {
+          "type": "HomomorphicCircuit"
+        }
+      },
+      "outputs": {
+        "estimate": {
+          "type": "NoiseEstimate"
+        }
+      },
+      "postconditions": [
+        "estimate.remaining_budget accurately predicts available operations"
+      ],
+      "implementation_notes": {
+        "heuristic": "Based on scheme parameters and operation counts",
+        "conservative": "Estimates err on the side of caution"
+      }
+    },
+    "bootstrap": {
+      "description": "Refresh noise budget via bootstrapping",
+      "inputs": {
+        "encrypted_value": {
+          "type": "EncryptedPoint",
+          "required": true
+        },
+        "bootstrapping_key": {
+          "type": "BootstrappingKey",
+          "required": true
+        }
+      },
+      "outputs": {
+        "refreshed_value": {
+          "type": "EncryptedPoint"
+        },
+        "precision_loss": {
+          "type": "number"
+        },
+        "bootstrapping_time_ms": {
+          "type": "integer"
+        }
+      },
+      "preconditions": [
+        "encrypted_value.noise_budget > minimum_for_bootstrap"
+      ],
+      "postconditions": [
+        "refreshed_value.noise_budget == initial_budget - precision_loss_bits",
+        "Decryption yields same plaintext (within precision loss)"
+      ],
+      "error_conditions": [
+        "BOOTSTRAP_FAILED: Insufficient noise budget to bootstrap"
+      ],
+      "security_properties": {
+        "circular_security": "Assumes circular security of the scheme"
+      }
+    },
+    "switch_scheme": {
+      "description": "Convert encrypted data between schemes (with transcryption)",
+      "inputs": {
+        "encrypted_value": {
+          "type": "EncryptedPoint",
+          "required": true
+        },
+        "source_secret_key": {
+          "type": "SecretKey",
+          "required": true
+        },
+        "target_public_key": {
+          "type": "PublicKey",
+          "required": true
+        }
+      },
+      "outputs": {
+        "converted_value": {
+          "type": "EncryptedPoint"
+        }
+      },
+      "preconditions": [
+        "source_secret_key corresponds to encryption key of input"
+      ],
+      "postconditions": [
+        "converted_value.scheme == target_public_key.scheme"
+      ],
+      "security_properties": {
+        "requires_secret_key": true,
+        "note": "This operation requires trusted party with secret key"
+      }
+    },
+    "verify_encrypted_constraint": {
+      "description": "Verify encrypted point satisfies manifold constraint (encrypted verification)",
+      "inputs": {
+        "encrypted_point": {
+          "type": "EncryptedPoint",
+          "required": true
+        },
+        "relin_keys": {
+          "type": "RelinearizationKey",
+          "required": true
+        },
+        "tolerance": {
+          "type": "number",
+          "default": 1e-06
+        }
+      },
+      "outputs": {
+        "encrypted_constraint_value": {
+          "type": "EncryptedScalar"
+        },
+        "verification_depth": {
+          "type": "integer"
+        }
+      },
+      "postconditions": [
+        "Decrypted constraint value close to -1 for valid Lorentz points"
+      ],
+      "implementation_notes": {
+        "computes": "E(\u27e8x,x\u27e9_M) which should equal E(-1) for valid points"
+      }
+    },
+    "compare_encrypted_distances": {
+      "description": "Compare two encrypted distances without revealing values",
+      "inputs": {
+        "encrypted_d1": {
+          "type": "EncryptedScalar",
+          "required": true
+        },
+        "encrypted_d2": {
+          "type": "EncryptedScalar",
+          "required": true
+        },
+        "comparison_method": {
+          "type": "string",
+          "enum": [
+            "sign_extraction",
+            "garbled_circuit",
+            "polynomial_approximation"
+          ],
+          "default": "polynomial_approximation"
+        }
+      },
+      "outputs": {
+        "encrypted_comparison": {
+          "type": "EncryptedScalar"
+        },
+        "comparison_meaning": {
+          "type": "string",
+          "description": "1 if d1 < d2, 0 otherwise (when decrypted)"
+        }
+      },
+      "implementation_notes": {
+        "polynomial_approximation": "Uses sign function approximation via Chebyshev polynomials",
+        "circuit_depth": "High due to comparison - may require bootstrapping"
+      }
+    },
+    "encrypted_knn_retrieval": {
+      "description": "Privacy-preserving k-NN retrieval over encrypted embeddings",
+      "inputs": {
+        "encrypted_query": {
+          "type": "EncryptedPoint",
+          "required": true
+        },
+        "encrypted_database": {
+          "type": "BatchEncryptedPoints",
+          "required": true
+        },
+        "k": {
+          "type": "integer",
+          "required": true,
+          "minimum": 1
+        },
+        "relin_keys": {
+          "type": "RelinearizationKey",
+          "required": true
+        },
+        "galois_keys": {
+          "type": "GaloisKeys",
+          "required": true
+        }
+      },
+      "outputs": {
+        "encrypted_indices": {
+          "type": "array",
+          "items": {
+            "type": "EncryptedScalar"
+          }
+        },
+        "encrypted_distances": {
+          "type": "array",
+          "items": {
+            "type": "EncryptedScalar"
+          }
+        },
+        "computation_stats": {
+          "type": "object",
+          "properties": {
+            "total_comparisons": {
+              "type": "integer"
+            },
+            "total_time_ms": {
+              "type": "integer"
+            }
+          }
+        }
+      },
+      "implementation_notes": {
+        "algorithm": "Encrypted sorting network or oblivious selection",
+        "complexity": "O(n log\u00b2 n) comparisons for sorting-based approach"
+      }
+    }
+  },
+  "tests": {
+    "conformance_blocks": [
+      {
+        "schema_version": "block-uni-1",
+        "block_id": "homo.ops.identity.001",
+        "metadata": {
+          "title": "Homomorphic Identity - Key Generation",
+          "description": "Verify key generation produces valid keys with correct properties",
+          "created_at": "2026-01-16T00:00:00Z",
+          "authors": [
+            "HyperSync Test Suite"
+          ],
+          "tags": [
+            "identity",
+            "keygen",
+            "cryptographic"
+          ]
+        },
+        "integrity": {
+          "manifest": [
+            {
+              "path": "test_identity_keygen.py",
+              "sha256": "placeholder_hash_001",
+              "role": "program"
+            },
+            {
+              "path": "fixtures/keygen_params.json",
+              "sha256": "placeholder_hash_002",
+              "role": "fixture"
+            }
+          ],
+          "dir_merkle_root": "placeholder_merkle_root_001",
+          "canonicalization": {
+            "field_order": "declared",
+            "byte_encoding": "utf8",
+            "float_format": "scientific",
+            "normalize_sign": true
+          },
+          "integrity_policy": {
+            "must_match_manifest": true,
+            "deny_unknown_files": true,
+            "allow_out_of_dir": false
+          }
+        },
+        "environment": {
+          "os": "linux",
+          "arch": "x86_64",
+          "accel": "cpu",
+          "precision": "fp64",
+          "deterministic_reductions": true,
+          "blas_threads": 1
+        },
+        "manifold": {
+          "model": "lorentz",
+          "dimension": 64,
+          "curvature": -1.0
+        },
+        "numeric_policy": {
+          "tolerance": 1e-12,
+          "max_iterations": 1000
+        },
+        "substrate": {
+          "nodes": [
+            {
+              "node_id": "keygen_node",
+              "role": "compute"
+            }
+          ],
+          "links": []
+        },
+        "semantics": {
+          "topics": [],
+          "policies": [
+            {
+              "policy_id": "crypto_policy",
+              "rules": [
+                "key_length >= 2048",
+                "entropy_source = secure_random"
+              ]
+            }
+          ]
+        },
+        "fixtures": {
+          "keygen_params": {
+            "schemes": [
+              "bfv",
+              "ckks",
+              "paillier"
+            ],
+            "security_levels": [
+              128,
+              192,
+              256
+            ],
+            "polynomial_degrees": [
+              4096,
+              8192,
+              16384
+            ]
+          }
+        },
+        "program": [
+          {
+            "step": 1,
+            "op": "crypto.generate_keys",
+            "params": {
+              "scheme": "bfv",
+              "security_level": 128
+            }
+          },
+          {
+            "step": 2,
+            "op": "crypto.verify_key_properties",
+            "params": {
+              "key_ref": "step_1.public_key"
+            }
+          },
+          {
+            "step": 3,
+            "op": "crypto.generate_keys",
+            "params": {
+              "scheme": "ckks",
+              "security_level": 128
+            }
+          },
+          {
+            "step": 4,
+            "op": "crypto.verify_key_properties",
+            "params": {
+              "key_ref": "step_3.public_key"
+            }
+          }
+        ],
+        "checks": [
+          {
+            "check_id": "keygen_bfv_valid",
+            "kind": "crypto.key_valid",
+            "params": {
+              "key_ref": "step_1.public_key"
+            },
+            "expected": {
+              "valid": true,
+              "scheme": "bfv"
+            }
+          },
+          {
+            "check_id": "keygen_ckks_valid",
+            "kind": "crypto.key_valid",
+            "params": {
+              "key_ref": "step_3.public_key"
+            },
+            "expected": {
+              "valid": true,
+              "scheme": "ckks"
+            }
+          },
+          {
+            "check_id": "keygen_deterministic",
+            "kind": "crypto.key_unique",
+            "params": {
+              "key1": "step_1.public_key",
+              "key2": "step_3.public_key"
+            },
+            "expected": {
+              "unique": true
+            }
+          }
+        ],
+        "coverage": {
+          "operations": [
+            "generate_keys"
+          ],
+          "invariants": [
+            "INV.CRYPTO.KEY_VALIDITY"
+          ]
+        },
+        "receipts": []
+      },
+      {
+        "schema_version": "block-uni-1",
+        "block_id": "homo.ops.integrity.001",
+        "metadata": {
+          "title": "Homomorphic Integrity - Encryption/Decryption Round Trip",
+          "description": "Verify encryption and decryption preserve point values",
+          "created_at": "2026-01-16T00:00:00Z",
+          "authors": [
+            "HyperSync Test Suite"
+          ],
+          "tags": [
+            "integrity",
+            "encryption",
+            "round_trip"
+          ]
+        },
+        "integrity": {
+          "manifest": [
+            {
+              "path": "test_integrity_encrypt.py",
+              "sha256": "placeholder_hash_003",
+              "role": "program"
+            }
+          ],
+          "dir_merkle_root": "placeholder_merkle_root_002",
+          "canonicalization": {
+            "field_order": "declared",
+            "byte_encoding": "utf8",
+            "float_format": "scientific",
+            "normalize_sign": true
+          },
+          "integrity_policy": {
+            "must_match_manifest": true,
+            "deny_unknown_files": true,
+            "allow_out_of_dir": false
+          }
+        },
+        "environment": {
+          "os": "linux",
+          "arch": "x86_64",
+          "accel": "cpu",
+          "precision": "fp64",
+          "deterministic_reductions": true,
+          "blas_threads": 1
+        },
+        "manifold": {
+          "model": "lorentz",
+          "dimension": 64,
+          "curvature": -1.0
+        },
+        "numeric_policy": {
+          "tolerance": 1e-06,
+          "max_iterations": 100
+        },
+        "substrate": {
+          "nodes": [
+            {
+              "node_id": "crypto_node",
+              "role": "compute"
+            }
+          ],
+          "links": []
+        },
+        "semantics": {
+          "topics": [],
+          "policies": []
+        },
+        "fixtures": {
+          "test_points": {
+            "lorentz_points": [
+              {
+                "coords": [
+                  1.5430806348152437,
+                  0.5,
+                  0.5,
+                  0.5,
+                  0.7071067811865476
+                ],
+                "dimension": 5
+              }
+            ]
+          }
+        },
+        "program": [
+          {
+            "step": 1,
+            "op": "crypto.generate_keys",
+            "params": {
+              "scheme": "ckks",
+              "security_level": 128
+            }
+          },
+          {
+            "step": 2,
+            "op": "homo.encrypt_point",
+            "params": {
+              "point": "fixtures.test_points.lorentz_points[0]",
+              "public_key": "step_1.public_key"
+            }
+          },
+          {
+            "step": 3,
+            "op": "homo.decrypt_point",
+            "params": {
+              "encrypted_point": "step_2.encrypted_point",
+              "secret_key": "step_1.secret_key"
+            }
+          },
+          {
+            "step": 4,
+            "op": "compute.point_distance",
+            "params": {
+              "p1": "fixtures.test_points.lorentz_points[0]",
+              "p2": "step_3.decrypted_point"
+            }
+          }
+        ],
+        "checks": [
+          {
+            "check_id": "encrypt_decrypt_round_trip",
+            "kind": "numeric.close_to",
+            "params": {
+              "value": "step_4.distance",
+              "target": 0,
+              "tolerance": 1e-06
+            },
+            "expected": {
+              "close": true
+            }
+          },
+          {
+            "check_id": "noise_budget_positive",
+            "kind": "numeric.greater_than",
+            "params": {
+              "value": "step_2.encrypted_point.noise_budget",
+              "threshold": 0
+            },
+            "expected": {
+              "satisfied": true
+            }
+          }
+        ],
+        "coverage": {
+          "operations": [
+            "encrypt_point",
+            "decrypt_point"
+          ],
+          "invariants": [
+            "INV.CRYPTO.ROUND_TRIP",
+            "INV.CRYPTO.NOISE_POSITIVE"
+          ]
+        },
+        "receipts": []
+      },
+      {
+        "schema_version": "block-uni-1",
+        "block_id": "homo.ops.manifold.001",
+        "metadata": {
+          "title": "Manifold Constraint Preservation Under Encryption",
+          "description": "Verify encrypted operations preserve manifold constraints",
+          "created_at": "2026-01-16T00:00:00Z",
+          "authors": [
+            "HyperSync Test Suite"
+          ],
+          "tags": [
+            "manifold",
+            "constraint",
+            "preservation"
+          ]
+        },
+        "integrity": {
+          "manifest": [
+            {
+              "path": "test_manifold_constraint.py",
+              "sha256": "placeholder_hash_004",
+              "role": "program"
+            }
+          ],
+          "dir_merkle_root": "placeholder_merkle_root_003",
+          "canonicalization": {
+            "field_order": "declared",
+            "byte_encoding": "utf8",
+            "float_format": "scientific",
+            "normalize_sign": true
+          },
+          "integrity_policy": {
+            "must_match_manifest": true,
+            "deny_unknown_files": true,
+            "allow_out_of_dir": false
+          }
+        },
+        "environment": {
+          "os": "linux",
+          "arch": "x86_64",
+          "accel": "cpu",
+          "precision": "fp64",
+          "deterministic_reductions": true,
+          "blas_threads": 1
+        },
+        "manifold": {
+          "model": "lorentz",
+          "dimension": 64,
+          "curvature": -1.0
+        },
+        "numeric_policy": {
+          "tolerance": 1e-05,
+          "max_iterations": 100
+        },
+        "substrate": {
+          "nodes": [
+            {
+              "node_id": "compute_node",
+              "role": "compute"
+            }
+          ],
+          "links": []
+        },
+        "semantics": {
+          "topics": [],
+          "policies": []
+        },
+        "fixtures": {
+          "lorentz_points": [
+            {
+              "coords": [
+                1.5430806348152437,
+                0.5,
+                0.5,
+                0.5,
+                0.7071067811865476
+              ],
+              "dimension": 5
+            },
+            {
+              "coords": [
+                2.0,
+                0.8,
+                0.9,
+                1.0,
+                0.6
+              ],
+              "dimension": 5
+            }
+          ]
+        },
+        "program": [
+          {
+            "step": 1,
+            "op": "crypto.generate_keys",
+            "params": {
+              "scheme": "ckks",
+              "security_level": 128
+            }
+          },
+          {
+            "step": 2,
+            "op": "homo.encrypt_point",
+            "params": {
+              "point": "fixtures.lorentz_points[0]",
+              "public_key": "step_1.public_key"
+            }
+          },
+          {
+            "step": 3,
+            "op": "homo.encrypt_point",
+            "params": {
+              "point": "fixtures.lorentz_points[1]",
+              "public_key": "step_1.public_key"
+            }
+          },
+          {
+            "step": 4,
+            "op": "homo.encrypted_geodesic_interpolation",
+            "params": {
+              "encrypted_start": "step_2.encrypted_point",
+              "encrypted_end": "step_3.encrypted_point",
+              "t": 0.5
+            }
+          },
+          {
+            "step": 5,
+            "op": "homo.verify_encrypted_constraint",
+            "params": {
+              "encrypted_point": "step_4.result.encrypted_point"
+            }
+          },
+          {
+            "step": 6,
+            "op": "homo.decrypt_point",
+            "params": {
+              "encrypted_point": "step_4.result.encrypted_point",
+              "secret_key": "step_1.secret_key"
+            }
+          },
+          {
+            "step": 7,
+            "op": "manifold.verify_constraint",
+            "params": {
+              "point": "step_6.decrypted_point"
+            }
+          }
+        ],
+        "checks": [
+          {
+            "check_id": "encrypted_constraint_approx",
+            "kind": "invariant",
+            "invariant_id": "INV.MANIFOLD.LORENTZ_CONSTRAINT",
+            "params": {
+              "encrypted_value": "step_5.encrypted_constraint_value"
+            },
+            "expected": {
+              "satisfied": true,
+              "tolerance": 0.0001
+            }
+          },
+          {
+            "check_id": "decrypted_on_manifold",
+            "kind": "manifold.on_hyperboloid",
+            "params": {
+              "point": "step_6.decrypted_point"
+            },
+            "expected": {
+              "on_manifold": true,
+              "tolerance": 1e-05
+            }
+          }
+        ],
+        "coverage": {
+          "operations": [
+            "encrypted_geodesic_interpolation",
+            "verify_encrypted_constraint"
+          ],
+          "invariants": [
+            "INV.MANIFOLD.LORENTZ_CONSTRAINT",
+            "INV.MANIFOLD.GEODESIC_PRESERVATION"
+          ]
+        },
+        "receipts": []
+      },
+      {
+        "schema_version": "block-uni-1",
+        "block_id": "homo.ops.numeric.001",
+        "metadata": {
+          "title": "Numeric Policy - Precision and Noise Budget",
+          "description": "Verify numeric precision is maintained and noise budget is tracked",
+          "created_at": "2026-01-16T00:00:00Z",
+          "authors": [
+            "HyperSync Test Suite"
+          ],
+          "tags": [
+            "numeric",
+            "precision",
+            "noise_budget"
+          ]
+        },
+        "integrity": {
+          "manifest": [
+            {
+              "path": "test_numeric_precision.py",
+              "sha256": "placeholder_hash_005",
+              "role": "program"
+            }
+          ],
+          "dir_merkle_root": "placeholder_merkle_root_004",
+          "canonicalization": {
+            "field_order": "declared",
+            "byte_encoding": "utf8",
+            "float_format": "scientific",
+            "normalize_sign": true
+          },
+          "integrity_policy": {
+            "must_match_manifest": true,
+            "deny_unknown_files": true,
+            "allow_out_of_dir": false
+          }
+        },
+        "environment": {
+          "os": "linux",
+          "arch": "x86_64",
+          "accel": "cpu",
+          "precision": "fp64",
+          "deterministic_reductions": true,
+          "blas_threads": 1
+        },
+        "manifold": {
+          "model": "lorentz",
+          "dimension": 32,
+          "curvature": -1.0
+        },
+        "numeric_policy": {
+          "tolerance": 1e-06,
+          "max_iterations": 100,
+          "min_noise_budget": 10
+        },
+        "substrate": {
+          "nodes": [
+            {
+              "node_id": "compute_node",
+              "role": "compute"
+            }
+          ],
+          "links": []
+        },
+        "semantics": {
+          "topics": [],
+          "policies": []
+        },
+        "fixtures": {
+          "precision_test_values": [
+            1e-10,
+            1e-05,
+            1.0,
+            100000.0,
+            10000000000.0
+          ]
+        },
+        "program": [
+          {
+            "step": 1,
+            "op": "crypto.generate_keys",
+            "params": {
+              "scheme": "ckks",
+              "security_level": 128,
+              "polynomial_degree": 16384
+            }
+          },
+          {
+            "step": 2,
+            "op": "homo.encrypt_scalar",
+            "params": {
+              "value": 1.234567890123456,
+              "public_key": "step_1.public_key"
+            }
+          },
+          {
+            "step": 3,
+            "op": "homo.multiply_encrypted",
+            "params": {
+              "a": "step_2.encrypted",
+              "b": "step_2.encrypted"
+            }
+          },
+          {
+            "step": 4,
+            "op": "homo.multiply_encrypted",
+            "params": {
+              "a": "step_3.result",
+              "b": "step_3.result"
+            }
+          },
+          {
+            "step": 5,
+            "op": "homo.noise_estimation",
+            "params": {
+              "encrypted_value": "step_4.result"
+            }
+          },
+          {
+            "step": 6,
+            "op": "homo.decrypt_scalar",
+            "params": {
+              "encrypted": "step_4.result",
+              "secret_key": "step_1.secret_key"
+            }
+          }
+        ],
+        "checks": [
+          {
+            "check_id": "noise_budget_tracking",
+            "kind": "numeric.greater_than",
+            "params": {
+              "value": "step_5.estimate.remaining_budget",
+              "threshold": 0
+            },
+            "expected": {
+              "satisfied": true
+            }
+          },
+          {
+            "check_id": "precision_maintained",
+            "kind": "numeric.relative_error",
+            "params": {
+              "computed": "step_6.value",
+              "expected": 2.321836854050312,
+              "tolerance": 0.001
+            },
+            "expected": {
+              "within_tolerance": true
+            }
+          },
+          {
+            "check_id": "noise_consumption_reasonable",
+            "kind": "numeric.less_than",
+            "params": {
+              "value": "step_5.estimate.consumed_budget",
+              "threshold": "step_5.estimate.initial_budget"
+            },
+            "expected": {
+              "satisfied": true
+            }
+          }
+        ],
+        "coverage": {
+          "operations": [
+            "noise_estimation",
+            "multiply_encrypted"
+          ],
+          "invariants": [
+            "INV.NUMERIC.NOISE_BUDGET",
+            "INV.NUMERIC.PRECISION"
+          ]
+        },
+        "receipts": []
+      },
+      {
+        "schema_version": "block-uni-1",
+        "block_id": "homo.ops.semantics.001",
+        "metadata": {
+          "title": "Semantic Correctness - Encrypted Distance Computation",
+          "description": "Verify encrypted distance matches plaintext distance within tolerance",
+          "created_at": "2026-01-16T00:00:00Z",
+          "authors": [
+            "HyperSync Test Suite"
+          ],
+          "tags": [
+            "semantics",
+            "distance",
+            "correctness"
+          ]
+        },
+        "integrity": {
+          "manifest": [
+            {
+              "path": "test_semantic_distance.py",
+              "sha256": "placeholder_hash_006",
+              "role": "program"
+            }
+          ],
+          "dir_merkle_root": "placeholder_merkle_root_005",
+          "canonicalization": {
+            "field_order": "declared",
+            "byte_encoding": "utf8",
+            "float_format": "scientific",
+            "normalize_sign": true
+          },
+          "integrity_policy": {
+            "must_match_manifest": true,
+            "deny_unknown_files": true,
+            "allow_out_of_dir": false
+          }
+        },
+        "environment": {
+          "os": "linux",
+          "arch": "x86_64",
+          "accel": "cpu",
+          "precision": "fp64",
+          "deterministic_reductions": true,
+          "blas_threads": 1
+        },
+        "manifold": {
+          "model": "lorentz",
+          "dimension": 16,
+          "curvature": -1.0
+        },
+        "numeric_policy": {
+          "tolerance": 0.0001,
+          "max_iterations": 100
+        },
+        "substrate": {
+          "nodes": [
+            {
+              "node_id": "compute_node",
+              "role": "compute"
+            }
+          ],
+          "links": []
+        },
+        "semantics": {
+          "topics": [],
+          "policies": []
+        },
+        "fixtures": {
+          "point_pairs": [
+            {
+              "p1": {
+                "coords": [
+                  1.5430806348152437,
+                  0.5,
+                  0.5,
+                  0.5,
+                  0.7071067811865476
+                ]
+              },
+              "p2": {
+                "coords": [
+                  2.0615528128088303,
+                  1.0,
+                  0.5,
+                  0.5,
+                  0.7071067811865476
+                ]
+              },
+              "expected_distance": 0.8813735870195432
+            }
+          ]
+        },
+        "program": [
+          {
+            "step": 1,
+            "op": "crypto.generate_keys",
+            "params": {
+              "scheme": "ckks",
+              "security_level": 128
+            }
+          },
+          {
+            "step": 2,
+            "op": "homo.encrypt_point",
+            "params": {
+              "point": "fixtures.point_pairs[0].p1",
+              "public_key": "step_1.public_key"
+            }
+          },
+          {
+            "step": 3,
+            "op": "homo.encrypt_point",
+            "params": {
+              "point": "fixtures.point_pairs[0].p2",
+              "public_key": "step_1.public_key"
+            }
+          },
+          {
+            "step": 4,
+            "op": "homo.encrypted_distance",
+            "params": {
+              "encrypted_p1": "step_2.encrypted_point",
+              "encrypted_p2": "step_3.encrypted_point",
+              "relin_keys": "step_1.relin_keys"
+            }
+          },
+          {
+            "step": 5,
+            "op": "homo.decrypt_scalar",
+            "params": {
+              "encrypted": "step_4.result.encrypted_distance",
+              "secret_key": "step_1.secret_key"
+            }
+          },
+          {
+            "step": 6,
+            "op": "compute.lorentz_distance",
+            "params": {
+              "p1": "fixtures.point_pairs[0].p1",
+              "p2": "fixtures.point_pairs[0].p2"
+            }
+          }
+        ],
+        "checks": [
+          {
+            "check_id": "encrypted_distance_correctness",
+            "kind": "invariant",
+            "invariant_id": "INV.DIST.CORRECTNESS",
+            "params": {
+              "computed": "step_5.value",
+              "expected": "step_6.distance",
+              "metric_type": "lorentz"
+            },
+            "expected": {
+              "correct": true,
+              "tolerance": 0.001
+            }
+          },
+          {
+            "check_id": "distance_non_negative",
+            "kind": "numeric.greater_than_or_equal",
+            "params": {
+              "value": "step_5.value",
+              "threshold": 0
+            },
+            "expected": {
+              "satisfied": true
+            }
+          }
+        ],
+        "coverage": {
+          "operations": [
+            "encrypted_distance"
+          ],
+          "invariants": [
+            "INV.DIST.CORRECTNESS"
+          ]
+        },
+        "receipts": []
+      },
+      {
+        "schema_version": "block-uni-1",
+        "block_id": "homo.ops.security.001",
+        "metadata": {
+          "title": "Security Validation - Semantic Security",
+          "description": "Verify encryption provides semantic security",
+          "created_at": "2026-01-16T00:00:00Z",
+          "authors": [
+            "HyperSync Test Suite"
+          ],
+          "tags": [
+            "security",
+            "semantic_security",
+            "cpa"
+          ]
+        },
+        "integrity": {
+          "manifest": [
+            {
+              "path": "test_security_semantic.py",
+              "sha256": "placeholder_hash_007",
+              "role": "program"
+            }
+          ],
+          "dir_merkle_root": "placeholder_merkle_root_006",
+          "canonicalization": {
+            "field_order": "declared",
+            "byte_encoding": "utf8",
+            "float_format": "scientific",
+            "normalize_sign": true
+          },
+          "integrity_policy": {
+            "must_match_manifest": true,
+            "deny_unknown_files": true,
+            "allow_out_of_dir": false
+          }
+        },
+        "environment": {
+          "os": "linux",
+          "arch": "x86_64",
+          "accel": "cpu",
+          "precision": "fp64",
+          "deterministic_reductions": true,
+          "blas_threads": 1
+        },
+        "manifold": {
+          "model": "lorentz",
+          "dimension": 16,
+          "curvature": -1.0
+        },
+        "numeric_policy": {
+          "tolerance": 1e-06,
+          "max_iterations": 100
+        },
+        "substrate": {
+          "nodes": [
+            {
+              "node_id": "security_test_node",
+              "role": "compute"
+            }
+          ],
+          "links": []
+        },
+        "semantics": {
+          "topics": [],
+          "policies": [
+            {
+              "policy_id": "security_policy",
+              "rules": [
+                "no_plaintext_leakage",
+                "randomized_encryption"
+              ]
+            }
+          ]
+        },
+        "fixtures": {
+          "identical_points": [
+            {
+              "coords": [
+                1.5430806348152437,
+                0.5,
+                0.5,
+                0.5,
+                0.7071067811865476
+              ]
+            },
+            {
+              "coords": [
+                1.5430806348152437,
+                0.5,
+                0.5,
+                0.5,
+                0.7071067811865476
+              ]
+            }
+          ]
+        },
+        "program": [
+          {
+            "step": 1,
+            "op": "crypto.generate_keys",
+            "params": {
+              "scheme": "ckks",
+              "security_level": 128
+            }
+          },
+          {
+            "step": 2,
+            "op": "homo.encrypt_point",
+            "params": {
+              "point": "fixtures.identical_points[0]",
+              "public_key": "step_1.public_key"
+            }
+          },
+          {
+            "step": 3,
+            "op": "homo.encrypt_point",
+            "params": {
+              "point": "fixtures.identical_points[1]",
+              "public_key": "step_1.public_key"
+            }
+          },
+          {
+            "step": 4,
+            "op": "security.compare_ciphertexts",
+            "params": {
+              "ct1": "step_2.encrypted_point",
+              "ct2": "step_3.encrypted_point"
+            }
+          }
+        ],
+        "checks": [
+          {
+            "check_id": "ciphertexts_distinct",
+            "kind": "security.ciphertexts_different",
+            "params": {
+              "ct1": "step_2.encrypted_point",
+              "ct2": "step_3.encrypted_point"
+            },
+            "expected": {
+              "different": true
+            }
+          },
+          {
+            "check_id": "randomized_encryption",
+            "kind": "security.randomization_check",
+            "params": {
+              "ciphertext": "step_2.encrypted_point"
+            },
+            "expected": {
+              "randomized": true
+            }
+          },
+          {
+            "check_id": "no_plaintext_correlation",
+            "kind": "security.correlation_test",
+            "params": {
+              "ct1": "step_2.encrypted_point",
+              "ct2": "step_3.encrypted_point"
+            },
+            "expected": {
+              "correlation": 0,
+              "tolerance": 0.01
+            }
+          }
+        ],
+        "coverage": {
+          "operations": [
+            "encrypt_point"
+          ],
+          "invariants": [
+            "INV.SECURITY.SEMANTIC",
+            "INV.SECURITY.CPA"
+          ]
+        },
+        "receipts": []
+      },
+      {
+        "schema_version": "block-uni-1",
+        "block_id": "homo.ops.security.002",
+        "metadata": {
+          "title": "Security Validation - Key Management",
+          "description": "Verify secure key generation and storage",
+          "created_at": "2026-01-16T00:00:00Z",
+          "authors": [
+            "HyperSync Test Suite"
+          ],
+          "tags": [
+            "security",
+            "key_management",
+            "entropy"
+          ]
+        },
+        "integrity": {
+          "manifest": [
+            {
+              "path": "test_key_management.py",
+              "sha256": "placeholder_hash_008",
+              "role": "program"
+            }
+          ],
+          "dir_merkle_root": "placeholder_merkle_root_007",
+          "canonicalization": {
+            "field_order": "declared",
+            "byte_encoding": "utf8",
+            "float_format": "scientific",
+            "normalize_sign": true
+          },
+          "integrity_policy": {
+            "must_match_manifest": true,
+            "deny_unknown_files": true,
+            "allow_out_of_dir": false
+          }
+        },
+        "environment": {
+          "os": "linux",
+          "arch": "x86_64",
+          "accel": "cpu",
+          "precision": "fp64",
+          "deterministic_reductions": true,
+          "blas_threads": 1
+        },
+        "manifold": {
+          "model": "lorentz",
+          "dimension": 16,
+          "curvature": -1.0
+        },
+        "numeric_policy": {
+          "tolerance": 1e-06,
+          "max_iterations": 100
+        },
+        "substrate": {
+          "nodes": [
+            {
+              "node_id": "key_mgmt_node",
+              "role": "compute"
+            }
+          ],
+          "links": []
+        },
+        "semantics": {
+          "topics": [],
+          "policies": [
+            {
+              "policy_id": "key_policy",
+              "rules": [
+                "min_entropy_256",
+                "secure_prng",
+                "key_isolation"
+              ]
+            }
+          ]
+        },
+        "fixtures": {},
+        "program": [
+          {
+            "step": 1,
+            "op": "crypto.generate_keys",
+            "params": {
+              "scheme": "bfv",
+              "security_level": 128
+            }
+          },
+          {
+            "step": 2,
+            "op": "crypto.generate_keys",
+            "params": {
+              "scheme": "bfv",
+              "security_level": 128
+            }
+          },
+          {
+            "step": 3,
+            "op": "security.entropy_test",
+            "params": {
+              "key_data": "step_1.public_key.key_data"
+            }
+          },
+          {
+            "step": 4,
+            "op": "security.entropy_test",
+            "params": {
+              "key_data": "step_2.public_key.key_data"
+            }
+          }
+        ],
+        "checks": [
+          {
+            "check_id": "keys_unique",
+            "kind": "security.keys_different",
+            "params": {
+              "key1": "step_1.public_key",
+              "key2": "step_2.public_key"
+            },
+            "expected": {
+              "different": true
+            }
+          },
+          {
+            "check_id": "entropy_sufficient_1",
+            "kind": "security.entropy_check",
+            "params": {
+              "entropy_result": "step_3.entropy_bits"
+            },
+            "expected": {
+              "min_entropy": 256
+            }
+          },
+          {
+            "check_id": "entropy_sufficient_2",
+            "kind": "security.entropy_check",
+            "params": {
+              "entropy_result": "step_4.entropy_bits"
+            },
+            "expected": {
+              "min_entropy": 256
+            }
+          }
+        ],
+        "coverage": {
+          "operations": [
+            "generate_keys"
+          ],
+          "invariants": [
+            "INV.SECURITY.KEY_ENTROPY",
+            "INV.SECURITY.KEY_UNIQUENESS"
+          ]
+        },
+        "receipts": []
+      },
+      {
+        "schema_version": "block-uni-1",
+        "block_id": "homo.ops.crypto.001",
+        "metadata": {
+          "title": "Cryptographic Validation - Homomorphic Properties",
+          "description": "Verify homomorphic properties hold for encrypted operations",
+          "created_at": "2026-01-16T00:00:00Z",
+          "authors": [
+            "HyperSync Test Suite"
+          ],
+          "tags": [
+            "crypto",
+            "homomorphic",
+            "additivity",
+            "multiplicativity"
+          ]
+        },
+        "integrity": {
+          "manifest": [
+            {
+              "path": "test_homomorphic_properties.py",
+              "sha256": "placeholder_hash_009",
+              "role": "program"
+            }
+          ],
+          "dir_merkle_root": "placeholder_merkle_root_008",
+          "canonicalization": {
+            "field_order": "declared",
+            "byte_encoding": "utf8",
+            "float_format": "scientific",
+            "normalize_sign": true
+          },
+          "integrity_policy": {
+            "must_match_manifest": true,
+            "deny_unknown_files": true,
+            "allow_out_of_dir": false
+          }
+        },
+        "environment": {
+          "os": "linux",
+          "arch": "x86_64",
+          "accel": "cpu",
+          "precision": "fp64",
+          "deterministic_reductions": true,
+          "blas_threads": 1
+        },
+        "manifold": {
+          "model": "lorentz",
+          "dimension": 8,
+          "curvature": -1.0
+        },
+        "numeric_policy": {
+          "tolerance": 1e-05,
+          "max_iterations": 100
+        },
+        "substrate": {
+          "nodes": [
+            {
+              "node_id": "crypto_test_node",
+              "role": "compute"
+            }
+          ],
+          "links": []
+        },
+        "semantics": {
+          "topics": [],
+          "policies": []
+        },
+        "fixtures": {
+          "test_scalars": {
+            "a": 3.5,
+            "b": 2.7
+          }
+        },
+        "program": [
+          {
+            "step": 1,
+            "op": "crypto.generate_keys",
+            "params": {
+              "scheme": "ckks",
+              "security_level": 128
+            }
+          },
+          {
+            "step": 2,
+            "op": "homo.encrypt_scalar",
+            "params": {
+              "value": "fixtures.test_scalars.a",
+              "public_key": "step_1.public_key"
+            }
+          },
+          {
+            "step": 3,
+            "op": "homo.encrypt_scalar",
+            "params": {
+              "value": "fixtures.test_scalars.b",
+              "public_key": "step_1.public_key"
+            }
+          },
+          {
+            "step": 4,
+            "op": "homo.add_encrypted",
+            "params": {
+              "a": "step_2.encrypted",
+              "b": "step_3.encrypted"
+            }
+          },
+          {
+            "step": 5,
+            "op": "homo.multiply_encrypted",
+            "params": {
+              "a": "step_2.encrypted",
+              "b": "step_3.encrypted",
+              "relin_keys": "step_1.relin_keys"
+            }
+          },
+          {
+            "step": 6,
+            "op": "homo.decrypt_scalar",
+            "params": {
+              "encrypted": "step_4.result",
+              "secret_key": "step_1.secret_key"
+            }
+          },
+          {
+            "step": 7,
+            "op": "homo.decrypt_scalar",
+            "params": {
+              "encrypted": "step_5.result",
+              "secret_key": "step_1.secret_key"
+            }
+          }
+        ],
+        "checks": [
+          {
+            "check_id": "additive_homomorphism",
+            "kind": "crypto.homomorphic_addition",
+            "params": {
+              "decrypted_sum": "step_6.value",
+              "expected_sum": 6.2
+            },
+            "expected": {
+              "correct": true,
+              "tolerance": 0.0001
+            }
+          },
+          {
+            "check_id": "multiplicative_homomorphism",
+            "kind": "crypto.homomorphic_multiplication",
+            "params": {
+              "decrypted_product": "step_7.value",
+              "expected_product": 9.45
+            },
+            "expected": {
+              "correct": true,
+              "tolerance": 0.001
+            }
+          }
+        ],
+        "coverage": {
+          "operations": [
+            "add_encrypted",
+            "multiply_encrypted"
+          ],
+          "invariants": [
+            "INV.CRYPTO.ADDITIVE_HOMO",
+            "INV.CRYPTO.MULTIPLICATIVE_HOMO"
+          ]
+        },
+        "receipts": []
+      },
+      {
+        "schema_version": "block-uni-1",
+        "block_id": "homo.ops.crypto.002",
+        "metadata": {
+          "title": "Cryptographic Validation - Noise Management",
+          "description": "Verify noise budget management and bootstrapping",
+          "created_at": "2026-01-16T00:00:00Z",
+          "authors": [
+            "HyperSync Test Suite"
+          ],
+          "tags": [
+            "crypto",
+            "noise",
+            "bootstrapping"
+          ]
+        },
+        "integrity": {
+          "manifest": [
+            {
+              "path": "test_noise_management.py",
+              "sha256": "placeholder_hash_010",
+              "role": "program"
+            }
+          ],
+          "dir_merkle_root": "placeholder_merkle_root_009",
+          "canonicalization": {
+            "field_order": "declared",
+            "byte_encoding": "utf8",
+            "float_format": "scientific",
+            "normalize_sign": true
+          },
+          "integrity_policy": {
+            "must_match_manifest": true,
+            "deny_unknown_files": true,
+            "allow_out_of_dir": false
+          }
+        },
+        "environment": {
+          "os": "linux",
+          "arch": "x86_64",
+          "accel": "cpu",
+          "precision": "fp64",
+          "deterministic_reductions": true,
+          "blas_threads": 1
+        },
+        "manifold": {
+          "model": "lorentz",
+          "dimension": 8,
+          "curvature": -1.0
+        },
+        "numeric_policy": {
+          "tolerance": 0.0001,
+          "max_iterations": 100
+        },
+        "substrate": {
+          "nodes": [
+            {
+              "node_id": "noise_test_node",
+              "role": "compute"
+            }
+          ],
+          "links": []
+        },
+        "semantics": {
+          "topics": [],
+          "policies": []
+        },
+        "fixtures": {
+          "chain_depth_test": {
+            "initial_value": 2.0,
+            "multiplications": 5
+          }
+        },
+        "program": [
+          {
+            "step": 1,
+            "op": "crypto.generate_keys",
+            "params": {
+              "scheme": "ckks",
+              "security_level": 128,
+              "include_bootstrapping_keys": true
+            }
+          },
+          {
+            "step": 2,
+            "op": "homo.encrypt_scalar",
+            "params": {
+              "value": "fixtures.chain_depth_test.initial_value",
+              "public_key": "step_1.public_key"
+            }
+          },
+          {
+            "step": 3,
+            "op": "homo.chain_multiplications",
+            "params": {
+              "encrypted": "step_2.encrypted",
+              "count": 5,
+              "relin_keys": "step_1.relin_keys"
+            }
+          },
+          {
+            "step": 4,
+            "op": "homo.noise_estimation",
+            "params": {
+              "encrypted_value": "step_3.final"
+            }
+          },
+          {
+            "step": 5,
+            "op": "homo.bootstrap",
+            "params": {
+              "encrypted_value": "step_3.final",
+              "bootstrapping_key": "step_1.bootstrapping_key"
+            }
+          },
+          {
+            "step": 6,
+            "op": "homo.noise_estimation",
+            "params": {
+              "encrypted_value": "step_5.refreshed_value"
+            }
+          }
+        ],
+        "checks": [
+          {
+            "check_id": "noise_decreases_with_ops",
+            "kind": "numeric.less_than",
+            "params": {
+              "value": "step_4.estimate.remaining_budget",
+              "threshold": "step_2.encrypted.noise_budget"
+            },
+            "expected": {
+              "satisfied": true
+            }
+          },
+          {
+            "check_id": "bootstrap_refreshes_noise",
+            "kind": "numeric.greater_than",
+            "params": {
+              "value": "step_6.estimate.remaining_budget",
+              "threshold": "step_4.estimate.remaining_budget"
+            },
+            "expected": {
+              "satisfied": true
+            }
+          },
+          {
+            "check_id": "value_preserved_after_bootstrap",
+            "kind": "crypto.bootstrap_preserves_value",
+            "params": {
+              "pre_bootstrap": "step_3.final",
+              "post_bootstrap": "step_5.refreshed_value"
+            },
+            "expected": {
+              "preserved": true,
+              "tolerance": 0.001
+            }
+          }
+        ],
+        "coverage": {
+          "operations": [
+            "bootstrap",
+            "noise_estimation"
+          ],
+          "invariants": [
+            "INV.CRYPTO.NOISE_BUDGET",
+            "INV.CRYPTO.BOOTSTRAP"
+          ]
+        },
+        "receipts": []
+      },
+      {
+        "schema_version": "block-uni-1",
+        "block_id": "homo.ops.batch.001",
+        "metadata": {
+          "title": "Batch Operations - SIMD Encrypted Computation",
+          "description": "Verify SIMD batching for efficient encrypted computation",
+          "created_at": "2026-01-16T00:00:00Z",
+          "authors": [
+            "HyperSync Test Suite"
+          ],
+          "tags": [
+            "batch",
+            "simd",
+            "performance"
+          ]
+        },
+        "integrity": {
+          "manifest": [
+            {
+              "path": "test_batch_simd.py",
+              "sha256": "placeholder_hash_011",
+              "role": "program"
+            }
+          ],
+          "dir_merkle_root": "placeholder_merkle_root_010",
+          "canonicalization": {
+            "field_order": "declared",
+            "byte_encoding": "utf8",
+            "float_format": "scientific",
+            "normalize_sign": true
+          },
+          "integrity_policy": {
+            "must_match_manifest": true,
+            "deny_unknown_files": true,
+            "allow_out_of_dir": false
+          }
+        },
+        "environment": {
+          "os": "linux",
+          "arch": "x86_64",
+          "accel": "cpu",
+          "precision": "fp64",
+          "deterministic_reductions": true,
+          "blas_threads": 4
+        },
+        "manifold": {
+          "model": "lorentz",
+          "dimension": 32,
+          "curvature": -1.0
+        },
+        "numeric_policy": {
+          "tolerance": 0.0001,
+          "max_iterations": 100
+        },
+        "substrate": {
+          "nodes": [
+            {
+              "node_id": "batch_compute_node",
+              "role": "compute"
+            }
+          ],
+          "links": []
+        },
+        "semantics": {
+          "topics": [],
+          "policies": []
+        },
+        "fixtures": {
+          "batch_size": 100,
+          "dimension": 32
+        },
+        "program": [
+          {
+            "step": 1,
+            "op": "crypto.generate_keys",
+            "params": {
+              "scheme": "ckks",
+              "security_level": 128,
+              "include_galois_keys": true
+            }
+          },
+          {
+            "step": 2,
+            "op": "generate.random_lorentz_points",
+            "params": {
+              "count": 100,
+              "dimension": 32
+            }
+          },
+          {
+            "step": 3,
+            "op": "homo.batch_encrypt_points",
+            "params": {
+              "points": "step_2.points",
+              "public_key": "step_1.public_key"
+            }
+          },
+          {
+            "step": 4,
+            "op": "generate.random_lorentz_point",
+            "params": {
+              "dimension": 32
+            }
+          },
+          {
+            "step": 5,
+            "op": "homo.encrypt_point",
+            "params": {
+              "point": "step_4.point",
+              "public_key": "step_1.public_key"
+            }
+          },
+          {
+            "step": 6,
+            "op": "homo.encrypted_batch_distances",
+            "params": {
+              "encrypted_query": "step_5.encrypted_point",
+              "encrypted_database": "step_3.batch",
+              "relin_keys": "step_1.relin_keys",
+              "galois_keys": "step_1.galois_keys"
+            }
+          }
+        ],
+        "checks": [
+          {
+            "check_id": "batch_distance_count",
+            "kind": "numeric.equals",
+            "params": {
+              "value": "step_6.encrypted_distances.length",
+              "expected": 100
+            },
+            "expected": {
+              "equal": true
+            }
+          },
+          {
+            "check_id": "batch_throughput",
+            "kind": "performance.throughput",
+            "params": {
+              "operations": 100,
+              "time_ms": "step_6.total_computation_time_ms"
+            },
+            "expected": {
+              "min_ops_per_second": 10
+            }
+          }
+        ],
+        "coverage": {
+          "operations": [
+            "batch_encrypt_points",
+            "encrypted_batch_distances"
+          ],
+          "invariants": [
+            "INV.BATCH.CORRECTNESS",
+            "INV.BATCH.EFFICIENCY"
+          ]
+        },
+        "receipts": []
+      }
+    ]
+  },
+  "implementation_notes": {
+    "security_considerations": [
+      "Never expose secret keys in logs or error messages",
+      "Use constant-time operations to prevent timing attacks",
+      "Validate all inputs before encryption/decryption",
+      "Implement secure memory wiping for sensitive data",
+      "Use hardware-backed RNG where available"
+    ],
+    "performance_optimization": [
+      "Use SIMD/AVX for polynomial operations",
+      "Implement lazy relinearization",
+      "Cache frequently used Galois rotations",
+      "Use NTT for polynomial multiplication"
+    ],
+    "numerical_stability": [
+      "Track precision loss through operation chains",
+      "Implement adaptive scaling for CKKS",
+      "Monitor noise budget and trigger bootstrap when needed",
+      "Use compensated summation for accumulated errors"
+    ],
+    "deployment_guidance": [
+      "Benchmark on target hardware before deployment",
+      "Configure polynomial degree based on required depth",
+      "Pre-generate keys during system initialization",
+      "Implement key rotation policies"
+    ]
+  }
+}

@@ -1,0 +1,2703 @@
+{
+  "metadata": {
+    "name": "zkp_mpc_protocols",
+    "version": "1.0.0",
+    "description": "Zero-Knowledge Proofs and Multi-Party Computation for HyperSync - Cryptographic verification of geometric properties without revealing data, collaborative geometric operations across parties",
+    "author": "HyperSync Framework",
+    "created": "2026-01-16T00:00:00Z",
+    "updated": "2026-01-16T00:00:00Z",
+    "stunir_version": "1.0",
+    "domain": "hypersync.security.zkp_mpc",
+    "conformance_level": 4,
+    "dependencies": [
+      "hyperbolic_core",
+      "lorentz_distance_metrics",
+      "cryptographic_primitives",
+      "commitment_schemes"
+    ],
+    "license": {
+      "name": "AGPLv3",
+      "url": "https://www.gnu.org/licenses/agpl-3.0.html"
+    },
+    "authors": [
+      "HyperSync Team"
+    ],
+    "mathematical_foundation": {
+      "basis": "Zero-Knowledge Proofs and Secure Multi-Party Computation",
+      "key_equations": [
+        "Schnorr Protocol: Prove knowledge of x s.t. Y = g^x without revealing x",
+        "Bulletproofs Range: Prove v \u2208 [0, 2^n) with O(log n) proof size",
+        "Pedersen Commitment: C = g^v h^r (computationally hiding, perfectly binding)",
+        "SPDZ Secret Sharing: [x] = (x\u2081, ..., x\u2099) where \u03a3x\u1d62 = x mod p",
+        "BGW Protocol: f(x\u2081,...,x\u2099) computed without revealing individual x\u1d62"
+      ],
+      "properties": [
+        "Completeness: Honest prover convinces honest verifier",
+        "Soundness: No cheating prover can convince verifier of false statement",
+        "Zero-Knowledge: Verifier learns nothing beyond statement validity",
+        "Privacy: No coalition of t parties learns anything about other inputs"
+      ]
+    },
+    "tags": [
+      "zkp",
+      "mpc",
+      "zero_knowledge",
+      "multi_party",
+      "cryptographic",
+      "critical"
+    ]
+  },
+  "types": {
+    "ZKProofSystem": {
+      "description": "Zero-knowledge proof system configuration",
+      "base_type": "object",
+      "properties": {
+        "system_type": {
+          "type": "string",
+          "enum": [
+            "schnorr",
+            "bulletproofs",
+            "groth16",
+            "plonk",
+            "stark",
+            "aurora"
+          ],
+          "description": "ZK proof system family"
+        },
+        "security_level": {
+          "type": "integer",
+          "enum": [
+            128,
+            192,
+            256
+          ],
+          "default": 128
+        },
+        "curve": {
+          "type": "string",
+          "enum": [
+            "bn254",
+            "bls12_381",
+            "secp256k1",
+            "curve25519"
+          ],
+          "default": "bls12_381"
+        },
+        "is_transparent": {
+          "type": "boolean",
+          "description": "Whether setup is transparent (no trusted setup)"
+        },
+        "is_succinct": {
+          "type": "boolean",
+          "description": "Whether proofs are succinct (sublinear in witness)"
+        }
+      }
+    },
+    "ZKProof": {
+      "description": "Zero-knowledge proof object",
+      "base_type": "object",
+      "properties": {
+        "proof_data": {
+          "type": "string",
+          "description": "Base64-encoded proof"
+        },
+        "proof_system": {
+          "type": "ZKProofSystem"
+        },
+        "statement_hash": {
+          "type": "string",
+          "description": "Hash of proven statement"
+        },
+        "proof_size_bytes": {
+          "type": "integer"
+        },
+        "verification_time_us": {
+          "type": "integer"
+        }
+      }
+    },
+    "Commitment": {
+      "description": "Cryptographic commitment",
+      "base_type": "object",
+      "properties": {
+        "commitment_value": {
+          "type": "string"
+        },
+        "scheme": {
+          "type": "string",
+          "enum": [
+            "pedersen",
+            "vector_pedersen",
+            "kzg",
+            "ipa"
+          ],
+          "default": "pedersen"
+        },
+        "binding": {
+          "type": "string",
+          "enum": [
+            "perfect",
+            "computational"
+          ]
+        },
+        "hiding": {
+          "type": "string",
+          "enum": [
+            "perfect",
+            "computational"
+          ]
+        }
+      }
+    },
+    "PointMembershipProof": {
+      "description": "ZK proof that point lies on hyperbolic manifold",
+      "base_type": "object",
+      "properties": {
+        "commitment": {
+          "type": "Commitment",
+          "description": "Commitment to point coordinates"
+        },
+        "proof": {
+          "type": "ZKProof"
+        },
+        "manifold_type": {
+          "type": "string",
+          "enum": [
+            "lorentz",
+            "poincare",
+            "klein"
+          ]
+        },
+        "dimension": {
+          "type": "integer"
+        },
+        "curvature": {
+          "type": "number"
+        }
+      }
+    },
+    "DistanceBoundProof": {
+      "description": "ZK proof that distance is within specified bounds",
+      "base_type": "object",
+      "properties": {
+        "commitment_p1": {
+          "type": "Commitment"
+        },
+        "commitment_p2": {
+          "type": "Commitment"
+        },
+        "proof": {
+          "type": "ZKProof"
+        },
+        "lower_bound": {
+          "type": "number",
+          "minimum": 0
+        },
+        "upper_bound": {
+          "type": "number"
+        },
+        "bound_type": {
+          "type": "string",
+          "enum": [
+            "strict",
+            "inclusive"
+          ]
+        }
+      }
+    },
+    "CurvatureProof": {
+      "description": "ZK proof of local curvature properties",
+      "base_type": "object",
+      "properties": {
+        "commitment_point": {
+          "type": "Commitment"
+        },
+        "proof": {
+          "type": "ZKProof"
+        },
+        "curvature_value": {
+          "type": "number"
+        },
+        "curvature_type": {
+          "type": "string",
+          "enum": [
+            "sectional",
+            "ricci",
+            "scalar"
+          ]
+        }
+      }
+    },
+    "GeodesicMembershipProof": {
+      "description": "ZK proof that point lies on geodesic between two committed points",
+      "base_type": "object",
+      "properties": {
+        "commitment_start": {
+          "type": "Commitment"
+        },
+        "commitment_end": {
+          "type": "Commitment"
+        },
+        "commitment_point": {
+          "type": "Commitment"
+        },
+        "proof": {
+          "type": "ZKProof"
+        },
+        "parameter_range": {
+          "type": "object",
+          "properties": {
+            "t_min": {
+              "type": "number"
+            },
+            "t_max": {
+              "type": "number"
+            }
+          }
+        }
+      }
+    },
+    "MPCProtocol": {
+      "description": "Multi-party computation protocol configuration",
+      "base_type": "object",
+      "properties": {
+        "protocol_type": {
+          "type": "string",
+          "enum": [
+            "spdz",
+            "bgw",
+            "gmw",
+            "yao",
+            "aby",
+            "aby3"
+          ],
+          "description": "MPC protocol family"
+        },
+        "num_parties": {
+          "type": "integer",
+          "minimum": 2
+        },
+        "threshold": {
+          "type": "integer",
+          "description": "Max corrupted parties tolerated"
+        },
+        "adversary_model": {
+          "type": "string",
+          "enum": [
+            "semi_honest",
+            "malicious"
+          ],
+          "default": "semi_honest"
+        },
+        "communication_model": {
+          "type": "string",
+          "enum": [
+            "synchronous",
+            "asynchronous"
+          ],
+          "default": "synchronous"
+        }
+      }
+    },
+    "SecretShare": {
+      "description": "Share of a secret value in MPC",
+      "base_type": "object",
+      "properties": {
+        "share_id": {
+          "type": "string"
+        },
+        "party_id": {
+          "type": "integer"
+        },
+        "share_value": {
+          "type": "string",
+          "description": "Encrypted share value"
+        },
+        "mac_share": {
+          "type": "string",
+          "description": "MAC share for malicious security"
+        },
+        "protocol": {
+          "type": "MPCProtocol"
+        }
+      }
+    },
+    "SharedPoint": {
+      "description": "Secret-shared hyperbolic point across parties",
+      "base_type": "object",
+      "properties": {
+        "point_id": {
+          "type": "string"
+        },
+        "dimension": {
+          "type": "integer"
+        },
+        "coordinate_shares": {
+          "type": "array",
+          "items": {
+            "type": "SecretShare"
+          }
+        },
+        "manifold_type": {
+          "type": "string",
+          "enum": [
+            "lorentz",
+            "poincare"
+          ]
+        },
+        "protocol": {
+          "type": "MPCProtocol"
+        }
+      }
+    },
+    "MPCComputationResult": {
+      "description": "Result of MPC computation",
+      "base_type": "object",
+      "properties": {
+        "result_shares": {
+          "type": "array",
+          "items": {
+            "type": "SecretShare"
+          }
+        },
+        "computation_id": {
+          "type": "string"
+        },
+        "rounds_used": {
+          "type": "integer"
+        },
+        "communication_bytes": {
+          "type": "integer"
+        },
+        "parties_participated": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        }
+      }
+    },
+    "PreprocessingData": {
+      "description": "Offline preprocessing for MPC (triples, etc.)",
+      "base_type": "object",
+      "properties": {
+        "triple_count": {
+          "type": "integer",
+          "description": "Beaver triples available"
+        },
+        "square_count": {
+          "type": "integer",
+          "description": "Square pairs available"
+        },
+        "random_bits": {
+          "type": "integer"
+        },
+        "protocol": {
+          "type": "MPCProtocol"
+        },
+        "generated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "VerificationKey": {
+      "description": "Public verification key for ZK proofs",
+      "base_type": "object",
+      "properties": {
+        "key_id": {
+          "type": "string"
+        },
+        "key_data": {
+          "type": "string"
+        },
+        "system": {
+          "type": "ZKProofSystem"
+        },
+        "circuit_hash": {
+          "type": "string"
+        }
+      }
+    },
+    "ProvingKey": {
+      "description": "Private proving key for ZK proofs",
+      "base_type": "object",
+      "properties": {
+        "key_id": {
+          "type": "string"
+        },
+        "system": {
+          "type": "ZKProofSystem"
+        },
+        "circuit_hash": {
+          "type": "string"
+        }
+      }
+    },
+    "ArithmeticCircuit": {
+      "description": "Arithmetic circuit for ZK/MPC computation",
+      "base_type": "object",
+      "properties": {
+        "circuit_id": {
+          "type": "string"
+        },
+        "num_inputs": {
+          "type": "integer"
+        },
+        "num_outputs": {
+          "type": "integer"
+        },
+        "num_gates": {
+          "type": "integer"
+        },
+        "multiplicative_depth": {
+          "type": "integer"
+        },
+        "gate_types": {
+          "type": "object",
+          "properties": {
+            "addition": {
+              "type": "integer"
+            },
+            "multiplication": {
+              "type": "integer"
+            },
+            "constant": {
+              "type": "integer"
+            }
+          }
+        }
+      }
+    },
+    "ProtocolTranscript": {
+      "description": "Transcript of interactive protocol for Fiat-Shamir",
+      "base_type": "object",
+      "properties": {
+        "transcript_hash": {
+          "type": "string"
+        },
+        "messages": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "round": {
+                "type": "integer"
+              },
+              "sender": {
+                "type": "string"
+              },
+              "message_hash": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "operations": {
+    "setup_zk_system": {
+      "description": "Initialize zero-knowledge proof system with parameters",
+      "inputs": {
+        "system": {
+          "type": "ZKProofSystem",
+          "required": true
+        },
+        "circuit": {
+          "type": "ArithmeticCircuit",
+          "required": true
+        },
+        "random_beacon": {
+          "type": "string",
+          "description": "For transparent setup"
+        }
+      },
+      "outputs": {
+        "verification_key": {
+          "type": "VerificationKey"
+        },
+        "proving_key": {
+          "type": "ProvingKey"
+        },
+        "setup_time_ms": {
+          "type": "integer"
+        }
+      },
+      "preconditions": [
+        "system.security_level >= 128",
+        "circuit is well-formed"
+      ],
+      "postconditions": [
+        "Keys are consistent with circuit",
+        "Setup is verifiable if transparent"
+      ],
+      "error_conditions": [
+        "INVALID_CIRCUIT: Circuit malformed",
+        "SETUP_FAILED: CRS generation failed"
+      ],
+      "security_properties": {
+        "knowledge_soundness": "Extractor exists for valid proofs",
+        "zero_knowledge": "Simulator exists for verification"
+      }
+    },
+    "prove_point_membership": {
+      "description": "Generate ZK proof that point lies on hyperbolic manifold",
+      "inputs": {
+        "point": {
+          "type": "object",
+          "required": true,
+          "description": "Point coordinates (private)"
+        },
+        "manifold_type": {
+          "type": "string",
+          "required": true
+        },
+        "curvature": {
+          "type": "number",
+          "required": true
+        },
+        "proving_key": {
+          "type": "ProvingKey",
+          "required": true
+        }
+      },
+      "outputs": {
+        "proof": {
+          "type": "PointMembershipProof"
+        },
+        "proving_time_ms": {
+          "type": "integer"
+        }
+      },
+      "preconditions": [
+        "Point actually lies on manifold",
+        "Proving key matches circuit"
+      ],
+      "postconditions": [
+        "Proof verifies with matching verification key",
+        "Point coordinates not revealed"
+      ],
+      "implementation_notes": {
+        "circuit": "Proves \u27e8x,x\u27e9_M = -1 for Lorentz, ||x|| < 1 for Poincar\u00e9",
+        "optimizations": "Use range proofs for coordinate bounds"
+      }
+    },
+    "verify_point_membership": {
+      "description": "Verify ZK proof of point membership",
+      "inputs": {
+        "proof": {
+          "type": "PointMembershipProof",
+          "required": true
+        },
+        "verification_key": {
+          "type": "VerificationKey",
+          "required": true
+        }
+      },
+      "outputs": {
+        "valid": {
+          "type": "boolean"
+        },
+        "verification_time_us": {
+          "type": "integer"
+        }
+      },
+      "postconditions": [
+        "Returns true iff proof is valid"
+      ]
+    },
+    "prove_distance_bound": {
+      "description": "Generate ZK proof that distance between committed points is within bounds",
+      "inputs": {
+        "point1": {
+          "type": "object",
+          "required": true
+        },
+        "point2": {
+          "type": "object",
+          "required": true
+        },
+        "lower_bound": {
+          "type": "number",
+          "required": true
+        },
+        "upper_bound": {
+          "type": "number",
+          "required": true
+        },
+        "proving_key": {
+          "type": "ProvingKey",
+          "required": true
+        }
+      },
+      "outputs": {
+        "proof": {
+          "type": "DistanceBoundProof"
+        },
+        "proving_time_ms": {
+          "type": "integer"
+        }
+      },
+      "preconditions": [
+        "lower_bound <= actual_distance <= upper_bound",
+        "Both points on manifold"
+      ],
+      "postconditions": [
+        "Proof verifies",
+        "Exact distance and coordinates remain hidden"
+      ],
+      "implementation_notes": {
+        "technique": "Combine distance computation circuit with Bulletproofs range proof",
+        "circuit_depth": "Depends on arcosh approximation depth"
+      }
+    },
+    "verify_distance_bound": {
+      "description": "Verify ZK proof of distance bound",
+      "inputs": {
+        "proof": {
+          "type": "DistanceBoundProof",
+          "required": true
+        },
+        "verification_key": {
+          "type": "VerificationKey",
+          "required": true
+        }
+      },
+      "outputs": {
+        "valid": {
+          "type": "boolean"
+        },
+        "verification_time_us": {
+          "type": "integer"
+        }
+      }
+    },
+    "prove_geodesic_membership": {
+      "description": "Prove point lies on geodesic between two committed endpoints",
+      "inputs": {
+        "start_point": {
+          "type": "object",
+          "required": true
+        },
+        "end_point": {
+          "type": "object",
+          "required": true
+        },
+        "point_on_geodesic": {
+          "type": "object",
+          "required": true
+        },
+        "proving_key": {
+          "type": "ProvingKey",
+          "required": true
+        }
+      },
+      "outputs": {
+        "proof": {
+          "type": "GeodesicMembershipProof"
+        },
+        "proving_time_ms": {
+          "type": "integer"
+        }
+      },
+      "postconditions": [
+        "Verifier convinced point lies on geodesic",
+        "Endpoint and point coordinates remain hidden"
+      ],
+      "implementation_notes": {
+        "technique": "Prove existence of t \u2208 [0,1] such that point = geodesic(start, end, t)"
+      }
+    },
+    "prove_curvature_property": {
+      "description": "Prove local curvature at committed point",
+      "inputs": {
+        "point": {
+          "type": "object",
+          "required": true
+        },
+        "expected_curvature": {
+          "type": "number",
+          "required": true
+        },
+        "curvature_type": {
+          "type": "string",
+          "required": true
+        },
+        "proving_key": {
+          "type": "ProvingKey",
+          "required": true
+        }
+      },
+      "outputs": {
+        "proof": {
+          "type": "CurvatureProof"
+        },
+        "proving_time_ms": {
+          "type": "integer"
+        }
+      }
+    },
+    "commit_to_point": {
+      "description": "Create cryptographic commitment to hyperbolic point",
+      "inputs": {
+        "point": {
+          "type": "object",
+          "required": true
+        },
+        "randomness": {
+          "type": "string",
+          "description": "Blinding factor"
+        },
+        "scheme": {
+          "type": "string",
+          "default": "pedersen"
+        }
+      },
+      "outputs": {
+        "commitment": {
+          "type": "Commitment"
+        },
+        "opening_info": {
+          "type": "object",
+          "description": "Information to open commitment"
+        }
+      },
+      "security_properties": {
+        "hiding": "Commitment reveals nothing about point",
+        "binding": "Cannot open to different point"
+      }
+    },
+    "batch_verify_proofs": {
+      "description": "Batch verify multiple ZK proofs efficiently",
+      "inputs": {
+        "proofs": {
+          "type": "array",
+          "items": {
+            "type": "ZKProof"
+          },
+          "required": true
+        },
+        "verification_key": {
+          "type": "VerificationKey",
+          "required": true
+        },
+        "random_coefficients": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        }
+      },
+      "outputs": {
+        "all_valid": {
+          "type": "boolean"
+        },
+        "invalid_indices": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "verification_time_us": {
+          "type": "integer"
+        }
+      },
+      "implementation_notes": {
+        "technique": "Random linear combination of verification equations",
+        "speedup": "O(n) proofs verified in time of O(1) verifications + O(n) field ops"
+      }
+    },
+    "setup_mpc_protocol": {
+      "description": "Initialize MPC protocol between parties",
+      "inputs": {
+        "protocol": {
+          "type": "MPCProtocol",
+          "required": true
+        },
+        "party_ids": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "required": true
+        },
+        "preprocessing_amount": {
+          "type": "integer",
+          "description": "Number of triples to generate"
+        }
+      },
+      "outputs": {
+        "session_id": {
+          "type": "string"
+        },
+        "preprocessing_data": {
+          "type": "PreprocessingData"
+        },
+        "setup_time_ms": {
+          "type": "integer"
+        }
+      },
+      "preconditions": [
+        "All parties reachable",
+        "Party count matches protocol requirements"
+      ],
+      "postconditions": [
+        "All parties have consistent preprocessing data",
+        "Session ready for computation"
+      ]
+    },
+    "share_point": {
+      "description": "Secret-share hyperbolic point among parties",
+      "inputs": {
+        "point": {
+          "type": "object",
+          "required": true
+        },
+        "session_id": {
+          "type": "string",
+          "required": true
+        },
+        "owner_party": {
+          "type": "integer",
+          "required": true
+        }
+      },
+      "outputs": {
+        "shared_point": {
+          "type": "SharedPoint"
+        },
+        "communication_bytes": {
+          "type": "integer"
+        }
+      },
+      "preconditions": [
+        "Session active",
+        "owner_party is valid party in session"
+      ],
+      "postconditions": [
+        "Each party holds valid share",
+        "No party learns point without reconstruction"
+      ]
+    },
+    "mpc_distance": {
+      "description": "Collaboratively compute distance between secret-shared points",
+      "inputs": {
+        "shared_p1": {
+          "type": "SharedPoint",
+          "required": true
+        },
+        "shared_p2": {
+          "type": "SharedPoint",
+          "required": true
+        },
+        "session_id": {
+          "type": "string",
+          "required": true
+        },
+        "reveal_result": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "outputs": {
+        "result": {
+          "type": "MPCComputationResult"
+        },
+        "revealed_distance": {
+          "type": "number",
+          "description": "Only if reveal_result=true"
+        }
+      },
+      "preconditions": [
+        "Both points shared in same session",
+        "Sufficient preprocessing data available"
+      ],
+      "postconditions": [
+        "Result is correct sharing of distance",
+        "Individual coordinates not revealed"
+      ],
+      "implementation_notes": {
+        "protocol": "SPDZ-style with Beaver triples for multiplication",
+        "rounds": "2 rounds for inner product + arcosh approximation rounds"
+      }
+    },
+    "mpc_geodesic_interpolation": {
+      "description": "Collaboratively compute point on geodesic",
+      "inputs": {
+        "shared_start": {
+          "type": "SharedPoint",
+          "required": true
+        },
+        "shared_end": {
+          "type": "SharedPoint",
+          "required": true
+        },
+        "t": {
+          "type": "number",
+          "required": true
+        },
+        "session_id": {
+          "type": "string",
+          "required": true
+        }
+      },
+      "outputs": {
+        "result": {
+          "type": "SharedPoint"
+        },
+        "communication_bytes": {
+          "type": "integer"
+        },
+        "rounds_used": {
+          "type": "integer"
+        }
+      },
+      "postconditions": [
+        "Result is valid sharing of geodesic point at parameter t"
+      ]
+    },
+    "mpc_centroid": {
+      "description": "Collaboratively compute Fr\u00e9chet mean of distributed points",
+      "inputs": {
+        "shared_points": {
+          "type": "array",
+          "items": {
+            "type": "SharedPoint"
+          },
+          "required": true
+        },
+        "weights": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        },
+        "session_id": {
+          "type": "string",
+          "required": true
+        },
+        "max_iterations": {
+          "type": "integer",
+          "default": 10
+        }
+      },
+      "outputs": {
+        "shared_centroid": {
+          "type": "SharedPoint"
+        },
+        "iterations_used": {
+          "type": "integer"
+        },
+        "communication_bytes": {
+          "type": "integer"
+        }
+      },
+      "implementation_notes": {
+        "algorithm": "MPC gradient descent with fixed iterations",
+        "complexity": "O(n \u00d7 d \u00d7 iterations) multiplications"
+      }
+    },
+    "mpc_parallel_transport": {
+      "description": "Collaboratively compute parallel transport",
+      "inputs": {
+        "shared_vector": {
+          "type": "object",
+          "required": true
+        },
+        "shared_start": {
+          "type": "SharedPoint",
+          "required": true
+        },
+        "shared_end": {
+          "type": "SharedPoint",
+          "required": true
+        },
+        "session_id": {
+          "type": "string",
+          "required": true
+        }
+      },
+      "outputs": {
+        "shared_result": {
+          "type": "object"
+        },
+        "communication_bytes": {
+          "type": "integer"
+        }
+      }
+    },
+    "reveal_to_party": {
+      "description": "Reveal shared value to specific party",
+      "inputs": {
+        "shared_value": {
+          "type": "object",
+          "required": true
+        },
+        "target_party": {
+          "type": "integer",
+          "required": true
+        },
+        "session_id": {
+          "type": "string",
+          "required": true
+        }
+      },
+      "outputs": {
+        "revealed_value": {
+          "type": "object"
+        },
+        "communication_bytes": {
+          "type": "integer"
+        }
+      },
+      "preconditions": [
+        "target_party in session",
+        "All parties agree to reveal"
+      ],
+      "security_properties": {
+        "selective_reveal": "Only target_party learns value"
+      }
+    },
+    "reconstruct_shared_value": {
+      "description": "Reconstruct secret value from shares (all parties)",
+      "inputs": {
+        "shared_value": {
+          "type": "object",
+          "required": true
+        },
+        "session_id": {
+          "type": "string",
+          "required": true
+        },
+        "verify_mac": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "outputs": {
+        "reconstructed_value": {
+          "type": "object"
+        },
+        "mac_valid": {
+          "type": "boolean"
+        }
+      },
+      "error_conditions": [
+        "MAC_VERIFICATION_FAILED: Cheating detected",
+        "INSUFFICIENT_SHARES: Not enough parties participated"
+      ]
+    },
+    "generate_preprocessing": {
+      "description": "Generate offline preprocessing material (Beaver triples)",
+      "inputs": {
+        "session_id": {
+          "type": "string",
+          "required": true
+        },
+        "triple_count": {
+          "type": "integer",
+          "required": true
+        },
+        "square_count": {
+          "type": "integer",
+          "default": 0
+        }
+      },
+      "outputs": {
+        "preprocessing_data": {
+          "type": "PreprocessingData"
+        },
+        "generation_time_ms": {
+          "type": "integer"
+        }
+      },
+      "implementation_notes": {
+        "technique": "OT-based triple generation or trusted dealer",
+        "amortization": "Generate in batches for efficiency"
+      }
+    },
+    "verify_mpc_transcript": {
+      "description": "Verify correctness of MPC computation from transcript",
+      "inputs": {
+        "transcript": {
+          "type": "ProtocolTranscript",
+          "required": true
+        },
+        "expected_output_commitment": {
+          "type": "Commitment"
+        },
+        "verification_key": {
+          "type": "VerificationKey"
+        }
+      },
+      "outputs": {
+        "valid": {
+          "type": "boolean"
+        },
+        "verification_time_ms": {
+          "type": "integer"
+        }
+      },
+      "implementation_notes": {
+        "technique": "Replay computation with transcript as randomness oracle"
+      }
+    },
+    "compose_proofs": {
+      "description": "Compose multiple ZK proofs into single proof",
+      "inputs": {
+        "proofs": {
+          "type": "array",
+          "items": {
+            "type": "ZKProof"
+          },
+          "required": true
+        },
+        "composition_type": {
+          "type": "string",
+          "enum": [
+            "and",
+            "or"
+          ],
+          "required": true
+        },
+        "proving_key": {
+          "type": "ProvingKey",
+          "required": true
+        }
+      },
+      "outputs": {
+        "composed_proof": {
+          "type": "ZKProof"
+        },
+        "proving_time_ms": {
+          "type": "integer"
+        }
+      },
+      "implementation_notes": {
+        "and_composition": "Prove all statements hold",
+        "or_composition": "Prove at least one statement holds (witness indistinguishability)"
+      }
+    }
+  },
+  "tests": {
+    "conformance_blocks": [
+      {
+        "schema_version": "block-uni-1",
+        "block_id": "zkp.mpc.identity.001",
+        "metadata": {
+          "title": "ZKP Identity - Proof System Setup",
+          "description": "Verify ZKP system setup produces valid keys",
+          "created_at": "2026-01-16T00:00:00Z",
+          "authors": [
+            "HyperSync Test Suite"
+          ],
+          "tags": [
+            "identity",
+            "setup",
+            "zkp"
+          ]
+        },
+        "integrity": {
+          "manifest": [
+            {
+              "path": "test_zkp_setup.py",
+              "sha256": "placeholder_hash_101",
+              "role": "program"
+            }
+          ],
+          "dir_merkle_root": "placeholder_merkle_root_101",
+          "canonicalization": {
+            "field_order": "declared",
+            "byte_encoding": "utf8",
+            "float_format": "scientific",
+            "normalize_sign": true
+          },
+          "integrity_policy": {
+            "must_match_manifest": true,
+            "deny_unknown_files": true,
+            "allow_out_of_dir": false
+          }
+        },
+        "environment": {
+          "os": "linux",
+          "arch": "x86_64",
+          "accel": "cpu",
+          "precision": "fp64",
+          "deterministic_reductions": true,
+          "blas_threads": 1
+        },
+        "manifold": {
+          "model": "lorentz",
+          "dimension": 16,
+          "curvature": -1.0
+        },
+        "numeric_policy": {
+          "tolerance": 1e-10,
+          "max_iterations": 100
+        },
+        "substrate": {
+          "nodes": [
+            {
+              "node_id": "zkp_node",
+              "role": "compute"
+            }
+          ],
+          "links": []
+        },
+        "semantics": {
+          "topics": [],
+          "policies": []
+        },
+        "fixtures": {
+          "proof_systems": [
+            "groth16",
+            "plonk",
+            "bulletproofs"
+          ]
+        },
+        "program": [
+          {
+            "step": 1,
+            "op": "zkp.define_circuit",
+            "params": {
+              "circuit_type": "point_membership",
+              "dimension": 16
+            }
+          },
+          {
+            "step": 2,
+            "op": "zkp.setup_zk_system",
+            "params": {
+              "system": {
+                "system_type": "groth16",
+                "curve": "bls12_381"
+              },
+              "circuit": "step_1.circuit"
+            }
+          },
+          {
+            "step": 3,
+            "op": "zkp.setup_zk_system",
+            "params": {
+              "system": {
+                "system_type": "plonk",
+                "curve": "bls12_381"
+              },
+              "circuit": "step_1.circuit"
+            }
+          }
+        ],
+        "checks": [
+          {
+            "check_id": "groth16_keys_valid",
+            "kind": "crypto.key_valid",
+            "params": {
+              "key_ref": "step_2.verification_key"
+            },
+            "expected": {
+              "valid": true
+            }
+          },
+          {
+            "check_id": "plonk_keys_valid",
+            "kind": "crypto.key_valid",
+            "params": {
+              "key_ref": "step_3.verification_key"
+            },
+            "expected": {
+              "valid": true
+            }
+          },
+          {
+            "check_id": "keys_match_circuit",
+            "kind": "zkp.circuit_key_consistency",
+            "params": {
+              "key": "step_2.verification_key",
+              "circuit": "step_1.circuit"
+            },
+            "expected": {
+              "consistent": true
+            }
+          }
+        ],
+        "coverage": {
+          "operations": [
+            "setup_zk_system"
+          ],
+          "invariants": [
+            "INV.ZKP.SETUP_VALID"
+          ]
+        },
+        "receipts": []
+      },
+      {
+        "schema_version": "block-uni-1",
+        "block_id": "zkp.mpc.integrity.001",
+        "metadata": {
+          "title": "ZKP Integrity - Proof Generation and Verification",
+          "description": "Verify proofs generated correctly verify",
+          "created_at": "2026-01-16T00:00:00Z",
+          "authors": [
+            "HyperSync Test Suite"
+          ],
+          "tags": [
+            "integrity",
+            "proof",
+            "verification"
+          ]
+        },
+        "integrity": {
+          "manifest": [
+            {
+              "path": "test_zkp_integrity.py",
+              "sha256": "placeholder_hash_102",
+              "role": "program"
+            }
+          ],
+          "dir_merkle_root": "placeholder_merkle_root_102",
+          "canonicalization": {
+            "field_order": "declared",
+            "byte_encoding": "utf8",
+            "float_format": "scientific",
+            "normalize_sign": true
+          },
+          "integrity_policy": {
+            "must_match_manifest": true,
+            "deny_unknown_files": true,
+            "allow_out_of_dir": false
+          }
+        },
+        "environment": {
+          "os": "linux",
+          "arch": "x86_64",
+          "accel": "cpu",
+          "precision": "fp64",
+          "deterministic_reductions": true,
+          "blas_threads": 1
+        },
+        "manifold": {
+          "model": "lorentz",
+          "dimension": 8,
+          "curvature": -1.0
+        },
+        "numeric_policy": {
+          "tolerance": 1e-10,
+          "max_iterations": 100
+        },
+        "substrate": {
+          "nodes": [
+            {
+              "node_id": "prover_node",
+              "role": "compute"
+            },
+            {
+              "node_id": "verifier_node",
+              "role": "compute"
+            }
+          ],
+          "links": []
+        },
+        "semantics": {
+          "topics": [],
+          "policies": []
+        },
+        "fixtures": {
+          "valid_lorentz_point": {
+            "coords": [
+              1.5430806348152437,
+              0.5,
+              0.5,
+              0.5,
+              0.7071067811865476
+            ],
+            "dimension": 5
+          }
+        },
+        "program": [
+          {
+            "step": 1,
+            "op": "zkp.define_circuit",
+            "params": {
+              "circuit_type": "point_membership",
+              "dimension": 5
+            }
+          },
+          {
+            "step": 2,
+            "op": "zkp.setup_zk_system",
+            "params": {
+              "system": {
+                "system_type": "groth16"
+              },
+              "circuit": "step_1.circuit"
+            }
+          },
+          {
+            "step": 3,
+            "op": "zkp.prove_point_membership",
+            "params": {
+              "point": "fixtures.valid_lorentz_point",
+              "manifold_type": "lorentz",
+              "curvature": -1.0,
+              "proving_key": "step_2.proving_key"
+            }
+          },
+          {
+            "step": 4,
+            "op": "zkp.verify_point_membership",
+            "params": {
+              "proof": "step_3.proof",
+              "verification_key": "step_2.verification_key"
+            }
+          }
+        ],
+        "checks": [
+          {
+            "check_id": "proof_generated",
+            "kind": "zkp.proof_non_empty",
+            "params": {
+              "proof": "step_3.proof"
+            },
+            "expected": {
+              "non_empty": true
+            }
+          },
+          {
+            "check_id": "proof_verifies",
+            "kind": "zkp.verification_result",
+            "params": {
+              "result": "step_4.valid"
+            },
+            "expected": {
+              "valid": true
+            }
+          }
+        ],
+        "coverage": {
+          "operations": [
+            "prove_point_membership",
+            "verify_point_membership"
+          ],
+          "invariants": [
+            "INV.ZKP.COMPLETENESS"
+          ]
+        },
+        "receipts": []
+      },
+      {
+        "schema_version": "block-uni-1",
+        "block_id": "zkp.mpc.semantics.001",
+        "metadata": {
+          "title": "ZKP Semantics - Distance Bound Proof Correctness",
+          "description": "Verify distance bound proofs are semantically correct",
+          "created_at": "2026-01-16T00:00:00Z",
+          "authors": [
+            "HyperSync Test Suite"
+          ],
+          "tags": [
+            "semantics",
+            "distance",
+            "range_proof"
+          ]
+        },
+        "integrity": {
+          "manifest": [
+            {
+              "path": "test_distance_bound.py",
+              "sha256": "placeholder_hash_103",
+              "role": "program"
+            }
+          ],
+          "dir_merkle_root": "placeholder_merkle_root_103",
+          "canonicalization": {
+            "field_order": "declared",
+            "byte_encoding": "utf8",
+            "float_format": "scientific",
+            "normalize_sign": true
+          },
+          "integrity_policy": {
+            "must_match_manifest": true,
+            "deny_unknown_files": true,
+            "allow_out_of_dir": false
+          }
+        },
+        "environment": {
+          "os": "linux",
+          "arch": "x86_64",
+          "accel": "cpu",
+          "precision": "fp64",
+          "deterministic_reductions": true,
+          "blas_threads": 1
+        },
+        "manifold": {
+          "model": "lorentz",
+          "dimension": 8,
+          "curvature": -1.0
+        },
+        "numeric_policy": {
+          "tolerance": 1e-08,
+          "max_iterations": 100
+        },
+        "substrate": {
+          "nodes": [
+            {
+              "node_id": "compute_node",
+              "role": "compute"
+            }
+          ],
+          "links": []
+        },
+        "semantics": {
+          "topics": [],
+          "policies": []
+        },
+        "fixtures": {
+          "point_pair": {
+            "p1": {
+              "coords": [
+                1.5430806348152437,
+                0.5,
+                0.5,
+                0.5,
+                0.7071067811865476
+              ]
+            },
+            "p2": {
+              "coords": [
+                2.0615528128088303,
+                1.0,
+                0.5,
+                0.5,
+                0.7071067811865476
+              ]
+            },
+            "actual_distance": 0.8813735870195432
+          }
+        },
+        "program": [
+          {
+            "step": 1,
+            "op": "zkp.define_circuit",
+            "params": {
+              "circuit_type": "distance_bound",
+              "dimension": 5
+            }
+          },
+          {
+            "step": 2,
+            "op": "zkp.setup_zk_system",
+            "params": {
+              "system": {
+                "system_type": "bulletproofs"
+              },
+              "circuit": "step_1.circuit"
+            }
+          },
+          {
+            "step": 3,
+            "op": "zkp.prove_distance_bound",
+            "params": {
+              "point1": "fixtures.point_pair.p1",
+              "point2": "fixtures.point_pair.p2",
+              "lower_bound": 0.5,
+              "upper_bound": 1.5,
+              "proving_key": "step_2.proving_key"
+            }
+          },
+          {
+            "step": 4,
+            "op": "zkp.verify_distance_bound",
+            "params": {
+              "proof": "step_3.proof",
+              "verification_key": "step_2.verification_key"
+            }
+          },
+          {
+            "step": 5,
+            "op": "zkp.prove_distance_bound",
+            "params": {
+              "point1": "fixtures.point_pair.p1",
+              "point2": "fixtures.point_pair.p2",
+              "lower_bound": 2.0,
+              "upper_bound": 3.0,
+              "proving_key": "step_2.proving_key"
+            }
+          }
+        ],
+        "checks": [
+          {
+            "check_id": "valid_range_proves",
+            "kind": "zkp.verification_result",
+            "params": {
+              "result": "step_4.valid"
+            },
+            "expected": {
+              "valid": true
+            }
+          },
+          {
+            "check_id": "invalid_range_fails",
+            "kind": "zkp.proof_generation_fails",
+            "params": {
+              "result": "step_5"
+            },
+            "expected": {
+              "failed": true,
+              "reason": "distance_outside_bounds"
+            }
+          }
+        ],
+        "coverage": {
+          "operations": [
+            "prove_distance_bound",
+            "verify_distance_bound"
+          ],
+          "invariants": [
+            "INV.ZKP.SOUNDNESS",
+            "INV.DIST.CORRECTNESS"
+          ]
+        },
+        "receipts": []
+      },
+      {
+        "schema_version": "block-uni-1",
+        "block_id": "zkp.mpc.security.001",
+        "metadata": {
+          "title": "ZKP Security - Zero Knowledge Property",
+          "description": "Verify proofs reveal nothing beyond statement validity",
+          "created_at": "2026-01-16T00:00:00Z",
+          "authors": [
+            "HyperSync Test Suite"
+          ],
+          "tags": [
+            "security",
+            "zero_knowledge",
+            "simulation"
+          ]
+        },
+        "integrity": {
+          "manifest": [
+            {
+              "path": "test_zero_knowledge.py",
+              "sha256": "placeholder_hash_104",
+              "role": "program"
+            }
+          ],
+          "dir_merkle_root": "placeholder_merkle_root_104",
+          "canonicalization": {
+            "field_order": "declared",
+            "byte_encoding": "utf8",
+            "float_format": "scientific",
+            "normalize_sign": true
+          },
+          "integrity_policy": {
+            "must_match_manifest": true,
+            "deny_unknown_files": true,
+            "allow_out_of_dir": false
+          }
+        },
+        "environment": {
+          "os": "linux",
+          "arch": "x86_64",
+          "accel": "cpu",
+          "precision": "fp64",
+          "deterministic_reductions": true,
+          "blas_threads": 1
+        },
+        "manifold": {
+          "model": "lorentz",
+          "dimension": 8,
+          "curvature": -1.0
+        },
+        "numeric_policy": {
+          "tolerance": 1e-10,
+          "max_iterations": 100
+        },
+        "substrate": {
+          "nodes": [
+            {
+              "node_id": "prover_node",
+              "role": "compute"
+            },
+            {
+              "node_id": "verifier_node",
+              "role": "compute"
+            }
+          ],
+          "links": []
+        },
+        "semantics": {
+          "topics": [],
+          "policies": [
+            {
+              "policy_id": "zk_policy",
+              "rules": [
+                "no_witness_leakage",
+                "simulation_indistinguishable"
+              ]
+            }
+          ]
+        },
+        "fixtures": {
+          "different_points": [
+            {
+              "coords": [
+                1.5430806348152437,
+                0.5,
+                0.5,
+                0.5,
+                0.7071067811865476
+              ]
+            },
+            {
+              "coords": [
+                2.0,
+                0.8,
+                0.9,
+                1.0,
+                0.6
+              ]
+            }
+          ]
+        },
+        "program": [
+          {
+            "step": 1,
+            "op": "zkp.define_circuit",
+            "params": {
+              "circuit_type": "point_membership",
+              "dimension": 5
+            }
+          },
+          {
+            "step": 2,
+            "op": "zkp.setup_zk_system",
+            "params": {
+              "system": {
+                "system_type": "groth16"
+              },
+              "circuit": "step_1.circuit"
+            }
+          },
+          {
+            "step": 3,
+            "op": "zkp.prove_point_membership",
+            "params": {
+              "point": "fixtures.different_points[0]",
+              "manifold_type": "lorentz",
+              "curvature": -1.0,
+              "proving_key": "step_2.proving_key"
+            }
+          },
+          {
+            "step": 4,
+            "op": "zkp.prove_point_membership",
+            "params": {
+              "point": "fixtures.different_points[1]",
+              "manifold_type": "lorentz",
+              "curvature": -1.0,
+              "proving_key": "step_2.proving_key"
+            }
+          },
+          {
+            "step": 5,
+            "op": "security.statistical_distance",
+            "params": {
+              "dist1": "step_3.proof",
+              "dist2": "step_4.proof"
+            }
+          }
+        ],
+        "checks": [
+          {
+            "check_id": "proofs_indistinguishable",
+            "kind": "security.computational_indistinguishability",
+            "params": {
+              "proof1": "step_3.proof",
+              "proof2": "step_4.proof"
+            },
+            "expected": {
+              "indistinguishable": true,
+              "advantage_bound": 1e-06
+            }
+          },
+          {
+            "check_id": "no_coordinate_leakage",
+            "kind": "security.information_leakage",
+            "params": {
+              "proof": "step_3.proof",
+              "witness": "fixtures.different_points[0]"
+            },
+            "expected": {
+              "leakage_bits": 0
+            }
+          }
+        ],
+        "coverage": {
+          "operations": [
+            "prove_point_membership"
+          ],
+          "invariants": [
+            "INV.SECURITY.ZERO_KNOWLEDGE"
+          ]
+        },
+        "receipts": []
+      },
+      {
+        "schema_version": "block-uni-1",
+        "block_id": "zkp.mpc.security.002",
+        "metadata": {
+          "title": "ZKP Security - Soundness Property",
+          "description": "Verify invalid statements cannot be proven",
+          "created_at": "2026-01-16T00:00:00Z",
+          "authors": [
+            "HyperSync Test Suite"
+          ],
+          "tags": [
+            "security",
+            "soundness",
+            "cheating"
+          ]
+        },
+        "integrity": {
+          "manifest": [
+            {
+              "path": "test_soundness.py",
+              "sha256": "placeholder_hash_105",
+              "role": "program"
+            }
+          ],
+          "dir_merkle_root": "placeholder_merkle_root_105",
+          "canonicalization": {
+            "field_order": "declared",
+            "byte_encoding": "utf8",
+            "float_format": "scientific",
+            "normalize_sign": true
+          },
+          "integrity_policy": {
+            "must_match_manifest": true,
+            "deny_unknown_files": true,
+            "allow_out_of_dir": false
+          }
+        },
+        "environment": {
+          "os": "linux",
+          "arch": "x86_64",
+          "accel": "cpu",
+          "precision": "fp64",
+          "deterministic_reductions": true,
+          "blas_threads": 1
+        },
+        "manifold": {
+          "model": "lorentz",
+          "dimension": 8,
+          "curvature": -1.0
+        },
+        "numeric_policy": {
+          "tolerance": 1e-10,
+          "max_iterations": 100
+        },
+        "substrate": {
+          "nodes": [
+            {
+              "node_id": "malicious_prover",
+              "role": "compute"
+            },
+            {
+              "node_id": "honest_verifier",
+              "role": "compute"
+            }
+          ],
+          "links": []
+        },
+        "semantics": {
+          "topics": [],
+          "policies": []
+        },
+        "fixtures": {
+          "invalid_point": {
+            "coords": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "note": "Not on hyperboloid"
+          }
+        },
+        "program": [
+          {
+            "step": 1,
+            "op": "zkp.define_circuit",
+            "params": {
+              "circuit_type": "point_membership",
+              "dimension": 5
+            }
+          },
+          {
+            "step": 2,
+            "op": "zkp.setup_zk_system",
+            "params": {
+              "system": {
+                "system_type": "groth16"
+              },
+              "circuit": "step_1.circuit"
+            }
+          },
+          {
+            "step": 3,
+            "op": "zkp.attempt_prove_invalid",
+            "params": {
+              "point": "fixtures.invalid_point",
+              "manifold_type": "lorentz",
+              "proving_key": "step_2.proving_key"
+            }
+          }
+        ],
+        "checks": [
+          {
+            "check_id": "invalid_proof_fails",
+            "kind": "zkp.proof_generation_fails",
+            "params": {
+              "result": "step_3"
+            },
+            "expected": {
+              "failed": true,
+              "reason": "constraint_not_satisfied"
+            }
+          }
+        ],
+        "coverage": {
+          "operations": [
+            "prove_point_membership"
+          ],
+          "invariants": [
+            "INV.ZKP.SOUNDNESS"
+          ]
+        },
+        "receipts": []
+      },
+      {
+        "schema_version": "block-uni-1",
+        "block_id": "zkp.mpc.mpc.001",
+        "metadata": {
+          "title": "MPC Setup and Secret Sharing",
+          "description": "Verify MPC protocol setup and secret sharing",
+          "created_at": "2026-01-16T00:00:00Z",
+          "authors": [
+            "HyperSync Test Suite"
+          ],
+          "tags": [
+            "mpc",
+            "setup",
+            "secret_sharing"
+          ]
+        },
+        "integrity": {
+          "manifest": [
+            {
+              "path": "test_mpc_setup.py",
+              "sha256": "placeholder_hash_106",
+              "role": "program"
+            }
+          ],
+          "dir_merkle_root": "placeholder_merkle_root_106",
+          "canonicalization": {
+            "field_order": "declared",
+            "byte_encoding": "utf8",
+            "float_format": "scientific",
+            "normalize_sign": true
+          },
+          "integrity_policy": {
+            "must_match_manifest": true,
+            "deny_unknown_files": true,
+            "allow_out_of_dir": false
+          }
+        },
+        "environment": {
+          "os": "linux",
+          "arch": "x86_64",
+          "accel": "cpu",
+          "precision": "fp64",
+          "deterministic_reductions": true,
+          "blas_threads": 1
+        },
+        "manifold": {
+          "model": "lorentz",
+          "dimension": 8,
+          "curvature": -1.0
+        },
+        "numeric_policy": {
+          "tolerance": 1e-10,
+          "max_iterations": 100
+        },
+        "substrate": {
+          "nodes": [
+            {
+              "node_id": "party_0",
+              "role": "compute"
+            },
+            {
+              "node_id": "party_1",
+              "role": "compute"
+            },
+            {
+              "node_id": "party_2",
+              "role": "compute"
+            }
+          ],
+          "links": [
+            {
+              "from": "party_0",
+              "to": "party_1"
+            },
+            {
+              "from": "party_1",
+              "to": "party_2"
+            },
+            {
+              "from": "party_0",
+              "to": "party_2"
+            }
+          ]
+        },
+        "semantics": {
+          "topics": [],
+          "policies": []
+        },
+        "fixtures": {
+          "test_point": {
+            "coords": [
+              1.5430806348152437,
+              0.5,
+              0.5,
+              0.5,
+              0.7071067811865476
+            ]
+          }
+        },
+        "program": [
+          {
+            "step": 1,
+            "op": "mpc.setup_mpc_protocol",
+            "params": {
+              "protocol": {
+                "protocol_type": "spdz",
+                "num_parties": 3,
+                "threshold": 1
+              },
+              "party_ids": [
+                0,
+                1,
+                2
+              ],
+              "preprocessing_amount": 100
+            }
+          },
+          {
+            "step": 2,
+            "op": "mpc.share_point",
+            "params": {
+              "point": "fixtures.test_point",
+              "session_id": "step_1.session_id",
+              "owner_party": 0
+            }
+          },
+          {
+            "step": 3,
+            "op": "mpc.reconstruct_shared_value",
+            "params": {
+              "shared_value": "step_2.shared_point",
+              "session_id": "step_1.session_id"
+            }
+          }
+        ],
+        "checks": [
+          {
+            "check_id": "session_created",
+            "kind": "mpc.session_valid",
+            "params": {
+              "session_id": "step_1.session_id"
+            },
+            "expected": {
+              "valid": true
+            }
+          },
+          {
+            "check_id": "shares_created",
+            "kind": "mpc.shares_valid",
+            "params": {
+              "shared_point": "step_2.shared_point"
+            },
+            "expected": {
+              "valid": true,
+              "share_count": 3
+            }
+          },
+          {
+            "check_id": "reconstruction_correct",
+            "kind": "numeric.close_to",
+            "params": {
+              "computed": "step_3.reconstructed_value",
+              "expected": "fixtures.test_point",
+              "tolerance": 1e-10
+            },
+            "expected": {
+              "close": true
+            }
+          }
+        ],
+        "coverage": {
+          "operations": [
+            "setup_mpc_protocol",
+            "share_point",
+            "reconstruct_shared_value"
+          ],
+          "invariants": [
+            "INV.MPC.SHARING_CORRECT"
+          ]
+        },
+        "receipts": []
+      },
+      {
+        "schema_version": "block-uni-1",
+        "block_id": "zkp.mpc.mpc.002",
+        "metadata": {
+          "title": "MPC Distance Computation",
+          "description": "Verify collaborative distance computation",
+          "created_at": "2026-01-16T00:00:00Z",
+          "authors": [
+            "HyperSync Test Suite"
+          ],
+          "tags": [
+            "mpc",
+            "distance",
+            "collaborative"
+          ]
+        },
+        "integrity": {
+          "manifest": [
+            {
+              "path": "test_mpc_distance.py",
+              "sha256": "placeholder_hash_107",
+              "role": "program"
+            }
+          ],
+          "dir_merkle_root": "placeholder_merkle_root_107",
+          "canonicalization": {
+            "field_order": "declared",
+            "byte_encoding": "utf8",
+            "float_format": "scientific",
+            "normalize_sign": true
+          },
+          "integrity_policy": {
+            "must_match_manifest": true,
+            "deny_unknown_files": true,
+            "allow_out_of_dir": false
+          }
+        },
+        "environment": {
+          "os": "linux",
+          "arch": "x86_64",
+          "accel": "cpu",
+          "precision": "fp64",
+          "deterministic_reductions": true,
+          "blas_threads": 1
+        },
+        "manifold": {
+          "model": "lorentz",
+          "dimension": 8,
+          "curvature": -1.0
+        },
+        "numeric_policy": {
+          "tolerance": 1e-06,
+          "max_iterations": 100
+        },
+        "substrate": {
+          "nodes": [
+            {
+              "node_id": "party_0",
+              "role": "compute"
+            },
+            {
+              "node_id": "party_1",
+              "role": "compute"
+            },
+            {
+              "node_id": "party_2",
+              "role": "compute"
+            }
+          ],
+          "links": [
+            {
+              "from": "party_0",
+              "to": "party_1"
+            },
+            {
+              "from": "party_1",
+              "to": "party_2"
+            },
+            {
+              "from": "party_0",
+              "to": "party_2"
+            }
+          ]
+        },
+        "semantics": {
+          "topics": [],
+          "policies": []
+        },
+        "fixtures": {
+          "point_pair": {
+            "p1": {
+              "coords": [
+                1.5430806348152437,
+                0.5,
+                0.5,
+                0.5,
+                0.7071067811865476
+              ]
+            },
+            "p2": {
+              "coords": [
+                2.0615528128088303,
+                1.0,
+                0.5,
+                0.5,
+                0.7071067811865476
+              ]
+            },
+            "expected_distance": 0.8813735870195432
+          }
+        },
+        "program": [
+          {
+            "step": 1,
+            "op": "mpc.setup_mpc_protocol",
+            "params": {
+              "protocol": {
+                "protocol_type": "spdz",
+                "num_parties": 3,
+                "threshold": 1
+              },
+              "party_ids": [
+                0,
+                1,
+                2
+              ],
+              "preprocessing_amount": 500
+            }
+          },
+          {
+            "step": 2,
+            "op": "mpc.share_point",
+            "params": {
+              "point": "fixtures.point_pair.p1",
+              "session_id": "step_1.session_id",
+              "owner_party": 0
+            }
+          },
+          {
+            "step": 3,
+            "op": "mpc.share_point",
+            "params": {
+              "point": "fixtures.point_pair.p2",
+              "session_id": "step_1.session_id",
+              "owner_party": 1
+            }
+          },
+          {
+            "step": 4,
+            "op": "mpc.mpc_distance",
+            "params": {
+              "shared_p1": "step_2.shared_point",
+              "shared_p2": "step_3.shared_point",
+              "session_id": "step_1.session_id",
+              "reveal_result": true
+            }
+          }
+        ],
+        "checks": [
+          {
+            "check_id": "mpc_distance_correct",
+            "kind": "invariant",
+            "invariant_id": "INV.DIST.CORRECTNESS",
+            "params": {
+              "computed": "step_4.revealed_distance",
+              "expected": "fixtures.point_pair.expected_distance"
+            },
+            "expected": {
+              "correct": true,
+              "tolerance": 0.0001
+            }
+          },
+          {
+            "check_id": "privacy_preserved",
+            "kind": "mpc.no_input_leakage",
+            "params": {
+              "parties": [
+                0,
+                1,
+                2
+              ],
+              "session_id": "step_1.session_id"
+            },
+            "expected": {
+              "leaked": false
+            }
+          }
+        ],
+        "coverage": {
+          "operations": [
+            "mpc_distance"
+          ],
+          "invariants": [
+            "INV.DIST.CORRECTNESS",
+            "INV.MPC.PRIVACY"
+          ]
+        },
+        "receipts": []
+      },
+      {
+        "schema_version": "block-uni-1",
+        "block_id": "zkp.mpc.mpc.003",
+        "metadata": {
+          "title": "MPC Malicious Security",
+          "description": "Verify MPC detects cheating parties",
+          "created_at": "2026-01-16T00:00:00Z",
+          "authors": [
+            "HyperSync Test Suite"
+          ],
+          "tags": [
+            "mpc",
+            "malicious",
+            "security"
+          ]
+        },
+        "integrity": {
+          "manifest": [
+            {
+              "path": "test_mpc_malicious.py",
+              "sha256": "placeholder_hash_108",
+              "role": "program"
+            }
+          ],
+          "dir_merkle_root": "placeholder_merkle_root_108",
+          "canonicalization": {
+            "field_order": "declared",
+            "byte_encoding": "utf8",
+            "float_format": "scientific",
+            "normalize_sign": true
+          },
+          "integrity_policy": {
+            "must_match_manifest": true,
+            "deny_unknown_files": true,
+            "allow_out_of_dir": false
+          }
+        },
+        "environment": {
+          "os": "linux",
+          "arch": "x86_64",
+          "accel": "cpu",
+          "precision": "fp64",
+          "deterministic_reductions": true,
+          "blas_threads": 1
+        },
+        "manifold": {
+          "model": "lorentz",
+          "dimension": 8,
+          "curvature": -1.0
+        },
+        "numeric_policy": {
+          "tolerance": 1e-10,
+          "max_iterations": 100
+        },
+        "substrate": {
+          "nodes": [
+            {
+              "node_id": "honest_party_0",
+              "role": "compute"
+            },
+            {
+              "node_id": "honest_party_1",
+              "role": "compute"
+            },
+            {
+              "node_id": "malicious_party_2",
+              "role": "compute",
+              "malicious": true
+            }
+          ],
+          "links": []
+        },
+        "semantics": {
+          "topics": [],
+          "policies": [
+            {
+              "policy_id": "malicious_security",
+              "rules": [
+                "detect_cheating",
+                "abort_on_mac_failure"
+              ]
+            }
+          ]
+        },
+        "fixtures": {
+          "test_point": {
+            "coords": [
+              1.5430806348152437,
+              0.5,
+              0.5,
+              0.5,
+              0.7071067811865476
+            ]
+          }
+        },
+        "program": [
+          {
+            "step": 1,
+            "op": "mpc.setup_mpc_protocol",
+            "params": {
+              "protocol": {
+                "protocol_type": "spdz",
+                "num_parties": 3,
+                "threshold": 1,
+                "adversary_model": "malicious"
+              },
+              "party_ids": [
+                0,
+                1,
+                2
+              ]
+            }
+          },
+          {
+            "step": 2,
+            "op": "mpc.share_point",
+            "params": {
+              "point": "fixtures.test_point",
+              "session_id": "step_1.session_id",
+              "owner_party": 0
+            }
+          },
+          {
+            "step": 3,
+            "op": "mpc.inject_malicious_share",
+            "params": {
+              "party_id": 2,
+              "tampered_share": "random_value",
+              "session_id": "step_1.session_id"
+            }
+          },
+          {
+            "step": 4,
+            "op": "mpc.reconstruct_shared_value",
+            "params": {
+              "shared_value": "step_2.shared_point",
+              "session_id": "step_1.session_id",
+              "verify_mac": true
+            }
+          }
+        ],
+        "checks": [
+          {
+            "check_id": "cheating_detected",
+            "kind": "mpc.mac_verification",
+            "params": {
+              "result": "step_4"
+            },
+            "expected": {
+              "mac_valid": false,
+              "aborted": true
+            }
+          }
+        ],
+        "coverage": {
+          "operations": [
+            "reconstruct_shared_value"
+          ],
+          "invariants": [
+            "INV.MPC.MALICIOUS_SECURITY"
+          ]
+        },
+        "receipts": []
+      },
+      {
+        "schema_version": "block-uni-1",
+        "block_id": "zkp.mpc.batch.001",
+        "metadata": {
+          "title": "Batch Proof Verification",
+          "description": "Verify efficient batch verification of multiple proofs",
+          "created_at": "2026-01-16T00:00:00Z",
+          "authors": [
+            "HyperSync Test Suite"
+          ],
+          "tags": [
+            "batch",
+            "verification",
+            "performance"
+          ]
+        },
+        "integrity": {
+          "manifest": [
+            {
+              "path": "test_batch_verify.py",
+              "sha256": "placeholder_hash_109",
+              "role": "program"
+            }
+          ],
+          "dir_merkle_root": "placeholder_merkle_root_109",
+          "canonicalization": {
+            "field_order": "declared",
+            "byte_encoding": "utf8",
+            "float_format": "scientific",
+            "normalize_sign": true
+          },
+          "integrity_policy": {
+            "must_match_manifest": true,
+            "deny_unknown_files": true,
+            "allow_out_of_dir": false
+          }
+        },
+        "environment": {
+          "os": "linux",
+          "arch": "x86_64",
+          "accel": "cpu",
+          "precision": "fp64",
+          "deterministic_reductions": true,
+          "blas_threads": 4
+        },
+        "manifold": {
+          "model": "lorentz",
+          "dimension": 8,
+          "curvature": -1.0
+        },
+        "numeric_policy": {
+          "tolerance": 1e-10,
+          "max_iterations": 100
+        },
+        "substrate": {
+          "nodes": [
+            {
+              "node_id": "batch_verifier",
+              "role": "compute"
+            }
+          ],
+          "links": []
+        },
+        "semantics": {
+          "topics": [],
+          "policies": []
+        },
+        "fixtures": {
+          "num_proofs": 100
+        },
+        "program": [
+          {
+            "step": 1,
+            "op": "zkp.define_circuit",
+            "params": {
+              "circuit_type": "point_membership",
+              "dimension": 5
+            }
+          },
+          {
+            "step": 2,
+            "op": "zkp.setup_zk_system",
+            "params": {
+              "system": {
+                "system_type": "groth16"
+              },
+              "circuit": "step_1.circuit"
+            }
+          },
+          {
+            "step": 3,
+            "op": "generate.random_lorentz_points",
+            "params": {
+              "count": 100,
+              "dimension": 5
+            }
+          },
+          {
+            "step": 4,
+            "op": "zkp.batch_prove",
+            "params": {
+              "points": "step_3.points",
+              "proving_key": "step_2.proving_key"
+            }
+          },
+          {
+            "step": 5,
+            "op": "zkp.batch_verify_proofs",
+            "params": {
+              "proofs": "step_4.proofs",
+              "verification_key": "step_2.verification_key"
+            }
+          }
+        ],
+        "checks": [
+          {
+            "check_id": "all_proofs_valid",
+            "kind": "zkp.batch_verification_result",
+            "params": {
+              "result": "step_5.all_valid"
+            },
+            "expected": {
+              "all_valid": true
+            }
+          },
+          {
+            "check_id": "batch_faster_than_individual",
+            "kind": "performance.speedup",
+            "params": {
+              "batch_time": "step_5.verification_time_us",
+              "individual_time_estimate": "step_4.proofs.length * 5000"
+            },
+            "expected": {
+              "speedup_factor": 2
+            }
+          }
+        ],
+        "coverage": {
+          "operations": [
+            "batch_verify_proofs"
+          ],
+          "invariants": [
+            "INV.ZKP.BATCH_CORRECTNESS"
+          ]
+        },
+        "receipts": []
+      }
+    ]
+  },
+  "implementation_notes": {
+    "security_considerations": [
+      "Use constant-time implementations to prevent timing attacks",
+      "Validate all public inputs before proof verification",
+      "Use secure randomness for Fiat-Shamir challenges",
+      "Implement secure key deletion after protocol completion",
+      "Audit circuits for constraint satisfaction"
+    ],
+    "performance_optimization": [
+      "Use multi-scalar multiplication for batch verification",
+      "Precompute Galois group elements for FFT",
+      "Parallelize proof generation across multiple cores",
+      "Use hardware acceleration for elliptic curve operations"
+    ],
+    "protocol_considerations": [
+      "Implement abort-on-error for malicious security",
+      "Use preprocessing to reduce online communication",
+      "Handle party failures gracefully with threshold protocols",
+      "Log transcripts for auditability"
+    ],
+    "deployment_guidance": [
+      "Generate trusted setup with MPC ceremony",
+      "Distribute verification keys securely",
+      "Monitor for proof replay attacks",
+      "Implement rate limiting on proof generation"
+    ]
+  }
+}

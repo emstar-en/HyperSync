@@ -1,0 +1,2839 @@
+{
+  "specification": "domain_operations",
+  "version": "1.0.0",
+  "status": "complete",
+  "author": "HyperSync Operations Team",
+  "created": "2026-01-12",
+  "description": "Complete domain lifecycle and management operations specification",
+  "metadata": {
+    "stunir_version": "3.0",
+    "category": "operations",
+    "tags": [
+      "operations",
+      "lifecycle",
+      "management",
+      "transitions"
+    ],
+    "dependencies": [
+      "domain_architecture",
+      "domain_security_model"
+    ],
+    "priority": "critical",
+    "implementation_status": "required"
+  },
+  "types": {
+    "DomainContext": {
+      "description": "Execution context within a domain",
+      "properties": {
+        "domain_id": {
+          "type": "DomainID"
+        },
+        "capabilities": {
+          "type": "array"
+        },
+        "resources": {
+          "type": "object"
+        },
+        "state": {
+          "type": "object"
+        }
+      }
+    },
+    "DomainTransition": {
+      "description": "Transition between domains",
+      "properties": {
+        "source_domain": {
+          "type": "DomainID"
+        },
+        "target_domain": {
+          "type": "DomainID"
+        },
+        "transition_type": {
+          "type": "string"
+        },
+        "state_preservation": {
+          "type": "boolean"
+        }
+      }
+    },
+    "NetworkIsolation": {
+      "description": "Network isolation configuration",
+      "properties": {
+        "network_id": {
+          "type": "string"
+        },
+        "isolated_domain": {
+          "type": "DomainID"
+        },
+        "policy": {
+          "type": "object"
+        }
+      }
+    },
+    "ResourceMigration": {
+      "description": "Resource migration state",
+      "properties": {
+        "resource_id": {
+          "type": "string"
+        },
+        "source_domain": {
+          "type": "DomainID"
+        },
+        "target_domain": {
+          "type": "DomainID"
+        },
+        "state": {
+          "type": "string"
+        }
+      }
+    },
+    "DomainHealth": {
+      "description": "Domain health metrics",
+      "properties": {
+        "status": {
+          "type": "string"
+        },
+        "metrics": {
+          "type": "object"
+        },
+        "issues": {
+          "type": "array"
+        }
+      }
+    },
+    "DomainBackup": {
+      "description": "Domain backup data",
+      "properties": {
+        "backup_id": {
+          "type": "string"
+        },
+        "domain_snapshot": {
+          "type": "object"
+        },
+        "timestamp": {
+          "type": "timestamp"
+        }
+      }
+    }
+  },
+  "operations": {
+    "enter_domain": {
+      "description": "Enter Domain operation",
+      "category": "lifecycle",
+      "inputs": {
+        "domain_id": {
+          "type": "DomainID",
+          "required": true
+        }
+      },
+      "outputs": {
+        "success": {
+          "type": "boolean"
+        }
+      },
+      "preconditions": [
+        "Domain exists",
+        "Valid permissions"
+      ],
+      "postconditions": [
+        "enter_domain completed",
+        "Domain consistent"
+      ],
+      "formulas": {
+        "state_preservation": "Maintain domain state across transitions",
+        "resource_tracking": "Track all resources during operations"
+      },
+      "edge_cases": [
+        {
+          "case": "Domain not found",
+          "handling": "Return error",
+          "outcome": "Invalid domain"
+        },
+        {
+          "case": "Permission denied",
+          "handling": "Return error",
+          "outcome": "Access control"
+        },
+        {
+          "case": "Operation in progress",
+          "handling": "Wait or reject",
+          "outcome": "Prevent conflicts"
+        },
+        {
+          "case": "Resource conflict",
+          "handling": "Resolve or reject",
+          "outcome": "Maintain consistency"
+        },
+        {
+          "case": "Domain transitioning",
+          "handling": "Queue or reject",
+          "outcome": "Handle state"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "Basic enter_domain",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "Domain not found",
+          "input": {
+            "domain_id": "ld://invalid/id"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "Permission check",
+          "setup": "No permission",
+          "input": {
+            "domain_id": "ld://secure/domain"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "State validation",
+          "setup": "Invalid state",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "Concurrent operation",
+          "setup": "Multiple calls",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "LD(0) operation",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "Resource tracking",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "Error recovery",
+          "setup": "Operation fails",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "Complete workflow",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        }
+      ],
+      "security_properties": [
+        "Access control enforced",
+        "State integrity maintained",
+        "Audit trail created"
+      ],
+      "performance": {
+        "complexity": "O(1) to O(n)",
+        "typical_duration_ms": "< 100",
+        "resource_overhead": "Depends on operation"
+      }
+    },
+    "exit_domain": {
+      "description": "Exit Domain operation",
+      "category": "lifecycle",
+      "inputs": {
+        "domain_id": {
+          "type": "DomainID",
+          "required": true
+        }
+      },
+      "outputs": {
+        "success": {
+          "type": "boolean"
+        }
+      },
+      "preconditions": [
+        "Domain exists",
+        "Valid permissions"
+      ],
+      "postconditions": [
+        "exit_domain completed",
+        "Domain consistent"
+      ],
+      "formulas": {
+        "state_preservation": "Maintain domain state across transitions",
+        "resource_tracking": "Track all resources during operations"
+      },
+      "edge_cases": [
+        {
+          "case": "Domain not found",
+          "handling": "Return error",
+          "outcome": "Invalid domain"
+        },
+        {
+          "case": "Permission denied",
+          "handling": "Return error",
+          "outcome": "Access control"
+        },
+        {
+          "case": "Operation in progress",
+          "handling": "Wait or reject",
+          "outcome": "Prevent conflicts"
+        },
+        {
+          "case": "Resource conflict",
+          "handling": "Resolve or reject",
+          "outcome": "Maintain consistency"
+        },
+        {
+          "case": "Domain transitioning",
+          "handling": "Queue or reject",
+          "outcome": "Handle state"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "Basic exit_domain",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "Domain not found",
+          "input": {
+            "domain_id": "ld://invalid/id"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "Permission check",
+          "setup": "No permission",
+          "input": {
+            "domain_id": "ld://secure/domain"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "State validation",
+          "setup": "Invalid state",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "Concurrent operation",
+          "setup": "Multiple calls",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "LD(0) operation",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "Resource tracking",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "Error recovery",
+          "setup": "Operation fails",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "Complete workflow",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        }
+      ],
+      "security_properties": [
+        "Access control enforced",
+        "State integrity maintained",
+        "Audit trail created"
+      ],
+      "performance": {
+        "complexity": "O(1) to O(n)",
+        "typical_duration_ms": "< 100",
+        "resource_overhead": "Depends on operation"
+      }
+    },
+    "transition_between_domains": {
+      "description": "Transition Between Domains operation",
+      "category": "lifecycle",
+      "inputs": {
+        "domain_id": {
+          "type": "DomainID",
+          "required": true
+        }
+      },
+      "outputs": {
+        "success": {
+          "type": "boolean"
+        }
+      },
+      "preconditions": [
+        "Domain exists",
+        "Valid permissions"
+      ],
+      "postconditions": [
+        "transition_between_domains completed",
+        "Domain consistent"
+      ],
+      "formulas": {
+        "state_preservation": "Maintain domain state across transitions",
+        "resource_tracking": "Track all resources during operations"
+      },
+      "edge_cases": [
+        {
+          "case": "Domain not found",
+          "handling": "Return error",
+          "outcome": "Invalid domain"
+        },
+        {
+          "case": "Permission denied",
+          "handling": "Return error",
+          "outcome": "Access control"
+        },
+        {
+          "case": "Operation in progress",
+          "handling": "Wait or reject",
+          "outcome": "Prevent conflicts"
+        },
+        {
+          "case": "Resource conflict",
+          "handling": "Resolve or reject",
+          "outcome": "Maintain consistency"
+        },
+        {
+          "case": "Domain transitioning",
+          "handling": "Queue or reject",
+          "outcome": "Handle state"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "Basic transition_between_domains",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "Domain not found",
+          "input": {
+            "domain_id": "ld://invalid/id"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "Permission check",
+          "setup": "No permission",
+          "input": {
+            "domain_id": "ld://secure/domain"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "State validation",
+          "setup": "Invalid state",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "Concurrent operation",
+          "setup": "Multiple calls",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "LD(0) operation",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "Resource tracking",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "Error recovery",
+          "setup": "Operation fails",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "Complete workflow",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        }
+      ],
+      "security_properties": [
+        "Access control enforced",
+        "State integrity maintained",
+        "Audit trail created"
+      ],
+      "performance": {
+        "complexity": "O(1) to O(n)",
+        "typical_duration_ms": "< 100",
+        "resource_overhead": "Depends on operation"
+      }
+    },
+    "execute_in_domain": {
+      "description": "Execute In Domain operation",
+      "category": "lifecycle",
+      "inputs": {
+        "domain_id": {
+          "type": "DomainID",
+          "required": true
+        }
+      },
+      "outputs": {
+        "success": {
+          "type": "boolean"
+        }
+      },
+      "preconditions": [
+        "Domain exists",
+        "Valid permissions"
+      ],
+      "postconditions": [
+        "execute_in_domain completed",
+        "Domain consistent"
+      ],
+      "formulas": {
+        "state_preservation": "Maintain domain state across transitions",
+        "resource_tracking": "Track all resources during operations"
+      },
+      "edge_cases": [
+        {
+          "case": "Domain not found",
+          "handling": "Return error",
+          "outcome": "Invalid domain"
+        },
+        {
+          "case": "Permission denied",
+          "handling": "Return error",
+          "outcome": "Access control"
+        },
+        {
+          "case": "Operation in progress",
+          "handling": "Wait or reject",
+          "outcome": "Prevent conflicts"
+        },
+        {
+          "case": "Resource conflict",
+          "handling": "Resolve or reject",
+          "outcome": "Maintain consistency"
+        },
+        {
+          "case": "Domain transitioning",
+          "handling": "Queue or reject",
+          "outcome": "Handle state"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "Basic execute_in_domain",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "Domain not found",
+          "input": {
+            "domain_id": "ld://invalid/id"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "Permission check",
+          "setup": "No permission",
+          "input": {
+            "domain_id": "ld://secure/domain"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "State validation",
+          "setup": "Invalid state",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "Concurrent operation",
+          "setup": "Multiple calls",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "LD(0) operation",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "Resource tracking",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "Error recovery",
+          "setup": "Operation fails",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "Complete workflow",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        }
+      ],
+      "security_properties": [
+        "Access control enforced",
+        "State integrity maintained",
+        "Audit trail created"
+      ],
+      "performance": {
+        "complexity": "O(1) to O(n)",
+        "typical_duration_ms": "< 100",
+        "resource_overhead": "Depends on operation"
+      }
+    },
+    "isolate_network": {
+      "description": "Isolate Network operation",
+      "category": "lifecycle",
+      "inputs": {
+        "domain_id": {
+          "type": "DomainID",
+          "required": true
+        }
+      },
+      "outputs": {
+        "success": {
+          "type": "boolean"
+        }
+      },
+      "preconditions": [
+        "Domain exists",
+        "Valid permissions"
+      ],
+      "postconditions": [
+        "isolate_network completed",
+        "Domain consistent"
+      ],
+      "formulas": {
+        "state_preservation": "Maintain domain state across transitions",
+        "resource_tracking": "Track all resources during operations"
+      },
+      "edge_cases": [
+        {
+          "case": "Domain not found",
+          "handling": "Return error",
+          "outcome": "Invalid domain"
+        },
+        {
+          "case": "Permission denied",
+          "handling": "Return error",
+          "outcome": "Access control"
+        },
+        {
+          "case": "Operation in progress",
+          "handling": "Wait or reject",
+          "outcome": "Prevent conflicts"
+        },
+        {
+          "case": "Resource conflict",
+          "handling": "Resolve or reject",
+          "outcome": "Maintain consistency"
+        },
+        {
+          "case": "Domain transitioning",
+          "handling": "Queue or reject",
+          "outcome": "Handle state"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "Basic isolate_network",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "Domain not found",
+          "input": {
+            "domain_id": "ld://invalid/id"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "Permission check",
+          "setup": "No permission",
+          "input": {
+            "domain_id": "ld://secure/domain"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "State validation",
+          "setup": "Invalid state",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "Concurrent operation",
+          "setup": "Multiple calls",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "LD(0) operation",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "Resource tracking",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "Error recovery",
+          "setup": "Operation fails",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "Complete workflow",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        }
+      ],
+      "security_properties": [
+        "Access control enforced",
+        "State integrity maintained",
+        "Audit trail created"
+      ],
+      "performance": {
+        "complexity": "O(1) to O(n)",
+        "typical_duration_ms": "< 100",
+        "resource_overhead": "Depends on operation"
+      }
+    },
+    "connect_networks": {
+      "description": "Connect Networks operation",
+      "category": "lifecycle",
+      "inputs": {
+        "domain_id": {
+          "type": "DomainID",
+          "required": true
+        }
+      },
+      "outputs": {
+        "success": {
+          "type": "boolean"
+        }
+      },
+      "preconditions": [
+        "Domain exists",
+        "Valid permissions"
+      ],
+      "postconditions": [
+        "connect_networks completed",
+        "Domain consistent"
+      ],
+      "formulas": {
+        "state_preservation": "Maintain domain state across transitions",
+        "resource_tracking": "Track all resources during operations"
+      },
+      "edge_cases": [
+        {
+          "case": "Domain not found",
+          "handling": "Return error",
+          "outcome": "Invalid domain"
+        },
+        {
+          "case": "Permission denied",
+          "handling": "Return error",
+          "outcome": "Access control"
+        },
+        {
+          "case": "Operation in progress",
+          "handling": "Wait or reject",
+          "outcome": "Prevent conflicts"
+        },
+        {
+          "case": "Resource conflict",
+          "handling": "Resolve or reject",
+          "outcome": "Maintain consistency"
+        },
+        {
+          "case": "Domain transitioning",
+          "handling": "Queue or reject",
+          "outcome": "Handle state"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "Basic connect_networks",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "Domain not found",
+          "input": {
+            "domain_id": "ld://invalid/id"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "Permission check",
+          "setup": "No permission",
+          "input": {
+            "domain_id": "ld://secure/domain"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "State validation",
+          "setup": "Invalid state",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "Concurrent operation",
+          "setup": "Multiple calls",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "LD(0) operation",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "Resource tracking",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "Error recovery",
+          "setup": "Operation fails",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "Complete workflow",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        }
+      ],
+      "security_properties": [
+        "Access control enforced",
+        "State integrity maintained",
+        "Audit trail created"
+      ],
+      "performance": {
+        "complexity": "O(1) to O(n)",
+        "typical_duration_ms": "< 100",
+        "resource_overhead": "Depends on operation"
+      }
+    },
+    "migrate_resource": {
+      "description": "Migrate Resource operation",
+      "category": "lifecycle",
+      "inputs": {
+        "domain_id": {
+          "type": "DomainID",
+          "required": true
+        }
+      },
+      "outputs": {
+        "success": {
+          "type": "boolean"
+        }
+      },
+      "preconditions": [
+        "Domain exists",
+        "Valid permissions"
+      ],
+      "postconditions": [
+        "migrate_resource completed",
+        "Domain consistent"
+      ],
+      "formulas": {
+        "state_preservation": "Maintain domain state across transitions",
+        "resource_tracking": "Track all resources during operations"
+      },
+      "edge_cases": [
+        {
+          "case": "Domain not found",
+          "handling": "Return error",
+          "outcome": "Invalid domain"
+        },
+        {
+          "case": "Permission denied",
+          "handling": "Return error",
+          "outcome": "Access control"
+        },
+        {
+          "case": "Operation in progress",
+          "handling": "Wait or reject",
+          "outcome": "Prevent conflicts"
+        },
+        {
+          "case": "Resource conflict",
+          "handling": "Resolve or reject",
+          "outcome": "Maintain consistency"
+        },
+        {
+          "case": "Domain transitioning",
+          "handling": "Queue or reject",
+          "outcome": "Handle state"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "Basic migrate_resource",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "Domain not found",
+          "input": {
+            "domain_id": "ld://invalid/id"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "Permission check",
+          "setup": "No permission",
+          "input": {
+            "domain_id": "ld://secure/domain"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "State validation",
+          "setup": "Invalid state",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "Concurrent operation",
+          "setup": "Multiple calls",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "LD(0) operation",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "Resource tracking",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "Error recovery",
+          "setup": "Operation fails",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "Complete workflow",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        }
+      ],
+      "security_properties": [
+        "Access control enforced",
+        "State integrity maintained",
+        "Audit trail created"
+      ],
+      "performance": {
+        "complexity": "O(1) to O(n)",
+        "typical_duration_ms": "< 100",
+        "resource_overhead": "Depends on operation"
+      }
+    },
+    "replicate_across_domains": {
+      "description": "Replicate Across Domains operation",
+      "category": "lifecycle",
+      "inputs": {
+        "domain_id": {
+          "type": "DomainID",
+          "required": true
+        }
+      },
+      "outputs": {
+        "success": {
+          "type": "boolean"
+        }
+      },
+      "preconditions": [
+        "Domain exists",
+        "Valid permissions"
+      ],
+      "postconditions": [
+        "replicate_across_domains completed",
+        "Domain consistent"
+      ],
+      "formulas": {
+        "state_preservation": "Maintain domain state across transitions",
+        "resource_tracking": "Track all resources during operations"
+      },
+      "edge_cases": [
+        {
+          "case": "Domain not found",
+          "handling": "Return error",
+          "outcome": "Invalid domain"
+        },
+        {
+          "case": "Permission denied",
+          "handling": "Return error",
+          "outcome": "Access control"
+        },
+        {
+          "case": "Operation in progress",
+          "handling": "Wait or reject",
+          "outcome": "Prevent conflicts"
+        },
+        {
+          "case": "Resource conflict",
+          "handling": "Resolve or reject",
+          "outcome": "Maintain consistency"
+        },
+        {
+          "case": "Domain transitioning",
+          "handling": "Queue or reject",
+          "outcome": "Handle state"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "Basic replicate_across_domains",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "Domain not found",
+          "input": {
+            "domain_id": "ld://invalid/id"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "Permission check",
+          "setup": "No permission",
+          "input": {
+            "domain_id": "ld://secure/domain"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "State validation",
+          "setup": "Invalid state",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "Concurrent operation",
+          "setup": "Multiple calls",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "LD(0) operation",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "Resource tracking",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "Error recovery",
+          "setup": "Operation fails",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "Complete workflow",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        }
+      ],
+      "security_properties": [
+        "Access control enforced",
+        "State integrity maintained",
+        "Audit trail created"
+      ],
+      "performance": {
+        "complexity": "O(1) to O(n)",
+        "typical_duration_ms": "< 100",
+        "resource_overhead": "Depends on operation"
+      }
+    },
+    "synchronize_domains": {
+      "description": "Synchronize Domains operation",
+      "category": "lifecycle",
+      "inputs": {
+        "domain_id": {
+          "type": "DomainID",
+          "required": true
+        }
+      },
+      "outputs": {
+        "success": {
+          "type": "boolean"
+        }
+      },
+      "preconditions": [
+        "Domain exists",
+        "Valid permissions"
+      ],
+      "postconditions": [
+        "synchronize_domains completed",
+        "Domain consistent"
+      ],
+      "formulas": {
+        "state_preservation": "Maintain domain state across transitions",
+        "resource_tracking": "Track all resources during operations"
+      },
+      "edge_cases": [
+        {
+          "case": "Domain not found",
+          "handling": "Return error",
+          "outcome": "Invalid domain"
+        },
+        {
+          "case": "Permission denied",
+          "handling": "Return error",
+          "outcome": "Access control"
+        },
+        {
+          "case": "Operation in progress",
+          "handling": "Wait or reject",
+          "outcome": "Prevent conflicts"
+        },
+        {
+          "case": "Resource conflict",
+          "handling": "Resolve or reject",
+          "outcome": "Maintain consistency"
+        },
+        {
+          "case": "Domain transitioning",
+          "handling": "Queue or reject",
+          "outcome": "Handle state"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "Basic synchronize_domains",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "Domain not found",
+          "input": {
+            "domain_id": "ld://invalid/id"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "Permission check",
+          "setup": "No permission",
+          "input": {
+            "domain_id": "ld://secure/domain"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "State validation",
+          "setup": "Invalid state",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "Concurrent operation",
+          "setup": "Multiple calls",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "LD(0) operation",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "Resource tracking",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "Error recovery",
+          "setup": "Operation fails",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "Complete workflow",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        }
+      ],
+      "security_properties": [
+        "Access control enforced",
+        "State integrity maintained",
+        "Audit trail created"
+      ],
+      "performance": {
+        "complexity": "O(1) to O(n)",
+        "typical_duration_ms": "< 100",
+        "resource_overhead": "Depends on operation"
+      }
+    },
+    "backup_domain": {
+      "description": "Backup Domain operation",
+      "category": "lifecycle",
+      "inputs": {
+        "domain_id": {
+          "type": "DomainID",
+          "required": true
+        }
+      },
+      "outputs": {
+        "success": {
+          "type": "boolean"
+        }
+      },
+      "preconditions": [
+        "Domain exists",
+        "Valid permissions"
+      ],
+      "postconditions": [
+        "backup_domain completed",
+        "Domain consistent"
+      ],
+      "formulas": {
+        "state_preservation": "Maintain domain state across transitions",
+        "resource_tracking": "Track all resources during operations"
+      },
+      "edge_cases": [
+        {
+          "case": "Domain not found",
+          "handling": "Return error",
+          "outcome": "Invalid domain"
+        },
+        {
+          "case": "Permission denied",
+          "handling": "Return error",
+          "outcome": "Access control"
+        },
+        {
+          "case": "Operation in progress",
+          "handling": "Wait or reject",
+          "outcome": "Prevent conflicts"
+        },
+        {
+          "case": "Resource conflict",
+          "handling": "Resolve or reject",
+          "outcome": "Maintain consistency"
+        },
+        {
+          "case": "Domain transitioning",
+          "handling": "Queue or reject",
+          "outcome": "Handle state"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "Basic backup_domain",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "Domain not found",
+          "input": {
+            "domain_id": "ld://invalid/id"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "Permission check",
+          "setup": "No permission",
+          "input": {
+            "domain_id": "ld://secure/domain"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "State validation",
+          "setup": "Invalid state",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "Concurrent operation",
+          "setup": "Multiple calls",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "LD(0) operation",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "Resource tracking",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "Error recovery",
+          "setup": "Operation fails",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "Complete workflow",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        }
+      ],
+      "security_properties": [
+        "Access control enforced",
+        "State integrity maintained",
+        "Audit trail created"
+      ],
+      "performance": {
+        "complexity": "O(1) to O(n)",
+        "typical_duration_ms": "< 100",
+        "resource_overhead": "Depends on operation"
+      }
+    },
+    "restore_domain_backup": {
+      "description": "Restore Domain Backup operation",
+      "category": "lifecycle",
+      "inputs": {
+        "domain_id": {
+          "type": "DomainID",
+          "required": true
+        }
+      },
+      "outputs": {
+        "success": {
+          "type": "boolean"
+        }
+      },
+      "preconditions": [
+        "Domain exists",
+        "Valid permissions"
+      ],
+      "postconditions": [
+        "restore_domain_backup completed",
+        "Domain consistent"
+      ],
+      "formulas": {
+        "state_preservation": "Maintain domain state across transitions",
+        "resource_tracking": "Track all resources during operations"
+      },
+      "edge_cases": [
+        {
+          "case": "Domain not found",
+          "handling": "Return error",
+          "outcome": "Invalid domain"
+        },
+        {
+          "case": "Permission denied",
+          "handling": "Return error",
+          "outcome": "Access control"
+        },
+        {
+          "case": "Operation in progress",
+          "handling": "Wait or reject",
+          "outcome": "Prevent conflicts"
+        },
+        {
+          "case": "Resource conflict",
+          "handling": "Resolve or reject",
+          "outcome": "Maintain consistency"
+        },
+        {
+          "case": "Domain transitioning",
+          "handling": "Queue or reject",
+          "outcome": "Handle state"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "Basic restore_domain_backup",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "Domain not found",
+          "input": {
+            "domain_id": "ld://invalid/id"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "Permission check",
+          "setup": "No permission",
+          "input": {
+            "domain_id": "ld://secure/domain"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "State validation",
+          "setup": "Invalid state",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "Concurrent operation",
+          "setup": "Multiple calls",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "LD(0) operation",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "Resource tracking",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "Error recovery",
+          "setup": "Operation fails",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "Complete workflow",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        }
+      ],
+      "security_properties": [
+        "Access control enforced",
+        "State integrity maintained",
+        "Audit trail created"
+      ],
+      "performance": {
+        "complexity": "O(1) to O(n)",
+        "typical_duration_ms": "< 100",
+        "resource_overhead": "Depends on operation"
+      }
+    },
+    "scale_domain": {
+      "description": "Scale Domain operation",
+      "category": "lifecycle",
+      "inputs": {
+        "domain_id": {
+          "type": "DomainID",
+          "required": true
+        }
+      },
+      "outputs": {
+        "success": {
+          "type": "boolean"
+        }
+      },
+      "preconditions": [
+        "Domain exists",
+        "Valid permissions"
+      ],
+      "postconditions": [
+        "scale_domain completed",
+        "Domain consistent"
+      ],
+      "formulas": {
+        "state_preservation": "Maintain domain state across transitions",
+        "resource_tracking": "Track all resources during operations"
+      },
+      "edge_cases": [
+        {
+          "case": "Domain not found",
+          "handling": "Return error",
+          "outcome": "Invalid domain"
+        },
+        {
+          "case": "Permission denied",
+          "handling": "Return error",
+          "outcome": "Access control"
+        },
+        {
+          "case": "Operation in progress",
+          "handling": "Wait or reject",
+          "outcome": "Prevent conflicts"
+        },
+        {
+          "case": "Resource conflict",
+          "handling": "Resolve or reject",
+          "outcome": "Maintain consistency"
+        },
+        {
+          "case": "Domain transitioning",
+          "handling": "Queue or reject",
+          "outcome": "Handle state"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "Basic scale_domain",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "Domain not found",
+          "input": {
+            "domain_id": "ld://invalid/id"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "Permission check",
+          "setup": "No permission",
+          "input": {
+            "domain_id": "ld://secure/domain"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "State validation",
+          "setup": "Invalid state",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "Concurrent operation",
+          "setup": "Multiple calls",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "LD(0) operation",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "Resource tracking",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "Error recovery",
+          "setup": "Operation fails",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "Complete workflow",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        }
+      ],
+      "security_properties": [
+        "Access control enforced",
+        "State integrity maintained",
+        "Audit trail created"
+      ],
+      "performance": {
+        "complexity": "O(1) to O(n)",
+        "typical_duration_ms": "< 100",
+        "resource_overhead": "Depends on operation"
+      }
+    },
+    "partition_domain": {
+      "description": "Partition Domain operation",
+      "category": "lifecycle",
+      "inputs": {
+        "domain_id": {
+          "type": "DomainID",
+          "required": true
+        }
+      },
+      "outputs": {
+        "success": {
+          "type": "boolean"
+        }
+      },
+      "preconditions": [
+        "Domain exists",
+        "Valid permissions"
+      ],
+      "postconditions": [
+        "partition_domain completed",
+        "Domain consistent"
+      ],
+      "formulas": {
+        "state_preservation": "Maintain domain state across transitions",
+        "resource_tracking": "Track all resources during operations"
+      },
+      "edge_cases": [
+        {
+          "case": "Domain not found",
+          "handling": "Return error",
+          "outcome": "Invalid domain"
+        },
+        {
+          "case": "Permission denied",
+          "handling": "Return error",
+          "outcome": "Access control"
+        },
+        {
+          "case": "Operation in progress",
+          "handling": "Wait or reject",
+          "outcome": "Prevent conflicts"
+        },
+        {
+          "case": "Resource conflict",
+          "handling": "Resolve or reject",
+          "outcome": "Maintain consistency"
+        },
+        {
+          "case": "Domain transitioning",
+          "handling": "Queue or reject",
+          "outcome": "Handle state"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "Basic partition_domain",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "Domain not found",
+          "input": {
+            "domain_id": "ld://invalid/id"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "Permission check",
+          "setup": "No permission",
+          "input": {
+            "domain_id": "ld://secure/domain"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "State validation",
+          "setup": "Invalid state",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "Concurrent operation",
+          "setup": "Multiple calls",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "LD(0) operation",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "Resource tracking",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "Error recovery",
+          "setup": "Operation fails",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "Complete workflow",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        }
+      ],
+      "security_properties": [
+        "Access control enforced",
+        "State integrity maintained",
+        "Audit trail created"
+      ],
+      "performance": {
+        "complexity": "O(1) to O(n)",
+        "typical_duration_ms": "< 100",
+        "resource_overhead": "Depends on operation"
+      }
+    },
+    "consolidate_domains": {
+      "description": "Consolidate Domains operation",
+      "category": "lifecycle",
+      "inputs": {
+        "domain_id": {
+          "type": "DomainID",
+          "required": true
+        }
+      },
+      "outputs": {
+        "success": {
+          "type": "boolean"
+        }
+      },
+      "preconditions": [
+        "Domain exists",
+        "Valid permissions"
+      ],
+      "postconditions": [
+        "consolidate_domains completed",
+        "Domain consistent"
+      ],
+      "formulas": {
+        "state_preservation": "Maintain domain state across transitions",
+        "resource_tracking": "Track all resources during operations"
+      },
+      "edge_cases": [
+        {
+          "case": "Domain not found",
+          "handling": "Return error",
+          "outcome": "Invalid domain"
+        },
+        {
+          "case": "Permission denied",
+          "handling": "Return error",
+          "outcome": "Access control"
+        },
+        {
+          "case": "Operation in progress",
+          "handling": "Wait or reject",
+          "outcome": "Prevent conflicts"
+        },
+        {
+          "case": "Resource conflict",
+          "handling": "Resolve or reject",
+          "outcome": "Maintain consistency"
+        },
+        {
+          "case": "Domain transitioning",
+          "handling": "Queue or reject",
+          "outcome": "Handle state"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "Basic consolidate_domains",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "Domain not found",
+          "input": {
+            "domain_id": "ld://invalid/id"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "Permission check",
+          "setup": "No permission",
+          "input": {
+            "domain_id": "ld://secure/domain"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "State validation",
+          "setup": "Invalid state",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "Concurrent operation",
+          "setup": "Multiple calls",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "LD(0) operation",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "Resource tracking",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "Error recovery",
+          "setup": "Operation fails",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "Complete workflow",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        }
+      ],
+      "security_properties": [
+        "Access control enforced",
+        "State integrity maintained",
+        "Audit trail created"
+      ],
+      "performance": {
+        "complexity": "O(1) to O(n)",
+        "typical_duration_ms": "< 100",
+        "resource_overhead": "Depends on operation"
+      }
+    },
+    "monitor_domain_health": {
+      "description": "Monitor Domain Health operation",
+      "category": "lifecycle",
+      "inputs": {
+        "domain_id": {
+          "type": "DomainID",
+          "required": true
+        }
+      },
+      "outputs": {
+        "success": {
+          "type": "boolean"
+        }
+      },
+      "preconditions": [
+        "Domain exists",
+        "Valid permissions"
+      ],
+      "postconditions": [
+        "monitor_domain_health completed",
+        "Domain consistent"
+      ],
+      "formulas": {
+        "state_preservation": "Maintain domain state across transitions",
+        "resource_tracking": "Track all resources during operations"
+      },
+      "edge_cases": [
+        {
+          "case": "Domain not found",
+          "handling": "Return error",
+          "outcome": "Invalid domain"
+        },
+        {
+          "case": "Permission denied",
+          "handling": "Return error",
+          "outcome": "Access control"
+        },
+        {
+          "case": "Operation in progress",
+          "handling": "Wait or reject",
+          "outcome": "Prevent conflicts"
+        },
+        {
+          "case": "Resource conflict",
+          "handling": "Resolve or reject",
+          "outcome": "Maintain consistency"
+        },
+        {
+          "case": "Domain transitioning",
+          "handling": "Queue or reject",
+          "outcome": "Handle state"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "Basic monitor_domain_health",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "Domain not found",
+          "input": {
+            "domain_id": "ld://invalid/id"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "Permission check",
+          "setup": "No permission",
+          "input": {
+            "domain_id": "ld://secure/domain"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "State validation",
+          "setup": "Invalid state",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "Concurrent operation",
+          "setup": "Multiple calls",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "LD(0) operation",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "Resource tracking",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "Error recovery",
+          "setup": "Operation fails",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "Complete workflow",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        }
+      ],
+      "security_properties": [
+        "Access control enforced",
+        "State integrity maintained",
+        "Audit trail created"
+      ],
+      "performance": {
+        "complexity": "O(1) to O(n)",
+        "typical_duration_ms": "< 100",
+        "resource_overhead": "Depends on operation"
+      }
+    },
+    "diagnose_domain_issues": {
+      "description": "Diagnose Domain Issues operation",
+      "category": "lifecycle",
+      "inputs": {
+        "domain_id": {
+          "type": "DomainID",
+          "required": true
+        }
+      },
+      "outputs": {
+        "success": {
+          "type": "boolean"
+        }
+      },
+      "preconditions": [
+        "Domain exists",
+        "Valid permissions"
+      ],
+      "postconditions": [
+        "diagnose_domain_issues completed",
+        "Domain consistent"
+      ],
+      "formulas": {
+        "state_preservation": "Maintain domain state across transitions",
+        "resource_tracking": "Track all resources during operations"
+      },
+      "edge_cases": [
+        {
+          "case": "Domain not found",
+          "handling": "Return error",
+          "outcome": "Invalid domain"
+        },
+        {
+          "case": "Permission denied",
+          "handling": "Return error",
+          "outcome": "Access control"
+        },
+        {
+          "case": "Operation in progress",
+          "handling": "Wait or reject",
+          "outcome": "Prevent conflicts"
+        },
+        {
+          "case": "Resource conflict",
+          "handling": "Resolve or reject",
+          "outcome": "Maintain consistency"
+        },
+        {
+          "case": "Domain transitioning",
+          "handling": "Queue or reject",
+          "outcome": "Handle state"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "Basic diagnose_domain_issues",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "Domain not found",
+          "input": {
+            "domain_id": "ld://invalid/id"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "Permission check",
+          "setup": "No permission",
+          "input": {
+            "domain_id": "ld://secure/domain"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "State validation",
+          "setup": "Invalid state",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "Concurrent operation",
+          "setup": "Multiple calls",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "LD(0) operation",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "Resource tracking",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "Error recovery",
+          "setup": "Operation fails",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "Complete workflow",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        }
+      ],
+      "security_properties": [
+        "Access control enforced",
+        "State integrity maintained",
+        "Audit trail created"
+      ],
+      "performance": {
+        "complexity": "O(1) to O(n)",
+        "typical_duration_ms": "< 100",
+        "resource_overhead": "Depends on operation"
+      }
+    },
+    "repair_domain": {
+      "description": "Repair Domain operation",
+      "category": "lifecycle",
+      "inputs": {
+        "domain_id": {
+          "type": "DomainID",
+          "required": true
+        }
+      },
+      "outputs": {
+        "success": {
+          "type": "boolean"
+        }
+      },
+      "preconditions": [
+        "Domain exists",
+        "Valid permissions"
+      ],
+      "postconditions": [
+        "repair_domain completed",
+        "Domain consistent"
+      ],
+      "formulas": {
+        "state_preservation": "Maintain domain state across transitions",
+        "resource_tracking": "Track all resources during operations"
+      },
+      "edge_cases": [
+        {
+          "case": "Domain not found",
+          "handling": "Return error",
+          "outcome": "Invalid domain"
+        },
+        {
+          "case": "Permission denied",
+          "handling": "Return error",
+          "outcome": "Access control"
+        },
+        {
+          "case": "Operation in progress",
+          "handling": "Wait or reject",
+          "outcome": "Prevent conflicts"
+        },
+        {
+          "case": "Resource conflict",
+          "handling": "Resolve or reject",
+          "outcome": "Maintain consistency"
+        },
+        {
+          "case": "Domain transitioning",
+          "handling": "Queue or reject",
+          "outcome": "Handle state"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "Basic repair_domain",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "Domain not found",
+          "input": {
+            "domain_id": "ld://invalid/id"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "Permission check",
+          "setup": "No permission",
+          "input": {
+            "domain_id": "ld://secure/domain"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "State validation",
+          "setup": "Invalid state",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "Concurrent operation",
+          "setup": "Multiple calls",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "LD(0) operation",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "Resource tracking",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "Error recovery",
+          "setup": "Operation fails",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "Complete workflow",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        }
+      ],
+      "security_properties": [
+        "Access control enforced",
+        "State integrity maintained",
+        "Audit trail created"
+      ],
+      "performance": {
+        "complexity": "O(1) to O(n)",
+        "typical_duration_ms": "< 100",
+        "resource_overhead": "Depends on operation"
+      }
+    },
+    "upgrade_domain": {
+      "description": "Upgrade Domain operation",
+      "category": "lifecycle",
+      "inputs": {
+        "domain_id": {
+          "type": "DomainID",
+          "required": true
+        }
+      },
+      "outputs": {
+        "success": {
+          "type": "boolean"
+        }
+      },
+      "preconditions": [
+        "Domain exists",
+        "Valid permissions"
+      ],
+      "postconditions": [
+        "upgrade_domain completed",
+        "Domain consistent"
+      ],
+      "formulas": {
+        "state_preservation": "Maintain domain state across transitions",
+        "resource_tracking": "Track all resources during operations"
+      },
+      "edge_cases": [
+        {
+          "case": "Domain not found",
+          "handling": "Return error",
+          "outcome": "Invalid domain"
+        },
+        {
+          "case": "Permission denied",
+          "handling": "Return error",
+          "outcome": "Access control"
+        },
+        {
+          "case": "Operation in progress",
+          "handling": "Wait or reject",
+          "outcome": "Prevent conflicts"
+        },
+        {
+          "case": "Resource conflict",
+          "handling": "Resolve or reject",
+          "outcome": "Maintain consistency"
+        },
+        {
+          "case": "Domain transitioning",
+          "handling": "Queue or reject",
+          "outcome": "Handle state"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "Basic upgrade_domain",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "Domain not found",
+          "input": {
+            "domain_id": "ld://invalid/id"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "Permission check",
+          "setup": "No permission",
+          "input": {
+            "domain_id": "ld://secure/domain"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "State validation",
+          "setup": "Invalid state",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "Concurrent operation",
+          "setup": "Multiple calls",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "LD(0) operation",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "Resource tracking",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "name": "Error recovery",
+          "setup": "Operation fails",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": false
+          }
+        },
+        {
+          "name": "Complete workflow",
+          "input": {
+            "domain_id": "ld://test/domain"
+          },
+          "expected_output": {
+            "success": true
+          }
+        }
+      ],
+      "security_properties": [
+        "Access control enforced",
+        "State integrity maintained",
+        "Audit trail created"
+      ],
+      "performance": {
+        "complexity": "O(1) to O(n)",
+        "typical_duration_ms": "< 100",
+        "resource_overhead": "Depends on operation"
+      }
+    }
+  }
+}

@@ -1,0 +1,1270 @@
+{
+  "version": "1.0.0",
+  "namespace": "hypersync.ui.adaptive_ux",
+  "description": "Adaptive UX Engine for self-building, user-centric terminal interfaces. Observes behavior, builds user models, adapts interfaces, predicts intent, and automates workflows. Makes the program feel like it builds itself around the user.",
+  "types": {
+    "UXEngine": {
+      "description": "Adaptive UX engine instance",
+      "fields": {
+        "engine_id": {
+          "type": "string",
+          "description": "Engine identifier",
+          "required": true
+        },
+        "user_models": {
+          "type": "map<string, UserModel>",
+          "description": "User models by user_id",
+          "required": true
+        },
+        "active_adaptations": {
+          "type": "array<Adaptation>",
+          "description": "Currently active adaptations",
+          "required": false
+        },
+        "learning_enabled": {
+          "type": "boolean",
+          "description": "Learning is enabled",
+          "required": true
+        },
+        "config": {
+          "type": "EngineConfig",
+          "description": "Engine configuration",
+          "required": true
+        }
+      }
+    },
+    "EngineConfig": {
+      "description": "UX engine configuration",
+      "fields": {
+        "adaptation_aggressiveness": {
+          "type": "float",
+          "description": "How aggressively to adapt (0.0-1.0)",
+          "required": false
+        },
+        "min_confidence": {
+          "type": "float",
+          "description": "Minimum confidence for adaptations (0.0-1.0)",
+          "required": false
+        },
+        "learning_rate": {
+          "type": "float",
+          "description": "Learning rate for models (0.0-1.0)",
+          "required": false
+        },
+        "prediction_horizon": {
+          "type": "integer",
+          "description": "Steps ahead to predict",
+          "required": false
+        },
+        "auto_simplify": {
+          "type": "boolean",
+          "description": "Automatically simplify on frustration",
+          "required": false
+        }
+      }
+    },
+    "UserModel": {
+      "description": "Learned user behavior model",
+      "fields": {
+        "user_id": {
+          "type": "string",
+          "description": "User identifier",
+          "required": true
+        },
+        "skill_level": {
+          "type": "SkillLevel",
+          "description": "Assessed skill level",
+          "required": true
+        },
+        "behavior_patterns": {
+          "type": "array<BehaviorPattern>",
+          "description": "Identified behavior patterns",
+          "required": true
+        },
+        "preferences": {
+          "type": "UserPreference",
+          "description": "Learned preferences",
+          "required": true
+        },
+        "workflow_sequences": {
+          "type": "array<WorkflowSequence>",
+          "description": "Common workflow sequences",
+          "required": false
+        },
+        "frustration_triggers": {
+          "type": "array<string>",
+          "description": "Identified frustration triggers",
+          "required": false
+        },
+        "efficiency_metrics": {
+          "type": "EfficiencyMetrics",
+          "description": "User efficiency metrics",
+          "required": true
+        },
+        "last_updated": {
+          "type": "integer",
+          "description": "Model last updated timestamp",
+          "required": true
+        }
+      }
+    },
+    "BehaviorPattern": {
+      "description": "Identified user behavior pattern",
+      "fields": {
+        "pattern_id": {
+          "type": "string",
+          "description": "Pattern identifier",
+          "required": true
+        },
+        "pattern_type": {
+          "type": "string",
+          "description": "Type of pattern (sequential, cyclical, conditional)",
+          "required": true
+        },
+        "actions": {
+          "type": "array<string>",
+          "description": "Action sequence",
+          "required": true
+        },
+        "frequency": {
+          "type": "integer",
+          "description": "Occurrence count",
+          "required": true
+        },
+        "confidence": {
+          "type": "float",
+          "description": "Pattern confidence (0.0-1.0)",
+          "required": true
+        },
+        "context": {
+          "type": "map<string, any>",
+          "description": "Context where pattern occurs",
+          "required": false
+        }
+      }
+    },
+    "WorkflowSequence": {
+      "description": "Common workflow sequence",
+      "fields": {
+        "sequence_id": {
+          "type": "string",
+          "description": "Sequence identifier",
+          "required": true
+        },
+        "name": {
+          "type": "string",
+          "description": "Sequence name",
+          "required": true
+        },
+        "steps": {
+          "type": "array<WorkflowStep>",
+          "description": "Workflow steps",
+          "required": true
+        },
+        "automation_potential": {
+          "type": "float",
+          "description": "Potential for automation (0.0-1.0)",
+          "required": true
+        },
+        "frequency": {
+          "type": "integer",
+          "description": "How often performed",
+          "required": true
+        }
+      }
+    },
+    "WorkflowStep": {
+      "description": "Step in workflow sequence",
+      "fields": {
+        "action": {
+          "type": "string",
+          "description": "Action performed",
+          "required": true
+        },
+        "parameters": {
+          "type": "map<string, any>",
+          "description": "Action parameters",
+          "required": false
+        },
+        "automatable": {
+          "type": "boolean",
+          "description": "Step can be automated",
+          "required": true
+        }
+      }
+    },
+    "EfficiencyMetrics": {
+      "description": "User efficiency metrics",
+      "fields": {
+        "actions_per_minute": {
+          "type": "float",
+          "description": "Average actions per minute",
+          "required": true
+        },
+        "error_rate": {
+          "type": "float",
+          "description": "Error rate (0.0-1.0)",
+          "required": true
+        },
+        "task_completion_time": {
+          "type": "map<string, float>",
+          "description": "Average completion time by task type",
+          "required": false
+        },
+        "efficiency_score": {
+          "type": "float",
+          "description": "Overall efficiency (0.0-1.0)",
+          "required": true
+        }
+      }
+    },
+    "Adaptation": {
+      "description": "UI/UX adaptation",
+      "fields": {
+        "adaptation_id": {
+          "type": "string",
+          "description": "Adaptation identifier",
+          "required": true
+        },
+        "adaptation_type": {
+          "type": "AdaptationType",
+          "description": "Type of adaptation",
+          "required": true
+        },
+        "target": {
+          "type": "string",
+          "description": "What is being adapted",
+          "required": true
+        },
+        "reason": {
+          "type": "string",
+          "description": "Reason for adaptation",
+          "required": true
+        },
+        "changes": {
+          "type": "array<string>",
+          "description": "Specific changes made",
+          "required": true
+        },
+        "confidence": {
+          "type": "float",
+          "description": "Confidence in adaptation (0.0-1.0)",
+          "required": true
+        },
+        "user_notified": {
+          "type": "boolean",
+          "description": "User was notified",
+          "required": true
+        },
+        "reversible": {
+          "type": "boolean",
+          "description": "Adaptation can be reversed",
+          "required": true
+        }
+      }
+    },
+    "AdaptationType": {
+      "description": "Type of UX adaptation",
+      "enum": [
+        "simplification",
+        "complexity_increase",
+        "layout_change",
+        "automation",
+        "suggestion",
+        "help",
+        "workflow_optimization"
+      ]
+    },
+    "IntentPrediction": {
+      "description": "Predicted user intent",
+      "fields": {
+        "predicted_action": {
+          "type": "string",
+          "description": "Predicted next action",
+          "required": true
+        },
+        "confidence": {
+          "type": "float",
+          "description": "Prediction confidence (0.0-1.0)",
+          "required": true
+        },
+        "context": {
+          "type": "UserContext",
+          "description": "Current context",
+          "required": true
+        },
+        "alternatives": {
+          "type": "array<string>",
+          "description": "Alternative predictions",
+          "required": false
+        },
+        "reasoning": {
+          "type": "string",
+          "description": "Prediction reasoning",
+          "required": false
+        }
+      }
+    },
+    "Suggestion": {
+      "description": "Proactive suggestion",
+      "fields": {
+        "suggestion_id": {
+          "type": "string",
+          "description": "Suggestion identifier",
+          "required": true
+        },
+        "suggestion_type": {
+          "type": "string",
+          "description": "Type of suggestion (action, shortcut, optimization)",
+          "required": true
+        },
+        "title": {
+          "type": "string",
+          "description": "Suggestion title",
+          "required": true
+        },
+        "description": {
+          "type": "string",
+          "description": "Detailed description",
+          "required": true
+        },
+        "action": {
+          "type": "string",
+          "description": "Action to perform if accepted",
+          "required": true
+        },
+        "benefit": {
+          "type": "string",
+          "description": "Expected benefit",
+          "required": true
+        },
+        "confidence": {
+          "type": "float",
+          "description": "Suggestion confidence (0.0-1.0)",
+          "required": true
+        }
+      }
+    },
+    "FrustrationSignal": {
+      "description": "Detected user frustration",
+      "fields": {
+        "signal_type": {
+          "type": "string",
+          "description": "Type of frustration signal",
+          "required": true
+        },
+        "severity": {
+          "type": "float",
+          "description": "Frustration severity (0.0-1.0)",
+          "required": true
+        },
+        "context": {
+          "type": "UserContext",
+          "description": "Context when detected",
+          "required": true
+        },
+        "indicators": {
+          "type": "array<string>",
+          "description": "Frustration indicators observed",
+          "required": true
+        },
+        "timestamp": {
+          "type": "integer",
+          "description": "Detection timestamp",
+          "required": true
+        }
+      }
+    },
+    "AutomationRule": {
+      "description": "Automated workflow rule",
+      "fields": {
+        "rule_id": {
+          "type": "string",
+          "description": "Rule identifier",
+          "required": true
+        },
+        "name": {
+          "type": "string",
+          "description": "Rule name",
+          "required": true
+        },
+        "trigger": {
+          "type": "string",
+          "description": "Automation trigger condition",
+          "required": true
+        },
+        "workflow": {
+          "type": "WorkflowSequence",
+          "description": "Workflow to automate",
+          "required": true
+        },
+        "enabled": {
+          "type": "boolean",
+          "description": "Rule is enabled",
+          "required": true
+        },
+        "auto_approve": {
+          "type": "boolean",
+          "description": "Auto-approve without confirmation",
+          "required": false
+        }
+      }
+    },
+    "ContextualHelp": {
+      "description": "Contextual help offering",
+      "fields": {
+        "help_id": {
+          "type": "string",
+          "description": "Help identifier",
+          "required": true
+        },
+        "trigger": {
+          "type": "string",
+          "description": "What triggered help offer",
+          "required": true
+        },
+        "help_type": {
+          "type": "string",
+          "description": "Type of help (tooltip, tutorial, guide)",
+          "required": true
+        },
+        "content": {
+          "type": "HelpContent",
+          "description": "Help content",
+          "required": true
+        },
+        "interactive": {
+          "type": "boolean",
+          "description": "Interactive tutorial",
+          "required": false
+        }
+      }
+    },
+    "ComplexityAdjustment": {
+      "description": "UI complexity adjustment",
+      "fields": {
+        "from_level": {
+          "type": "ComplexityLevel",
+          "description": "Current complexity level",
+          "required": true
+        },
+        "to_level": {
+          "type": "ComplexityLevel",
+          "description": "Target complexity level",
+          "required": true
+        },
+        "reason": {
+          "type": "string",
+          "description": "Reason for adjustment",
+          "required": true
+        },
+        "changes": {
+          "type": "array<string>",
+          "description": "Specific changes",
+          "required": true
+        }
+      }
+    },
+    "ErrorRecovery": {
+      "description": "Error recovery strategy",
+      "fields": {
+        "error_type": {
+          "type": "string",
+          "description": "Type of error",
+          "required": true
+        },
+        "recovery_actions": {
+          "type": "array<string>",
+          "description": "Actions to recover",
+          "required": true
+        },
+        "prevent_future": {
+          "type": "array<string>",
+          "description": "Preventive measures",
+          "required": false
+        },
+        "explanation": {
+          "type": "string",
+          "description": "User-friendly explanation",
+          "required": true
+        }
+      }
+    }
+  },
+  "operations": {
+    "initialize_ux_engine": {
+      "description": "Initialize adaptive UX engine with configuration and user models. Starts behavior observation.",
+      "inputs": {
+        "config": {
+          "type": "EngineConfig",
+          "description": "Engine configuration",
+          "required": false
+        },
+        "load_existing_models": {
+          "type": "boolean",
+          "description": "Load existing user models",
+          "required": false
+        }
+      },
+      "outputs": {
+        "engine": {
+          "type": "UXEngine",
+          "description": "Initialized UX engine"
+        },
+        "models_loaded": {
+          "type": "integer",
+          "description": "Number of user models loaded"
+        }
+      },
+      "errors": {
+        "INITIALIZATION_FAILED": "Failed to initialize UX engine",
+        "MODEL_LOAD_FAILED": "Failed to load existing models"
+      }
+    },
+    "observe_user_behavior": {
+      "description": "Observe and record user behavior (actions, timing, errors) for learning and adaptation.",
+      "inputs": {
+        "user_id": {
+          "type": "string",
+          "description": "User identifier",
+          "required": true
+        },
+        "action": {
+          "type": "string",
+          "description": "Action performed",
+          "required": true
+        },
+        "context": {
+          "type": "UserContext",
+          "description": "Action context",
+          "required": true
+        },
+        "success": {
+          "type": "boolean",
+          "description": "Action was successful",
+          "required": false
+        },
+        "duration_ms": {
+          "type": "integer",
+          "description": "Action duration",
+          "required": false
+        }
+      },
+      "outputs": {
+        "recorded": {
+          "type": "boolean",
+          "description": "Behavior was recorded"
+        },
+        "pattern_detected": {
+          "type": "boolean",
+          "description": "New pattern detected"
+        },
+        "pattern": {
+          "type": "BehaviorPattern",
+          "description": "Detected pattern",
+          "required": false
+        }
+      },
+      "errors": {
+        "OBSERVATION_FAILED": "Failed to record behavior"
+      }
+    },
+    "build_user_model": {
+      "description": "Build or update user behavioral model from observations. Identifies patterns, skill level, preferences.",
+      "inputs": {
+        "user_id": {
+          "type": "string",
+          "description": "User identifier",
+          "required": true
+        },
+        "observations": {
+          "type": "array<map<string, any>>",
+          "description": "Behavior observations",
+          "required": true
+        },
+        "incremental": {
+          "type": "boolean",
+          "description": "Incremental update vs rebuild",
+          "required": false
+        }
+      },
+      "outputs": {
+        "model": {
+          "type": "UserModel",
+          "description": "Built/updated user model"
+        },
+        "patterns_found": {
+          "type": "integer",
+          "description": "Number of patterns identified"
+        },
+        "model_quality": {
+          "type": "float",
+          "description": "Model quality score (0.0-1.0)"
+        }
+      },
+      "errors": {
+        "MODEL_BUILD_FAILED": "Failed to build user model",
+        "INSUFFICIENT_DATA": "Not enough observations for model"
+      }
+    },
+    "adapt_interface": {
+      "description": "Adapt interface based on user model (layout, complexity, features). Makes UI feel self-building.",
+      "inputs": {
+        "user_id": {
+          "type": "string",
+          "description": "User identifier",
+          "required": true
+        },
+        "model": {
+          "type": "UserModel",
+          "description": "User model",
+          "required": true
+        },
+        "current_ui": {
+          "type": "UILayout",
+          "description": "Current UI layout",
+          "required": true
+        },
+        "notify_user": {
+          "type": "boolean",
+          "description": "Notify user of adaptations",
+          "required": false
+        }
+      },
+      "outputs": {
+        "adaptations": {
+          "type": "array<Adaptation>",
+          "description": "Applied adaptations"
+        },
+        "adapted_ui": {
+          "type": "UILayout",
+          "description": "Adapted UI layout"
+        }
+      },
+      "errors": {
+        "ADAPTATION_FAILED": "Failed to adapt interface",
+        "NO_ADAPTATIONS_NEEDED": "No adaptations necessary"
+      }
+    },
+    "predict_user_intent": {
+      "description": "Predict what user will do next based on context and patterns. Enables anticipatory UX.",
+      "inputs": {
+        "user_id": {
+          "type": "string",
+          "description": "User identifier",
+          "required": true
+        },
+        "model": {
+          "type": "UserModel",
+          "description": "User model",
+          "required": true
+        },
+        "context": {
+          "type": "UserContext",
+          "description": "Current context",
+          "required": true
+        },
+        "num_predictions": {
+          "type": "integer",
+          "description": "Number of predictions to return",
+          "required": false
+        }
+      },
+      "outputs": {
+        "predictions": {
+          "type": "array<IntentPrediction>",
+          "description": "Predicted intents (ordered by confidence)"
+        }
+      },
+      "errors": {
+        "PREDICTION_FAILED": "Failed to predict intent",
+        "MODEL_INSUFFICIENT": "Model not sufficient for prediction"
+      }
+    },
+    "suggest_actions": {
+      "description": "Suggest helpful actions based on predictions and patterns. Proactive assistance.",
+      "inputs": {
+        "user_id": {
+          "type": "string",
+          "description": "User identifier",
+          "required": true
+        },
+        "predictions": {
+          "type": "array<IntentPrediction>",
+          "description": "Intent predictions",
+          "required": true
+        },
+        "max_suggestions": {
+          "type": "integer",
+          "description": "Maximum suggestions to return",
+          "required": false
+        }
+      },
+      "outputs": {
+        "suggestions": {
+          "type": "array<Suggestion>",
+          "description": "Action suggestions"
+        }
+      },
+      "errors": {
+        "SUGGESTION_FAILED": "Failed to generate suggestions",
+        "NO_SUGGESTIONS": "No suggestions available"
+      }
+    },
+    "simplify_workflow": {
+      "description": "Simplify workflow by removing steps, automating parts, or improving efficiency.",
+      "inputs": {
+        "workflow": {
+          "type": "WorkflowSequence",
+          "description": "Workflow to simplify",
+          "required": true
+        },
+        "user_model": {
+          "type": "UserModel",
+          "description": "User model for context",
+          "required": true
+        }
+      },
+      "outputs": {
+        "simplified_workflow": {
+          "type": "WorkflowSequence",
+          "description": "Simplified workflow"
+        },
+        "improvements": {
+          "type": "array<string>",
+          "description": "Improvements made"
+        },
+        "time_saved": {
+          "type": "integer",
+          "description": "Estimated time saved (ms)"
+        }
+      },
+      "errors": {
+        "SIMPLIFICATION_FAILED": "Failed to simplify workflow",
+        "NO_SIMPLIFICATION_POSSIBLE": "Workflow already optimal"
+      }
+    },
+    "automate_repetitive_tasks": {
+      "description": "Identify and automate repetitive tasks from user patterns. Creates automation rules.",
+      "inputs": {
+        "user_id": {
+          "type": "string",
+          "description": "User identifier",
+          "required": true
+        },
+        "model": {
+          "type": "UserModel",
+          "description": "User model",
+          "required": true
+        },
+        "min_frequency": {
+          "type": "integer",
+          "description": "Minimum repetitions to automate",
+          "required": false
+        }
+      },
+      "outputs": {
+        "automation_rules": {
+          "type": "array<AutomationRule>",
+          "description": "Created automation rules"
+        },
+        "potential_savings": {
+          "type": "map<string, integer>",
+          "description": "Time savings per rule (ms)"
+        }
+      },
+      "errors": {
+        "AUTOMATION_FAILED": "Failed to create automations",
+        "NO_REPETITIVE_TASKS": "No repetitive tasks found"
+      }
+    },
+    "provide_contextual_help": {
+      "description": "Provide contextual help when user appears stuck or confused. Adaptive guidance.",
+      "inputs": {
+        "user_id": {
+          "type": "string",
+          "description": "User identifier",
+          "required": true
+        },
+        "context": {
+          "type": "UserContext",
+          "description": "Current context",
+          "required": true
+        },
+        "frustration": {
+          "type": "FrustrationSignal",
+          "description": "Frustration signal (if any)",
+          "required": false
+        }
+      },
+      "outputs": {
+        "help": {
+          "type": "ContextualHelp",
+          "description": "Contextual help"
+        },
+        "help_offered": {
+          "type": "boolean",
+          "description": "Help was offered to user"
+        }
+      },
+      "errors": {
+        "HELP_GENERATION_FAILED": "Failed to generate help",
+        "NO_HELP_AVAILABLE": "No relevant help available"
+      }
+    },
+    "adjust_complexity": {
+      "description": "Adjust UI complexity based on user skill level and comfort. Progressive disclosure.",
+      "inputs": {
+        "user_id": {
+          "type": "string",
+          "description": "User identifier",
+          "required": true
+        },
+        "model": {
+          "type": "UserModel",
+          "description": "User model",
+          "required": true
+        },
+        "current_layout": {
+          "type": "UILayout",
+          "description": "Current UI layout",
+          "required": true
+        },
+        "direction": {
+          "type": "string",
+          "description": "Adjustment direction (increase, decrease, auto)",
+          "required": false
+        }
+      },
+      "outputs": {
+        "adjustment": {
+          "type": "ComplexityAdjustment",
+          "description": "Complexity adjustment"
+        },
+        "adjusted_layout": {
+          "type": "UILayout",
+          "description": "Adjusted layout"
+        }
+      },
+      "errors": {
+        "ADJUSTMENT_FAILED": "Failed to adjust complexity",
+        "ALREADY_OPTIMAL": "Complexity already optimal"
+      }
+    },
+    "personalize_experience": {
+      "description": "Comprehensive personalization of entire user experience based on model.",
+      "inputs": {
+        "user_id": {
+          "type": "string",
+          "description": "User identifier",
+          "required": true
+        },
+        "model": {
+          "type": "UserModel",
+          "description": "User model",
+          "required": true
+        },
+        "scope": {
+          "type": "array<string>",
+          "description": "Aspects to personalize (ui, workflows, help, etc.)",
+          "required": false
+        }
+      },
+      "outputs": {
+        "personalizations": {
+          "type": "array<Adaptation>",
+          "description": "Applied personalizations"
+        },
+        "personalization_score": {
+          "type": "float",
+          "description": "Degree of personalization (0.0-1.0)"
+        }
+      },
+      "errors": {
+        "PERSONALIZATION_FAILED": "Failed to personalize experience",
+        "INSUFFICIENT_MODEL": "User model insufficient for personalization"
+      }
+    },
+    "learn_from_feedback": {
+      "description": "Learn from user feedback (explicit and implicit) to improve model and adaptations.",
+      "inputs": {
+        "user_id": {
+          "type": "string",
+          "description": "User identifier",
+          "required": true
+        },
+        "feedback": {
+          "type": "array<FeedbackData>",
+          "description": "Feedback data",
+          "required": true
+        },
+        "model": {
+          "type": "UserModel",
+          "description": "Current user model",
+          "required": true
+        }
+      },
+      "outputs": {
+        "updated_model": {
+          "type": "UserModel",
+          "description": "Updated user model"
+        },
+        "improvements": {
+          "type": "array<string>",
+          "description": "Model improvements made"
+        }
+      },
+      "errors": {
+        "LEARNING_FAILED": "Failed to learn from feedback",
+        "INVALID_FEEDBACK": "Feedback data is invalid"
+      }
+    },
+    "optimize_user_flow": {
+      "description": "Optimize user flow by reordering steps, removing friction, improving efficiency.",
+      "inputs": {
+        "user_id": {
+          "type": "string",
+          "description": "User identifier",
+          "required": true
+        },
+        "model": {
+          "type": "UserModel",
+          "description": "User model",
+          "required": true
+        },
+        "flow": {
+          "type": "WorkflowSequence",
+          "description": "Flow to optimize",
+          "required": true
+        }
+      },
+      "outputs": {
+        "optimized_flow": {
+          "type": "WorkflowSequence",
+          "description": "Optimized flow"
+        },
+        "efficiency_gain": {
+          "type": "float",
+          "description": "Estimated efficiency improvement (%)"
+        },
+        "optimizations": {
+          "type": "array<string>",
+          "description": "Optimizations applied"
+        }
+      },
+      "errors": {
+        "OPTIMIZATION_FAILED": "Failed to optimize flow",
+        "FLOW_ALREADY_OPTIMAL": "Flow is already optimal"
+      }
+    },
+    "detect_user_frustration": {
+      "description": "Detect user frustration from behavior signals (repeated errors, hesitation, etc.).",
+      "inputs": {
+        "user_id": {
+          "type": "string",
+          "description": "User identifier",
+          "required": true
+        },
+        "recent_actions": {
+          "type": "array<map<string, any>>",
+          "description": "Recent user actions",
+          "required": true
+        },
+        "context": {
+          "type": "UserContext",
+          "description": "Current context",
+          "required": true
+        }
+      },
+      "outputs": {
+        "frustrated": {
+          "type": "boolean",
+          "description": "User appears frustrated"
+        },
+        "signal": {
+          "type": "FrustrationSignal",
+          "description": "Frustration signal details",
+          "required": false
+        },
+        "recommended_actions": {
+          "type": "array<string>",
+          "description": "Recommended interventions"
+        }
+      },
+      "errors": {
+        "DETECTION_FAILED": "Failed to detect frustration",
+        "INSUFFICIENT_DATA": "Not enough recent actions"
+      }
+    },
+    "recover_from_errors": {
+      "description": "Help user recover from errors with guidance, undo, and preventive suggestions.",
+      "inputs": {
+        "error_type": {
+          "type": "string",
+          "description": "Type of error",
+          "required": true
+        },
+        "context": {
+          "type": "UserContext",
+          "description": "Error context",
+          "required": true
+        },
+        "user_id": {
+          "type": "string",
+          "description": "User identifier",
+          "required": true
+        }
+      },
+      "outputs": {
+        "recovery": {
+          "type": "ErrorRecovery",
+          "description": "Recovery strategy"
+        },
+        "help_offered": {
+          "type": "boolean",
+          "description": "Help was offered"
+        }
+      },
+      "errors": {
+        "RECOVERY_FAILED": "Failed to create recovery strategy",
+        "UNKNOWN_ERROR_TYPE": "Error type not recognized"
+      }
+    }
+  },
+  "documentation": {
+    "overview": "Adaptive UX Engine creates self-building, user-centric terminal interfaces that adapt in real-time. Observes behavior, learns patterns, predicts intent, and continuously optimizes the experience for each user.",
+    "core_principles": {
+      "user_centric": "Everything revolves around user needs and comfort",
+      "non_intrusive": "Adaptations feel natural, not jarring",
+      "learning": "Continuously learns and improves",
+      "anticipatory": "Predicts and prepares for user needs",
+      "empowering": "Makes users more efficient and confident",
+      "transparent": "User understands what's happening and why"
+    },
+    "adaptive_ux_cycle": [
+      "1. Observe - observe_user_behavior tracks all actions",
+      "2. Learn - build_user_model identifies patterns",
+      "3. Predict - predict_user_intent anticipates needs",
+      "4. Adapt - adapt_interface changes UI appropriately",
+      "5. Assist - suggest_actions provides proactive help",
+      "6. Automate - automate_repetitive_tasks creates efficiencies",
+      "7. Feedback - learn_from_feedback improves model",
+      "8. Repeat - Continuous cycle"
+    ],
+    "behavior_observation": {
+      "description": "Foundation of adaptive UX",
+      "what_to_observe": [
+        "Actions - What user does",
+        "Timing - How long actions take",
+        "Sequences - Order of actions",
+        "Errors - Mistakes made",
+        "Corrections - How errors are fixed",
+        "Hesitations - Pauses before actions",
+        "Shortcuts - Keyboard vs mouse usage",
+        "Feature discovery - New features used"
+      ],
+      "privacy": "Observations used only for adaptation, not tracked externally",
+      "storage": "Stored locally, user controls retention"
+    },
+    "pattern_recognition": {
+      "description": "Identifying behavioral patterns",
+      "pattern_types": {
+        "sequential": "A always followed by B",
+        "cyclical": "Repeating sequences (workflows)",
+        "conditional": "If X then Y, else Z",
+        "temporal": "Patterns at specific times",
+        "contextual": "Patterns in specific contexts"
+      },
+      "ml_techniques": "Sequence mining, clustering, association rules",
+      "confidence": "Patterns require minimum frequency and consistency"
+    },
+    "user_modeling": {
+      "description": "Building comprehensive user models",
+      "model_components": {
+        "skill_assessment": "Novice \u2192 Expert based on actions",
+        "preferences": "Learned UI/interaction preferences",
+        "workflows": "Common task sequences",
+        "efficiency": "Speed, error rate, completion time",
+        "frustrations": "What causes difficulty",
+        "growth": "Skill development over time"
+      },
+      "model_quality": "Improves with more observations",
+      "cold_start": "Reasonable defaults for new users"
+    },
+    "intent_prediction": {
+      "description": "Predicting what user will do next",
+      "prediction_methods": [
+        "Pattern matching - Similar sequences in past",
+        "Context analysis - What makes sense now",
+        "Workflow continuation - Next step in workflow",
+        "Statistical - Most likely next action",
+        "Task-based - Actions for current task"
+      ],
+      "confidence_scoring": "Predictions ranked by confidence",
+      "horizon": "Predict 1-3 steps ahead typically",
+      "use_cases": [
+        "Prefetch data",
+        "Prepare UI",
+        "Suggest actions",
+        "Automate steps"
+      ]
+    },
+    "interface_adaptation": {
+      "description": "Dynamic UI adaptation strategies",
+      "adaptation_triggers": [
+        "Skill level change - Show advanced features",
+        "Frustration detected - Simplify or offer help",
+        "Efficiency opportunity - Suggest automation",
+        "Pattern emerges - Optimize for pattern",
+        "Error pattern - Add validation or guidance",
+        "Feature unused - Hide or explain",
+        "Terminal change - Adapt to new capabilities"
+      ],
+      "adaptation_types": {
+        "simplification": "Hide complexity for novices",
+        "enhancement": "Add features for experts",
+        "reorganization": "Reorder for common workflows",
+        "automation": "Auto-execute repetitive steps",
+        "guidance": "Add hints and help",
+        "optimization": "Improve efficiency"
+      },
+      "user_notification": "Significant changes explained to user"
+    },
+    "proactive_assistance": {
+      "description": "Helping before asked",
+      "assistance_types": {
+        "suggestions": "Suggest next actions",
+        "shortcuts": "Propose faster methods",
+        "automation": "Offer to automate tasks",
+        "help": "Contextual help when stuck",
+        "error_prevention": "Warn before mistakes",
+        "recovery": "Help fix errors"
+      },
+      "timing": "Offer help at right moments, not constantly",
+      "acceptance": "Track acceptance to improve suggestions"
+    },
+    "automation": {
+      "description": "Automating repetitive tasks",
+      "automation_criteria": [
+        "Frequency - Task done repeatedly",
+        "Consistency - Same steps each time",
+        "Deterministic - Predictable outcome",
+        "Safe - Low risk of harm",
+        "User benefit - Saves significant time"
+      ],
+      "automation_types": {
+        "full": "Entire workflow automated",
+        "partial": "Some steps automated",
+        "triggered": "Automated when conditions met",
+        "suggested": "User approves each execution"
+      },
+      "user_control": "User can enable/disable/customize automation"
+    },
+    "frustration_detection": {
+      "description": "Recognizing when user struggles",
+      "frustration_signals": [
+        "Repeated errors - Same mistake multiple times",
+        "Rapid actions - Frantic clicking",
+        "Long pauses - Uncertainty",
+        "Backtracking - Undoing actions",
+        "Help seeking - Opening help repeatedly",
+        "Feature switching - Trying different approaches",
+        "Abandonment - Giving up on task"
+      ],
+      "response": "Simplify, offer help, suggest alternative approach",
+      "sensitivity": "Balance detection vs false positives"
+    },
+    "complexity_management": {
+      "description": "Progressive disclosure of features",
+      "levels": {
+        "novice": "Essential features only, simple language",
+        "intermediate": "Common features, some advanced options",
+        "advanced": "Most features, technical language ok",
+        "expert": "All features, efficiency-focused, shortcuts"
+      },
+      "progression": "Gradually reveal as user demonstrates skill",
+      "manual_control": "User can override automatic level"
+    },
+    "feedback_loop": {
+      "description": "Learning from user reactions",
+      "explicit_feedback": [
+        "Accepting suggestions",
+        "Rejecting suggestions",
+        "Rating features",
+        "Requesting help",
+        "Customizing settings"
+      ],
+      "implicit_feedback": [
+        "Using suggested features",
+        "Ignoring suggestions",
+        "Workflow changes after adaptation",
+        "Efficiency improvements",
+        "Error rate changes"
+      ],
+      "reinforcement": "Positive feedback reinforces model, negative adjusts"
+    },
+    "personalization_scope": {
+      "ui_personalization": "Layout, colors, complexity, widgets",
+      "workflow_personalization": "Order of steps, automation, shortcuts",
+      "help_personalization": "Level of detail, language, examples",
+      "prediction_personalization": "Adapt predictions to individual patterns",
+      "timing_personalization": "When to offer suggestions, help"
+    },
+    "best_practices": [
+      "Start observing from first interaction",
+      "Build model incrementally, don't wait",
+      "Adapt gradually, not drastically",
+      "Always explain significant changes",
+      "Allow user to revert adaptations",
+      "Respect user preferences over predictions",
+      "Be conservative with automation",
+      "Monitor adaptation effectiveness",
+      "Protect user privacy (local storage)",
+      "Test with diverse user skill levels"
+    ],
+    "privacy_and_control": {
+      "data_locality": "All learning data stored locally",
+      "user_control": "User can view, edit, delete model data",
+      "transparency": "User can see what's learned",
+      "opt_out": "User can disable learning/adaptation",
+      "reset": "User can reset model to start fresh"
+    },
+    "examples": {
+      "novice_to_expert": {
+        "description": "Adapting as user skill grows",
+        "timeline": [
+          "Day 1: Simple UI, lots of help, basic features",
+          "Week 1: Help becomes less intrusive, more features appear",
+          "Month 1: Advanced features shown, shortcuts suggested",
+          "Month 3: Expert mode, automation offered, full features",
+          "Ongoing: Continues optimizing for individual workflows"
+        ]
+      },
+      "frustration_recovery": {
+        "description": "Helping frustrated user",
+        "scenario": "User tries same action 3 times, fails each time",
+        "detection": "detect_user_frustration \u2192 frustrated=true",
+        "response": [
+          "1. Simplify UI immediately",
+          "2. provide_contextual_help \u2192 Show step-by-step guide",
+          "3. suggest_actions \u2192 Alternative approach",
+          "4. Monitor: If still stuck, offer human help contact"
+        ]
+      },
+      "workflow_automation": {
+        "description": "Automating discovered workflow",
+        "observation": "User performs sequence X\u2192Y\u2192Z 10 times",
+        "detection": "build_user_model \u2192 identifies workflow",
+        "automation": "automate_repetitive_tasks \u2192 creates rule",
+        "offer": "Suggest automation to user: 'I noticed you often do X\u2192Y\u2192Z. Would you like me to automate this?'",
+        "result": "If accepted, workflow auto-executes with single trigger"
+      }
+    }
+  },
+  "metadata": {
+    "license": {
+      "name": "AGPLv3",
+      "url": "https://www.gnu.org/licenses/agpl-3.0.html"
+    }
+  }
+}

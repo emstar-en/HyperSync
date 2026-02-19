@@ -1,0 +1,1150 @@
+{
+  "version": "1.0.0",
+  "namespace": "hypersync.ui.sixel",
+  "description": "Sixel graphics integration for terminal-native high-quality visualization. Provides advanced image rendering, charts, and geometric visualizations with optimization, animation, and graceful fallback to Unicode/ASCII.",
+  "types": {
+    "SixelCapability": {
+      "description": "Terminal sixel capabilities",
+      "fields": {
+        "supported": {
+          "type": "boolean",
+          "description": "Terminal supports sixel",
+          "required": true
+        },
+        "max_width": {
+          "type": "integer",
+          "description": "Maximum image width in pixels",
+          "required": false
+        },
+        "max_height": {
+          "type": "integer",
+          "description": "Maximum image height in pixels",
+          "required": false
+        },
+        "max_colors": {
+          "type": "integer",
+          "description": "Maximum color palette size",
+          "required": false
+        },
+        "transparency": {
+          "type": "boolean",
+          "description": "Supports transparency",
+          "required": false
+        },
+        "animation": {
+          "type": "boolean",
+          "description": "Supports animated sixel",
+          "required": false
+        },
+        "detection_method": {
+          "type": "string",
+          "description": "How capability was detected",
+          "required": false
+        }
+      }
+    },
+    "SixelImage": {
+      "description": "Sixel image data",
+      "fields": {
+        "width": {
+          "type": "integer",
+          "description": "Image width in pixels",
+          "required": true
+        },
+        "height": {
+          "type": "integer",
+          "description": "Image height in pixels",
+          "required": true
+        },
+        "data": {
+          "type": "bytes",
+          "description": "Raw image data",
+          "required": true
+        },
+        "format": {
+          "type": "ImageFormat",
+          "description": "Source image format",
+          "required": true
+        },
+        "has_alpha": {
+          "type": "boolean",
+          "description": "Image has alpha channel",
+          "required": false
+        }
+      }
+    },
+    "ImageFormat": {
+      "description": "Source image format",
+      "enum": [
+        "png",
+        "jpeg",
+        "gif",
+        "bmp",
+        "webp",
+        "raw_rgba"
+      ]
+    },
+    "SixelPalette": {
+      "description": "Sixel color palette",
+      "fields": {
+        "colors": {
+          "type": "array<RGBColor>",
+          "description": "Palette colors",
+          "required": true
+        },
+        "size": {
+          "type": "integer",
+          "description": "Palette size (number of colors)",
+          "required": true
+        },
+        "optimized": {
+          "type": "boolean",
+          "description": "Palette is optimized for image",
+          "required": false
+        },
+        "dithering": {
+          "type": "DitheringMethod",
+          "description": "Dithering method used",
+          "required": false
+        }
+      }
+    },
+    "RGBColor": {
+      "description": "RGB color",
+      "fields": {
+        "r": {
+          "type": "integer",
+          "description": "Red (0-255)",
+          "required": true
+        },
+        "g": {
+          "type": "integer",
+          "description": "Green (0-255)",
+          "required": true
+        },
+        "b": {
+          "type": "integer",
+          "description": "Blue (0-255)",
+          "required": true
+        }
+      }
+    },
+    "DitheringMethod": {
+      "description": "Dithering method for color reduction",
+      "enum": [
+        "none",
+        "floyd_steinberg",
+        "ordered",
+        "atkinson",
+        "burkes"
+      ]
+    },
+    "SixelBuffer": {
+      "description": "Sixel rendering buffer",
+      "fields": {
+        "buffer_id": {
+          "type": "string",
+          "description": "Unique buffer identifier",
+          "required": true
+        },
+        "width": {
+          "type": "integer",
+          "description": "Buffer width in pixels",
+          "required": true
+        },
+        "height": {
+          "type": "integer",
+          "description": "Buffer height in pixels",
+          "required": true
+        },
+        "front_buffer": {
+          "type": "bytes",
+          "description": "Front buffer data",
+          "required": true
+        },
+        "back_buffer": {
+          "type": "bytes",
+          "description": "Back buffer data (double buffering)",
+          "required": false
+        },
+        "dirty_regions": {
+          "type": "array<Rectangle>",
+          "description": "Regions that need redrawing",
+          "required": false
+        }
+      }
+    },
+    "Rectangle": {
+      "description": "Rectangular region",
+      "fields": {
+        "x": {
+          "type": "integer",
+          "description": "X position",
+          "required": true
+        },
+        "y": {
+          "type": "integer",
+          "description": "Y position",
+          "required": true
+        },
+        "width": {
+          "type": "integer",
+          "description": "Width",
+          "required": true
+        },
+        "height": {
+          "type": "integer",
+          "description": "Height",
+          "required": true
+        }
+      }
+    },
+    "SixelAnimation": {
+      "description": "Sixel animation data",
+      "fields": {
+        "frames": {
+          "type": "array<SixelFrame>",
+          "description": "Animation frames",
+          "required": true
+        },
+        "frame_rate": {
+          "type": "float",
+          "description": "Frames per second",
+          "required": true
+        },
+        "loop": {
+          "type": "boolean",
+          "description": "Loop animation",
+          "required": false
+        },
+        "current_frame": {
+          "type": "integer",
+          "description": "Current frame index",
+          "required": false
+        }
+      }
+    },
+    "SixelFrame": {
+      "description": "Single animation frame",
+      "fields": {
+        "image": {
+          "type": "SixelImage",
+          "description": "Frame image data",
+          "required": true
+        },
+        "duration": {
+          "type": "integer",
+          "description": "Frame duration in milliseconds",
+          "required": true
+        },
+        "transition": {
+          "type": "TransitionType",
+          "description": "Transition to next frame",
+          "required": false
+        }
+      }
+    },
+    "TransitionType": {
+      "description": "Frame transition type",
+      "enum": [
+        "none",
+        "fade",
+        "slide",
+        "dissolve"
+      ]
+    },
+    "SixelRenderConfig": {
+      "description": "Sixel rendering configuration",
+      "fields": {
+        "target_width": {
+          "type": "integer",
+          "description": "Target width in pixels",
+          "required": false
+        },
+        "target_height": {
+          "type": "integer",
+          "description": "Target height in pixels",
+          "required": false
+        },
+        "maintain_aspect": {
+          "type": "boolean",
+          "description": "Maintain aspect ratio",
+          "required": false
+        },
+        "quality": {
+          "type": "QualityLevel",
+          "description": "Rendering quality",
+          "required": false
+        },
+        "max_colors": {
+          "type": "integer",
+          "description": "Maximum palette colors",
+          "required": false
+        },
+        "position_x": {
+          "type": "integer",
+          "description": "Terminal X position (columns)",
+          "required": false
+        },
+        "position_y": {
+          "type": "integer",
+          "description": "Terminal Y position (rows)",
+          "required": false
+        }
+      }
+    },
+    "QualityLevel": {
+      "description": "Rendering quality vs size tradeoff",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "maximum"
+      ]
+    },
+    "ChartRenderConfig": {
+      "description": "Chart rendering configuration for sixel",
+      "fields": {
+        "width": {
+          "type": "integer",
+          "description": "Chart width in pixels",
+          "required": true
+        },
+        "height": {
+          "type": "integer",
+          "description": "Chart height in pixels",
+          "required": true
+        },
+        "antialias": {
+          "type": "boolean",
+          "description": "Enable anti-aliasing",
+          "required": false
+        },
+        "background_color": {
+          "type": "RGBColor",
+          "description": "Background color",
+          "required": false
+        },
+        "dpi": {
+          "type": "integer",
+          "description": "Dots per inch",
+          "required": false
+        }
+      }
+    },
+    "VisualizationConfig": {
+      "description": "3D/4D visualization configuration",
+      "fields": {
+        "projection": {
+          "type": "ProjectionType",
+          "description": "Projection type",
+          "required": true
+        },
+        "rotation": {
+          "type": "Rotation3D",
+          "description": "3D rotation angles",
+          "required": false
+        },
+        "zoom": {
+          "type": "float",
+          "description": "Zoom level",
+          "required": false
+        },
+        "lighting": {
+          "type": "boolean",
+          "description": "Enable lighting effects",
+          "required": false
+        }
+      }
+    },
+    "ProjectionType": {
+      "description": "3D projection type",
+      "enum": [
+        "orthographic",
+        "perspective",
+        "isometric"
+      ]
+    },
+    "Rotation3D": {
+      "description": "3D rotation angles",
+      "fields": {
+        "x": {
+          "type": "float",
+          "description": "X-axis rotation (degrees)",
+          "required": true
+        },
+        "y": {
+          "type": "float",
+          "description": "Y-axis rotation (degrees)",
+          "required": true
+        },
+        "z": {
+          "type": "float",
+          "description": "Z-axis rotation (degrees)",
+          "required": true
+        }
+      }
+    },
+    "SixelCache": {
+      "description": "Cached sixel rendering",
+      "fields": {
+        "cache_key": {
+          "type": "string",
+          "description": "Cache key (hash of input)",
+          "required": true
+        },
+        "sixel_data": {
+          "type": "string",
+          "description": "Cached sixel escape sequence",
+          "required": true
+        },
+        "size_bytes": {
+          "type": "integer",
+          "description": "Cache entry size",
+          "required": true
+        },
+        "created_at": {
+          "type": "integer",
+          "description": "Creation timestamp",
+          "required": true
+        },
+        "access_count": {
+          "type": "integer",
+          "description": "Number of cache hits",
+          "required": false
+        }
+      }
+    },
+    "CompositeLayer": {
+      "description": "Layer for sixel compositing",
+      "fields": {
+        "layer_id": {
+          "type": "string",
+          "description": "Layer identifier",
+          "required": true
+        },
+        "image": {
+          "type": "SixelImage",
+          "description": "Layer image",
+          "required": true
+        },
+        "offset_x": {
+          "type": "integer",
+          "description": "X offset in pixels",
+          "required": false
+        },
+        "offset_y": {
+          "type": "integer",
+          "description": "Y offset in pixels",
+          "required": false
+        },
+        "opacity": {
+          "type": "float",
+          "description": "Layer opacity (0.0-1.0)",
+          "required": false
+        },
+        "blend_mode": {
+          "type": "BlendMode",
+          "description": "Blending mode",
+          "required": false
+        },
+        "z_index": {
+          "type": "integer",
+          "description": "Layer ordering (higher = front)",
+          "required": false
+        }
+      }
+    },
+    "BlendMode": {
+      "description": "Layer blending mode",
+      "enum": [
+        "normal",
+        "multiply",
+        "screen",
+        "overlay",
+        "add"
+      ]
+    },
+    "FallbackConfig": {
+      "description": "Fallback configuration when sixel unavailable",
+      "fields": {
+        "method": {
+          "type": "FallbackMethod",
+          "description": "Fallback rendering method",
+          "required": true
+        },
+        "unicode_blocks": {
+          "type": "boolean",
+          "description": "Use Unicode block elements",
+          "required": false
+        },
+        "ascii_art": {
+          "type": "boolean",
+          "description": "Fall back to ASCII art",
+          "required": false
+        },
+        "color_support": {
+          "type": "integer",
+          "description": "Color support level (0=none, 16, 256, 16777216)",
+          "required": false
+        }
+      }
+    },
+    "FallbackMethod": {
+      "description": "Fallback rendering method",
+      "enum": [
+        "unicode_blocks",
+        "unicode_half_blocks",
+        "ascii_shades",
+        "ascii_art",
+        "none"
+      ]
+    },
+    "CompressionResult": {
+      "description": "Sixel compression result",
+      "fields": {
+        "compressed_data": {
+          "type": "string",
+          "description": "Compressed sixel data",
+          "required": true
+        },
+        "original_size": {
+          "type": "integer",
+          "description": "Original size in bytes",
+          "required": true
+        },
+        "compressed_size": {
+          "type": "integer",
+          "description": "Compressed size in bytes",
+          "required": true
+        },
+        "compression_ratio": {
+          "type": "float",
+          "description": "Compression ratio",
+          "required": true
+        },
+        "method": {
+          "type": "string",
+          "description": "Compression method used",
+          "required": true
+        }
+      }
+    }
+  },
+  "operations": {
+    "detect_sixel_support": {
+      "description": "Detect terminal sixel capability through device attribute queries and capability testing. Returns comprehensive sixel support information.",
+      "inputs": {
+        "timeout_ms": {
+          "type": "integer",
+          "description": "Detection timeout in milliseconds",
+          "required": false
+        },
+        "test_render": {
+          "type": "boolean",
+          "description": "Perform test rendering to verify support",
+          "required": false
+        }
+      },
+      "outputs": {
+        "capability": {
+          "type": "SixelCapability",
+          "description": "Detected sixel capabilities"
+        },
+        "confidence": {
+          "type": "float",
+          "description": "Detection confidence (0.0-1.0)"
+        }
+      },
+      "errors": {
+        "DETECTION_TIMEOUT": "Terminal did not respond to capability query",
+        "DETECTION_FAILED": "Failed to detect sixel support"
+      }
+    },
+    "render_sixel_image": {
+      "description": "Render image via sixel graphics with automatic scaling, positioning, and palette optimization. Supports multiple image formats.",
+      "inputs": {
+        "image": {
+          "type": "SixelImage",
+          "description": "Image to render",
+          "required": true
+        },
+        "config": {
+          "type": "SixelRenderConfig",
+          "description": "Rendering configuration",
+          "required": true
+        },
+        "capability": {
+          "type": "SixelCapability",
+          "description": "Terminal sixel capabilities",
+          "required": true
+        }
+      },
+      "outputs": {
+        "sixel_data": {
+          "type": "string",
+          "description": "Sixel escape sequence"
+        },
+        "actual_width": {
+          "type": "integer",
+          "description": "Actual rendered width in pixels"
+        },
+        "actual_height": {
+          "type": "integer",
+          "description": "Actual rendered height in pixels"
+        },
+        "palette": {
+          "type": "SixelPalette",
+          "description": "Optimized color palette used"
+        }
+      },
+      "errors": {
+        "UNSUPPORTED_FORMAT": "Image format not supported",
+        "IMAGE_TOO_LARGE": "Image exceeds terminal maximum size",
+        "RENDER_FAILED": "Failed to render sixel image"
+      }
+    },
+    "render_sixel_chart": {
+      "description": "Render chart as high-quality sixel graphics with anti-aliasing, color gradients, and professional appearance.",
+      "inputs": {
+        "chart_type": {
+          "type": "string",
+          "description": "Chart type (line, bar, scatter, pie, etc.)",
+          "required": true
+        },
+        "data": {
+          "type": "array<array<float>>",
+          "description": "Chart data series",
+          "required": true
+        },
+        "config": {
+          "type": "ChartRenderConfig",
+          "description": "Chart rendering configuration",
+          "required": true
+        },
+        "capability": {
+          "type": "SixelCapability",
+          "description": "Terminal sixel capabilities",
+          "required": true
+        },
+        "labels": {
+          "type": "map<string, string>",
+          "description": "Chart labels (title, axes, legend)",
+          "required": false
+        }
+      },
+      "outputs": {
+        "sixel_data": {
+          "type": "string",
+          "description": "Sixel escape sequence"
+        },
+        "render_time_ms": {
+          "type": "integer",
+          "description": "Rendering time in milliseconds"
+        }
+      },
+      "errors": {
+        "INVALID_CHART_TYPE": "Chart type not supported",
+        "EMPTY_DATA": "Chart data is empty",
+        "RENDER_FAILED": "Failed to render chart"
+      }
+    },
+    "render_sixel_visualization": {
+      "description": "Render geometric 3D/4D visualization with rotation, zoom, and lighting. Supports real-time updates for interactive exploration.",
+      "inputs": {
+        "geometry": {
+          "type": "array<any>",
+          "description": "Geometric data (vertices, faces, etc.)",
+          "required": true
+        },
+        "config": {
+          "type": "VisualizationConfig",
+          "description": "Visualization configuration",
+          "required": true
+        },
+        "render_config": {
+          "type": "ChartRenderConfig",
+          "description": "Base rendering configuration",
+          "required": true
+        },
+        "capability": {
+          "type": "SixelCapability",
+          "description": "Terminal sixel capabilities",
+          "required": true
+        }
+      },
+      "outputs": {
+        "sixel_data": {
+          "type": "string",
+          "description": "Sixel escape sequence"
+        },
+        "viewport_info": {
+          "type": "map<string, any>",
+          "description": "Viewport and camera information"
+        }
+      },
+      "errors": {
+        "INVALID_GEOMETRY": "Geometry data is malformed",
+        "PROJECTION_FAILED": "Failed to project 3D geometry",
+        "RENDER_FAILED": "Failed to render visualization"
+      }
+    },
+    "create_sixel_buffer": {
+      "description": "Create sixel rendering buffer with double buffering and dirty region tracking for efficient updates.",
+      "inputs": {
+        "width": {
+          "type": "integer",
+          "description": "Buffer width in pixels",
+          "required": true
+        },
+        "height": {
+          "type": "integer",
+          "description": "Buffer height in pixels",
+          "required": true
+        },
+        "double_buffer": {
+          "type": "boolean",
+          "description": "Enable double buffering",
+          "required": false
+        }
+      },
+      "outputs": {
+        "buffer": {
+          "type": "SixelBuffer",
+          "description": "Created sixel buffer"
+        },
+        "memory_bytes": {
+          "type": "integer",
+          "description": "Buffer memory usage in bytes"
+        }
+      },
+      "errors": {
+        "INVALID_DIMENSIONS": "Buffer dimensions are invalid",
+        "MEMORY_ALLOCATION_FAILED": "Failed to allocate buffer memory"
+      }
+    },
+    "optimize_sixel_palette": {
+      "description": "Optimize color palette for image using quantization and dithering. Reduces colors while maintaining visual quality.",
+      "inputs": {
+        "image": {
+          "type": "SixelImage",
+          "description": "Source image",
+          "required": true
+        },
+        "max_colors": {
+          "type": "integer",
+          "description": "Maximum palette size",
+          "required": true
+        },
+        "dithering": {
+          "type": "DitheringMethod",
+          "description": "Dithering method",
+          "required": false
+        }
+      },
+      "outputs": {
+        "palette": {
+          "type": "SixelPalette",
+          "description": "Optimized color palette"
+        },
+        "quantized_image": {
+          "type": "SixelImage",
+          "description": "Image with optimized palette"
+        },
+        "quality_score": {
+          "type": "float",
+          "description": "Perceptual quality score (0.0-1.0)"
+        }
+      },
+      "errors": {
+        "INVALID_COLOR_COUNT": "Maximum colors must be 2-256",
+        "QUANTIZATION_FAILED": "Failed to quantize colors"
+      }
+    },
+    "compress_sixel_data": {
+      "description": "Compress sixel data using run-length encoding and optimization. Balances quality vs size for efficient transmission.",
+      "inputs": {
+        "sixel_data": {
+          "type": "string",
+          "description": "Uncompressed sixel data",
+          "required": true
+        },
+        "quality": {
+          "type": "QualityLevel",
+          "description": "Quality vs size tradeoff",
+          "required": false
+        }
+      },
+      "outputs": {
+        "result": {
+          "type": "CompressionResult",
+          "description": "Compression result"
+        }
+      },
+      "errors": {
+        "COMPRESSION_FAILED": "Failed to compress sixel data",
+        "INVALID_SIXEL_DATA": "Sixel data is malformed"
+      }
+    },
+    "animate_sixel": {
+      "description": "Animate sixel graphics with frame management, timing control, and smooth transitions.",
+      "inputs": {
+        "animation": {
+          "type": "SixelAnimation",
+          "description": "Animation data",
+          "required": true
+        },
+        "capability": {
+          "type": "SixelCapability",
+          "description": "Terminal sixel capabilities",
+          "required": true
+        },
+        "position_x": {
+          "type": "integer",
+          "description": "Animation X position (columns)",
+          "required": false
+        },
+        "position_y": {
+          "type": "integer",
+          "description": "Animation Y position (rows)",
+          "required": false
+        }
+      },
+      "outputs": {
+        "frame_data": {
+          "type": "array<string>",
+          "description": "Sixel data for each frame"
+        },
+        "frame_timings": {
+          "type": "array<integer>",
+          "description": "Frame display durations (ms)"
+        },
+        "total_duration": {
+          "type": "integer",
+          "description": "Total animation duration (ms)"
+        }
+      },
+      "errors": {
+        "EMPTY_ANIMATION": "Animation has no frames",
+        "ANIMATION_NOT_SUPPORTED": "Terminal doesn't support animated sixel",
+        "RENDER_FAILED": "Failed to render animation frames"
+      }
+    },
+    "composite_sixel": {
+      "description": "Composite multiple sixel layers with alpha blending, layer ordering, and clipping. Creates complex compositions.",
+      "inputs": {
+        "layers": {
+          "type": "array<CompositeLayer>",
+          "description": "Layers to composite (ordered by z_index)",
+          "required": true
+        },
+        "output_width": {
+          "type": "integer",
+          "description": "Output width in pixels",
+          "required": true
+        },
+        "output_height": {
+          "type": "integer",
+          "description": "Output height in pixels",
+          "required": true
+        },
+        "capability": {
+          "type": "SixelCapability",
+          "description": "Terminal sixel capabilities",
+          "required": true
+        }
+      },
+      "outputs": {
+        "composited": {
+          "type": "SixelImage",
+          "description": "Composited image"
+        },
+        "sixel_data": {
+          "type": "string",
+          "description": "Sixel escape sequence"
+        }
+      },
+      "errors": {
+        "NO_LAYERS": "No layers provided for compositing",
+        "LAYER_SIZE_MISMATCH": "Layer sizes incompatible",
+        "COMPOSITE_FAILED": "Failed to composite layers"
+      }
+    },
+    "convert_to_sixel": {
+      "description": "Convert graphics from various formats to sixel with resolution adaptation and quality settings.",
+      "inputs": {
+        "source_data": {
+          "type": "bytes",
+          "description": "Source image data",
+          "required": true
+        },
+        "source_format": {
+          "type": "ImageFormat",
+          "description": "Source image format",
+          "required": true
+        },
+        "config": {
+          "type": "SixelRenderConfig",
+          "description": "Conversion configuration",
+          "required": true
+        },
+        "capability": {
+          "type": "SixelCapability",
+          "description": "Terminal sixel capabilities",
+          "required": true
+        }
+      },
+      "outputs": {
+        "sixel_data": {
+          "type": "string",
+          "description": "Sixel escape sequence"
+        },
+        "image": {
+          "type": "SixelImage",
+          "description": "Converted image metadata"
+        }
+      },
+      "errors": {
+        "UNSUPPORTED_FORMAT": "Source format not supported",
+        "CONVERSION_FAILED": "Failed to convert to sixel",
+        "DECODE_ERROR": "Failed to decode source image"
+      }
+    },
+    "cache_sixel": {
+      "description": "Cache rendered sixel with cache management, invalidation, and memory limits. Improves performance for repeated renders.",
+      "inputs": {
+        "cache_key": {
+          "type": "string",
+          "description": "Unique cache key",
+          "required": true
+        },
+        "sixel_data": {
+          "type": "string",
+          "description": "Sixel data to cache",
+          "required": true
+        },
+        "ttl_seconds": {
+          "type": "integer",
+          "description": "Time to live in seconds (0 = no expiry)",
+          "required": false
+        }
+      },
+      "outputs": {
+        "cached": {
+          "type": "boolean",
+          "description": "Successfully cached"
+        },
+        "cache_entry": {
+          "type": "SixelCache",
+          "description": "Cache entry metadata"
+        }
+      },
+      "errors": {
+        "CACHE_FULL": "Cache is full, eviction failed",
+        "INVALID_KEY": "Cache key is invalid"
+      }
+    },
+    "fallback_from_sixel": {
+      "description": "Gracefully fallback from sixel to Unicode blocks or ASCII art when sixel is unavailable. Maintains visual representation.",
+      "inputs": {
+        "image": {
+          "type": "SixelImage",
+          "description": "Source image",
+          "required": true
+        },
+        "config": {
+          "type": "FallbackConfig",
+          "description": "Fallback configuration",
+          "required": true
+        },
+        "target_width": {
+          "type": "integer",
+          "description": "Target width in characters",
+          "required": true
+        },
+        "target_height": {
+          "type": "integer",
+          "description": "Target height in characters",
+          "required": true
+        }
+      },
+      "outputs": {
+        "text_data": {
+          "type": "string",
+          "description": "Fallback text representation"
+        },
+        "method_used": {
+          "type": "FallbackMethod",
+          "description": "Fallback method that was used"
+        },
+        "quality": {
+          "type": "float",
+          "description": "Fallback quality score (0.0-1.0)"
+        }
+      },
+      "errors": {
+        "FALLBACK_FAILED": "All fallback methods failed",
+        "INVALID_DIMENSIONS": "Target dimensions invalid"
+      }
+    }
+  },
+  "documentation": {
+    "overview": "Sixel Graphics Integration provides high-quality terminal graphics rendering using the sixel protocol. Supports images, charts, 3D visualizations, animations, and compositing with automatic optimization and graceful fallback to Unicode/ASCII.",
+    "sixel_protocol": {
+      "description": "Sixel is a bitmap graphics protocol originally from DEC terminals, now supported by many modern terminal emulators (xterm, mintty, mlterm, wezterm, etc.)",
+      "capabilities": [
+        "High-resolution images (limited by terminal)",
+        "Full color support (up to 256 colors in palette)",
+        "Transparency support (terminal-dependent)",
+        "Animation support (via sequential rendering)",
+        "Efficient compression (run-length encoding)"
+      ],
+      "limitations": [
+        "Not universally supported (detection required)",
+        "Palette size limits (typically 256 colors)",
+        "Performance varies by terminal",
+        "Memory intensive for large images"
+      ]
+    },
+    "detection_strategy": {
+      "description": "Multi-method detection ensures reliable sixel support identification",
+      "methods": [
+        "Device Attribute queries (Primary DA, Secondary DA)",
+        "XTGETTCAP queries for graphics capabilities",
+        "Test rendering with small sixel image",
+        "Terminal type detection (TERM environment variable)",
+        "Known terminal database lookup"
+      ],
+      "recommended_flow": "1. Check TERM variable, 2. Send DA queries, 3. Test render if uncertain, 4. Cache result"
+    },
+    "optimization_techniques": {
+      "palette_optimization": "Use color quantization (median cut, octree) to reduce palette size while maintaining quality",
+      "dithering": "Apply dithering (Floyd-Steinberg recommended) to improve perceived quality with limited colors",
+      "compression": "Use run-length encoding to compress repetitive sixel data",
+      "caching": "Cache rendered sixel for repeated use (especially for UI elements)",
+      "dirty_regions": "Only re-render changed regions using sixel buffers",
+      "resolution_adaptation": "Scale images to optimal terminal resolution"
+    },
+    "rendering_pipeline": [
+      "1. Detect sixel capabilities (detect_sixel_support)",
+      "2. Load/generate image data",
+      "3. Optimize palette if needed (optimize_sixel_palette)",
+      "4. Convert to sixel format (convert_to_sixel or render_sixel_*)",
+      "5. Optionally compress (compress_sixel_data)",
+      "6. Cache result (cache_sixel)",
+      "7. Output sixel escape sequence to terminal",
+      "8. Fallback to Unicode/ASCII if needed (fallback_from_sixel)"
+    ],
+    "animation_support": {
+      "description": "Sixel animation via sequential frame rendering",
+      "implementation": "Clear position \u2192 Render frame \u2192 Wait duration \u2192 Repeat",
+      "performance": "Frame rate limited by terminal rendering speed and data transmission",
+      "best_practices": [
+        "Pre-render all frames",
+        "Optimize each frame's palette",
+        "Use consistent dimensions",
+        "Consider compression for complex animations",
+        "Monitor frame timing accuracy"
+      ]
+    },
+    "compositing": {
+      "description": "Layer-based compositing for complex graphics",
+      "use_cases": [
+        "UI overlays on images",
+        "Multi-element visualizations",
+        "Transparent overlays",
+        "Watermarks and annotations"
+      ],
+      "blend_modes": "Normal, multiply, screen, overlay, add",
+      "performance": "CPU-intensive, consider caching composited results"
+    },
+    "fallback_strategy": {
+      "description": "Graceful degradation when sixel unavailable",
+      "levels": [
+        "Level 1: Unicode half blocks (\u2580\u2584) with 256 colors - Best fallback",
+        "Level 2: Unicode quarter blocks (\u2596\u2597\u2598\u259d) - Good detail",
+        "Level 3: Unicode shades (\u2591\u2592\u2593\u2588) - Limited but readable",
+        "Level 4: ASCII shades (@%#*+=-:. ) - Universal compatibility",
+        "Level 5: ASCII art - Artistic representation"
+      ],
+      "selection": "Automatically select best method based on terminal capabilities"
+    },
+    "best_practices": [
+      "Always detect sixel support before rendering",
+      "Cache capability detection result per session",
+      "Optimize palettes for terminal color limits",
+      "Use appropriate quality settings (high for static, medium for interactive)",
+      "Implement fallback for non-sixel terminals",
+      "Monitor memory usage for large images",
+      "Pre-render and cache frequently used graphics",
+      "Test on multiple terminal emulators",
+      "Consider bandwidth for remote connections",
+      "Use compression for slow connections"
+    ],
+    "terminal_support": {
+      "well_supported": [
+        "xterm (with sixel enabled)",
+        "mlterm",
+        "mintty",
+        "wezterm",
+        "foot",
+        "yaft"
+      ],
+      "partial_support": [
+        "iTerm2 (via imgcat)",
+        "kitty (own protocol)",
+        "konsole (limited)"
+      ],
+      "no_support": [
+        "most basic terminals",
+        "linux console",
+        "screen",
+        "tmux (without passthrough)"
+      ],
+      "recommendation": "Always provide fallback for maximum compatibility"
+    },
+    "performance_considerations": {
+      "rendering_time": "Depends on image size, palette optimization, and terminal speed",
+      "memory_usage": "Raw image + palette + sixel data + buffers",
+      "bandwidth": "Sixel data can be large, use compression for remote connections",
+      "caching_benefits": "10-100x speedup for repeated renders",
+      "optimization": "Profile rendering pipeline, optimize bottlenecks (usually palette quantization)"
+    },
+    "examples": {
+      "simple_image": {
+        "description": "Render a PNG image",
+        "steps": [
+          "1. detect_sixel_support()",
+          "2. Load PNG into SixelImage",
+          "3. render_sixel_image(image, config, capability)",
+          "4. Output sixel_data to terminal"
+        ]
+      },
+      "chart_rendering": {
+        "description": "Render high-quality chart",
+        "steps": [
+          "1. detect_sixel_support()",
+          "2. Prepare chart data",
+          "3. render_sixel_chart('line', data, config, capability)",
+          "4. Output sixel_data to terminal"
+        ]
+      },
+      "animated_visualization": {
+        "description": "Animate 3D rotation",
+        "steps": [
+          "1. detect_sixel_support()",
+          "2. Generate frames with different rotation angles",
+          "3. Create SixelAnimation with frames",
+          "4. animate_sixel(animation, capability)",
+          "5. Render frames sequentially with timing"
+        ]
+      }
+    }
+  },
+  "metadata": {
+    "license": {
+      "name": "AGPLv3",
+      "url": "https://www.gnu.org/licenses/agpl-3.0.html"
+    }
+  }
+}

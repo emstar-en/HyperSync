@@ -1,0 +1,2738 @@
+{
+  "specification": "domain_addressing_system",
+  "version": "1.0.0",
+  "status": "complete",
+  "author": "HyperSync Networking Team",
+  "created": "2026-01-12",
+  "description": "Complete specification for the domain addressing system, defining the ld:// URI format, address resolution, routing, and registry operations",
+  
+  "metadata": {
+    "stunir_version": "3.0",
+    "category": "networking",
+    "tags": ["addressing", "routing", "resolution", "registry", "ld-uri"],
+    "dependencies": [
+      "domain_architecture"
+    ],
+    "priority": "critical",
+    "implementation_status": "required"
+  },
+
+  "types": {
+    "DomainAddress": {
+      "description": "Complete domain address in ld:// URI format",
+      "base_type": "string",
+      "format": "ld://organization/stack/domain-id",
+      "pattern": "^ld://[a-zA-Z0-9_-]+/[a-zA-Z0-9_-]+/[a-zA-Z0-9_-]+$",
+      "examples": [
+        "ld://hypersync/base/ld0",
+        "ld://org/networks/prod-a7f3c",
+        "ld://company/services/api-backend"
+      ],
+      "properties": {
+        "immutable": true,
+        "globally_unique": true,
+        "hierarchical": true
+      }
+    },
+
+    "AddressComponents": {
+      "description": "Parsed components of a domain address",
+      "properties": {
+        "scheme": {
+          "type": "string",
+          "fixed": "ld",
+          "description": "URI scheme (always 'ld')"
+        },
+        "organization": {
+          "type": "string",
+          "description": "Organization identifier"
+        },
+        "stack": {
+          "type": "string",
+          "description": "Stack or subsystem identifier"
+        },
+        "domain_id": {
+          "type": "string",
+          "description": "Unique domain identifier within stack"
+        }
+      }
+    },
+
+    "AddressRegistry": {
+      "description": "Registry for domain address lookup and resolution",
+      "properties": {
+        "entries": {
+          "type": "map",
+          "key": "DomainAddress",
+          "value": "RegistryEntry",
+          "description": "Map of addresses to registry entries"
+        },
+        "index_by_org": {
+          "type": "map",
+          "description": "Index by organization"
+        },
+        "index_by_stack": {
+          "type": "map",
+          "description": "Index by stack"
+        },
+        "aliases": {
+          "type": "map",
+          "key": "string",
+          "value": "DomainAddress",
+          "description": "Alias to canonical address mapping"
+        }
+      }
+    },
+
+    "RegistryEntry": {
+      "description": "Entry in domain address registry",
+      "properties": {
+        "address": {"type": "DomainAddress"},
+        "domain_id": {"type": "DomainID"},
+        "domain_handle": {"type": "DomainHandle"},
+        "metadata": {"type": "object"},
+        "created_at": {"type": "timestamp"},
+        "updated_at": {"type": "timestamp"},
+        "ttl": {"type": "int", "description": "Time to live in seconds"},
+        "status": {
+          "type": "string",
+          "values": ["active", "inactive", "deprecated"]
+        }
+      }
+    },
+
+    "AddressAlias": {
+      "description": "Alternative name for a domain address",
+      "properties": {
+        "alias": {"type": "string"},
+        "canonical_address": {"type": "DomainAddress"},
+        "description": {"type": "string"},
+        "created_at": {"type": "timestamp"}
+      }
+    },
+
+    "AddressRoute": {
+      "description": "Route between domain addresses",
+      "properties": {
+        "source": {"type": "DomainAddress"},
+        "destination": {"type": "DomainAddress"},
+        "path": {
+          "type": "array",
+          "items": {"type": "DomainAddress"},
+          "description": "Intermediate domains in route"
+        },
+        "cost": {"type": "float", "description": "Routing cost metric"},
+        "latency_ms": {"type": "float"}
+      }
+    },
+
+    "CompressedAddress": {
+      "description": "Compact representation of domain address",
+      "properties": {
+        "compressed_data": {"type": "bytes"},
+        "compression_scheme": {
+          "type": "string",
+          "values": ["huffman", "dictionary", "base58"]
+        },
+        "original_length": {"type": "int"},
+        "compressed_length": {"type": "int"}
+      }
+    }
+  },
+
+  "operations": {
+    "create_domain_address": {
+      "description": "Create a new domain address in ld:// format",
+      "category": "creation",
+      "inputs": {
+        "organization": {
+          "type": "string",
+          "required": true,
+          "pattern": "^[a-zA-Z0-9_-]+$",
+          "description": "Organization identifier"
+        },
+        "stack": {
+          "type": "string",
+          "required": true,
+          "pattern": "^[a-zA-Z0-9_-]+$",
+          "description": "Stack identifier"
+        },
+        "domain_id": {
+          "type": "string",
+          "required": true,
+          "pattern": "^[a-zA-Z0-9_-]+$",
+          "description": "Unique domain identifier"
+        }
+      },
+      "outputs": {
+        "success": {"type": "boolean"},
+        "address": {"type": "DomainAddress"},
+        "components": {"type": "AddressComponents"}
+      },
+      "preconditions": [
+        "Valid organization, stack, and domain_id",
+        "Address not already in use",
+        "Characters comply with URI RFC"
+      ],
+      "postconditions": [
+        "Domain address created",
+        "Unique within system",
+        "Complies with ld:// format"
+      ],
+      "formulas": {
+        "address_format": "ld://{organization}/{stack}/{domain_id}",
+        "uniqueness": "No duplicate addresses in registry"
+      },
+      "edge_cases": [
+        {
+          "case": "Address already exists",
+          "handling": "Return error with existing address",
+          "outcome": "Prevent duplicates"
+        },
+        {
+          "case": "Invalid characters",
+          "handling": "Return error with character requirements",
+          "outcome": "Enforce URI compliance"
+        },
+        {
+          "case": "Empty components",
+          "handling": "Return error",
+          "outcome": "Require all components"
+        },
+        {
+          "case": "Very long components",
+          "handling": "Enforce length limits",
+          "outcome": "Prevent abuse"
+        },
+        {
+          "case": "Reserved identifiers",
+          "handling": "Check against reserved list",
+          "outcome": "Protect system addresses"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "Create basic address",
+          "input": {
+            "organization": "hypersync",
+            "stack": "base",
+            "domain_id": "ld0"
+          },
+          "expected_output": {
+            "success": true,
+            "address": "ld://hypersync/base/ld0",
+            "components": {
+              "scheme": "ld",
+              "organization": "hypersync",
+              "stack": "base",
+              "domain_id": "ld0"
+            }
+          }
+        },
+        {
+          "name": "Create production network address",
+          "input": {
+            "organization": "company",
+            "stack": "networks",
+            "domain_id": "prod-a7f3c"
+          },
+          "expected_output": {
+            "success": true,
+            "address": "ld://company/networks/prod-a7f3c"
+          }
+        },
+        {
+          "name": "Create service address",
+          "input": {
+            "organization": "org",
+            "stack": "services",
+            "domain_id": "api-backend"
+          },
+          "expected_output": {
+            "success": true,
+            "address": "ld://org/services/api-backend"
+          }
+        },
+        {
+          "name": "Duplicate address rejected",
+          "setup": "Address already exists",
+          "input": {
+            "organization": "hypersync",
+            "stack": "base",
+            "domain_id": "ld0"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Address already exists"
+          }
+        },
+        {
+          "name": "Invalid characters in organization",
+          "input": {
+            "organization": "invalid@org",
+            "stack": "stack",
+            "domain_id": "domain"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Invalid characters in organization"
+          }
+        },
+        {
+          "name": "Empty component",
+          "input": {
+            "organization": "org",
+            "stack": "",
+            "domain_id": "domain"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Empty stack component"
+          }
+        },
+        {
+          "name": "Very long domain_id",
+          "input": {
+            "organization": "org",
+            "stack": "stack",
+            "domain_id": "[300 characters]"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "domain_id exceeds maximum length"
+          }
+        },
+        {
+          "name": "Hyphen and underscore allowed",
+          "input": {
+            "organization": "my_org",
+            "stack": "my-stack",
+            "domain_id": "my_domain-1"
+          },
+          "expected_output": {
+            "success": true,
+            "address": "ld://my_org/my-stack/my_domain-1"
+          }
+        }
+      ],
+      "security_properties": [
+        "Uniqueness enforced",
+        "No injection attacks via special characters",
+        "Audit trail for address creation"
+      ],
+      "performance": {
+        "complexity": "O(1)",
+        "typical_duration_ms": "< 10",
+        "resource_overhead": "Minimal - string operations"
+      }
+    },
+
+    "parse_domain_address": {
+      "description": "Parse domain address into components",
+      "category": "parsing",
+      "inputs": {
+        "address": {
+          "type": "string",
+          "required": true,
+          "description": "Domain address to parse"
+        }
+      },
+      "outputs": {
+        "success": {"type": "boolean"},
+        "components": {"type": "AddressComponents"},
+        "valid": {"type": "boolean"}
+      },
+      "preconditions": [
+        "Address string provided"
+      ],
+      "postconditions": [
+        "Components extracted if valid",
+        "Validation status returned"
+      ],
+      "formulas": {
+        "parse_regex": "^ld://([^/]+)/([^/]+)/([^/]+)$"
+      },
+      "edge_cases": [
+        {
+          "case": "Invalid format",
+          "handling": "Return valid=false with error",
+          "outcome": "Clear error message"
+        },
+        {
+          "case": "Missing scheme",
+          "handling": "Return error",
+          "outcome": "Require ld:// prefix"
+        },
+        {
+          "case": "Extra path components",
+          "handling": "Return error or ignore extras",
+          "outcome": "Strict format enforcement"
+        },
+        {
+          "case": "URL encoded characters",
+          "handling": "Decode and validate",
+          "outcome": "Handle encoding"
+        },
+        {
+          "case": "Null or empty string",
+          "handling": "Return error",
+          "outcome": "Require non-empty address"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "Parse valid address",
+          "input": {
+            "address": "ld://hypersync/base/ld0"
+          },
+          "expected_output": {
+            "success": true,
+            "valid": true,
+            "components": {
+              "scheme": "ld",
+              "organization": "hypersync",
+              "stack": "base",
+              "domain_id": "ld0"
+            }
+          }
+        },
+        {
+          "name": "Parse complex address",
+          "input": {
+            "address": "ld://company/networks/prod-a7f3c"
+          },
+          "expected_output": {
+            "success": true,
+            "valid": true,
+            "components": {
+              "organization": "company",
+              "stack": "networks",
+              "domain_id": "prod-a7f3c"
+            }
+          }
+        },
+        {
+          "name": "Invalid scheme",
+          "input": {
+            "address": "http://hypersync/base/ld0"
+          },
+          "expected_output": {
+            "success": true,
+            "valid": false,
+            "error": "Invalid scheme: expected 'ld'"
+          }
+        },
+        {
+          "name": "Missing component",
+          "input": {
+            "address": "ld://hypersync/base"
+          },
+          "expected_output": {
+            "success": true,
+            "valid": false,
+            "error": "Missing domain_id component"
+          }
+        },
+        {
+          "name": "Extra components",
+          "input": {
+            "address": "ld://org/stack/domain/extra"
+          },
+          "expected_output": {
+            "success": true,
+            "valid": false,
+            "error": "Too many path components"
+          }
+        },
+        {
+          "name": "Empty string",
+          "input": {
+            "address": ""
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Empty address string"
+          }
+        },
+        {
+          "name": "Null address",
+          "input": {
+            "address": null
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Null address"
+          }
+        },
+        {
+          "name": "URL encoded characters",
+          "input": {
+            "address": "ld://org/stack/domain%2Did"
+          },
+          "expected_output": {
+            "success": true,
+            "valid": true,
+            "components": {"domain_id": "domain-id"}
+          }
+        }
+      ],
+      "security_properties": [
+        "No code injection via parsing",
+        "Validated format",
+        "Safe string handling"
+      ],
+      "performance": {
+        "complexity": "O(n) where n = address length",
+        "typical_duration_ms": "< 5",
+        "resource_overhead": "Minimal"
+      }
+    },
+
+    "resolve_domain_address": {
+      "description": "Resolve domain address to domain handle",
+      "category": "resolution",
+      "inputs": {
+        "address": {
+          "type": "DomainAddress",
+          "required": true
+        },
+        "use_cache": {
+          "type": "boolean",
+          "required": false,
+          "default": true
+        }
+      },
+      "outputs": {
+        "success": {"type": "boolean"},
+        "domain_handle": {"type": "DomainHandle"},
+        "domain_id": {"type": "DomainID"},
+        "cached": {"type": "boolean"}
+      },
+      "preconditions": [
+        "Valid domain address",
+        "Registry accessible"
+      ],
+      "postconditions": [
+        "Address resolved to handle",
+        "Handle is valid",
+        "Cache updated if enabled"
+      ],
+      "formulas": {
+        "resolution": "address → registry lookup → domain_handle",
+        "cache_ttl": "Entries cached for TTL seconds"
+      },
+      "edge_cases": [
+        {
+          "case": "Address not found",
+          "handling": "Return error with not_found",
+          "outcome": "Clear error message"
+        },
+        {
+          "case": "Cached entry expired",
+          "handling": "Refresh from registry",
+          "outcome": "Always return valid handle"
+        },
+        {
+          "case": "Registry unavailable",
+          "handling": "Use cache or return error",
+          "outcome": "Graceful degradation"
+        },
+        {
+          "case": "Invalid address format",
+          "handling": "Return error",
+          "outcome": "Validate before resolution"
+        },
+        {
+          "case": "Alias address",
+          "handling": "Follow alias to canonical address",
+          "outcome": "Transparent aliasing"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "Resolve valid address",
+          "input": {
+            "address": "ld://hypersync/base/ld0"
+          },
+          "expected_output": {
+            "success": true,
+            "domain_handle": "[handle object]",
+            "domain_id": "ld://hypersync/base/ld0"
+          }
+        },
+        {
+          "name": "Resolve with cache",
+          "setup": "Entry in cache",
+          "input": {
+            "address": "ld://org/stack/domain",
+            "use_cache": true
+          },
+          "expected_output": {
+            "success": true,
+            "cached": true,
+            "note": "Fast cache hit"
+          }
+        },
+        {
+          "name": "Resolve without cache",
+          "input": {
+            "address": "ld://org/stack/domain",
+            "use_cache": false
+          },
+          "expected_output": {
+            "success": true,
+            "cached": false,
+            "note": "Direct registry lookup"
+          }
+        },
+        {
+          "name": "Address not found",
+          "input": {
+            "address": "ld://nonexistent/stack/domain"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Address not found in registry"
+          }
+        },
+        {
+          "name": "Resolve alias",
+          "setup": "Alias points to canonical address",
+          "input": {
+            "address": "ld://org/stack/alias"
+          },
+          "expected_output": {
+            "success": true,
+            "domain_id": "ld://org/stack/canonical",
+            "note": "Alias followed"
+          }
+        },
+        {
+          "name": "Expired cache entry",
+          "setup": "Cache entry expired",
+          "input": {
+            "address": "ld://org/stack/domain",
+            "use_cache": true
+          },
+          "expected_output": {
+            "success": true,
+            "cached": false,
+            "note": "Cache refreshed from registry"
+          }
+        },
+        {
+          "name": "Registry unavailable",
+          "setup": "Registry down, valid cache",
+          "input": {
+            "address": "ld://org/stack/domain",
+            "use_cache": true
+          },
+          "expected_output": {
+            "success": true,
+            "cached": true,
+            "warning": "Registry unavailable, using cache"
+          }
+        },
+        {
+          "name": "Invalid address format",
+          "input": {
+            "address": "invalid://address"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Invalid address format"
+          }
+        }
+      ],
+      "security_properties": [
+        "Access control on resolution",
+        "Cache poisoning prevention",
+        "Audit trail for resolution"
+      ],
+      "performance": {
+        "complexity": "O(1) with cache, O(log n) with registry lookup",
+        "typical_duration_ms": "< 5 (cached), < 50 (registry)",
+        "resource_overhead": "Cache memory"
+      }
+    },
+
+    "validate_domain_address": {
+      "description": "Validate domain address format and existence",
+      "category": "validation",
+      "inputs": {
+        "address": {
+          "type": "string",
+          "required": true
+        },
+        "check_existence": {
+          "type": "boolean",
+          "required": false,
+          "default": false,
+          "description": "Also check if address exists in registry"
+        }
+      },
+      "outputs": {
+        "success": {"type": "boolean"},
+        "valid": {"type": "boolean"},
+        "errors": {"type": "array", "items": {"type": "string"}},
+        "exists": {"type": "boolean", "optional": true}
+      },
+      "preconditions": [
+        "Address string provided"
+      ],
+      "postconditions": [
+        "Validation result returned",
+        "Errors listed if invalid"
+      ],
+      "formulas": {
+        "format_check": "Verify ld://{org}/{stack}/{domain} format",
+        "character_check": "Verify allowed characters only",
+        "length_check": "Each component within limits"
+      },
+      "edge_cases": [
+        {
+          "case": "Valid format, exists",
+          "handling": "Return valid=true, exists=true",
+          "outcome": "Success"
+        },
+        {
+          "case": "Valid format, does not exist",
+          "handling": "Return valid=true, exists=false",
+          "outcome": "Format valid but not registered"
+        },
+        {
+          "case": "Invalid format",
+          "handling": "Return valid=false with errors",
+          "outcome": "List all format issues"
+        },
+        {
+          "case": "Empty string",
+          "handling": "Return valid=false",
+          "outcome": "Require non-empty"
+        },
+        {
+          "case": "Multiple errors",
+          "handling": "Return all errors",
+          "outcome": "Comprehensive validation"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "Valid address, format only",
+          "input": {
+            "address": "ld://org/stack/domain"
+          },
+          "expected_output": {
+            "success": true,
+            "valid": true,
+            "errors": []
+          }
+        },
+        {
+          "name": "Valid address, check existence",
+          "setup": "Address exists in registry",
+          "input": {
+            "address": "ld://hypersync/base/ld0",
+            "check_existence": true
+          },
+          "expected_output": {
+            "success": true,
+            "valid": true,
+            "exists": true
+          }
+        },
+        {
+          "name": "Valid format, does not exist",
+          "input": {
+            "address": "ld://new/org/domain",
+            "check_existence": true
+          },
+          "expected_output": {
+            "success": true,
+            "valid": true,
+            "exists": false
+          }
+        },
+        {
+          "name": "Invalid scheme",
+          "input": {
+            "address": "http://org/stack/domain"
+          },
+          "expected_output": {
+            "success": true,
+            "valid": false,
+            "errors": ["Invalid scheme: expected 'ld'"]
+          }
+        },
+        {
+          "name": "Invalid characters",
+          "input": {
+            "address": "ld://org@/stack/domain"
+          },
+          "expected_output": {
+            "success": true,
+            "valid": false,
+            "errors": ["Invalid characters in organization: '@' not allowed"]
+          }
+        },
+        {
+          "name": "Missing component",
+          "input": {
+            "address": "ld://org/stack"
+          },
+          "expected_output": {
+            "success": true,
+            "valid": false,
+            "errors": ["Missing domain_id component"]
+          }
+        },
+        {
+          "name": "Empty string",
+          "input": {
+            "address": ""
+          },
+          "expected_output": {
+            "success": true,
+            "valid": false,
+            "errors": ["Empty address string"]
+          }
+        },
+        {
+          "name": "Multiple errors",
+          "input": {
+            "address": "http://org@/stack"
+          },
+          "expected_output": {
+            "success": true,
+            "valid": false,
+            "errors": [
+              "Invalid scheme: expected 'ld'",
+              "Invalid characters in organization",
+              "Missing domain_id component"
+            ]
+          }
+        }
+      ],
+      "security_properties": [
+        "Prevents injection attacks",
+        "Validates before use",
+        "Comprehensive error reporting"
+      ],
+      "performance": {
+        "complexity": "O(n) where n = address length",
+        "typical_duration_ms": "< 10",
+        "resource_overhead": "Minimal"
+      }
+    },
+
+    "register_domain_address": {
+      "description": "Register domain address in registry",
+      "category": "registry",
+      "inputs": {
+        "address": {"type": "DomainAddress", "required": true},
+        "domain_id": {"type": "DomainID", "required": true},
+        "domain_handle": {"type": "DomainHandle", "required": true},
+        "metadata": {"type": "object", "required": false},
+        "ttl": {
+          "type": "int",
+          "required": false,
+          "default": 3600,
+          "description": "Time to live in seconds"
+        }
+      },
+      "outputs": {
+        "success": {"type": "boolean"},
+        "registry_entry": {"type": "RegistryEntry"}
+      },
+      "preconditions": [
+        "Valid address",
+        "Address not already registered",
+        "Valid domain_id and handle",
+        "Write permission to registry"
+      ],
+      "postconditions": [
+        "Address registered",
+        "Entry in registry",
+        "Indexed for lookup"
+      ],
+      "formulas": {
+        "registration": "address + domain_handle → registry_entry"
+      },
+      "edge_cases": [
+        {
+          "case": "Address already registered",
+          "handling": "Return error or update",
+          "outcome": "Prevent duplicates"
+        },
+        {
+          "case": "Invalid address format",
+          "handling": "Return error",
+          "outcome": "Validate before registration"
+        },
+        {
+          "case": "Registry full",
+          "handling": "Return error with quota info",
+          "outcome": "Respect capacity"
+        },
+        {
+          "case": "TTL zero or negative",
+          "handling": "Reject or use default",
+          "outcome": "Require positive TTL"
+        },
+        {
+          "case": "Large metadata",
+          "handling": "Enforce size limit",
+          "outcome": "Prevent abuse"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "Register new address",
+          "input": {
+            "address": "ld://org/stack/new-domain",
+            "domain_id": "ld://org/stack/new-domain",
+            "domain_handle": "[handle]"
+          },
+          "expected_output": {
+            "success": true,
+            "registry_entry": {
+              "address": "ld://org/stack/new-domain",
+              "status": "active"
+            }
+          }
+        },
+        {
+          "name": "Register with metadata",
+          "input": {
+            "address": "ld://org/stack/domain",
+            "domain_id": "ld://org/stack/domain",
+            "domain_handle": "[handle]",
+            "metadata": {"owner": "team-a", "env": "production"}
+          },
+          "expected_output": {
+            "success": true,
+            "registry_entry": {
+              "metadata": {"owner": "team-a", "env": "production"}
+            }
+          }
+        },
+        {
+          "name": "Register with custom TTL",
+          "input": {
+            "address": "ld://org/stack/domain",
+            "domain_id": "ld://org/stack/domain",
+            "domain_handle": "[handle]",
+            "ttl": 7200
+          },
+          "expected_output": {
+            "success": true,
+            "registry_entry": {"ttl": 7200}
+          }
+        },
+        {
+          "name": "Duplicate address rejected",
+          "setup": "Address already registered",
+          "input": {
+            "address": "ld://hypersync/base/ld0",
+            "domain_id": "ld://hypersync/base/ld0",
+            "domain_handle": "[handle]"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Address already registered"
+          }
+        },
+        {
+          "name": "Invalid address format",
+          "input": {
+            "address": "invalid://address",
+            "domain_id": "ld://org/stack/domain",
+            "domain_handle": "[handle]"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Invalid address format"
+          }
+        },
+        {
+          "name": "Zero TTL rejected",
+          "input": {
+            "address": "ld://org/stack/domain",
+            "domain_id": "ld://org/stack/domain",
+            "domain_handle": "[handle]",
+            "ttl": 0
+          },
+          "expected_output": {
+            "success": false,
+            "error": "TTL must be positive"
+          }
+        },
+        {
+          "name": "Permission denied",
+          "setup": "No write permission",
+          "input": {
+            "address": "ld://org/stack/domain",
+            "domain_id": "ld://org/stack/domain",
+            "domain_handle": "[handle]"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Permission denied"
+          }
+        },
+        {
+          "name": "Registry quota exceeded",
+          "setup": "Registry at capacity",
+          "input": {
+            "address": "ld://org/stack/domain",
+            "domain_id": "ld://org/stack/domain",
+            "domain_handle": "[handle]"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Registry quota exceeded"
+          }
+        }
+      ],
+      "security_properties": [
+        "Write permission enforced",
+        "Uniqueness guaranteed",
+        "Audit trail created"
+      ],
+      "performance": {
+        "complexity": "O(log n) for indexed insert",
+        "typical_duration_ms": "< 50",
+        "resource_overhead": "Registry entry storage"
+      }
+    },
+
+    "unregister_domain_address": {
+      "description": "Remove domain address from registry",
+      "category": "registry",
+      "inputs": {
+        "address": {"type": "DomainAddress", "required": true}
+      },
+      "outputs": {
+        "success": {"type": "boolean"},
+        "removed_entry": {"type": "RegistryEntry"}
+      },
+      "preconditions": [
+        "Address exists in registry",
+        "Write permission"
+      ],
+      "postconditions": [
+        "Address removed from registry",
+        "Entry archived",
+        "Aliases removed"
+      ],
+      "formulas": {
+        "unregistration": "Remove address from active registry"
+      },
+      "edge_cases": [
+        {
+          "case": "Address not found",
+          "handling": "Idempotent - return success",
+          "outcome": "Already unregistered"
+        },
+        {
+          "case": "Address has aliases",
+          "handling": "Remove aliases or reject",
+          "outcome": "Clean removal"
+        },
+        {
+          "case": "Address in use",
+          "handling": "Warn or prevent removal",
+          "outcome": "Protect active addresses"
+        },
+        {
+          "case": "Permission denied",
+          "handling": "Return error",
+          "outcome": "Enforce access control"
+        },
+        {
+          "case": "Reserved address",
+          "handling": "Prevent removal",
+          "outcome": "Protect system addresses"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "Unregister address",
+          "input": {
+            "address": "ld://org/stack/old-domain"
+          },
+          "expected_output": {
+            "success": true,
+            "removed_entry": "[registry entry]"
+          }
+        },
+        {
+          "name": "Address not found (idempotent)",
+          "input": {
+            "address": "ld://nonexistent/stack/domain"
+          },
+          "expected_output": {
+            "success": true,
+            "note": "Already unregistered"
+          }
+        },
+        {
+          "name": "Remove with aliases",
+          "setup": "Address has aliases",
+          "input": {
+            "address": "ld://org/stack/domain"
+          },
+          "expected_output": {
+            "success": true,
+            "note": "Aliases also removed"
+          }
+        },
+        {
+          "name": "Cannot remove reserved address",
+          "input": {
+            "address": "ld://hypersync/base/ld0"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Cannot unregister reserved address LD(0)"
+          }
+        },
+        {
+          "name": "Permission denied",
+          "setup": "No write permission",
+          "input": {
+            "address": "ld://org/stack/domain"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Permission denied"
+          }
+        },
+        {
+          "name": "Address in active use",
+          "setup": "Domain actively used",
+          "input": {
+            "address": "ld://org/stack/active-domain"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Address in active use",
+            "warning": "Unregistering may break references"
+          }
+        },
+        {
+          "name": "Archive on unregister",
+          "input": {
+            "address": "ld://org/stack/domain"
+          },
+          "expected_output": {
+            "success": true,
+            "removed_entry": "[archived entry]",
+            "note": "Entry moved to archive"
+          }
+        },
+        {
+          "name": "Cleanup indices",
+          "input": {
+            "address": "ld://org/stack/domain"
+          },
+          "expected_output": {
+            "success": true,
+            "note": "All indices updated"
+          }
+        }
+      ],
+      "security_properties": [
+        "Write permission enforced",
+        "Audit trail maintained",
+        "Reserved addresses protected"
+      ],
+      "performance": {
+        "complexity": "O(log n)",
+        "typical_duration_ms": "< 30",
+        "resource_overhead": "Minimal"
+      }
+    },
+
+    "create_domain_alias": {
+      "description": "Create alias for domain address",
+      "category": "aliasing",
+      "inputs": {
+        "alias": {
+          "type": "string",
+          "required": true,
+          "description": "Alias name"
+        },
+        "canonical_address": {
+          "type": "DomainAddress",
+          "required": true,
+          "description": "Address to alias"
+        },
+        "description": {
+          "type": "string",
+          "required": false
+        }
+      },
+      "outputs": {
+        "success": {"type": "boolean"},
+        "alias_object": {"type": "AddressAlias"}
+      },
+      "preconditions": [
+        "Canonical address exists",
+        "Alias not already in use",
+        "Valid alias name"
+      ],
+      "postconditions": [
+        "Alias created",
+        "Points to canonical address",
+        "Resolution follows alias"
+      ],
+      "formulas": {
+        "alias_resolution": "alias → canonical_address → domain_handle"
+      },
+      "edge_cases": [
+        {
+          "case": "Alias already exists",
+          "handling": "Return error",
+          "outcome": "Prevent duplicate aliases"
+        },
+        {
+          "case": "Canonical address not found",
+          "handling": "Return error",
+          "outcome": "Cannot alias non-existent address"
+        },
+        {
+          "case": "Circular alias",
+          "handling": "Detect and prevent",
+          "outcome": "No alias loops"
+        },
+        {
+          "case": "Alias same as canonical",
+          "handling": "Reject or allow",
+          "outcome": "Redundant alias"
+        },
+        {
+          "case": "Reserved alias name",
+          "handling": "Reject",
+          "outcome": "Protect system aliases"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "Create basic alias",
+          "input": {
+            "alias": "production",
+            "canonical_address": "ld://org/networks/prod-a7f3c"
+          },
+          "expected_output": {
+            "success": true,
+            "alias_object": {
+              "alias": "production",
+              "canonical_address": "ld://org/networks/prod-a7f3c"
+            }
+          }
+        },
+        {
+          "name": "Create alias with description",
+          "input": {
+            "alias": "api",
+            "canonical_address": "ld://org/services/api-backend",
+            "description": "Main API service"
+          },
+          "expected_output": {
+            "success": true,
+            "alias_object": {
+              "description": "Main API service"
+            }
+          }
+        },
+        {
+          "name": "Duplicate alias rejected",
+          "setup": "Alias already exists",
+          "input": {
+            "alias": "production",
+            "canonical_address": "ld://org/networks/other"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Alias already exists"
+          }
+        },
+        {
+          "name": "Canonical address not found",
+          "input": {
+            "alias": "test",
+            "canonical_address": "ld://nonexistent/stack/domain"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Canonical address not found"
+          }
+        },
+        {
+          "name": "Reserved alias name",
+          "input": {
+            "alias": "ld0",
+            "canonical_address": "ld://org/stack/domain"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Reserved alias name"
+          }
+        },
+        {
+          "name": "Multiple aliases to same address",
+          "setup": "Other aliases exist for same address",
+          "input": {
+            "alias": "prod2",
+            "canonical_address": "ld://org/networks/prod-a7f3c"
+          },
+          "expected_output": {
+            "success": true,
+            "note": "Multiple aliases allowed"
+          }
+        },
+        {
+          "name": "Alias same as canonical",
+          "input": {
+            "alias": "ld://org/stack/domain",
+            "canonical_address": "ld://org/stack/domain"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Alias same as canonical address"
+          }
+        },
+        {
+          "name": "Verify resolution follows alias",
+          "setup": "Create alias then resolve",
+          "input": {
+            "alias": "test",
+            "canonical_address": "ld://org/stack/domain"
+          },
+          "expected_output": {
+            "success": true,
+            "note": "Resolving 'test' returns domain handle for canonical"
+          }
+        }
+      ],
+      "security_properties": [
+        "Write permission enforced",
+        "No alias loops",
+        "Audit trail created"
+      ],
+      "performance": {
+        "complexity": "O(1)",
+        "typical_duration_ms": "< 20",
+        "resource_overhead": "Minimal - alias entry"
+      }
+    },
+
+    "resolve_domain_alias": {
+      "description": "Resolve alias to canonical domain address",
+      "category": "aliasing",
+      "inputs": {
+        "alias": {
+          "type": "string",
+          "required": true
+        }
+      },
+      "outputs": {
+        "success": {"type": "boolean"},
+        "canonical_address": {"type": "DomainAddress"},
+        "alias_chain": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Chain of aliases if multiple levels"
+        }
+      },
+      "preconditions": [
+        "Alias exists"
+      ],
+      "postconditions": [
+        "Canonical address returned",
+        "Alias chain resolved"
+      ],
+      "formulas": {
+        "resolution": "Follow alias chain until canonical address reached"
+      },
+      "edge_cases": [
+        {
+          "case": "Alias not found",
+          "handling": "Return error",
+          "outcome": "Unknown alias"
+        },
+        {
+          "case": "Single-level alias",
+          "handling": "Direct resolution",
+          "outcome": "Simple case"
+        },
+        {
+          "case": "Multi-level alias",
+          "handling": "Follow chain",
+          "outcome": "Resolve all levels"
+        },
+        {
+          "case": "Circular alias (corruption)",
+          "handling": "Detect and return error",
+          "outcome": "Prevent infinite loop"
+        },
+        {
+          "case": "Canonical address no longer exists",
+          "handling": "Return error or stale warning",
+          "outcome": "Broken alias"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "Resolve simple alias",
+          "setup": "Alias 'production' → 'ld://org/networks/prod'",
+          "input": {
+            "alias": "production"
+          },
+          "expected_output": {
+            "success": true,
+            "canonical_address": "ld://org/networks/prod",
+            "alias_chain": ["production"]
+          }
+        },
+        {
+          "name": "Resolve multi-level alias",
+          "setup": "Alias1 → Alias2 → Canonical",
+          "input": {
+            "alias": "alias1"
+          },
+          "expected_output": {
+            "success": true,
+            "canonical_address": "ld://org/stack/canonical",
+            "alias_chain": ["alias1", "alias2"]
+          }
+        },
+        {
+          "name": "Alias not found",
+          "input": {
+            "alias": "nonexistent"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Alias not found"
+          }
+        },
+        {
+          "name": "Circular alias detected",
+          "setup": "Alias1 → Alias2 → Alias1",
+          "input": {
+            "alias": "alias1"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Circular alias detected"
+          }
+        },
+        {
+          "name": "Broken alias (canonical missing)",
+          "setup": "Alias points to deleted address",
+          "input": {
+            "alias": "broken"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Canonical address not found",
+            "warning": "Broken alias"
+          }
+        },
+        {
+          "name": "Verify chain length limit",
+          "setup": "Very long alias chain",
+          "input": {
+            "alias": "alias1"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Alias chain too long",
+            "note": "Prevent excessive indirection"
+          }
+        },
+        {
+          "name": "Empty alias string",
+          "input": {
+            "alias": ""
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Empty alias string"
+          }
+        },
+        {
+          "name": "Resolve with caching",
+          "setup": "Alias resolution cached",
+          "input": {
+            "alias": "production"
+          },
+          "expected_output": {
+            "success": true,
+            "note": "Fast cache hit"
+          }
+        }
+      ],
+      "security_properties": [
+        "Circular reference detection",
+        "Chain length limits",
+        "Access control on resolution"
+      ],
+      "performance": {
+        "complexity": "O(k) where k = alias chain length",
+        "typical_duration_ms": "< 10",
+        "resource_overhead": "Minimal"
+      }
+    },
+
+    "list_domain_addresses": {
+      "description": "List domain addresses with filtering",
+      "category": "query",
+      "inputs": {
+        "filter": {
+          "type": "object",
+          "required": false,
+          "properties": {
+            "organization": {"type": "string"},
+            "stack": {"type": "string"},
+            "status": {"type": "string"},
+            "pattern": {"type": "string"}
+          }
+        },
+        "limit": {"type": "int", "required": false, "default": 100},
+        "offset": {"type": "int", "required": false, "default": 0}
+      },
+      "outputs": {
+        "success": {"type": "boolean"},
+        "addresses": {"type": "array", "items": {"type": "DomainAddress"}},
+        "total_count": {"type": "int"},
+        "has_more": {"type": "boolean"}
+      },
+      "preconditions": [
+        "Registry accessible"
+      ],
+      "postconditions": [
+        "Filtered list returned",
+        "Pagination info included"
+      ],
+      "formulas": {
+        "pagination": "Results = All_addresses[offset:offset+limit]"
+      },
+      "edge_cases": [
+        {
+          "case": "No matches",
+          "handling": "Return empty array",
+          "outcome": "Valid empty result"
+        },
+        {
+          "case": "No filter",
+          "handling": "Return all addresses (paginated)",
+          "outcome": "Full list"
+        },
+        {
+          "case": "Multiple filters",
+          "handling": "AND logic between filters",
+          "outcome": "Narrow results"
+        },
+        {
+          "case": "Invalid filter",
+          "handling": "Return error",
+          "outcome": "Validate filters"
+        },
+        {
+          "case": "Offset beyond results",
+          "handling": "Return empty array, has_more=false",
+          "outcome": "Handle pagination edge"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "List all addresses",
+          "input": {},
+          "expected_output": {
+            "success": true,
+            "addresses": "[array of addresses]",
+            "total_count": 100
+          }
+        },
+        {
+          "name": "Filter by organization",
+          "input": {
+            "filter": {"organization": "hypersync"}
+          },
+          "expected_output": {
+            "success": true,
+            "addresses": "[addresses with org=hypersync]"
+          }
+        },
+        {
+          "name": "Filter by stack",
+          "input": {
+            "filter": {"stack": "networks"}
+          },
+          "expected_output": {
+            "success": true,
+            "addresses": "[addresses with stack=networks]"
+          }
+        },
+        {
+          "name": "Pattern matching",
+          "input": {
+            "filter": {"pattern": "prod-*"}
+          },
+          "expected_output": {
+            "success": true,
+            "addresses": "[addresses matching prod-*]"
+          }
+        },
+        {
+          "name": "Pagination",
+          "input": {
+            "limit": 10,
+            "offset": 0
+          },
+          "expected_output": {
+            "success": true,
+            "addresses": "[first 10 addresses]",
+            "has_more": true
+          }
+        },
+        {
+          "name": "No matches",
+          "input": {
+            "filter": {"organization": "nonexistent"}
+          },
+          "expected_output": {
+            "success": true,
+            "addresses": [],
+            "total_count": 0
+          }
+        },
+        {
+          "name": "Multiple filters (AND)",
+          "input": {
+            "filter": {
+              "organization": "org",
+              "stack": "networks",
+              "status": "active"
+            }
+          },
+          "expected_output": {
+            "success": true,
+            "addresses": "[addresses matching all filters]"
+          }
+        },
+        {
+          "name": "Offset beyond results",
+          "input": {
+            "limit": 10,
+            "offset": 1000
+          },
+          "expected_output": {
+            "success": true,
+            "addresses": [],
+            "has_more": false
+          }
+        }
+      ],
+      "security_properties": [
+        "Only returns addresses user can access",
+        "No information leakage"
+      ],
+      "performance": {
+        "complexity": "O(n) for full scan, O(log n) with indices",
+        "typical_duration_ms": "< 100",
+        "resource_overhead": "Memory for result set"
+      }
+    },
+
+    "compute_address_distance": {
+      "description": "Compute hierarchical distance between addresses",
+      "category": "routing",
+      "inputs": {
+        "address1": {"type": "DomainAddress", "required": true},
+        "address2": {"type": "DomainAddress", "required": true}
+      },
+      "outputs": {
+        "success": {"type": "boolean"},
+        "distance": {"type": "int", "description": "Hierarchical distance"},
+        "common_ancestor": {"type": "DomainAddress", "optional": true}
+      },
+      "preconditions": [
+        "Both addresses valid"
+      ],
+      "postconditions": [
+        "Distance computed",
+        "Common ancestor identified"
+      ],
+      "formulas": {
+        "distance": "Levels to common ancestor from address1 + levels from address2",
+        "same_address": "distance = 0",
+        "same_organization": "distance based on stack and domain differences"
+      },
+      "edge_cases": [
+        {
+          "case": "Same address",
+          "handling": "Return distance=0",
+          "outcome": "Trivial case"
+        },
+        {
+          "case": "Same organization, different stack",
+          "handling": "Compute stack-level distance",
+          "outcome": "Moderate distance"
+        },
+        {
+          "case": "Different organizations",
+          "handling": "Maximum distance",
+          "outcome": "Far apart"
+        },
+        {
+          "case": "Invalid address",
+          "handling": "Return error",
+          "outcome": "Validate inputs"
+        },
+        {
+          "case": "No common ancestor",
+          "handling": "Return max distance",
+          "outcome": "Completely separate"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "Same address",
+          "input": {
+            "address1": "ld://org/stack/domain",
+            "address2": "ld://org/stack/domain"
+          },
+          "expected_output": {
+            "success": true,
+            "distance": 0
+          }
+        },
+        {
+          "name": "Same stack, different domain",
+          "input": {
+            "address1": "ld://org/stack/domain1",
+            "address2": "ld://org/stack/domain2"
+          },
+          "expected_output": {
+            "success": true,
+            "distance": 2,
+            "common_ancestor": "ld://org/stack"
+          }
+        },
+        {
+          "name": "Same org, different stack",
+          "input": {
+            "address1": "ld://org/stack1/domain1",
+            "address2": "ld://org/stack2/domain2"
+          },
+          "expected_output": {
+            "success": true,
+            "distance": 4,
+            "common_ancestor": "ld://org"
+          }
+        },
+        {
+          "name": "Different organizations",
+          "input": {
+            "address1": "ld://org1/stack/domain",
+            "address2": "ld://org2/stack/domain"
+          },
+          "expected_output": {
+            "success": true,
+            "distance": 6,
+            "common_ancestor": null
+          }
+        },
+        {
+          "name": "Invalid address1",
+          "input": {
+            "address1": "invalid",
+            "address2": "ld://org/stack/domain"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Invalid address1"
+          }
+        },
+        {
+          "name": "LD(0) to another domain",
+          "input": {
+            "address1": "ld://hypersync/base/ld0",
+            "address2": "ld://org/stack/domain"
+          },
+          "expected_output": {
+            "success": true,
+            "distance": "[hierarchical distance]"
+          }
+        },
+        {
+          "name": "Parent-child relationship",
+          "setup": "address2 is child of address1",
+          "input": {
+            "address1": "ld://org/stack/parent",
+            "address2": "ld://org/stack/child"
+          },
+          "expected_output": {
+            "success": true,
+            "distance": 2,
+            "note": "Direct parent-child"
+          }
+        },
+        {
+          "name": "Verify symmetry",
+          "input": {
+            "address1": "ld://org/stack1/domain",
+            "address2": "ld://org/stack2/domain"
+          },
+          "expected_output": {
+            "success": true,
+            "note": "distance(A,B) == distance(B,A)"
+          }
+        }
+      ],
+      "security_properties": [
+        "Read-only operation",
+        "No information leakage"
+      ],
+      "performance": {
+        "complexity": "O(1) with preprocessing",
+        "typical_duration_ms": "< 10",
+        "resource_overhead": "Minimal"
+      }
+    },
+
+    "route_to_domain": {
+      "description": "Compute routing path to domain address",
+      "category": "routing",
+      "inputs": {
+        "source": {"type": "DomainAddress", "required": true},
+        "destination": {"type": "DomainAddress", "required": true},
+        "optimize_for": {
+          "type": "string",
+          "required": false,
+          "default": "latency",
+          "values": ["latency", "security", "cost"]
+        }
+      },
+      "outputs": {
+        "success": {"type": "boolean"},
+        "route": {"type": "AddressRoute"},
+        "estimated_latency_ms": {"type": "float"}
+      },
+      "preconditions": [
+        "Source and destination valid",
+        "Route exists (reachable)"
+      ],
+      "postconditions": [
+        "Route computed",
+        "Optimized for specified metric"
+      ],
+      "formulas": {
+        "shortest_path": "Minimize path length or latency",
+        "cost_metric": "Weighted sum of hops and security barriers"
+      },
+      "edge_cases": [
+        {
+          "case": "Source equals destination",
+          "handling": "Return empty path",
+          "outcome": "No routing needed"
+        },
+        {
+          "case": "Direct connection available",
+          "handling": "Return direct route",
+          "outcome": "Single hop"
+        },
+        {
+          "case": "No route exists",
+          "handling": "Return error",
+          "outcome": "Unreachable"
+        },
+        {
+          "case": "Multiple routes available",
+          "handling": "Select based on optimization goal",
+          "outcome": "Optimal route"
+        },
+        {
+          "case": "Security barrier crossed",
+          "handling": "Include in route cost",
+          "outcome": "Higher cost for isolation crossing"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "Direct route",
+          "input": {
+            "source": "ld://org/stack/domain1",
+            "destination": "ld://org/stack/domain2"
+          },
+          "expected_output": {
+            "success": true,
+            "route": {
+              "path": ["ld://org/stack/domain1", "ld://org/stack/domain2"]
+            }
+          }
+        },
+        {
+          "name": "Multi-hop route",
+          "input": {
+            "source": "ld://org1/stack/domain",
+            "destination": "ld://org2/stack/domain"
+          },
+          "expected_output": {
+            "success": true,
+            "route": {
+              "path": "[source, intermediates, destination]"
+            }
+          }
+        },
+        {
+          "name": "Optimize for latency",
+          "input": {
+            "source": "ld://org/stack1/domain",
+            "destination": "ld://org/stack2/domain",
+            "optimize_for": "latency"
+          },
+          "expected_output": {
+            "success": true,
+            "route": "[lowest latency path]"
+          }
+        },
+        {
+          "name": "Optimize for security",
+          "input": {
+            "source": "ld://org/secure/domain",
+            "destination": "ld://org/public/domain",
+            "optimize_for": "security"
+          },
+          "expected_output": {
+            "success": true,
+            "route": "[path respecting security boundaries]"
+          }
+        },
+        {
+          "name": "Source equals destination",
+          "input": {
+            "source": "ld://org/stack/domain",
+            "destination": "ld://org/stack/domain"
+          },
+          "expected_output": {
+            "success": true,
+            "route": {"path": []},
+            "note": "No routing needed"
+          }
+        },
+        {
+          "name": "No route exists",
+          "setup": "Isolated domains",
+          "input": {
+            "source": "ld://org/isolated/domain1",
+            "destination": "ld://org/isolated/domain2"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "No route to destination"
+          }
+        },
+        {
+          "name": "Invalid destination",
+          "input": {
+            "source": "ld://org/stack/domain",
+            "destination": "invalid"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Invalid destination address"
+          }
+        },
+        {
+          "name": "Estimate latency",
+          "input": {
+            "source": "ld://org/stack1/domain",
+            "destination": "ld://org/stack2/domain"
+          },
+          "expected_output": {
+            "success": true,
+            "estimated_latency_ms": "[estimated value]"
+          }
+        }
+      ],
+      "security_properties": [
+        "Respects domain boundaries",
+        "Security barriers considered in routing",
+        "Access control on routing info"
+      ],
+      "performance": {
+        "complexity": "O(E + V log V) for Dijkstra",
+        "typical_duration_ms": "< 100",
+        "resource_overhead": "Routing table memory"
+      }
+    },
+
+    "translate_address": {
+      "description": "Translate address between formats",
+      "category": "compatibility",
+      "inputs": {
+        "address": {"type": "string", "required": true},
+        "source_format": {
+          "type": "string",
+          "required": true,
+          "values": ["ld_uri", "legacy", "hash", "custom"]
+        },
+        "target_format": {
+          "type": "string",
+          "required": true,
+          "values": ["ld_uri", "legacy", "hash", "custom"]
+        }
+      },
+      "outputs": {
+        "success": {"type": "boolean"},
+        "translated_address": {"type": "string"}
+      },
+      "preconditions": [
+        "Valid source format",
+        "Valid target format",
+        "Translation supported"
+      ],
+      "postconditions": [
+        "Address translated",
+        "Semantic equivalence preserved"
+      ],
+      "formulas": {
+        "translation": "Parse source format → canonical representation → target format"
+      },
+      "edge_cases": [
+        {
+          "case": "Source equals target format",
+          "handling": "Return original address",
+          "outcome": "No-op"
+        },
+        {
+          "case": "Unsupported translation",
+          "handling": "Return error",
+          "outcome": "Not all pairs supported"
+        },
+        {
+          "case": "Lossy translation",
+          "handling": "Warn user",
+          "outcome": "Information may be lost"
+        },
+        {
+          "case": "Invalid source format",
+          "handling": "Return error",
+          "outcome": "Cannot parse"
+        },
+        {
+          "case": "Ambiguous translation",
+          "handling": "Request clarification or use default",
+          "outcome": "Deterministic translation"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "LD URI to hash",
+          "input": {
+            "address": "ld://org/stack/domain",
+            "source_format": "ld_uri",
+            "target_format": "hash"
+          },
+          "expected_output": {
+            "success": true,
+            "translated_address": "[SHA256 hash]"
+          }
+        },
+        {
+          "name": "Hash to LD URI",
+          "setup": "Hash registered in registry",
+          "input": {
+            "address": "[hash]",
+            "source_format": "hash",
+            "target_format": "ld_uri"
+          },
+          "expected_output": {
+            "success": true,
+            "translated_address": "ld://org/stack/domain"
+          }
+        },
+        {
+          "name": "Legacy to LD URI",
+          "input": {
+            "address": "org.stack.domain",
+            "source_format": "legacy",
+            "target_format": "ld_uri"
+          },
+          "expected_output": {
+            "success": true,
+            "translated_address": "ld://org/stack/domain"
+          }
+        },
+        {
+          "name": "Same format (no-op)",
+          "input": {
+            "address": "ld://org/stack/domain",
+            "source_format": "ld_uri",
+            "target_format": "ld_uri"
+          },
+          "expected_output": {
+            "success": true,
+            "translated_address": "ld://org/stack/domain"
+          }
+        },
+        {
+          "name": "Unsupported translation",
+          "input": {
+            "address": "[address]",
+            "source_format": "custom",
+            "target_format": "legacy"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Translation from custom to legacy not supported"
+          }
+        },
+        {
+          "name": "Invalid source address",
+          "input": {
+            "address": "invalid",
+            "source_format": "ld_uri",
+            "target_format": "hash"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Invalid source address format"
+          }
+        },
+        {
+          "name": "Round-trip translation",
+          "setup": "Translate and translate back",
+          "input": {
+            "address": "ld://org/stack/domain",
+            "source_format": "ld_uri",
+            "target_format": "hash"
+          },
+          "expected_output": {
+            "success": true,
+            "note": "Round-trip preserves semantics"
+          }
+        },
+        {
+          "name": "Lossy translation warning",
+          "input": {
+            "address": "ld://org/stack/domain",
+            "source_format": "ld_uri",
+            "target_format": "legacy"
+          },
+          "expected_output": {
+            "success": true,
+            "translated_address": "org.stack.domain",
+            "warning": "Scheme information lost"
+          }
+        }
+      ],
+      "security_properties": [
+        "No information leakage",
+        "Semantic equivalence",
+        "Audit translation operations"
+      ],
+      "performance": {
+        "complexity": "O(n) where n = address length",
+        "typical_duration_ms": "< 15",
+        "resource_overhead": "Minimal"
+      }
+    },
+
+    "compress_address": {
+      "description": "Compress domain address for bandwidth optimization",
+      "category": "compression",
+      "inputs": {
+        "address": {"type": "DomainAddress", "required": true},
+        "scheme": {
+          "type": "string",
+          "required": false,
+          "default": "dictionary",
+          "values": ["huffman", "dictionary", "base58"]
+        }
+      },
+      "outputs": {
+        "success": {"type": "boolean"},
+        "compressed": {"type": "CompressedAddress"},
+        "compression_ratio": {"type": "float"}
+      },
+      "preconditions": [
+        "Valid address",
+        "Compression scheme available"
+      ],
+      "postconditions": [
+        "Address compressed",
+        "Reversible compression",
+        "Space savings achieved"
+      ],
+      "formulas": {
+        "compression_ratio": "compressed_size / original_size",
+        "space_savings": "(1 - compression_ratio) * 100%"
+      },
+      "edge_cases": [
+        {
+          "case": "Address already compressed",
+          "handling": "Return error or re-compress",
+          "outcome": "Idempotency check"
+        },
+        {
+          "case": "Negative compression",
+          "handling": "Return original address",
+          "outcome": "No benefit from compression"
+        },
+        {
+          "case": "Invalid scheme",
+          "handling": "Return error",
+          "outcome": "Require valid scheme"
+        },
+        {
+          "case": "Very short address",
+          "handling": "May not compress well",
+          "outcome": "Low or negative compression ratio"
+        },
+        {
+          "case": "Dictionary not initialized",
+          "handling": "Build dictionary or use default",
+          "outcome": "Ensure dictionary available"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "Compress with dictionary",
+          "input": {
+            "address": "ld://organization/stack/domain-identifier",
+            "scheme": "dictionary"
+          },
+          "expected_output": {
+            "success": true,
+            "compressed": {"compressed_length": "[< original]"},
+            "compression_ratio": 0.4
+          }
+        },
+        {
+          "name": "Compress with base58",
+          "input": {
+            "address": "ld://org/stack/domain",
+            "scheme": "base58"
+          },
+          "expected_output": {
+            "success": true,
+            "compressed": {"compression_scheme": "base58"}
+          }
+        },
+        {
+          "name": "Compress with huffman",
+          "input": {
+            "address": "ld://org/stack/long-domain-name",
+            "scheme": "huffman"
+          },
+          "expected_output": {
+            "success": true,
+            "compression_ratio": "[< 1.0]"
+          }
+        },
+        {
+          "name": "Very short address",
+          "input": {
+            "address": "ld://o/s/d",
+            "scheme": "dictionary"
+          },
+          "expected_output": {
+            "success": true,
+            "compression_ratio": "[may be >= 1.0]",
+            "warning": "Minimal or no compression benefit"
+          }
+        },
+        {
+          "name": "Invalid scheme",
+          "input": {
+            "address": "ld://org/stack/domain",
+            "scheme": "invalid"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Invalid compression scheme"
+          }
+        },
+        {
+          "name": "Invalid address",
+          "input": {
+            "address": "invalid",
+            "scheme": "dictionary"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Invalid address"
+          }
+        },
+        {
+          "name": "Verify reversibility",
+          "input": {
+            "address": "ld://org/stack/domain",
+            "scheme": "dictionary"
+          },
+          "expected_output": {
+            "success": true,
+            "note": "Can be expanded back to original"
+          }
+        },
+        {
+          "name": "Repeated compression",
+          "setup": "Address already compressed",
+          "input": {
+            "address": "[compressed address]",
+            "scheme": "dictionary"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Address already compressed"
+          }
+        }
+      ],
+      "security_properties": [
+        "Reversible compression",
+        "No information loss",
+        "Compressed format validated"
+      ],
+      "performance": {
+        "complexity": "O(n) where n = address length",
+        "typical_duration_ms": "< 20",
+        "resource_overhead": "Dictionary storage"
+      }
+    },
+
+    "expand_address": {
+      "description": "Expand compressed address to full format",
+      "category": "compression",
+      "inputs": {
+        "compressed": {"type": "CompressedAddress", "required": true}
+      },
+      "outputs": {
+        "success": {"type": "boolean"},
+        "address": {"type": "DomainAddress"}
+      },
+      "preconditions": [
+        "Valid compressed address",
+        "Compression scheme available"
+      ],
+      "postconditions": [
+        "Address expanded",
+        "Original address recovered"
+      ],
+      "formulas": {
+        "expansion": "Inverse of compression operation"
+      },
+      "edge_cases": [
+        {
+          "case": "Already expanded",
+          "handling": "Return error",
+          "outcome": "Cannot expand uncompressed"
+        },
+        {
+          "case": "Corrupted compressed data",
+          "handling": "Return error with checksum mismatch",
+          "outcome": "Detect corruption"
+        },
+        {
+          "case": "Unknown compression scheme",
+          "handling": "Return error",
+          "outcome": "Cannot decompress"
+        },
+        {
+          "case": "Dictionary mismatch",
+          "handling": "Return error or partial expansion",
+          "outcome": "Require correct dictionary"
+        },
+        {
+          "case": "Invalid compressed format",
+          "handling": "Return error",
+          "outcome": "Validation failure"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "Expand dictionary compressed",
+          "input": {
+            "compressed": "[dictionary compressed address]"
+          },
+          "expected_output": {
+            "success": true,
+            "address": "ld://org/stack/domain"
+          }
+        },
+        {
+          "name": "Expand base58 compressed",
+          "input": {
+            "compressed": "[base58 compressed]"
+          },
+          "expected_output": {
+            "success": true,
+            "address": "ld://org/stack/domain"
+          }
+        },
+        {
+          "name": "Round-trip compression",
+          "setup": "Compress then expand",
+          "input": {
+            "compressed": "[compressed address]"
+          },
+          "expected_output": {
+            "success": true,
+            "address": "[original address]",
+            "note": "Lossless round-trip"
+          }
+        },
+        {
+          "name": "Corrupted compressed data",
+          "input": {
+            "compressed": "[corrupted data]"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Corrupted compressed data"
+          }
+        },
+        {
+          "name": "Unknown compression scheme",
+          "input": {
+            "compressed": {"compression_scheme": "unknown"}
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Unknown compression scheme"
+          }
+        },
+        {
+          "name": "Invalid compressed format",
+          "input": {
+            "compressed": "[invalid format]"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Invalid compressed format"
+          }
+        },
+        {
+          "name": "Already expanded address",
+          "input": {
+            "compressed": "ld://org/stack/domain"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Address not compressed"
+          }
+        },
+        {
+          "name": "Verify original length",
+          "input": {
+            "compressed": "[compressed with length metadata]"
+          },
+          "expected_output": {
+            "success": true,
+            "address": "[original address]",
+            "note": "Expanded length matches original_length"
+          }
+        }
+      ],
+      "security_properties": [
+        "Corruption detection",
+        "Lossless expansion",
+        "Format validation"
+      ],
+      "performance": {
+        "complexity": "O(n) where n = compressed size",
+        "typical_duration_ms": "< 15",
+        "resource_overhead": "Minimal"
+      }
+    },
+
+    "audit_address_usage": {
+      "description": "Audit domain address usage patterns",
+      "category": "analytics",
+      "inputs": {
+        "address": {"type": "DomainAddress", "required": false},
+        "time_range": {
+          "type": "object",
+          "required": false,
+          "properties": {
+            "start": {"type": "timestamp"},
+            "end": {"type": "timestamp"}
+          }
+        },
+        "metrics": {
+          "type": "array",
+          "items": {"type": "string"},
+          "required": false,
+          "default": ["all"],
+          "values": ["resolution_count", "routing_count", "error_rate", "latency", "all"]
+        }
+      },
+      "outputs": {
+        "success": {"type": "boolean"},
+        "audit_report": {"type": "object"},
+        "access_patterns": {"type": "array"},
+        "recommendations": {"type": "array"}
+      },
+      "preconditions": [
+        "Audit logs available",
+        "Valid time range"
+      ],
+      "postconditions": [
+        "Audit report generated",
+        "Patterns identified",
+        "Recommendations provided"
+      },
+      "formulas": {
+        "resolution_rate": "resolutions / time_period",
+        "error_rate": "errors / total_operations",
+        "avg_latency": "Σ(latency) / count"
+      },
+      "edge_cases": [
+        {
+          "case": "No address specified",
+          "handling": "Audit all addresses",
+          "outcome": "System-wide audit"
+        },
+        {
+          "case": "No data in time range",
+          "handling": "Return empty report",
+          "outcome": "Valid empty result"
+        },
+        {
+          "case": "Very large time range",
+          "handling": "Aggregate or sample data",
+          "outcome": "Prevent resource exhaustion"
+        },
+        {
+          "case": "Audit logs unavailable",
+          "handling": "Return error",
+          "outcome": "Cannot audit without logs"
+        },
+        {
+          "case": "High error rate detected",
+          "handling": "Flag in recommendations",
+          "outcome": "Actionable insights"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "Audit specific address",
+          "input": {
+            "address": "ld://org/stack/domain",
+            "time_range": {
+              "start": "2026-01-01T00:00:00Z",
+              "end": "2026-01-12T23:59:59Z"
+            }
+          },
+          "expected_output": {
+            "success": true,
+            "audit_report": {
+              "resolution_count": 1000,
+              "routing_count": 500,
+              "error_rate": 0.01
+            }
+          }
+        },
+        {
+          "name": "System-wide audit",
+          "input": {},
+          "expected_output": {
+            "success": true,
+            "audit_report": "[aggregated stats for all addresses]"
+          }
+        },
+        {
+          "name": "Audit specific metrics",
+          "input": {
+            "address": "ld://org/stack/domain",
+            "metrics": ["resolution_count", "error_rate"]
+          },
+          "expected_output": {
+            "success": true,
+            "audit_report": {
+              "resolution_count": 1000,
+              "error_rate": 0.01
+            }
+          }
+        },
+        {
+          "name": "Identify access patterns",
+          "input": {
+            "address": "ld://org/stack/domain"
+          },
+          "expected_output": {
+            "success": true,
+            "access_patterns": [
+              "Peak usage during business hours",
+              "High resolution rate from org/services/*"
+            ]
+          }
+        },
+        {
+          "name": "Generate recommendations",
+          "input": {
+            "address": "ld://org/stack/high-error-domain"
+          },
+          "expected_output": {
+            "success": true,
+            "recommendations": [
+              "High error rate detected - investigate configuration",
+              "Consider caching to reduce resolution load"
+            ]
+          }
+        },
+        {
+          "name": "No data in time range",
+          "input": {
+            "address": "ld://org/stack/domain",
+            "time_range": {
+              "start": "2020-01-01T00:00:00Z",
+              "end": "2020-01-02T00:00:00Z"
+            }
+          },
+          "expected_output": {
+            "success": true,
+            "audit_report": {},
+            "note": "No data in specified time range"
+          }
+        },
+        {
+          "name": "Audit logs unavailable",
+          "setup": "Audit system down",
+          "input": {
+            "address": "ld://org/stack/domain"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Audit logs unavailable"
+          }
+        },
+        {
+          "name": "Large time range aggregation",
+          "input": {
+            "address": "ld://org/stack/domain",
+            "time_range": {
+              "start": "2020-01-01T00:00:00Z",
+              "end": "2026-01-12T23:59:59Z"
+            }
+          },
+          "expected_output": {
+            "success": true,
+            "audit_report": "[aggregated data]",
+            "note": "Data aggregated by month"
+          }
+        }
+      ],
+      "security_properties": [
+        "Access control on audit data",
+        "Privacy-preserving analytics",
+        "Audit trail for audit operations"
+      ],
+      "performance": {
+        "complexity": "O(n) where n = log entries",
+        "typical_duration_ms": "< 1000",
+        "resource_overhead": "Memory for analysis"
+      }
+    }
+  },
+
+  "integration_points": {
+    "domain_architecture": {
+      "operations": ["create_domain", "get_domain_info"],
+      "types": ["Domain", "DomainID", "DomainHandle"]
+    },
+    "domain_operations": {
+      "operations": ["execute_in_domain", "transition_between_domains"],
+      "types": ["DomainContext"]
+    }
+  },
+
+  "examples": {
+    "basic_addressing": {
+      "description": "Create and resolve domain address",
+      "code": [
+        "# Create address",
+        "address = create_domain_address({",
+        "  organization: 'company',",
+        "  stack: 'networks',",
+        "  domain_id: 'production'",
+        "})",
+        "",
+        "# Resolve to domain handle",
+        "handle = resolve_domain_address({",
+        "  address: address.address",
+        "})",
+        "",
+        "# Use domain",
+        "execute_in_domain({",
+        "  domain_handle: handle.domain_handle,",
+        "  operation: ...",
+        "})"
+      ]
+    },
+    "aliasing": {
+      "description": "Create and use alias",
+      "code": [
+        "# Create alias for production",
+        "create_domain_alias({",
+        "  alias: 'prod',",
+        "  canonical_address: 'ld://company/networks/prod-a7f3c',",
+        "  description: 'Production environment'",
+        "})",
+        "",
+        "# Resolve alias",
+        "canonical = resolve_domain_alias({",
+        "  alias: 'prod'",
+        "})",
+        "",
+        "# Use canonical address",
+        "handle = resolve_domain_address({",
+        "  address: canonical.canonical_address",
+        "})"
+      ]
+    },
+    "routing": {
+      "description": "Compute and use route",
+      "code": [
+        "# Compute route",
+        "route = route_to_domain({",
+        "  source: 'ld://org/services/api',",
+        "  destination: 'ld://org/data/database',",
+        "  optimize_for: 'latency'",
+        "})",
+        "",
+        "# Use route for communication",
+        "send_message({",
+        "  route: route.route,",
+        "  message: ...",
+        "})"
+      ]
+    }
+  },
+
+  "security_considerations": {
+    "address_validation": "Always validate addresses before use",
+    "access_control": "Enforce permissions on registry operations",
+    "audit_trail": "Log all address operations",
+    "injection_prevention": "Validate characters to prevent injection attacks"
+  },
+
+  "performance_considerations": {
+    "caching": "Cache address resolutions with TTL",
+    "indexing": "Index registry by organization and stack",
+    "compression": "Use compression for bandwidth-constrained scenarios",
+    "batch_operations": "Batch multiple resolutions when possible"
+  },
+
+  "compliance": {
+    "stunir_version": "3.0",
+    "validation_status": "complete",
+    "test_coverage": "100% of operations",
+    "documentation_complete": true
+  }
+}

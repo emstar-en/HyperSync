@@ -1,0 +1,218 @@
+{
+  "name": "mxfy_capsule_integration",
+  "version": "1.0.0",
+  "description": "MXFY-Capsule Integration Specification - Universal Capsule Format (UCF) usage, capsule generation, packaging, and cross-platform distribution",
+  "license": {
+    "type": "AGPLv3",
+    "text": "This specification is licensed under the GNU Affero General Public License v3.0. See https://www.gnu.org/licenses/agpl-3.0.html for full license text.",
+    "copyright": "Copyright (c) 2024-2026 HyperSync Project"
+  },
+  "subsystem": "MXFY",
+  "category": "capsule_integration",
+  "stunir_compatible": true,
+  "dependencies": [
+    "mxfy_core_system@1.0.0",
+    "mxfy_fabrication_engine@1.0.0",
+    "hypersync_capsule_system@2.0.0"
+  ],
+  "architecture": {
+    "overview": "MXFY generates applications as UCF (Universal Capsule Format) capsules for distribution and execution",
+    "ucf_format": {
+      "description": "Universal Capsule Format for polyglot component packaging",
+      "components": {
+        "manifest": "capsule.json - metadata and configuration",
+        "logic": "logic.md - algorithm documentation",
+        "implementation": "impl/ - executable code",
+        "assets": "assets/ - non-code resources",
+        "tests": "tests/ - validation tests"
+      }
+    },
+    "generation_pipeline": {
+      "code_packaging": "Package fabricated code into impl/",
+      "manifest_generation": "Generate capsule.json from FactorySpec",
+      "asset_bundling": "Bundle assets into assets/",
+      "signature": "Sign capsule with generation receipt",
+      "validation": "Validate UCF compliance"
+    },
+    "distribution_model": {
+      "local_deployment": "Hot-load into local HyperSync instance",
+      "network_distribution": "Distribute across HyperSync network",
+      "export_formats": ["ucf_archive", "standalone_package", "source_bundle"]
+    }
+  },
+  "type_definitions": {
+    "CapsuleManifest": {
+      "description": "UCF capsule.json manifest structure",
+      "schema": {
+        "type": "object",
+        "required": ["name", "version", "runtime", "entry_point"],
+        "properties": {
+          "name": {"type": "string"},
+          "version": {"type": "string"},
+          "description": {"type": "string"},
+          "runtime": {
+            "type": "object",
+            "properties": {
+              "type": {"type": "string", "enum": ["process", "class", "function", "service", "agent"]},
+              "language": {"type": "string"},
+              "requirements": {"type": "array", "items": {"type": "string"}}
+            }
+          },
+          "entry_point": {"type": "string"},
+          "dependencies": {"type": "array", "items": {"type": "object"}},
+          "capabilities": {"type": "array", "items": {"type": "string"}},
+          "vnes_binding": {"type": "string"},
+          "determinism_tier": {"type": "string", "enum": ["D0", "D1", "D2"]},
+          "mxfy_metadata": {
+            "type": "object",
+            "properties": {
+              "factory_spec_id": {"type": "string"},
+              "generation_timestamp": {"type": "string"},
+              "intent": {"type": "object"},
+              "primitive_sources": {"type": "array"}
+            }
+          }
+        }
+      }
+    },
+    "UCFArchive": {
+      "description": "Packaged UCF archive",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "manifest": {"$ref": "#/type_definitions/CapsuleManifest"},
+          "files": {"type": "object"},
+          "signature": {"type": "string"},
+          "hash": {"type": "string"},
+          "size_bytes": {"type": "integer"}
+        }
+      }
+    },
+    "GenerationReceipt": {
+      "description": "Receipt proving capsule generation",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "specification_hash": {"type": "string", "description": "SHA-256 of FactorySpec"},
+          "generated_code_hash": {"type": "string", "description": "SHA-256 of generated code"},
+          "primitive_hashes": {"type": "object", "description": "Hashes of source primitives"},
+          "mxfy_version": {"type": "string"},
+          "timestamp": {"type": "string", "format": "date-time"},
+          "signature": {"type": "string", "description": "Ed25519 signature"}
+        }
+      }
+    },
+    "DistributionTarget": {
+      "description": "Target for capsule distribution",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "type": {"type": "string", "enum": ["local", "peer", "registry", "export"]},
+          "address": {"type": "string"},
+          "credentials": {"type": "object"}
+        }
+      }
+    }
+  },
+  "operations": [
+    {
+      "name": "capsule_generate_manifest",
+      "description": "Generate capsule.json from FactorySpec",
+      "signature": "capsule_generate_manifest(spec: FactorySpec, code_bundle: CodeBundle) -> CapsuleManifest",
+      "complexity": "O(n)",
+      "determinism": "D0"
+    },
+    {
+      "name": "capsule_package",
+      "description": "Package generated application as UCF archive",
+      "signature": "capsule_package(manifest: CapsuleManifest, code: CodeBundle, assets: array) -> UCFArchive",
+      "complexity": "O(n)",
+      "determinism": "D0"
+    },
+    {
+      "name": "capsule_sign",
+      "description": "Sign capsule with generation receipt",
+      "signature": "capsule_sign(archive: UCFArchive, spec: FactorySpec) -> GenerationReceipt",
+      "complexity": "O(n)",
+      "determinism": "D0"
+    },
+    {
+      "name": "capsule_validate_ucf",
+      "description": "Validate UCF compliance",
+      "signature": "capsule_validate_ucf(archive: UCFArchive) -> ValidationResult",
+      "complexity": "O(n)",
+      "determinism": "D0"
+    },
+    {
+      "name": "capsule_distribute",
+      "description": "Distribute capsule to target",
+      "signature": "capsule_distribute(archive: UCFArchive, target: DistributionTarget) -> boolean",
+      "complexity": "O(1)",
+      "determinism": "D0"
+    },
+    {
+      "name": "capsule_export",
+      "description": "Export capsule to external format",
+      "signature": "capsule_export(archive: UCFArchive, format: string) -> bytes",
+      "complexity": "O(n)",
+      "determinism": "D0"
+    },
+    {
+      "name": "capsule_verify_receipt",
+      "description": "Verify generation receipt",
+      "signature": "capsule_verify_receipt(archive: UCFArchive, receipt: GenerationReceipt) -> boolean",
+      "complexity": "O(n)",
+      "determinism": "D0"
+    },
+    {
+      "name": "capsule_extract",
+      "description": "Extract capsule from archive",
+      "signature": "capsule_extract(archive: UCFArchive, path: string) -> boolean",
+      "complexity": "O(n)",
+      "determinism": "D0"
+    }
+  ],
+  "vnes_binding": {
+    "description": "VNES namespace binding for generated capsules",
+    "format": "mxfy.generated.{category}.{name}",
+    "examples": [
+      "mxfy.generated.viewers.dataset-file-browser",
+      "mxfy.generated.dashboards.system-monitor",
+      "mxfy.generated.utilities.log-viewer"
+    ],
+    "benefits": [
+      "Uniform addressing across HyperSync",
+      "Receipt-based verification",
+      "Polyglot composition"
+    ]
+  },
+  "determinism_tiers": {
+    "D0": {
+      "description": "Strict determinism - frozen hash",
+      "use_case": "Generated code execution",
+      "characteristics": ["Reproducible", "Verifiable", "Immutable"]
+    },
+    "D1": {
+      "description": "Controlled non-determinism",
+      "use_case": "Randomized but bounded behavior",
+      "characteristics": ["Bounded variance", "Auditable"]
+    },
+    "D2": {
+      "description": "Statistical determinism",
+      "use_case": "LLM-generated content",
+      "characteristics": ["Non-reproducible", "Creative", "Context-sensitive"]
+    }
+  },
+  "test_cases": [
+    {
+      "id": "CAPSULE_TC_001",
+      "description": "Package and validate simple capsule",
+      "expected": {"ucf_valid": true, "signature_valid": true}
+    },
+    {
+      "id": "CAPSULE_TC_002",
+      "description": "Verify generation receipt",
+      "expected": {"receipt_valid": true, "hashes_match": true}
+    }
+  ]
+}

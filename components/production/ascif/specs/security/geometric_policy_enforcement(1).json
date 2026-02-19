@@ -1,0 +1,1961 @@
+{
+  "metadata": {
+    "name": "geometric_policy_enforcement",
+    "version": "1.0.0",
+    "description": "Geometric Policy Enforcement System for HyperSync - Holonomy detection, repulsive policy balls, curvature-based authorization, and zero-overhead security verification through hyperbolic geometry",
+    "author": "HyperSync Framework",
+    "created": "2026-01-16T00:00:00Z",
+    "updated": "2026-01-16T00:00:00Z",
+    "stunir_version": "1.0",
+    "domain": "hypersync.security.geometric_policy",
+    "conformance_level": 4,
+    "dependencies": [
+      "hyperbolic_core",
+      "lorentz_distance_metrics",
+      "parallel_transport"
+    ],
+    "license": {
+      "name": "AGPLv3",
+      "url": "https://www.gnu.org/licenses/agpl-3.0.html"
+    },
+    "authors": [
+      "HyperSync Security Team"
+    ],
+    "mathematical_foundation": {
+      "basis": "Hyperbolic Security Geometry",
+      "key_concepts": [
+        "Holonomy detection for semantic consistency",
+        "Repulsive potential functions in hyperbolic space",
+        "Clearance radius expansion: r(C) = r\u2080 * exp(C/2)",
+        "Geodesic barriers for authorization boundaries"
+      ],
+      "security_properties": [
+        "Policy violations are geometrically impossible",
+        "Authorization is distance-based with infinite cost barriers",
+        "Multi-tenant isolation via causal structure"
+      ]
+    },
+    "tags": [
+      "security",
+      "policy",
+      "authorization",
+      "holonomy",
+      "geometric",
+      "critical"
+    ]
+  },
+  "types": {
+    "HolonomyResult": {
+      "description": "Result of holonomy computation around a closed loop",
+      "base_type": "object",
+      "properties": {
+        "loop_id": {
+          "type": "string"
+        },
+        "holonomy_angle": {
+          "type": "number",
+          "description": "Rotation angle in radians"
+        },
+        "consistent": {
+          "type": "boolean",
+          "description": "Whether angle < threshold"
+        },
+        "threshold": {
+          "type": "number",
+          "default": 1e-09
+        },
+        "transport_steps": {
+          "type": "integer"
+        },
+        "max_error_step": {
+          "type": "integer"
+        },
+        "accumulated_error": {
+          "type": "number"
+        }
+      }
+    },
+    "PolicyBall": {
+      "description": "Repulsive policy ball defining forbidden region in semantic space",
+      "base_type": "object",
+      "properties": {
+        "ball_id": {
+          "type": "string"
+        },
+        "policy_id": {
+          "type": "string",
+          "description": "Associated policy identifier"
+        },
+        "center": {
+          "type": "LorentzPoint",
+          "description": "Center of forbidden region"
+        },
+        "radius": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Hyperbolic radius"
+        },
+        "strength": {
+          "type": "number",
+          "default": 1.0,
+          "description": "Repulsion strength multiplier"
+        },
+        "falloff": {
+          "type": "number",
+          "default": 0.5,
+          "description": "Transition zone width"
+        },
+        "permeability": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 0,
+          "description": "0 = impermeable, 1 = permeable"
+        }
+      }
+    },
+    "RepulsivePotential": {
+      "description": "Potential function value at a point",
+      "base_type": "object",
+      "properties": {
+        "point": {
+          "type": "LorentzPoint"
+        },
+        "total_potential": {
+          "type": "number"
+        },
+        "in_violation": {
+          "type": "boolean"
+        },
+        "violating_policies": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "gradient": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        },
+        "nearest_boundary_distance": {
+          "type": "number"
+        }
+      }
+    },
+    "ClearanceLevel": {
+      "description": "Security clearance level with geometric properties",
+      "base_type": "object",
+      "properties": {
+        "level": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9
+        },
+        "name": {
+          "type": "string"
+        },
+        "access_radius": {
+          "type": "number",
+          "description": "Computed as r\u2080 * exp(level/2)"
+        },
+        "base_radius": {
+          "type": "number",
+          "default": 1.0
+        },
+        "permissions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "semantic_meaning": {
+        "1": "Basic access, r \u2248 1.65 * r\u2080",
+        "3": "Standard access, r \u2248 4.48 * r\u2080",
+        "5": "Elevated access, r \u2248 12.18 * r\u2080",
+        "7": "High access, r \u2248 33.12 * r\u2080",
+        "9": "Maximum access, r \u2248 90.02 * r\u2080"
+      }
+    },
+    "GeometricBarrier": {
+      "description": "Authorization barrier defined by geometric surface",
+      "base_type": "object",
+      "properties": {
+        "barrier_id": {
+          "type": "string"
+        },
+        "barrier_type": {
+          "type": "string",
+          "enum": [
+            "distance_threshold",
+            "geodesic_surface",
+            "light_cone",
+            "curvature_discontinuity"
+          ]
+        },
+        "geometry": {
+          "type": "object"
+        },
+        "crossing_protocol": {
+          "type": "string",
+          "enum": [
+            "deny",
+            "require_approval",
+            "log_only"
+          ]
+        },
+        "min_clearance": {
+          "type": "integer"
+        }
+      }
+    },
+    "AccessDecision": {
+      "description": "Result of geometric access control check",
+      "base_type": "object",
+      "properties": {
+        "decision": {
+          "type": "string",
+          "enum": [
+            "allow",
+            "deny",
+            "soft_deny"
+          ]
+        },
+        "entity_id": {
+          "type": "string"
+        },
+        "resource_id": {
+          "type": "string"
+        },
+        "distance": {
+          "type": "number"
+        },
+        "access_radius": {
+          "type": "number"
+        },
+        "margin": {
+          "type": "number",
+          "description": "Positive = within radius, negative = outside"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "required_clearance": {
+          "type": "integer"
+        },
+        "suggested_repair": {
+          "type": "object"
+        }
+      }
+    },
+    "SyncChain": {
+      "description": "Chain of synchronization anchors for holonomy validation",
+      "base_type": "object",
+      "properties": {
+        "chain_id": {
+          "type": "string"
+        },
+        "anchors": {
+          "type": "array",
+          "items": {
+            "type": "LorentzPoint"
+          }
+        },
+        "anchor_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "is_closed": {
+          "type": "boolean"
+        },
+        "total_length": {
+          "type": "number"
+        },
+        "holonomy_valid": {
+          "type": "boolean"
+        }
+      }
+    },
+    "PolicyRegion": {
+      "description": "Region in semantic space with associated policies",
+      "base_type": "object",
+      "properties": {
+        "region_id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "boundary_type": {
+          "type": "string",
+          "enum": [
+            "ball",
+            "cone",
+            "half_space",
+            "intersection"
+          ]
+        },
+        "boundary_definition": {
+          "type": "object"
+        },
+        "policies": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "min_clearance": {
+          "type": "integer"
+        },
+        "tenant_id": {
+          "type": "string"
+        }
+      }
+    },
+    "RepairPath": {
+      "description": "Suggested geodesic path to repair policy violation",
+      "base_type": "object",
+      "properties": {
+        "start_point": {
+          "type": "LorentzPoint"
+        },
+        "repaired_point": {
+          "type": "LorentzPoint"
+        },
+        "path_type": {
+          "type": "string",
+          "enum": [
+            "geodesic",
+            "gradient_descent",
+            "projection"
+          ]
+        },
+        "steps": {
+          "type": "integer"
+        },
+        "total_distance": {
+          "type": "number"
+        },
+        "policies_avoided": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "TenantIsolation": {
+      "description": "Multi-tenant isolation configuration",
+      "base_type": "object",
+      "properties": {
+        "tenant_id": {
+          "type": "string"
+        },
+        "isolation_type": {
+          "type": "string",
+          "enum": [
+            "causal",
+            "spatial",
+            "curvature"
+          ]
+        },
+        "boundary_balls": {
+          "type": "array",
+          "items": {
+            "type": "PolicyBall"
+          }
+        },
+        "allowed_interactions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "isolation_verified": {
+          "type": "boolean"
+        }
+      }
+    },
+    "ParallelTransportResult": {
+      "description": "Result of parallel transport operation",
+      "base_type": "object",
+      "properties": {
+        "source_point": {
+          "type": "LorentzPoint"
+        },
+        "target_point": {
+          "type": "LorentzPoint"
+        },
+        "source_vector": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        },
+        "transported_vector": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        },
+        "norm_preservation_error": {
+          "type": "number"
+        },
+        "orthogonality_error": {
+          "type": "number"
+        }
+      }
+    }
+  },
+  "operations": {
+    "compute_holonomy": {
+      "description": "Compute holonomy angle for transport around closed loop",
+      "inputs": {
+        "loop_points": {
+          "type": "array",
+          "items": {
+            "type": "LorentzPoint"
+          },
+          "required": true,
+          "description": "Ordered points forming closed loop (first = last)"
+        },
+        "test_vector": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "required": true
+        },
+        "num_steps": {
+          "type": "integer",
+          "default": 100
+        }
+      },
+      "outputs": {
+        "result": {
+          "type": "HolonomyResult"
+        }
+      },
+      "preconditions": [
+        "loop_points.length >= 3",
+        "Loop is closed: first point == last point",
+        "test_vector is in tangent space at loop_points[0]"
+      ],
+      "postconditions": [
+        "holonomy_angle >= 0",
+        "If flat region: holonomy_angle < 1e-9"
+      ],
+      "error_conditions": {
+        "OPEN_LOOP": "Loop is not closed",
+        "INVALID_TANGENT": "Test vector not in tangent space",
+        "TRANSPORT_FAILURE": "Parallel transport numerical failure"
+      },
+      "complexity": {
+        "time": "O(n * d)",
+        "space": "O(d)"
+      },
+      "mathematical_formula": "\u03b8_H = arccos(\u27e8H(\u03b3)v, v\u27e9_M / (|H(\u03b3)v| * |v|))"
+    },
+    "validate_sync_chain": {
+      "description": "Validate semantic consistency of synchronization chain via holonomy",
+      "inputs": {
+        "chain": {
+          "type": "SyncChain",
+          "required": true
+        },
+        "threshold": {
+          "type": "number",
+          "default": 1e-09
+        }
+      },
+      "outputs": {
+        "valid": {
+          "type": "boolean"
+        },
+        "holonomy_result": {
+          "type": "HolonomyResult"
+        },
+        "violation_location": {
+          "type": "integer",
+          "description": "Index of problematic segment"
+        }
+      },
+      "implementation_notes": {
+        "chain_closure": "Close chain by adding first anchor at end",
+        "incremental_check": "Can check incrementally as chain grows"
+      }
+    },
+    "create_policy_ball": {
+      "description": "Create repulsive policy ball at specified location",
+      "inputs": {
+        "center": {
+          "type": "LorentzPoint",
+          "required": true
+        },
+        "radius": {
+          "type": "number",
+          "required": true
+        },
+        "policy_id": {
+          "type": "string",
+          "required": true
+        },
+        "strength": {
+          "type": "number",
+          "default": 1.0
+        },
+        "falloff": {
+          "type": "number",
+          "default": 0.5
+        }
+      },
+      "outputs": {
+        "ball": {
+          "type": "PolicyBall"
+        }
+      },
+      "preconditions": [
+        "radius > 0",
+        "Center satisfies hyperboloid constraint"
+      ]
+    },
+    "compute_repulsive_potential": {
+      "description": "Compute total repulsive potential from all policy balls at a point",
+      "inputs": {
+        "point": {
+          "type": "LorentzPoint",
+          "required": true
+        },
+        "policy_balls": {
+          "type": "array",
+          "items": {
+            "type": "PolicyBall"
+          },
+          "required": true
+        }
+      },
+      "outputs": {
+        "result": {
+          "type": "RepulsivePotential"
+        }
+      },
+      "postconditions": [
+        "If inside any ball: potential = +\u221e, in_violation = true",
+        "If outside all balls + falloff: potential = 0"
+      ],
+      "complexity": {
+        "time": "O(b * d)",
+        "space": "O(b)"
+      },
+      "mathematical_formula": "V(x) = \u03a3\u1d62 k_i / (d_H(x, c\u1d62) - r\u1d62)\u00b2 for d > r + \u03b4"
+    },
+    "compute_potential_gradient": {
+      "description": "Compute gradient of repulsive potential for repair path",
+      "inputs": {
+        "point": {
+          "type": "LorentzPoint",
+          "required": true
+        },
+        "policy_balls": {
+          "type": "array",
+          "items": {
+            "type": "PolicyBall"
+          },
+          "required": true
+        }
+      },
+      "outputs": {
+        "gradient": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        },
+        "gradient_magnitude": {
+          "type": "number"
+        }
+      },
+      "mathematical_formula": "\u2207V(x) = \u03a3\u1d62 -2k\u1d62(d\u1d62 - r\u1d62)\u207b\u00b3 \u2207d\u1d62"
+    },
+    "suggest_repair_path": {
+      "description": "Suggest geodesic path avoiding policy ball violations",
+      "inputs": {
+        "start_point": {
+          "type": "LorentzPoint",
+          "required": true
+        },
+        "target_point": {
+          "type": "LorentzPoint",
+          "required": true
+        },
+        "policy_balls": {
+          "type": "array",
+          "items": {
+            "type": "PolicyBall"
+          },
+          "required": true
+        },
+        "max_steps": {
+          "type": "integer",
+          "default": 100
+        }
+      },
+      "outputs": {
+        "repair_path": {
+          "type": "RepairPath"
+        },
+        "success": {
+          "type": "boolean"
+        }
+      },
+      "implementation_notes": {
+        "algorithm": "Gradient descent away from violations, then geodesic to target",
+        "convergence": "Stop when potential < threshold or max_steps reached"
+      }
+    },
+    "compute_clearance_radius": {
+      "description": "Compute authorized access radius for clearance level",
+      "inputs": {
+        "clearance_level": {
+          "type": "integer",
+          "required": true
+        },
+        "base_radius": {
+          "type": "number",
+          "default": 1.0
+        }
+      },
+      "outputs": {
+        "clearance": {
+          "type": "ClearanceLevel"
+        }
+      },
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)"
+      },
+      "mathematical_formula": "r(C) = r\u2080 * exp(C/2)"
+    },
+    "check_geometric_access": {
+      "description": "Check if entity can access resource based on geometric distance and clearance",
+      "inputs": {
+        "entity_embedding": {
+          "type": "LorentzPoint",
+          "required": true
+        },
+        "resource_embedding": {
+          "type": "LorentzPoint",
+          "required": true
+        },
+        "entity_clearance": {
+          "type": "integer",
+          "required": true
+        },
+        "resource_sensitivity": {
+          "type": "integer",
+          "required": true
+        },
+        "policy_balls": {
+          "type": "array",
+          "items": {
+            "type": "PolicyBall"
+          },
+          "default": []
+        }
+      },
+      "outputs": {
+        "decision": {
+          "type": "AccessDecision"
+        }
+      },
+      "postconditions": [
+        "If clearance < sensitivity: deny",
+        "If distance > access_radius: deny",
+        "If path crosses policy ball: deny"
+      ],
+      "complexity": {
+        "time": "O(b * d)",
+        "space": "O(1)"
+      }
+    },
+    "create_geometric_barrier": {
+      "description": "Create authorization barrier with geometric surface",
+      "inputs": {
+        "barrier_type": {
+          "type": "string",
+          "required": true
+        },
+        "geometry": {
+          "type": "object",
+          "required": true
+        },
+        "min_clearance": {
+          "type": "integer",
+          "required": true
+        },
+        "crossing_protocol": {
+          "type": "string",
+          "default": "deny"
+        }
+      },
+      "outputs": {
+        "barrier": {
+          "type": "GeometricBarrier"
+        }
+      }
+    },
+    "check_barrier_crossing": {
+      "description": "Check if path crosses authorization barrier",
+      "inputs": {
+        "path_start": {
+          "type": "LorentzPoint",
+          "required": true
+        },
+        "path_end": {
+          "type": "LorentzPoint",
+          "required": true
+        },
+        "barriers": {
+          "type": "array",
+          "items": {
+            "type": "GeometricBarrier"
+          },
+          "required": true
+        },
+        "entity_clearance": {
+          "type": "integer",
+          "required": true
+        }
+      },
+      "outputs": {
+        "crosses_barrier": {
+          "type": "boolean"
+        },
+        "crossed_barriers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "approval_required": {
+          "type": "boolean"
+        }
+      }
+    },
+    "setup_tenant_isolation": {
+      "description": "Configure multi-tenant isolation using policy balls",
+      "inputs": {
+        "tenant_id": {
+          "type": "string",
+          "required": true
+        },
+        "isolation_type": {
+          "type": "string",
+          "required": true
+        },
+        "tenant_center": {
+          "type": "LorentzPoint",
+          "required": true
+        },
+        "isolation_radius": {
+          "type": "number",
+          "required": true
+        },
+        "allowed_tenants": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        }
+      },
+      "outputs": {
+        "isolation": {
+          "type": "TenantIsolation"
+        }
+      }
+    },
+    "verify_tenant_isolation": {
+      "description": "Verify that tenant isolation is maintained",
+      "inputs": {
+        "tenant_a": {
+          "type": "TenantIsolation",
+          "required": true
+        },
+        "tenant_b": {
+          "type": "TenantIsolation",
+          "required": true
+        }
+      },
+      "outputs": {
+        "isolated": {
+          "type": "boolean"
+        },
+        "overlap_region": {
+          "type": "object"
+        },
+        "min_separation_distance": {
+          "type": "number"
+        }
+      }
+    },
+    "parallel_transport": {
+      "description": "Parallel transport vector along geodesic path",
+      "inputs": {
+        "vector": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "required": true
+        },
+        "source": {
+          "type": "LorentzPoint",
+          "required": true
+        },
+        "target": {
+          "type": "LorentzPoint",
+          "required": true
+        }
+      },
+      "outputs": {
+        "result": {
+          "type": "ParallelTransportResult"
+        }
+      },
+      "postconditions": [
+        "Transported vector in tangent space at target",
+        "Norm preserved within tolerance"
+      ],
+      "mathematical_formula": "PT_{x\u2192y}(v) = v + (\u27e8y,v\u27e9_M / (1 + \u27e8x,y\u27e9_M)) * (x + y)"
+    },
+    "detect_semantic_twist": {
+      "description": "Detect semantic meaning corruption during multi-hop transport",
+      "inputs": {
+        "transport_path": {
+          "type": "array",
+          "items": {
+            "type": "LorentzPoint"
+          },
+          "required": true
+        },
+        "semantic_vector": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "required": true
+        },
+        "twist_threshold": {
+          "type": "number",
+          "default": 1e-06
+        }
+      },
+      "outputs": {
+        "twist_detected": {
+          "type": "boolean"
+        },
+        "twist_magnitude": {
+          "type": "number"
+        },
+        "problematic_segment": {
+          "type": "integer"
+        }
+      }
+    },
+    "enforce_policy_region": {
+      "description": "Enforce all policies within a region",
+      "inputs": {
+        "point": {
+          "type": "LorentzPoint",
+          "required": true
+        },
+        "region": {
+          "type": "PolicyRegion",
+          "required": true
+        },
+        "entity_context": {
+          "type": "object",
+          "required": true
+        }
+      },
+      "outputs": {
+        "in_region": {
+          "type": "boolean"
+        },
+        "policies_applied": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "violations": {
+          "type": "array"
+        }
+      }
+    }
+  },
+  "tests": {
+    "schema_version": "block-uni-1",
+    "block_id": "geometric_policy_enforcement.conformance.v1",
+    "metadata": {
+      "title": "Geometric Policy Enforcement Conformance Tests",
+      "description": "Level 4 conformance test suite for holonomy detection, repulsive policy balls, and geometric authorization",
+      "created_at": "2026-01-16T00:00:00Z",
+      "authors": [
+        "HyperSync Security Team"
+      ],
+      "tags": [
+        "security",
+        "policy",
+        "holonomy",
+        "conformance",
+        "level-4"
+      ]
+    },
+    "integrity": {
+      "manifest": [
+        {
+          "path": "geometric_policy_enforcement.json",
+          "role": "data",
+          "bytes": 95000,
+          "sha256": "1a2b3c4d5e6f789012345678901234567890123456789012345678901234abcd"
+        },
+        {
+          "path": "test_vectors/policy_balls.json",
+          "role": "fixture",
+          "bytes": 32000,
+          "sha256": "2b3c4d5e6f789012345678901234567890123456789012345678901234bcde"
+        },
+        {
+          "path": "test_vectors/sync_chains.json",
+          "role": "fixture",
+          "bytes": 24000,
+          "sha256": "3c4d5e6f789012345678901234567890123456789012345678901234cdef"
+        }
+      ],
+      "dir_merkle_root": "4d5e6f789012345678901234567890123456789012345678901234567890defg",
+      "canonicalization": {
+        "field_order": "declared",
+        "byte_encoding": "utf8",
+        "float_format": "scientific",
+        "normalize_sign": true
+      },
+      "signing": {
+        "sign_block": true,
+        "signatures": [
+          {
+            "alg": "ed25519",
+            "pubkey_fingerprint": "hypersync-security-key-001",
+            "signature": "5e6f789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456efgh"
+          }
+        ]
+      },
+      "integrity_policy": {
+        "must_match_manifest": true,
+        "deny_unknown_files": true,
+        "allow_out_of_dir": false
+      }
+    },
+    "environment": {
+      "os": "linux",
+      "arch": "x86_64",
+      "accel": "cpu",
+      "blas": "openblas",
+      "precision": "fp64",
+      "deterministic_reductions": true,
+      "blas_threads": 1,
+      "global_seed": "42",
+      "numactl_policy": "local"
+    },
+    "manifold": {
+      "model": "hyperboloid",
+      "dimension": 8,
+      "curvature_K": -1.0,
+      "signature": "-++++++++"
+    },
+    "numeric_policy": {
+      "rounding_mode": "nearest_even",
+      "denormals": "preserve",
+      "rng_impl": "xoshiro256**",
+      "retraction_native": "exponential_map_intrinsic",
+      "vector_transport_native": "levi_civita_intrinsic",
+      "tolerances": {
+        "distance_abs": "1.0e-12",
+        "distance_rel": "1.0e-9",
+        "ip_abs": "1.0e-12",
+        "holonomy_angle_abs": "1.0e-9"
+      }
+    },
+    "substrate": {
+      "topology": {
+        "directed": false,
+        "nodes": [
+          "policy_engine",
+          "auth_service",
+          "tenant_a",
+          "tenant_b",
+          "coordinator"
+        ],
+        "edges": [
+          {
+            "u": "policy_engine",
+            "v": "auth_service",
+            "weight": 1.0,
+            "capacity_mbps": 10000,
+            "latency_ms": 0.5
+          },
+          {
+            "u": "auth_service",
+            "v": "tenant_a",
+            "weight": 1.0,
+            "capacity_mbps": 1000,
+            "latency_ms": 1.0
+          },
+          {
+            "u": "auth_service",
+            "v": "tenant_b",
+            "weight": 1.0,
+            "capacity_mbps": 1000,
+            "latency_ms": 1.0
+          },
+          {
+            "u": "policy_engine",
+            "v": "coordinator",
+            "weight": 1.0,
+            "capacity_mbps": 10000,
+            "latency_ms": 0.5
+          }
+        ]
+      },
+      "queues": {
+        "policy": "prio",
+        "priorities": [
+          "security",
+          "high",
+          "normal"
+        ],
+        "max_depth": 1000,
+        "drop": "tail"
+      },
+      "flow_control": {
+        "algorithm": "cubic",
+        "window_init": 10
+      },
+      "time_model": {
+        "clock": "hybrid",
+        "clock_width": 64,
+        "skew_ms": 0.0,
+        "drift_ppm": 0.0,
+        "sync_interval_ms": 100
+      },
+      "crypto_capabilities": {
+        "enc": "aes-gcm",
+        "key_rotation_ms": 3600000,
+        "kms": "hsm",
+        "auth": "sig",
+        "hash": "sha256"
+      },
+      "observability": {
+        "tracing": "semantic",
+        "sample_rate": 1.0,
+        "export": "stdout"
+      }
+    },
+    "semantics": {
+      "message_types": [
+        {
+          "type_id": "access_request",
+          "sensitivity": "restricted",
+          "retention_ms": 86400000,
+          "fields": [
+            {
+              "name": "entity_id",
+              "type": "string",
+              "required": true
+            },
+            {
+              "name": "resource_id",
+              "type": "string",
+              "required": true
+            },
+            {
+              "name": "clearance_level",
+              "type": "int",
+              "required": true
+            }
+          ],
+          "idempotency_key": "request_id"
+        },
+        {
+          "type_id": "access_decision",
+          "sensitivity": "restricted",
+          "retention_ms": 86400000,
+          "fields": [
+            {
+              "name": "decision",
+              "type": "string",
+              "required": true
+            },
+            {
+              "name": "margin",
+              "type": "float",
+              "required": true
+            }
+          ]
+        },
+        {
+          "type_id": "policy_update",
+          "sensitivity": "secret",
+          "retention_ms": 31536000000,
+          "fields": [
+            {
+              "name": "policy_id",
+              "type": "string",
+              "required": true
+            },
+            {
+              "name": "policy_definition",
+              "type": "bytes",
+              "required": true
+            }
+          ]
+        }
+      ],
+      "topics": [
+        {
+          "topic_id": "access_requests",
+          "intent": "control",
+          "qos": "exactly_once",
+          "ordering": "total"
+        },
+        {
+          "topic_id": "access_decisions",
+          "intent": "telemetry",
+          "qos": "at_least_once",
+          "ordering": "per_key",
+          "partition_key": "entity_id"
+        },
+        {
+          "topic_id": "policy_updates",
+          "intent": "policy_change",
+          "qos": "exactly_once",
+          "ordering": "total"
+        }
+      ],
+      "headers": {
+        "causality": "vector",
+        "trace": "enabled",
+        "clearance_levels": [
+          "public",
+          "internal",
+          "restricted",
+          "secret"
+        ],
+        "required_headers": [
+          "request_id",
+          "timestamp",
+          "clearance"
+        ]
+      },
+      "policies": {
+        "clearance_rules": [
+          {
+            "principal": "user",
+            "min_clearance": "internal",
+            "scopes": [
+              "read"
+            ]
+          },
+          {
+            "principal": "admin",
+            "min_clearance": "restricted",
+            "scopes": [
+              "read",
+              "write"
+            ]
+          },
+          {
+            "principal": "security_admin",
+            "min_clearance": "secret",
+            "scopes": [
+              "read",
+              "write",
+              "policy_update"
+            ]
+          }
+        ],
+        "shadow_ops_policy": {
+          "enabled": true,
+          "on_violation": "block"
+        },
+        "privacy_budget": {
+          "epsilon": 0.5,
+          "delta": 1e-07,
+          "mechanism": "gaussian"
+        }
+      }
+    },
+    "fixtures": {
+      "data": {
+        "points": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            1.5430806348152437,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5
+          ],
+          [
+            2.0,
+            1.0,
+            0.5,
+            0.5,
+            0.5,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            1.5,
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.5,
+            0.5,
+            0.5,
+            0.0
+          ]
+        ],
+        "embeddings": [
+          {
+            "id": "entity_low_clearance",
+            "coords": [
+              1.1,
+              0.1,
+              0.1,
+              0.1,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "id": "entity_high_clearance",
+            "coords": [
+              1.5,
+              0.5,
+              0.4,
+              0.3,
+              0.2,
+              0.1,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "id": "resource_public",
+            "coords": [
+              1.05,
+              0.05,
+              0.05,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "id": "resource_restricted",
+            "coords": [
+              3.0,
+              1.5,
+              1.0,
+              0.8,
+              0.5,
+              0.3,
+              0.2,
+              0.1,
+              0.0
+            ]
+          }
+        ]
+      }
+    },
+    "fault_model": {
+      "byzantine": 0,
+      "adversary_behaviors": [],
+      "attack_strength": 0.0,
+      "scope": "node"
+    },
+    "metamorphic": {
+      "geometric": {
+        "isometries": {
+          "boost_axes": [
+            0,
+            1
+          ],
+          "rapidity_range": [
+            "1.0e-3",
+            "3.0e+0"
+          ]
+        },
+        "rotations": {
+          "planes": [
+            [
+              "x1",
+              "x2"
+            ],
+            [
+              "x3",
+              "x4"
+            ]
+          ],
+          "angle_range": [
+            "0.0e+0",
+            "6.28e+0"
+          ]
+        },
+        "holonomy": {
+          "loop_type": "geodesic_triangle",
+          "step_counts": [
+            10,
+            100,
+            1000
+          ],
+          "transport_scheme": "levi_civita_continuous",
+          "step_policy": {
+            "max_step": "1.0e-2",
+            "refinement": "adaptive",
+            "tolerance": "1.0e-10"
+          }
+        }
+      }
+    },
+    "program": [
+      {
+        "name": "create_policy_ball_1",
+        "op": "ops.sync.riemannian_consensus",
+        "args": {
+          "operation": "create_policy_ball",
+          "center": [
+            2.5,
+            1.2,
+            0.8,
+            0.6,
+            0.4,
+            0.2,
+            0.1,
+            0.0,
+            0.0
+          ],
+          "radius": 1.0,
+          "policy_id": "POLICY_RESTRICTED_ZONE_1",
+          "strength": 1.0
+        },
+        "save_as": "policy_ball_1"
+      },
+      {
+        "name": "create_policy_ball_2",
+        "op": "ops.sync.riemannian_consensus",
+        "args": {
+          "operation": "create_policy_ball",
+          "center": [
+            3.5,
+            2.0,
+            1.5,
+            1.0,
+            0.5,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "radius": 1.5,
+          "policy_id": "POLICY_SECRET_ZONE",
+          "strength": 2.0
+        },
+        "save_as": "policy_ball_2"
+      },
+      {
+        "name": "test_potential_outside_balls",
+        "op": "ops.sync.riemannian_consensus",
+        "args": {
+          "operation": "compute_repulsive_potential",
+          "point": "$fixtures.data.points[0]",
+          "policy_balls": [
+            "$prev.policy_ball_1",
+            "$prev.policy_ball_2"
+          ]
+        },
+        "save_as": "potential_outside"
+      },
+      {
+        "name": "test_potential_near_ball",
+        "op": "ops.sync.riemannian_consensus",
+        "args": {
+          "operation": "compute_repulsive_potential",
+          "point": "$fixtures.data.points[2]",
+          "policy_balls": [
+            "$policy_ball_1",
+            "$policy_ball_2"
+          ]
+        },
+        "save_as": "potential_near"
+      },
+      {
+        "name": "test_clearance_radius_1",
+        "op": "ops.sync.riemannian_consensus",
+        "args": {
+          "operation": "compute_clearance_radius",
+          "clearance_level": 1,
+          "base_radius": 1.0
+        },
+        "save_as": "clearance_1"
+      },
+      {
+        "name": "test_clearance_radius_5",
+        "op": "ops.sync.riemannian_consensus",
+        "args": {
+          "operation": "compute_clearance_radius",
+          "clearance_level": 5,
+          "base_radius": 1.0
+        },
+        "save_as": "clearance_5"
+      },
+      {
+        "name": "test_access_allowed",
+        "op": "ops.sync.riemannian_consensus",
+        "args": {
+          "operation": "check_geometric_access",
+          "entity_embedding": "$fixtures.data.embeddings[1]",
+          "resource_embedding": "$fixtures.data.embeddings[2]",
+          "entity_clearance": 5,
+          "resource_sensitivity": 3,
+          "policy_balls": []
+        },
+        "save_as": "access_allowed"
+      },
+      {
+        "name": "test_access_denied_distance",
+        "op": "ops.sync.riemannian_consensus",
+        "args": {
+          "operation": "check_geometric_access",
+          "entity_embedding": "$fixtures.data.embeddings[0]",
+          "resource_embedding": "$fixtures.data.embeddings[3]",
+          "entity_clearance": 1,
+          "resource_sensitivity": 1,
+          "policy_balls": []
+        },
+        "save_as": "access_denied_distance"
+      },
+      {
+        "name": "test_access_denied_clearance",
+        "op": "ops.sync.riemannian_consensus",
+        "args": {
+          "operation": "check_geometric_access",
+          "entity_embedding": "$fixtures.data.embeddings[0]",
+          "resource_embedding": "$fixtures.data.embeddings[2]",
+          "entity_clearance": 1,
+          "resource_sensitivity": 5,
+          "policy_balls": []
+        },
+        "save_as": "access_denied_clearance"
+      },
+      {
+        "name": "test_holonomy_triangle",
+        "op": "ops.sync.riemannian_consensus",
+        "args": {
+          "operation": "compute_holonomy",
+          "loop_points": [
+            "$fixtures.data.points[0]",
+            "$fixtures.data.points[1]",
+            "$fixtures.data.points[2]",
+            "$fixtures.data.points[0]"
+          ],
+          "test_vector": [
+            0.0,
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "num_steps": 100
+        },
+        "save_as": "holonomy_triangle"
+      },
+      {
+        "name": "test_holonomy_quadrilateral",
+        "op": "ops.sync.riemannian_consensus",
+        "args": {
+          "operation": "compute_holonomy",
+          "loop_points": [
+            "$fixtures.data.points[0]",
+            "$fixtures.data.points[1]",
+            "$fixtures.data.points[2]",
+            "$fixtures.data.points[3]",
+            "$fixtures.data.points[0]"
+          ],
+          "test_vector": [
+            0.0,
+            0.0,
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "num_steps": 200
+        },
+        "save_as": "holonomy_quad"
+      },
+      {
+        "name": "test_sync_chain_validation",
+        "op": "ops.sync.riemannian_consensus",
+        "args": {
+          "operation": "validate_sync_chain",
+          "chain": {
+            "anchors": [
+              "$fixtures.data.points[0]",
+              "$fixtures.data.points[1]",
+              "$fixtures.data.points[2]"
+            ],
+            "is_closed": true
+          },
+          "threshold": 1e-09
+        },
+        "save_as": "sync_chain_result"
+      },
+      {
+        "name": "test_parallel_transport",
+        "op": "ops.sync.riemannian_consensus",
+        "args": {
+          "operation": "parallel_transport",
+          "vector": [
+            0.0,
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "source": "$fixtures.data.points[0]",
+          "target": "$fixtures.data.points[1]"
+        },
+        "save_as": "transport_result"
+      },
+      {
+        "name": "test_repair_path",
+        "op": "ops.sync.riemannian_consensus",
+        "args": {
+          "operation": "suggest_repair_path",
+          "start_point": [
+            2.3,
+            1.1,
+            0.7,
+            0.5,
+            0.3,
+            0.15,
+            0.05,
+            0.0,
+            0.0
+          ],
+          "target_point": "$fixtures.data.points[0]",
+          "policy_balls": [
+            "$policy_ball_1"
+          ],
+          "max_steps": 50
+        },
+        "save_as": "repair_path_result"
+      },
+      {
+        "name": "test_tenant_isolation_setup",
+        "op": "ops.sync.riemannian_consensus",
+        "args": {
+          "operation": "setup_tenant_isolation",
+          "tenant_id": "tenant_a",
+          "isolation_type": "spatial",
+          "tenant_center": "$fixtures.data.points[1]",
+          "isolation_radius": 2.0
+        },
+        "save_as": "tenant_a_isolation"
+      },
+      {
+        "name": "test_semantic_twist_detection",
+        "op": "ops.sync.riemannian_consensus",
+        "args": {
+          "operation": "detect_semantic_twist",
+          "transport_path": [
+            "$fixtures.data.points[0]",
+            "$fixtures.data.points[1]",
+            "$fixtures.data.points[2]",
+            "$fixtures.data.points[3]"
+          ],
+          "semantic_vector": [
+            0.0,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "twist_threshold": 1e-06
+        },
+        "save_as": "twist_detection_result"
+      }
+    ],
+    "checks": {
+      "invariants": [
+        {
+          "id": "INV.HOLONOMY.BOUNDS",
+          "metric": "holonomy_angle",
+          "args": [
+            "$holonomy_triangle"
+          ],
+          "expected": {
+            "max_angle": "1.0e-9"
+          },
+          "tolerance_overrides": {
+            "abs": "1.0e-9"
+          }
+        },
+        {
+          "id": "INV.HOLONOMY.BOUNDS",
+          "metric": "holonomy_angle",
+          "args": [
+            "$holonomy_quad"
+          ],
+          "expected": {
+            "max_angle": "1.0e-9"
+          }
+        },
+        {
+          "id": "INV.TRANSPORT.CONSISTENCY",
+          "metric": "lorentz",
+          "args": [
+            "$transport_result"
+          ],
+          "expected": {
+            "norm_preserved": true,
+            "error": "1.0e-12"
+          }
+        },
+        {
+          "id": "INV.DIST.CORRECTNESS",
+          "metric": "lorentz",
+          "args": [
+            "$potential_outside"
+          ],
+          "expected": {
+            "in_violation": false
+          }
+        }
+      ],
+      "ops": [
+        {
+          "kind": "routing.success",
+          "target": "$policy_ball_1",
+          "params": {},
+          "expected": {
+            "success": true
+          }
+        },
+        {
+          "kind": "routing.success",
+          "target": "$potential_outside",
+          "params": {},
+          "expected": {
+            "in_violation": false,
+            "total_potential": 0
+          }
+        },
+        {
+          "kind": "routing.success",
+          "target": "$clearance_1",
+          "params": {},
+          "expected": {
+            "access_radius_approx": 1.65
+          }
+        },
+        {
+          "kind": "routing.success",
+          "target": "$clearance_5",
+          "params": {},
+          "expected": {
+            "access_radius_approx": 12.18
+          }
+        },
+        {
+          "kind": "routing.success",
+          "target": "$access_allowed",
+          "params": {},
+          "expected": {
+            "decision": "allow"
+          }
+        },
+        {
+          "kind": "routing.success",
+          "target": "$access_denied_distance",
+          "params": {},
+          "expected": {
+            "decision": "deny",
+            "reason": "outside_access_radius"
+          }
+        },
+        {
+          "kind": "routing.success",
+          "target": "$access_denied_clearance",
+          "params": {},
+          "expected": {
+            "decision": "deny",
+            "reason": "insufficient_clearance"
+          }
+        },
+        {
+          "kind": "sync.converges_tol",
+          "target": "$sync_chain_result",
+          "params": {
+            "tol": 1e-09
+          },
+          "expected": {
+            "valid": true
+          }
+        },
+        {
+          "kind": "routing.success",
+          "target": "$repair_path_result",
+          "params": {},
+          "expected": {
+            "success": true
+          }
+        },
+        {
+          "kind": "routing.success",
+          "target": "$twist_detection_result",
+          "params": {},
+          "expected": {
+            "twist_detected": false
+          }
+        }
+      ],
+      "transport": [
+        {
+          "kind": "delivery.qos_satisfied",
+          "target": "access_requests",
+          "params": {
+            "qos": "exactly_once"
+          },
+          "expected": {
+            "satisfied": true
+          }
+        },
+        {
+          "kind": "ordering.contract_satisfied",
+          "target": "policy_updates",
+          "params": {
+            "ordering": "total"
+          },
+          "expected": {
+            "satisfied": true
+          }
+        },
+        {
+          "kind": "auth.clearance_enforced",
+          "params": {
+            "policy": "clearance_rules"
+          },
+          "expected": {
+            "enforced": true,
+            "violations": 0
+          }
+        }
+      ],
+      "security": [
+        {
+          "kind": "shadow_ops.diverted_on_violation",
+          "params": {
+            "policy": "access_control"
+          },
+          "expected": {
+            "diverted": false
+          }
+        },
+        {
+          "kind": "policy.change_propagates",
+          "params": {
+            "policy_id": "POLICY_RESTRICTED_ZONE_1"
+          },
+          "expected": {
+            "propagated": true
+          }
+        },
+        {
+          "kind": "audit.receipts_match",
+          "params": {},
+          "expected": {
+            "match": true
+          }
+        }
+      ],
+      "performance": {
+        "max_runtime_ms": 60000,
+        "max_memory_mb": 2048
+      }
+    },
+    "coverage": {
+      "claims": [
+        "CLAIM.HOLONOMY.DETECTION",
+        "CLAIM.HOLONOMY.BOUNDED",
+        "CLAIM.POLICY.REPULSIVE_BALLS",
+        "CLAIM.ACCESS.GEOMETRIC",
+        "CLAIM.CLEARANCE.EXPONENTIAL",
+        "CLAIM.TENANT.ISOLATION",
+        "CLAIM.SEMANTIC.CONSISTENCY",
+        "CLAIM.REPAIR.GEODESIC"
+      ],
+      "matrix": [
+        {
+          "claim_id": "CLAIM.HOLONOMY.DETECTION",
+          "step": "test_holonomy_triangle",
+          "check": "INV.HOLONOMY.BOUNDS"
+        },
+        {
+          "claim_id": "CLAIM.HOLONOMY.BOUNDED",
+          "step": "test_holonomy_quadrilateral",
+          "check": "INV.HOLONOMY.BOUNDS"
+        },
+        {
+          "claim_id": "CLAIM.POLICY.REPULSIVE_BALLS",
+          "step": "test_potential_outside_balls",
+          "check": "routing.success"
+        },
+        {
+          "claim_id": "CLAIM.ACCESS.GEOMETRIC",
+          "step": "test_access_allowed",
+          "check": "routing.success"
+        },
+        {
+          "claim_id": "CLAIM.ACCESS.GEOMETRIC",
+          "step": "test_access_denied_distance",
+          "check": "routing.success"
+        },
+        {
+          "claim_id": "CLAIM.CLEARANCE.EXPONENTIAL",
+          "step": "test_clearance_radius_5",
+          "check": "routing.success"
+        },
+        {
+          "claim_id": "CLAIM.TENANT.ISOLATION",
+          "step": "test_tenant_isolation_setup",
+          "check": "routing.success"
+        },
+        {
+          "claim_id": "CLAIM.SEMANTIC.CONSISTENCY",
+          "step": "test_semantic_twist_detection",
+          "check": "routing.success"
+        },
+        {
+          "claim_id": "CLAIM.REPAIR.GEODESIC",
+          "step": "test_repair_path",
+          "check": "routing.success"
+        }
+      ]
+    },
+    "receipts": {
+      "per_step": [
+        {
+          "step_name": "create_policy_ball_1",
+          "sha256": "aa12345678901234567890123456789012345678901234567890123456789012"
+        },
+        {
+          "step_name": "test_holonomy_triangle",
+          "sha256": "bb23456789012345678901234567890123456789012345678901234567890123"
+        },
+        {
+          "step_name": "test_access_allowed",
+          "sha256": "cc34567890123456789012345678901234567890123456789012345678901234"
+        },
+        {
+          "step_name": "test_sync_chain_validation",
+          "sha256": "dd45678901234567890123456789012345678901234567890123456789012345"
+        }
+      ],
+      "per_check": [
+        {
+          "check_id": "INV.HOLONOMY.BOUNDS.0",
+          "sha256": "ee56789012345678901234567890123456789012345678901234567890123456"
+        },
+        {
+          "check_id": "INV.TRANSPORT.CONSISTENCY.0",
+          "sha256": "ff67890123456789012345678901234567890123456789012345678901234567"
+        }
+      ],
+      "audit_export": {
+        "format": "jsonl",
+        "include_traces": true
+      }
+    },
+    "notes": "Level 4 conformance suite for Geometric Policy Enforcement. Tests holonomy detection for semantic consistency, repulsive policy balls for security zones, clearance-based geometric authorization, and multi-tenant isolation. Foundation for zero-overhead security model."
+  },
+  "implementation_notes": {
+    "language_targets": [
+      "python",
+      "rust",
+      "javascript",
+      "go"
+    ],
+    "holonomy_computation": {
+      "transport_method": "Intrinsic Levi-Civita parallel transport",
+      "discretization": "Geodesic segments with adaptive refinement",
+      "error_accumulation": "Track cumulative error, abort if > threshold"
+    },
+    "policy_ball_optimization": {
+      "spatial_indexing": "Use R-tree or ball tree for fast ball lookup",
+      "batch_checking": "Vectorize potential computation for multiple points",
+      "caching": "Cache potential values for frequently accessed regions"
+    },
+    "security_considerations": {
+      "timing_attacks": "Constant-time distance comparison",
+      "side_channels": "No early exit on first policy ball hit",
+      "audit_logging": "Log all access decisions with full context"
+    }
+  }
+}

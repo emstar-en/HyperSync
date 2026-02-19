@@ -1,0 +1,194 @@
+{
+  "name": "mxfy_blueprint_generation",
+  "version": "1.0.0",
+  "description": "MXFY Blueprint Generation Specification - FactorySpec creation through primitive selection, dependency resolution, architecture planning, and resource estimation",
+  "license": {
+    "type": "AGPLv3",
+    "text": "This specification is licensed under the GNU Affero General Public License v3.0. See https://www.gnu.org/licenses/agpl-3.0.html for full license text.",
+    "copyright": "Copyright (c) 2024-2026 HyperSync Project"
+  },
+  "subsystem": "MXFY",
+  "category": "blueprint_generation",
+  "stunir_compatible": true,
+  "dependencies": [
+    "mxfy_core_system@1.0.0",
+    "mxfy_intent_analysis@1.0.0",
+    "sdl_core_infrastructure@3.1.0",
+    "sdl_semantic_search@3.1.0"
+  ],
+  "architecture": {
+    "overview": "Blueprint Generation is Phase 2 of MXFY - creating FactorySpec blueprints from parsed intents",
+    "pipeline": {
+      "primitive_discovery": "Query SDL for relevant primitives",
+      "primitive_selection": "Select best primitives for requirements",
+      "dependency_resolution": "Resolve primitive dependencies",
+      "architecture_planning": "Plan component layout and data flow",
+      "resource_estimation": "Estimate required resources",
+      "blueprint_validation": "Validate FactorySpec completeness"
+    },
+    "sdl_integration": {
+      "description": "Blueprint generation heavily relies on SDL for primitive discovery",
+      "query_strategy": {
+        "semantic_search": "Find primitives by semantic similarity to intent",
+        "capability_match": "Match required capabilities to primitive capabilities",
+        "type_filter": "Filter by primitive type (code, ui, data, config)"
+      }
+    }
+  },
+  "type_definitions": {
+    "BlueprintPlan": {
+      "description": "Initial plan before full FactorySpec",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "intent": {"$ref": "mxfy_core_system#/type_definitions/ParsedIntent"},
+          "required_capabilities": {"type": "array", "items": {"type": "string"}},
+          "suggested_architecture": {"type": "string", "enum": ["single_component", "multi_component", "plugin_based", "microservice"]},
+          "estimated_complexity": {"type": "string", "enum": ["simple", "moderate", "complex"]}
+        }
+      }
+    },
+    "PrimitiveCandidate": {
+      "description": "Candidate primitive from SDL search",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "shard": {"$ref": "sdl_core_infrastructure#/type_definitions/SDLShard"},
+          "relevance_score": {"type": "number"},
+          "capability_match": {"type": "number"},
+          "compatibility_score": {"type": "number"}
+        }
+      }
+    },
+    "DependencyGraph": {
+      "description": "Resolved dependency graph for primitives",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "nodes": {"type": "array", "items": {"type": "object"}},
+          "edges": {"type": "array", "items": {"type": "object"}},
+          "topological_order": {"type": "array", "items": {"type": "string"}},
+          "has_cycles": {"type": "boolean"}
+        }
+      }
+    },
+    "ArchitecturePlan": {
+      "description": "Architecture plan for application",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "components": {"type": "array", "items": {"type": "object"}},
+          "layout": {"type": "object"},
+          "data_flow": {"type": "array", "items": {"type": "object"}},
+          "entry_point": {"type": "string"},
+          "lifecycle_hooks": {"type": "object"}
+        }
+      }
+    },
+    "ResourceEstimate": {
+      "description": "Estimated resource requirements",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "memory_mb": {"type": "integer"},
+          "cpu_cores": {"type": "number"},
+          "storage_mb": {"type": "integer"},
+          "network_required": {"type": "boolean"},
+          "special_capabilities": {"type": "array", "items": {"type": "string"}}
+        }
+      }
+    }
+  },
+  "operations": [
+    {
+      "name": "blueprint_create_plan",
+      "description": "Create initial blueprint plan from intent",
+      "signature": "blueprint_create_plan(intent: ParsedIntent) -> BlueprintPlan",
+      "complexity": "O(1)",
+      "determinism": "D2"
+    },
+    {
+      "name": "blueprint_discover_primitives",
+      "description": "Query SDL for relevant primitives",
+      "signature": "blueprint_discover_primitives(plan: BlueprintPlan) -> array[PrimitiveCandidate]",
+      "complexity": "O(log n) for semantic search",
+      "determinism": "D0"
+    },
+    {
+      "name": "blueprint_select_primitives",
+      "description": "Select optimal primitives from candidates",
+      "signature": "blueprint_select_primitives(candidates: array[PrimitiveCandidate], constraints: object) -> array[PrimitiveReference]",
+      "complexity": "O(n log n)",
+      "determinism": "D2"
+    },
+    {
+      "name": "blueprint_resolve_dependencies",
+      "description": "Resolve all primitive dependencies",
+      "signature": "blueprint_resolve_dependencies(primitives: array[PrimitiveReference]) -> DependencyGraph",
+      "complexity": "O(V + E)",
+      "determinism": "D0"
+    },
+    {
+      "name": "blueprint_plan_architecture",
+      "description": "Plan application architecture",
+      "signature": "blueprint_plan_architecture(primitives: array[PrimitiveReference], intent: ParsedIntent) -> ArchitecturePlan",
+      "complexity": "O(n²)",
+      "determinism": "D2"
+    },
+    {
+      "name": "blueprint_estimate_resources",
+      "description": "Estimate resource requirements",
+      "signature": "blueprint_estimate_resources(plan: ArchitecturePlan) -> ResourceEstimate",
+      "complexity": "O(n)",
+      "determinism": "D0"
+    },
+    {
+      "name": "blueprint_generate_spec",
+      "description": "Generate final FactorySpec",
+      "signature": "blueprint_generate_spec(plan: BlueprintPlan, primitives: array[PrimitiveReference], architecture: ArchitecturePlan, resources: ResourceEstimate) -> FactorySpec",
+      "complexity": "O(n)",
+      "determinism": "D0"
+    },
+    {
+      "name": "blueprint_validate",
+      "description": "Validate FactorySpec completeness",
+      "signature": "blueprint_validate(spec: FactorySpec) -> ValidationResult",
+      "complexity": "O(n)",
+      "determinism": "D0"
+    },
+    {
+      "name": "blueprint_optimize",
+      "description": "Optimize blueprint for performance",
+      "signature": "blueprint_optimize(spec: FactorySpec) -> FactorySpec",
+      "complexity": "O(n²)",
+      "determinism": "D2"
+    }
+  ],
+  "primitive_selection_strategies": {
+    "relevance_ranking": {
+      "description": "Rank primitives by relevance to intent",
+      "factors": ["semantic_similarity", "capability_coverage", "usage_frequency", "compatibility"]
+    },
+    "constraint_satisfaction": {
+      "description": "Filter by hard constraints",
+      "constraints": ["type_compatibility", "resource_limits", "license_compliance"]
+    },
+    "diversity_selection": {
+      "description": "Ensure diverse primitive coverage",
+      "technique": "Maximal marginal relevance (MMR)"
+    }
+  },
+  "test_cases": [
+    {
+      "id": "BLUEPRINT_TC_001",
+      "input": {
+        "intent": {"application_type": "file browser", "target_use_case": "managing datasets"}
+      },
+      "expected": {
+        "primitive_count": ">=3",
+        "has_ui_primitives": true,
+        "has_data_primitives": true
+      }
+    }
+  ]
+}

@@ -1,0 +1,1035 @@
+{
+  "version": "1.0.0",
+  "namespace": "hypersync.ui.packing",
+  "description": "Packed primitive format system for efficient UI storage, transmission, and caching. Provides compression, serialization, versioning, and indexing for terminal UI primitives.",
+  
+  "types": {
+    "PackedPrimitive": {
+      "description": "Serialized primitive in packed format",
+      "fields": {
+        "version": {
+          "type": "string",
+          "description": "Format version (semver)",
+          "required": true
+        },
+        "primitive_id": {
+          "type": "string",
+          "description": "Primitive identifier",
+          "required": true
+        },
+        "primitive_type": {
+          "type": "string",
+          "description": "Type of primitive",
+          "required": true
+        },
+        "compressed": {
+          "type": "boolean",
+          "description": "Data is compressed",
+          "required": true
+        },
+        "compression_algorithm": {
+          "type": "CompressionAlgorithm",
+          "description": "Compression algorithm used",
+          "required": false
+        },
+        "encoding": {
+          "type": "EncodingFormat",
+          "description": "Encoding format",
+          "required": true
+        },
+        "data": {
+          "type": "bytes",
+          "description": "Packed primitive data",
+          "required": true
+        },
+        "checksum": {
+          "type": "string",
+          "description": "Data integrity checksum (SHA-256)",
+          "required": true
+        },
+        "size_bytes": {
+          "type": "integer",
+          "description": "Packed size in bytes",
+          "required": true
+        },
+        "original_size": {
+          "type": "integer",
+          "description": "Original uncompressed size",
+          "required": false
+        },
+        "metadata": {
+          "type": "PrimitiveMetadata",
+          "description": "Primitive metadata",
+          "required": true
+        },
+        "packed_at": {
+          "type": "integer",
+          "description": "Packing timestamp",
+          "required": true
+        }
+      }
+    },
+    
+    "CompressionAlgorithm": {
+      "description": "Compression algorithm",
+      "enum": ["none", "gzip", "zstd", "lz4", "brotli"]
+    },
+    
+    "EncodingFormat": {
+      "description": "Data encoding format",
+      "enum": ["binary", "base64", "msgpack", "protobuf", "json"]
+    },
+    
+    "PrimitiveMetadata": {
+      "description": "Metadata about packed primitive",
+      "fields": {
+        "name": {
+          "type": "string",
+          "description": "Primitive name",
+          "required": false
+        },
+        "description": {
+          "type": "string",
+          "description": "Primitive description",
+          "required": false
+        },
+        "tags": {
+          "type": "array<string>",
+          "description": "Classification tags",
+          "required": false
+        },
+        "category": {
+          "type": "string",
+          "description": "Primitive category",
+          "required": false
+        },
+        "graphics_level": {
+          "type": "integer",
+          "description": "Minimum graphics level required",
+          "required": false
+        },
+        "dependencies": {
+          "type": "array<string>",
+          "description": "Dependent primitive IDs",
+          "required": false
+        },
+        "author": {
+          "type": "string",
+          "description": "Creator/author",
+          "required": false
+        },
+        "created_at": {
+          "type": "integer",
+          "description": "Creation timestamp",
+          "required": false
+        }
+      }
+    },
+    
+    "CompressionFormat": {
+      "description": "Compression configuration",
+      "fields": {
+        "algorithm": {
+          "type": "CompressionAlgorithm",
+          "description": "Compression algorithm",
+          "required": true
+        },
+        "level": {
+          "type": "integer",
+          "description": "Compression level (0-9, algorithm-specific)",
+          "required": false
+        },
+        "dictionary": {
+          "type": "bytes",
+          "description": "Compression dictionary (for Zstd)",
+          "required": false
+        }
+      }
+    },
+    
+    "PrimitiveIndex": {
+      "description": "Index for primitive library",
+      "fields": {
+        "index_version": {
+          "type": "string",
+          "description": "Index format version",
+          "required": true
+        },
+        "total_primitives": {
+          "type": "integer",
+          "description": "Total number of primitives",
+          "required": true
+        },
+        "entries": {
+          "type": "array<IndexEntry>",
+          "description": "Index entries",
+          "required": true
+        },
+        "categories": {
+          "type": "map<string, integer>",
+          "description": "Category counts",
+          "required": false
+        },
+        "tags": {
+          "type": "map<string, integer>",
+          "description": "Tag usage counts",
+          "required": false
+        },
+        "created_at": {
+          "type": "integer",
+          "description": "Index creation timestamp",
+          "required": true
+        }
+      }
+    },
+    
+    "IndexEntry": {
+      "description": "Single index entry",
+      "fields": {
+        "primitive_id": {
+          "type": "string",
+          "description": "Primitive identifier",
+          "required": true
+        },
+        "name": {
+          "type": "string",
+          "description": "Primitive name",
+          "required": true
+        },
+        "type": {
+          "type": "string",
+          "description": "Primitive type",
+          "required": true
+        },
+        "category": {
+          "type": "string",
+          "description": "Category",
+          "required": false
+        },
+        "tags": {
+          "type": "array<string>",
+          "description": "Tags",
+          "required": false
+        },
+        "size_bytes": {
+          "type": "integer",
+          "description": "Packed size",
+          "required": true
+        },
+        "checksum": {
+          "type": "string",
+          "description": "Data checksum",
+          "required": true
+        },
+        "storage_path": {
+          "type": "string",
+          "description": "Storage location",
+          "required": false
+        }
+      }
+    },
+    
+    "PrimitiveBundle": {
+      "description": "Bundle of multiple primitives",
+      "fields": {
+        "bundle_id": {
+          "type": "string",
+          "description": "Bundle identifier",
+          "required": true
+        },
+        "bundle_name": {
+          "type": "string",
+          "description": "Bundle name",
+          "required": true
+        },
+        "version": {
+          "type": "string",
+          "description": "Bundle version",
+          "required": true
+        },
+        "primitives": {
+          "type": "array<PackedPrimitive>",
+          "description": "Bundled primitives",
+          "required": true
+        },
+        "dependency_graph": {
+          "type": "map<string, array<string>>",
+          "description": "Primitive dependency graph",
+          "required": false
+        },
+        "manifest": {
+          "type": "map<string, any>",
+          "description": "Bundle manifest",
+          "required": true
+        },
+        "compressed": {
+          "type": "boolean",
+          "description": "Entire bundle is compressed",
+          "required": true
+        }
+      }
+    },
+    
+    "CacheConfig": {
+      "description": "Primitive cache configuration",
+      "fields": {
+        "max_size_bytes": {
+          "type": "integer",
+          "description": "Maximum cache size",
+          "required": true
+        },
+        "max_entries": {
+          "type": "integer",
+          "description": "Maximum number of entries",
+          "required": false
+        },
+        "eviction_policy": {
+          "type": "EvictionPolicy",
+          "description": "Cache eviction policy",
+          "required": true
+        },
+        "ttl_seconds": {
+          "type": "integer",
+          "description": "Time to live (0 = no expiry)",
+          "required": false
+        },
+        "persist": {
+          "type": "boolean",
+          "description": "Persist cache to disk",
+          "required": false
+        }
+      }
+    },
+    
+    "EvictionPolicy": {
+      "description": "Cache eviction policy",
+      "enum": ["lru", "lfu", "fifo", "size_based", "ttl"]
+    },
+    
+    "CacheEntry": {
+      "description": "Cached primitive entry",
+      "fields": {
+        "primitive_id": {
+          "type": "string",
+          "description": "Primitive identifier",
+          "required": true
+        },
+        "primitive": {
+          "type": "Primitive",
+          "description": "Unpacked primitive (or packed if lazy)",
+          "required": true
+        },
+        "size_bytes": {
+          "type": "integer",
+          "description": "Memory size",
+          "required": true
+        },
+        "access_count": {
+          "type": "integer",
+          "description": "Number of accesses",
+          "required": true
+        },
+        "last_access": {
+          "type": "integer",
+          "description": "Last access timestamp",
+          "required": true
+        },
+        "cached_at": {
+          "type": "integer",
+          "description": "Cache entry creation time",
+          "required": true
+        }
+      }
+    },
+    
+    "MigrationRule": {
+      "description": "Format migration rule",
+      "fields": {
+        "from_version": {
+          "type": "string",
+          "description": "Source version",
+          "required": true
+        },
+        "to_version": {
+          "type": "string",
+          "description": "Target version",
+          "required": true
+        },
+        "transformation": {
+          "type": "string",
+          "description": "Transformation function name",
+          "required": true
+        },
+        "breaking_change": {
+          "type": "boolean",
+          "description": "Migration includes breaking changes",
+          "required": true
+        },
+        "automatic": {
+          "type": "boolean",
+          "description": "Can migrate automatically",
+          "required": true
+        }
+      }
+    },
+    
+    "ValidationResult": {
+      "description": "Validation result for packed format",
+      "fields": {
+        "valid": {
+          "type": "boolean",
+          "description": "Format is valid",
+          "required": true
+        },
+        "errors": {
+          "type": "array<string>",
+          "description": "Validation errors",
+          "required": false
+        },
+        "warnings": {
+          "type": "array<string>",
+          "description": "Validation warnings",
+          "required": false
+        },
+        "checksum_valid": {
+          "type": "boolean",
+          "description": "Checksum is valid",
+          "required": true
+        },
+        "version_compatible": {
+          "type": "boolean",
+          "description": "Version is compatible",
+          "required": true
+        }
+      }
+    },
+    
+    "StorageStats": {
+      "description": "Storage statistics",
+      "fields": {
+        "total_primitives": {
+          "type": "integer",
+          "description": "Total primitives stored",
+          "required": true
+        },
+        "total_size_bytes": {
+          "type": "integer",
+          "description": "Total storage size",
+          "required": true
+        },
+        "average_size_bytes": {
+          "type": "integer",
+          "description": "Average primitive size",
+          "required": true
+        },
+        "compression_ratio": {
+          "type": "float",
+          "description": "Overall compression ratio",
+          "required": true
+        },
+        "by_type": {
+          "type": "map<string, integer>",
+          "description": "Count by primitive type",
+          "required": false
+        },
+        "by_category": {
+          "type": "map<string, integer>",
+          "description": "Count by category",
+          "required": false
+        }
+      }
+    }
+  },
+  
+  "operations": {
+    "pack_primitive": {
+      "description": "Pack primitive for efficient storage with compression, serialization, and checksumming.",
+      "inputs": {
+        "primitive": {
+          "type": "Primitive",
+          "description": "Primitive to pack",
+          "required": true
+        },
+        "compression": {
+          "type": "CompressionFormat",
+          "description": "Compression configuration",
+          "required": false
+        },
+        "encoding": {
+          "type": "EncodingFormat",
+          "description": "Encoding format",
+          "required": false
+        },
+        "include_children": {
+          "type": "boolean",
+          "description": "Include child primitives recursively",
+          "required": false
+        },
+        "metadata": {
+          "type": "PrimitiveMetadata",
+          "description": "Additional metadata",
+          "required": false
+        }
+      },
+      "outputs": {
+        "packed": {
+          "type": "PackedPrimitive",
+          "description": "Packed primitive"
+        },
+        "size_bytes": {
+          "type": "integer",
+          "description": "Packed size in bytes"
+        },
+        "compression_ratio": {
+          "type": "float",
+          "description": "Compression ratio (original/packed)"
+        }
+      },
+      "errors": {
+        "PACKING_FAILED": "Failed to pack primitive",
+        "COMPRESSION_ERROR": "Compression failed",
+        "SERIALIZATION_ERROR": "Serialization failed",
+        "INVALID_PRIMITIVE": "Primitive structure is invalid"
+      }
+    },
+    
+    "unpack_primitive": {
+      "description": "Unpack primitive from packed format with decompression, deserialization, and validation.",
+      "inputs": {
+        "packed": {
+          "type": "PackedPrimitive",
+          "description": "Packed primitive",
+          "required": true
+        },
+        "validate": {
+          "type": "boolean",
+          "description": "Validate checksum and format",
+          "required": false
+        },
+        "include_children": {
+          "type": "boolean",
+          "description": "Unpack child primitives",
+          "required": false
+        }
+      },
+      "outputs": {
+        "primitive": {
+          "type": "Primitive",
+          "description": "Unpacked primitive"
+        },
+        "validation": {
+          "type": "ValidationResult",
+          "description": "Validation results"
+        }
+      },
+      "errors": {
+        "UNPACKING_FAILED": "Failed to unpack primitive",
+        "DECOMPRESSION_ERROR": "Decompression failed",
+        "DESERIALIZATION_ERROR": "Deserialization failed",
+        "CHECKSUM_MISMATCH": "Checksum validation failed",
+        "VERSION_INCOMPATIBLE": "Format version not supported"
+      }
+    },
+    
+    "validate_packed_format": {
+      "description": "Validate packed format for integrity, version compatibility, and correctness.",
+      "inputs": {
+        "packed": {
+          "type": "PackedPrimitive",
+          "description": "Packed primitive to validate",
+          "required": true
+        },
+        "strict": {
+          "type": "boolean",
+          "description": "Strict validation (vs permissive)",
+          "required": false
+        }
+      },
+      "outputs": {
+        "result": {
+          "type": "ValidationResult",
+          "description": "Validation results"
+        }
+      },
+      "errors": {
+        "VALIDATION_FAILED": "Validation process failed"
+      }
+    },
+    
+    "compress_primitive_data": {
+      "description": "Compress primitive data using specified algorithm with quality/size optimization.",
+      "inputs": {
+        "data": {
+          "type": "bytes",
+          "description": "Data to compress",
+          "required": true
+        },
+        "compression": {
+          "type": "CompressionFormat",
+          "description": "Compression configuration",
+          "required": true
+        }
+      },
+      "outputs": {
+        "compressed_data": {
+          "type": "bytes",
+          "description": "Compressed data"
+        },
+        "original_size": {
+          "type": "integer",
+          "description": "Original size in bytes"
+        },
+        "compressed_size": {
+          "type": "integer",
+          "description": "Compressed size in bytes"
+        },
+        "ratio": {
+          "type": "float",
+          "description": "Compression ratio"
+        }
+      },
+      "errors": {
+        "COMPRESSION_FAILED": "Compression failed",
+        "UNSUPPORTED_ALGORITHM": "Compression algorithm not supported"
+      }
+    },
+    
+    "index_primitive_library": {
+      "description": "Create searchable index of primitive library for fast lookup and categorization.",
+      "inputs": {
+        "primitives": {
+          "type": "array<PackedPrimitive>",
+          "description": "Primitives to index",
+          "required": true
+        },
+        "rebuild": {
+          "type": "boolean",
+          "description": "Rebuild index from scratch",
+          "required": false
+        }
+      },
+      "outputs": {
+        "index": {
+          "type": "PrimitiveIndex",
+          "description": "Primitive library index"
+        },
+        "stats": {
+          "type": "StorageStats",
+          "description": "Library statistics"
+        }
+      },
+      "errors": {
+        "INDEXING_FAILED": "Failed to create index",
+        "INVALID_PRIMITIVES": "Some primitives are invalid"
+      }
+    },
+    
+    "cache_unpacked_primitives": {
+      "description": "Cache unpacked primitives in memory with eviction policy and memory limits.",
+      "inputs": {
+        "primitive_id": {
+          "type": "string",
+          "description": "Primitive identifier to cache",
+          "required": true
+        },
+        "primitive": {
+          "type": "Primitive",
+          "description": "Unpacked primitive",
+          "required": true
+        },
+        "config": {
+          "type": "CacheConfig",
+          "description": "Cache configuration",
+          "required": false
+        }
+      },
+      "outputs": {
+        "cached": {
+          "type": "boolean",
+          "description": "Successfully cached"
+        },
+        "cache_entry": {
+          "type": "CacheEntry",
+          "description": "Cache entry info"
+        },
+        "evicted": {
+          "type": "array<string>",
+          "description": "Primitive IDs that were evicted"
+        }
+      },
+      "errors": {
+        "CACHE_FULL": "Cache is full and eviction failed",
+        "CACHING_FAILED": "Failed to cache primitive"
+      }
+    },
+    
+    "version_primitive": {
+      "description": "Version primitive format with tracking, migration support, and compatibility.",
+      "inputs": {
+        "primitive": {
+          "type": "Primitive",
+          "description": "Primitive to version",
+          "required": true
+        },
+        "version": {
+          "type": "string",
+          "description": "Version number (semver)",
+          "required": true
+        },
+        "migration_rules": {
+          "type": "array<MigrationRule>",
+          "description": "Migration rules from previous versions",
+          "required": false
+        }
+      },
+      "outputs": {
+        "versioned": {
+          "type": "PackedPrimitive",
+          "description": "Versioned primitive"
+        },
+        "compatible_versions": {
+          "type": "array<string>",
+          "description": "Versions this is compatible with"
+        }
+      },
+      "errors": {
+        "VERSIONING_FAILED": "Failed to version primitive",
+        "INVALID_VERSION": "Version number is invalid"
+      }
+    },
+    
+    "bundle_primitives": {
+      "description": "Bundle multiple primitives together with dependency resolution for atomic loading.",
+      "inputs": {
+        "primitives": {
+          "type": "array<PackedPrimitive>",
+          "description": "Primitives to bundle",
+          "required": true
+        },
+        "bundle_name": {
+          "type": "string",
+          "description": "Bundle name",
+          "required": true
+        },
+        "resolve_dependencies": {
+          "type": "boolean",
+          "description": "Automatically resolve and include dependencies",
+          "required": false
+        },
+        "compress_bundle": {
+          "type": "boolean",
+          "description": "Compress entire bundle",
+          "required": false
+        }
+      },
+      "outputs": {
+        "bundle": {
+          "type": "PrimitiveBundle",
+          "description": "Primitive bundle"
+        },
+        "total_size": {
+          "type": "integer",
+          "description": "Total bundle size"
+        },
+        "primitive_count": {
+          "type": "integer",
+          "description": "Number of primitives in bundle"
+        }
+      },
+      "errors": {
+        "BUNDLING_FAILED": "Failed to create bundle",
+        "DEPENDENCY_CONFLICT": "Dependency conflicts detected",
+        "MISSING_DEPENDENCIES": "Required dependencies missing"
+      }
+    },
+    
+    "optimize_primitive_storage": {
+      "description": "Optimize storage with deduplication, reference sharing, and compact encoding.",
+      "inputs": {
+        "primitives": {
+          "type": "array<PackedPrimitive>",
+          "description": "Primitives to optimize",
+          "required": true
+        },
+        "deduplicate": {
+          "type": "boolean",
+          "description": "Remove duplicate primitives",
+          "required": false
+        },
+        "share_references": {
+          "type": "boolean",
+          "description": "Share common sub-structures",
+          "required": false
+        }
+      },
+      "outputs": {
+        "optimized": {
+          "type": "array<PackedPrimitive>",
+          "description": "Optimized primitives"
+        },
+        "size_reduction": {
+          "type": "integer",
+          "description": "Bytes saved"
+        },
+        "optimization_ratio": {
+          "type": "float",
+          "description": "Optimization ratio"
+        },
+        "duplicates_removed": {
+          "type": "integer",
+          "description": "Number of duplicates removed"
+        }
+      },
+      "errors": {
+        "OPTIMIZATION_FAILED": "Optimization failed",
+        "NO_OPTIMIZATIONS_POSSIBLE": "No optimizations could be applied"
+      }
+    },
+    
+    "migrate_primitive_format": {
+      "description": "Migrate primitive from old format version to new with transformation and compatibility.",
+      "inputs": {
+        "packed": {
+          "type": "PackedPrimitive",
+          "description": "Primitive in old format",
+          "required": true
+        },
+        "target_version": {
+          "type": "string",
+          "description": "Target format version",
+          "required": true
+        },
+        "migration_rules": {
+          "type": "array<MigrationRule>",
+          "description": "Migration rules",
+          "required": false
+        }
+      },
+      "outputs": {
+        "migrated": {
+          "type": "PackedPrimitive",
+          "description": "Migrated primitive"
+        },
+        "transformations": {
+          "type": "array<string>",
+          "description": "Transformations applied"
+        },
+        "breaking_changes": {
+          "type": "array<string>",
+          "description": "Breaking changes encountered"
+        }
+      },
+      "errors": {
+        "MIGRATION_FAILED": "Migration failed",
+        "NO_MIGRATION_PATH": "No migration path available",
+        "BREAKING_CHANGES": "Breaking changes prevent automatic migration"
+      }
+    }
+  },
+  
+  "documentation": {
+    "overview": "Packed Primitive Format provides efficient storage, transmission, and caching for terminal UI primitives. Uses compression, versioning, and smart indexing for optimal performance.",
+    
+    "format_goals": {
+      "efficiency": "Minimize storage and bandwidth usage",
+      "speed": "Fast pack/unpack operations",
+      "reliability": "Checksums and validation for integrity",
+      "versioning": "Support format evolution over time",
+      "portability": "Work across different systems and architectures",
+      "caching": "Enable efficient in-memory caching"
+    },
+    
+    "compression_algorithms": {
+      "gzip": {
+        "description": "Standard compression, widely supported",
+        "ratio": "Good (typically 3-5x)",
+        "speed": "Moderate",
+        "use_case": "General purpose, compatible"
+      },
+      "zstd": {
+        "description": "Modern compression, excellent performance",
+        "ratio": "Excellent (typically 4-7x)",
+        "speed": "Fast",
+        "use_case": "Recommended for most cases"
+      },
+      "lz4": {
+        "description": "Extremely fast compression",
+        "ratio": "Moderate (typically 2-3x)",
+        "speed": "Very fast",
+        "use_case": "Real-time, performance-critical"
+      },
+      "brotli": {
+        "description": "High compression ratio",
+        "ratio": "Excellent (typically 5-8x)",
+        "speed": "Slower",
+        "use_case": "Network transmission, static content"
+      }
+    },
+    
+    "encoding_formats": {
+      "binary": "Native binary format - fastest, most compact",
+      "msgpack": "MessagePack - compact, fast, widely supported",
+      "protobuf": "Protocol Buffers - efficient, schema-based",
+      "json": "JSON - human-readable, debugging (not recommended for production)",
+      "base64": "Base64 encoding - for text-safe transmission"
+    },
+    
+    "versioning_strategy": {
+      "description": "Semantic versioning for format compatibility",
+      "semver": "MAJOR.MINOR.PATCH (e.g., 1.2.3)",
+      "compatibility": {
+        "MAJOR": "Breaking changes - migration required",
+        "MINOR": "New features - backward compatible",
+        "PATCH": "Bug fixes - fully compatible"
+      },
+      "migration": "Automatic migration for minor/patch, manual for major",
+      "support": "Support N-2 major versions for smooth transitions"
+    },
+    
+    "checksumming": {
+      "algorithm": "SHA-256 for cryptographic integrity",
+      "purpose": "Detect corruption, tampering, transmission errors",
+      "validation": "Always validate on unpack",
+      "performance": "Minimal overhead, highly optimized"
+    },
+    
+    "caching_strategy": {
+      "description": "Multi-level caching for performance",
+      "levels": {
+        "L1": "In-memory unpacked primitives - instant access",
+        "L2": "In-memory packed primitives - fast unpack",
+        "L3": "Disk-based cache - persistent across sessions"
+      },
+      "eviction_policies": {
+        "LRU": "Least Recently Used - good general purpose",
+        "LFU": "Least Frequently Used - for stable working sets",
+        "Size-based": "Evict largest first - maximize count",
+        "TTL": "Time-based expiry - for temporary data"
+      },
+      "best_practice": "Use LRU with size limit for most cases"
+    },
+    
+    "bundling": {
+      "description": "Group related primitives for atomic loading",
+      "use_cases": [
+        "UI themes - complete set of styled widgets",
+        "Feature modules - all widgets for a feature",
+        "Libraries - reusable primitive collections",
+        "Templates - pre-built UI layouts"
+      ],
+      "benefits": [
+        "Single download for complete functionality",
+        "Automatic dependency resolution",
+        "Reduced HTTP requests (if served over network)",
+        "Atomic updates - all or nothing"
+      ],
+      "format": "Bundle is itself a packed primitive containing others"
+    },
+    
+    "optimization_techniques": {
+      "deduplication": {
+        "description": "Remove identical primitives",
+        "method": "Hash-based detection using checksums",
+        "savings": "Significant for repeated widgets"
+      },
+      "reference_sharing": {
+        "description": "Share common sub-structures",
+        "method": "Content-addressed storage",
+        "savings": "Reduces redundancy in similar widgets"
+      },
+      "delta_encoding": {
+        "description": "Store differences from base",
+        "method": "Diff against common base widget",
+        "savings": "Excellent for widget variations"
+      },
+      "dictionary_compression": {
+        "description": "Shared compression dictionary",
+        "method": "Pre-trained dictionary for UI primitives",
+        "savings": "Better compression for similar widgets"
+      }
+    },
+    
+    "indexing": {
+      "description": "Fast primitive lookup and discovery",
+      "index_keys": [
+        "Primitive ID - unique identifier",
+        "Type - primitive type (button, table, etc.)",
+        "Category - logical grouping",
+        "Tags - multiple classification labels",
+        "Checksum - for integrity checking"
+      ],
+      "search_capabilities": [
+        "By ID - O(1) lookup",
+        "By type - find all buttons, tables, etc.",
+        "By category - UI section, theme, etc.",
+        "By tag - flexible multi-facet search"
+      ],
+      "implementation": "In-memory hash maps + persistent index file"
+    },
+    
+    "migration_process": {
+      "description": "Handling format version changes",
+      "detection": "Check version field in packed primitive",
+      "rules": "Migration rules define transformations",
+      "automatic": "Minor/patch versions migrate automatically",
+      "manual": "Major versions may require manual intervention",
+      "rollback": "Keep backup before migrating",
+      "testing": "Test migrations on copies first"
+    },
+    
+    "best_practices": [
+      "Use Zstd compression for best balance of speed and ratio",
+      "Always validate checksums on unpack",
+      "Cache frequently-used primitives in memory",
+      "Bundle related primitives for efficiency",
+      "Version all primitives for future compatibility",
+      "Index large libraries for fast lookup",
+      "Optimize storage periodically (deduplication)",
+      "Use binary encoding for production",
+      "Monitor cache hit rates and adjust size",
+      "Implement lazy loading for large bundles"
+    ],
+    
+    "performance_considerations": {
+      "packing_cost": "One-time cost, amortized over many uses",
+      "unpacking_cost": "Should be < 1ms for typical widgets",
+      "cache_benefits": "10-100x speedup vs unpacking",
+      "network_transmission": "Compression reduces bandwidth by 4-7x",
+      "memory_usage": "Monitor cache size, tune eviction",
+      "disk_io": "Use memory caching to minimize disk access"
+    },
+    
+    "examples": {
+      "pack_and_cache": {
+        "description": "Pack primitive and cache for reuse",
+        "steps": [
+          "1. pack_primitive(primitive, compression=zstd) → packed",
+          "2. Save packed to storage",
+          "3. unpack_primitive(packed) → primitive",
+          "4. cache_unpacked_primitives(primitive_id, primitive)",
+          "5. Future uses: retrieve from cache instantly"
+        ]
+      },
+      "create_bundle": {
+        "description": "Bundle UI theme primitives",
+        "steps": [
+          "1. Pack all theme widgets: button, input, table, etc.",
+          "2. bundle_primitives(packed_widgets, 'dark_theme')",
+          "3. Distribute single bundle file",
+          "4. Load bundle: unpacks all widgets atomically",
+          "5. Cache all unpacked widgets"
+        ]
+      },
+      "migrate_format": {
+        "description": "Migrate old format to new version",
+        "steps": [
+          "1. Load old packed primitive",
+          "2. validate_packed_format(packed) → check version",
+          "3. If old version: migrate_primitive_format(packed, target='2.0.0')",
+          "4. Save migrated primitive",
+          "5. Continue using new format"
+        ]
+      }
+    }
+  }
+}

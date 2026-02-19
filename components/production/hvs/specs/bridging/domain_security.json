@@ -1,0 +1,1622 @@
+{
+  "metadata": {
+    "name": "domain_security",
+    "version": "1.0.0",
+    "description": "Security through geometry model for HyperSync Lorentzian Domains - zero-runtime-overhead security based on geometric constraints, curvature-based isolation, and boundary enforcement",
+    "author": "HyperSync Framework",
+    "created": "2026-01-16",
+    "updated": "2026-01-16",
+    "stunir_version": "1.0",
+    "domain": "hypersync.domains.security",
+    "dependencies": [
+      "lorentzian_domains",
+      "domain_addressing",
+      "agua_geometry_spec"
+    ],
+    "security_model": "Security Through Geometry",
+    "core_principle": "Isolation is a mathematical property verified at domain creation, not a runtime check",
+    "tags": [
+      "security",
+      "isolation",
+      "geometry",
+      "curvature",
+      "boundary",
+      "zero-overhead"
+    ],
+    "license": {
+      "name": "AGPLv3",
+      "url": "https://www.gnu.org/licenses/agpl-3.0.html"
+    }
+  },
+  "types": {
+    "SecurityLevel": {
+      "description": "Classification level for domain security",
+      "base_type": "enum",
+      "values": [
+        "PUBLIC",
+        "INTERNAL",
+        "CONFIDENTIAL",
+        "RESTRICTED",
+        "TOP_SECRET"
+      ],
+      "ordering": "PUBLIC < INTERNAL < CONFIDENTIAL < RESTRICTED < TOP_SECRET"
+    },
+    "IsolationType": {
+      "description": "Type of geometric isolation between domains",
+      "base_type": "enum",
+      "values": [
+        "CAUSAL",
+        "SPACELIKE",
+        "GEODESIC",
+        "CURVATURE_BARRIER",
+        "HORIZON"
+      ],
+      "descriptions": {
+        "CAUSAL": "No timelike paths exist between domains - fundamental isolation",
+        "SPACELIKE": "Domains are spacelike separated at all points",
+        "GEODESIC": "No geodesic connects domains without passing through boundary",
+        "CURVATURE_BARRIER": "Extreme curvature prevents traversal",
+        "HORIZON": "Event horizon-like boundary - one-way information flow only"
+      }
+    },
+    "GeometricSecurityProperty": {
+      "description": "Security property derived from geometric structure",
+      "base_type": "object",
+      "properties": {
+        "property_type": {
+          "type": "enum",
+          "values": [
+            "CAUSAL_ISOLATION",
+            "GEODESIC_INCOMPLETENESS",
+            "CURVATURE_DIVERGENCE",
+            "METRIC_DISCONTINUITY",
+            "TOPOLOGICAL_SEPARATION"
+          ]
+        },
+        "strength": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "description": "Strength of the property (1.0 = mathematically proven)"
+        },
+        "verification_method": {
+          "type": "enum",
+          "values": [
+            "ALGEBRAIC",
+            "NUMERICAL",
+            "TOPOLOGICAL",
+            "FORMAL_PROOF"
+          ]
+        },
+        "proof_certificate": {
+          "type": "GeometricProofCertificate",
+          "description": "Certificate proving the property"
+        }
+      }
+    },
+    "GeometricProofCertificate": {
+      "description": "Cryptographically signed certificate of geometric security proof",
+      "base_type": "object",
+      "properties": {
+        "certificate_id": {
+          "type": "string"
+        },
+        "domain_id": {
+          "type": "DomainIdentifier"
+        },
+        "property_proven": {
+          "type": "GeometricSecurityProperty"
+        },
+        "proof_method": {
+          "type": "string"
+        },
+        "proof_hash": {
+          "type": "string",
+          "description": "Hash of the formal proof"
+        },
+        "issued_at": {
+          "type": "Timestamp"
+        },
+        "valid_until": {
+          "type": "Timestamp"
+        },
+        "issuer_signature": {
+          "type": "string"
+        }
+      }
+    },
+    "IsolationProof": {
+      "description": "Mathematical proof of isolation between domains",
+      "base_type": "object",
+      "properties": {
+        "domain_a": {
+          "type": "DomainIdentifier"
+        },
+        "domain_b": {
+          "type": "DomainIdentifier"
+        },
+        "isolation_type": {
+          "type": "IsolationType"
+        },
+        "proof_method": {
+          "type": "enum",
+          "values": [
+            "LIGHT_CONE_ANALYSIS",
+            "GEODESIC_COMPLETENESS",
+            "CURVATURE_CALCULATION",
+            "TOPOLOGICAL_ARGUMENT"
+          ]
+        },
+        "minimum_separation": {
+          "type": "number",
+          "description": "Minimum spacelike or geodesic separation"
+        },
+        "proof_steps": {
+          "type": "array",
+          "items": {
+            "type": "ProofStep"
+          }
+        },
+        "verified": {
+          "type": "boolean"
+        },
+        "certificate": {
+          "type": "GeometricProofCertificate"
+        }
+      }
+    },
+    "ProofStep": {
+      "description": "Single step in a geometric proof",
+      "base_type": "object",
+      "properties": {
+        "step_number": {
+          "type": "integer"
+        },
+        "statement": {
+          "type": "string"
+        },
+        "justification": {
+          "type": "string"
+        },
+        "references": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        }
+      }
+    },
+    "SecurityBoundary": {
+      "description": "Security boundary of a domain",
+      "base_type": "object",
+      "properties": {
+        "domain_id": {
+          "type": "DomainIdentifier"
+        },
+        "boundary_geometry": {
+          "type": "Hypersurface"
+        },
+        "boundary_type": {
+          "type": "enum",
+          "values": [
+            "HARD",
+            "SOFT",
+            "PERMEABLE",
+            "ONE_WAY"
+          ]
+        },
+        "enforcement_mechanism": {
+          "type": "enum",
+          "values": [
+            "GEOMETRIC",
+            "CRYPTOGRAPHIC",
+            "HYBRID",
+            "POLICY"
+          ]
+        },
+        "crossing_policy": {
+          "type": "CrossingPolicy"
+        },
+        "curvature_at_boundary": {
+          "type": "number",
+          "description": "Gaussian curvature at boundary"
+        }
+      }
+    },
+    "CrossingPolicy": {
+      "description": "Policy for crossing domain boundaries",
+      "base_type": "object",
+      "properties": {
+        "allow_crossing": {
+          "type": "boolean"
+        },
+        "required_credentials": {
+          "type": "array",
+          "items": {
+            "type": "CredentialRequirement"
+          }
+        },
+        "time_constraints": {
+          "type": "TimeConstraints"
+        },
+        "rate_limits": {
+          "type": "RateLimits"
+        },
+        "audit_level": {
+          "type": "enum",
+          "values": [
+            "NONE",
+            "BASIC",
+            "DETAILED",
+            "FULL"
+          ]
+        }
+      }
+    },
+    "CredentialRequirement": {
+      "description": "Credential required for boundary crossing",
+      "base_type": "object",
+      "properties": {
+        "credential_type": {
+          "type": "enum",
+          "values": [
+            "GEOMETRIC_TOKEN",
+            "CRYPTOGRAPHIC_KEY",
+            "DOMAIN_MEMBERSHIP",
+            "CAPABILITY_TOKEN"
+          ]
+        },
+        "issuer": {
+          "type": "DomainIdentifier"
+        },
+        "minimum_level": {
+          "type": "SecurityLevel"
+        }
+      }
+    },
+    "TimeConstraints": {
+      "description": "Time-based constraints on boundary crossing",
+      "base_type": "object",
+      "properties": {
+        "allowed_windows": {
+          "type": "array",
+          "items": {
+            "type": "TimeWindow"
+          }
+        },
+        "max_duration": {
+          "type": "Duration"
+        },
+        "cooldown_period": {
+          "type": "Duration"
+        }
+      }
+    },
+    "TimeWindow": {
+      "description": "Time window for allowed operations",
+      "base_type": "object",
+      "properties": {
+        "start": {
+          "type": "Time"
+        },
+        "end": {
+          "type": "Time"
+        },
+        "days_of_week": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "RateLimits": {
+      "description": "Rate limiting for boundary crossings",
+      "base_type": "object",
+      "properties": {
+        "max_crossings_per_second": {
+          "type": "number"
+        },
+        "max_crossings_per_minute": {
+          "type": "number"
+        },
+        "max_crossings_per_hour": {
+          "type": "number"
+        },
+        "burst_allowance": {
+          "type": "integer"
+        }
+      }
+    },
+    "SecurityViolation": {
+      "description": "Record of a security violation attempt",
+      "base_type": "object",
+      "properties": {
+        "violation_id": {
+          "type": "string"
+        },
+        "timestamp": {
+          "type": "Timestamp"
+        },
+        "source_domain": {
+          "type": "DomainIdentifier"
+        },
+        "target_domain": {
+          "type": "DomainIdentifier"
+        },
+        "violation_type": {
+          "type": "enum",
+          "values": [
+            "UNAUTHORIZED_CROSSING",
+            "CREDENTIAL_INVALID",
+            "RATE_LIMIT_EXCEEDED",
+            "TIME_CONSTRAINT_VIOLATION",
+            "GEOMETRIC_BYPASS_ATTEMPT",
+            "ISOLATION_BREACH_ATTEMPT"
+          ]
+        },
+        "details": {
+          "type": "object"
+        },
+        "blocked": {
+          "type": "boolean"
+        },
+        "response_action": {
+          "type": "string"
+        }
+      }
+    },
+    "GeometricToken": {
+      "description": "Token encoding geometric authorization for boundary crossing",
+      "base_type": "object",
+      "properties": {
+        "token_id": {
+          "type": "string"
+        },
+        "source_domain": {
+          "type": "DomainIdentifier"
+        },
+        "target_domain": {
+          "type": "DomainIdentifier"
+        },
+        "geodesic_path": {
+          "type": "GeodesicPath",
+          "description": "Authorized path through geometry"
+        },
+        "issued_at": {
+          "type": "Timestamp"
+        },
+        "expires_at": {
+          "type": "Timestamp"
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "signature": {
+          "type": "string",
+          "description": "Cryptographic signature binding token to geometry"
+        }
+      }
+    },
+    "AccessControlEntry": {
+      "description": "Access control entry for domain access",
+      "base_type": "object",
+      "properties": {
+        "principal": {
+          "type": "Principal"
+        },
+        "permissions": {
+          "type": "array",
+          "items": {
+            "type": "Permission"
+          }
+        },
+        "conditions": {
+          "type": "array",
+          "items": {
+            "type": "AccessCondition"
+          }
+        },
+        "priority": {
+          "type": "integer"
+        }
+      }
+    },
+    "Principal": {
+      "description": "Entity that can be granted access",
+      "base_type": "object",
+      "properties": {
+        "type": {
+          "type": "enum",
+          "values": [
+            "DOMAIN",
+            "NETWORK",
+            "ENTITY",
+            "ROLE",
+            "WILDCARD"
+          ]
+        },
+        "identifier": {
+          "type": "string"
+        }
+      }
+    },
+    "Permission": {
+      "description": "Permission that can be granted",
+      "base_type": "enum",
+      "values": [
+        "TRAVERSE",
+        "READ",
+        "WRITE",
+        "EXECUTE",
+        "CREATE_CHILD",
+        "DELETE",
+        "MODIFY_BOUNDARY",
+        "GRANT",
+        "ADMIN"
+      ]
+    },
+    "AccessCondition": {
+      "description": "Condition for access to be granted",
+      "base_type": "object",
+      "properties": {
+        "type": {
+          "type": "enum",
+          "values": [
+            "TIME",
+            "LOCATION",
+            "CREDENTIAL",
+            "RATE",
+            "CUSTOM"
+          ]
+        },
+        "parameters": {
+          "type": "object"
+        }
+      }
+    },
+    "SecurityAuditLog": {
+      "description": "Audit log for security events",
+      "base_type": "object",
+      "properties": {
+        "entries": {
+          "type": "array",
+          "items": {
+            "type": "AuditEntry"
+          }
+        },
+        "domain_id": {
+          "type": "DomainIdentifier"
+        },
+        "retention_period": {
+          "type": "Duration"
+        }
+      }
+    },
+    "AuditEntry": {
+      "description": "Single audit log entry",
+      "base_type": "object",
+      "properties": {
+        "entry_id": {
+          "type": "string"
+        },
+        "timestamp": {
+          "type": "Timestamp"
+        },
+        "event_type": {
+          "type": "string"
+        },
+        "principal": {
+          "type": "Principal"
+        },
+        "action": {
+          "type": "string"
+        },
+        "target": {
+          "type": "string"
+        },
+        "outcome": {
+          "type": "enum",
+          "values": [
+            "SUCCESS",
+            "FAILURE",
+            "BLOCKED"
+          ]
+        },
+        "details": {
+          "type": "object"
+        }
+      }
+    }
+  },
+  "operations": {
+    "verify_geometric_isolation": {
+      "description": "Verify that two domains are geometrically isolated with zero runtime overhead",
+      "category": "verification",
+      "inputs": {
+        "domain_a": {
+          "type": "DomainIdentifier",
+          "required": true
+        },
+        "domain_b": {
+          "type": "DomainIdentifier",
+          "required": true
+        },
+        "isolation_type": {
+          "type": "IsolationType",
+          "default": "CAUSAL",
+          "description": "Type of isolation to verify"
+        },
+        "generate_proof": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether to generate formal proof"
+        }
+      },
+      "outputs": {
+        "isolated": {
+          "type": "boolean"
+        },
+        "isolation_proof": {
+          "type": "IsolationProof"
+        },
+        "separation_metric": {
+          "type": "number",
+          "description": "Quantitative measure of separation"
+        }
+      },
+      "preconditions": [
+        "Both domains exist",
+        "Domains have valid metrics"
+      ],
+      "postconditions": [
+        "Result is mathematically determined",
+        "Proof is verifiable if generated"
+      ],
+      "error_conditions": {
+        "DOMAIN_NOT_FOUND": "One or both domains not found",
+        "INVALID_METRIC": "Domain metric not properly initialized",
+        "PROOF_GENERATION_FAILED": "Could not generate formal proof"
+      },
+      "zero_overhead_note": "This verification happens at domain creation time, not at runtime"
+    },
+    "create_security_boundary": {
+      "description": "Create a security boundary for a domain",
+      "category": "boundary",
+      "inputs": {
+        "domain_id": {
+          "type": "DomainIdentifier",
+          "required": true
+        },
+        "boundary_type": {
+          "type": "string",
+          "required": true,
+          "description": "Type of boundary (HARD, SOFT, PERMEABLE, ONE_WAY)"
+        },
+        "geometry_spec": {
+          "type": "object",
+          "required": true,
+          "description": "Specification of boundary geometry"
+        },
+        "crossing_policy": {
+          "type": "CrossingPolicy",
+          "required": true
+        }
+      },
+      "outputs": {
+        "boundary": {
+          "type": "SecurityBoundary"
+        },
+        "boundary_certificate": {
+          "type": "GeometricProofCertificate"
+        }
+      },
+      "preconditions": [
+        "Domain exists",
+        "Boundary geometry is valid",
+        "Boundary does not overlap with existing boundaries"
+      ],
+      "postconditions": [
+        "Boundary is registered",
+        "Crossing policy is active",
+        "Geometric certificate is issued"
+      ],
+      "error_conditions": {
+        "DOMAIN_NOT_FOUND": "Domain does not exist",
+        "INVALID_GEOMETRY": "Boundary geometry is invalid",
+        "BOUNDARY_OVERLAP": "Boundary overlaps with existing boundary",
+        "POLICY_INVALID": "Crossing policy is invalid"
+      }
+    },
+    "enforce_boundary_crossing": {
+      "description": "Enforce security policy for a boundary crossing request",
+      "category": "enforcement",
+      "inputs": {
+        "crossing_request": {
+          "type": "object",
+          "properties": {
+            "source_domain": {
+              "type": "DomainIdentifier"
+            },
+            "target_domain": {
+              "type": "DomainIdentifier"
+            },
+            "principal": {
+              "type": "Principal"
+            },
+            "requested_permissions": {
+              "type": "array",
+              "items": {
+                "type": "Permission"
+              }
+            },
+            "credentials": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        }
+      },
+      "outputs": {
+        "allowed": {
+          "type": "boolean"
+        },
+        "granted_permissions": {
+          "type": "array",
+          "items": {
+            "type": "Permission"
+          }
+        },
+        "denial_reasons": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "geometric_token": {
+          "type": "GeometricToken",
+          "description": "Token for authorized crossing"
+        }
+      },
+      "preconditions": [
+        "Both domains exist",
+        "Boundary between domains is defined"
+      ],
+      "postconditions": [
+        "Decision is logged",
+        "Token issued if allowed"
+      ],
+      "error_conditions": {
+        "DOMAIN_NOT_FOUND": "Source or target domain not found",
+        "NO_BOUNDARY_DEFINED": "No boundary defined between domains",
+        "INVALID_CREDENTIALS": "Provided credentials are invalid"
+      }
+    },
+    "issue_geometric_token": {
+      "description": "Issue a geometric token for authorized cross-domain access",
+      "category": "authorization",
+      "inputs": {
+        "source_domain": {
+          "type": "DomainIdentifier",
+          "required": true
+        },
+        "target_domain": {
+          "type": "DomainIdentifier",
+          "required": true
+        },
+        "principal": {
+          "type": "Principal",
+          "required": true
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "validity_duration": {
+          "type": "Duration",
+          "default": "1h"
+        }
+      },
+      "outputs": {
+        "token": {
+          "type": "GeometricToken"
+        }
+      },
+      "preconditions": [
+        "Source domain can issue tokens",
+        "Target domain accepts tokens from source",
+        "Principal is authorized for capabilities"
+      ],
+      "postconditions": [
+        "Token is valid for specified duration",
+        "Token is bound to specific geodesic path"
+      ],
+      "error_conditions": {
+        "DOMAIN_NOT_FOUND": "Domain not found",
+        "UNAUTHORIZED_ISSUER": "Source domain cannot issue tokens",
+        "CAPABILITY_NOT_GRANTED": "Principal not authorized for capability",
+        "INVALID_DURATION": "Validity duration exceeds maximum"
+      }
+    },
+    "validate_geometric_token": {
+      "description": "Validate a geometric token for boundary crossing",
+      "category": "validation",
+      "inputs": {
+        "token": {
+          "type": "GeometricToken",
+          "required": true
+        },
+        "crossing_point": {
+          "type": "Point4D",
+          "required": true,
+          "description": "Point where crossing is attempted"
+        }
+      },
+      "outputs": {
+        "valid": {
+          "type": "boolean"
+        },
+        "validation_details": {
+          "type": "object",
+          "properties": {
+            "signature_valid": {
+              "type": "boolean"
+            },
+            "not_expired": {
+              "type": "boolean"
+            },
+            "path_valid": {
+              "type": "boolean"
+            },
+            "crossing_point_on_path": {
+              "type": "boolean"
+            }
+          }
+        }
+      },
+      "preconditions": [
+        "Token is not null"
+      ],
+      "postconditions": [
+        "Validation result is deterministic"
+      ],
+      "error_conditions": {
+        "TOKEN_MALFORMED": "Token structure is invalid",
+        "SIGNATURE_INVALID": "Token signature verification failed"
+      }
+    },
+    "compute_curvature_barrier": {
+      "description": "Compute the curvature barrier strength between domains",
+      "category": "analysis",
+      "inputs": {
+        "domain_a": {
+          "type": "DomainIdentifier",
+          "required": true
+        },
+        "domain_b": {
+          "type": "DomainIdentifier",
+          "required": true
+        }
+      },
+      "outputs": {
+        "barrier_strength": {
+          "type": "number",
+          "description": "Strength of curvature barrier (higher = more secure)"
+        },
+        "minimum_curvature": {
+          "type": "number",
+          "description": "Minimum Gaussian curvature along boundary"
+        },
+        "maximum_curvature": {
+          "type": "number",
+          "description": "Maximum Gaussian curvature along boundary"
+        },
+        "curvature_profile": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          },
+          "description": "Curvature values along boundary"
+        }
+      },
+      "preconditions": [
+        "Both domains exist",
+        "Domains have valid metrics"
+      ],
+      "postconditions": [
+        "Barrier strength is computed"
+      ],
+      "error_conditions": {
+        "DOMAIN_NOT_FOUND": "Domain not found",
+        "NO_SHARED_BOUNDARY": "Domains do not share a boundary"
+      }
+    },
+    "set_access_control": {
+      "description": "Set access control entries for a domain",
+      "category": "access_control",
+      "inputs": {
+        "domain_id": {
+          "type": "DomainIdentifier",
+          "required": true
+        },
+        "entries": {
+          "type": "array",
+          "items": {
+            "type": "AccessControlEntry"
+          },
+          "required": true
+        },
+        "merge_mode": {
+          "type": "enum",
+          "values": [
+            "REPLACE",
+            "MERGE",
+            "APPEND"
+          ],
+          "default": "MERGE"
+        }
+      },
+      "outputs": {
+        "updated_entries": {
+          "type": "array",
+          "items": {
+            "type": "AccessControlEntry"
+          }
+        },
+        "conflicts_resolved": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      },
+      "preconditions": [
+        "Domain exists",
+        "Caller has ADMIN permission"
+      ],
+      "postconditions": [
+        "Access control entries are active",
+        "Conflicting entries resolved according to priority"
+      ],
+      "error_conditions": {
+        "DOMAIN_NOT_FOUND": "Domain not found",
+        "PERMISSION_DENIED": "Caller lacks ADMIN permission",
+        "INVALID_ENTRY": "Access control entry is invalid"
+      }
+    },
+    "check_access": {
+      "description": "Check if a principal has access with specific permissions",
+      "category": "access_control",
+      "inputs": {
+        "domain_id": {
+          "type": "DomainIdentifier",
+          "required": true
+        },
+        "principal": {
+          "type": "Principal",
+          "required": true
+        },
+        "requested_permissions": {
+          "type": "array",
+          "items": {
+            "type": "Permission"
+          },
+          "required": true
+        },
+        "context": {
+          "type": "object",
+          "description": "Additional context for condition evaluation"
+        }
+      },
+      "outputs": {
+        "allowed": {
+          "type": "boolean"
+        },
+        "granted_permissions": {
+          "type": "array",
+          "items": {
+            "type": "Permission"
+          }
+        },
+        "matching_entries": {
+          "type": "array",
+          "items": {
+            "type": "AccessControlEntry"
+          }
+        }
+      },
+      "preconditions": [
+        "Domain exists"
+      ],
+      "postconditions": [
+        "Access decision is logged"
+      ],
+      "error_conditions": {
+        "DOMAIN_NOT_FOUND": "Domain not found"
+      }
+    },
+    "record_security_violation": {
+      "description": "Record a security violation attempt",
+      "category": "audit",
+      "inputs": {
+        "violation": {
+          "type": "SecurityViolation",
+          "required": true
+        }
+      },
+      "outputs": {
+        "recorded": {
+          "type": "boolean"
+        },
+        "alert_triggered": {
+          "type": "boolean"
+        },
+        "response_actions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "preconditions": [],
+      "postconditions": [
+        "Violation is recorded in audit log",
+        "Alerts triggered if threshold exceeded"
+      ],
+      "error_conditions": {
+        "STORAGE_FAILED": "Could not store violation record"
+      }
+    },
+    "get_security_audit_log": {
+      "description": "Retrieve security audit log for a domain",
+      "category": "audit",
+      "inputs": {
+        "domain_id": {
+          "type": "DomainIdentifier",
+          "required": true
+        },
+        "filters": {
+          "type": "object",
+          "properties": {
+            "start_time": {
+              "type": "Timestamp"
+            },
+            "end_time": {
+              "type": "Timestamp"
+            },
+            "event_types": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "principals": {
+              "type": "array",
+              "items": {
+                "type": "Principal"
+              }
+            },
+            "outcomes": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "pagination": {
+          "type": "object",
+          "properties": {
+            "offset": {
+              "type": "integer"
+            },
+            "limit": {
+              "type": "integer"
+            }
+          }
+        }
+      },
+      "outputs": {
+        "log": {
+          "type": "SecurityAuditLog"
+        },
+        "total_count": {
+          "type": "integer"
+        }
+      },
+      "preconditions": [
+        "Domain exists",
+        "Caller has audit read permission"
+      ],
+      "postconditions": [
+        "Results respect filters and pagination"
+      ],
+      "error_conditions": {
+        "DOMAIN_NOT_FOUND": "Domain not found",
+        "PERMISSION_DENIED": "Caller lacks audit permission"
+      }
+    },
+    "rotate_security_credentials": {
+      "description": "Rotate security credentials for a domain",
+      "category": "credential_management",
+      "inputs": {
+        "domain_id": {
+          "type": "DomainIdentifier",
+          "required": true
+        },
+        "credential_types": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Types of credentials to rotate, null for all"
+        },
+        "grace_period": {
+          "type": "Duration",
+          "default": "1h",
+          "description": "Time during which old credentials remain valid"
+        }
+      },
+      "outputs": {
+        "rotated_credentials": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "new_certificates": {
+          "type": "array",
+          "items": {
+            "type": "GeometricProofCertificate"
+          }
+        },
+        "old_credentials_expire_at": {
+          "type": "Timestamp"
+        }
+      },
+      "preconditions": [
+        "Domain exists",
+        "Caller has credential management permission"
+      ],
+      "postconditions": [
+        "New credentials are active",
+        "Old credentials valid during grace period"
+      ],
+      "error_conditions": {
+        "DOMAIN_NOT_FOUND": "Domain not found",
+        "PERMISSION_DENIED": "Caller lacks credential management permission",
+        "ROTATION_IN_PROGRESS": "Credential rotation already in progress"
+      }
+    },
+    "verify_proof_certificate": {
+      "description": "Verify a geometric proof certificate",
+      "category": "verification",
+      "inputs": {
+        "certificate": {
+          "type": "GeometricProofCertificate",
+          "required": true
+        }
+      },
+      "outputs": {
+        "valid": {
+          "type": "boolean"
+        },
+        "verification_details": {
+          "type": "object",
+          "properties": {
+            "signature_valid": {
+              "type": "boolean"
+            },
+            "not_expired": {
+              "type": "boolean"
+            },
+            "proof_valid": {
+              "type": "boolean"
+            },
+            "domain_matches": {
+              "type": "boolean"
+            }
+          }
+        }
+      },
+      "preconditions": [],
+      "postconditions": [
+        "Verification result is deterministic"
+      ],
+      "error_conditions": {
+        "CERTIFICATE_MALFORMED": "Certificate structure is invalid"
+      }
+    }
+  },
+  "tests": {
+    "test_verify_isolation_causal": {
+      "description": "Verify causal isolation between sibling domains",
+      "category": "unit",
+      "operation": "verify_geometric_isolation",
+      "setup": {
+        "domain_a": {
+          "id": "ld://org/stack/domain-a",
+          "level": 1,
+          "curvature": -1.0
+        },
+        "domain_b": {
+          "id": "ld://org/stack/domain-b",
+          "level": 1,
+          "curvature": -1.0
+        }
+      },
+      "inputs": {
+        "domain_a": "ld://org/stack/domain-a",
+        "domain_b": "ld://org/stack/domain-b",
+        "isolation_type": "CAUSAL",
+        "generate_proof": true
+      },
+      "expected": {
+        "isolated": true
+      },
+      "assertions": [
+        "isolation_proof is not null",
+        "separation_metric > 0"
+      ]
+    },
+    "test_verify_isolation_parent_child": {
+      "description": "Parent and child are NOT isolated (intentionally)",
+      "category": "unit",
+      "operation": "verify_geometric_isolation",
+      "setup": {
+        "parent": {
+          "id": "ld://org/stack/parent",
+          "level": 0
+        },
+        "child": {
+          "id": "ld://org/stack/child",
+          "level": 1,
+          "parent": "ld://org/stack/parent"
+        }
+      },
+      "inputs": {
+        "domain_a": "ld://org/stack/parent",
+        "domain_b": "ld://org/stack/child",
+        "isolation_type": "CAUSAL"
+      },
+      "expected": {
+        "isolated": false
+      }
+    },
+    "test_create_security_boundary": {
+      "description": "Create a hard security boundary",
+      "category": "unit",
+      "operation": "create_security_boundary",
+      "setup": {
+        "domain": {
+          "id": "ld://org/stack/secure-domain",
+          "state": "ACTIVE"
+        }
+      },
+      "inputs": {
+        "domain_id": "ld://org/stack/secure-domain",
+        "boundary_type": "HARD",
+        "geometry_spec": {
+          "type": "LIGHT_CONE",
+          "parameters": {
+            "apex": {
+              "t": 0,
+              "x": 0,
+              "y": 0,
+              "z": 0
+            }
+          }
+        },
+        "crossing_policy": {
+          "allow_crossing": true,
+          "required_credentials": [
+            {
+              "credential_type": "GEOMETRIC_TOKEN"
+            }
+          ],
+          "audit_level": "FULL"
+        }
+      },
+      "expected": {
+        "boundary is not null": true,
+        "boundary_certificate is not null": true
+      }
+    },
+    "test_enforce_boundary_crossing_allowed": {
+      "description": "Allow boundary crossing with valid credentials",
+      "category": "unit",
+      "operation": "enforce_boundary_crossing",
+      "setup": {
+        "source_domain": "ld://org/stack/source",
+        "target_domain": "ld://org/stack/target",
+        "boundary": {
+          "crossing_policy": {
+            "allow_crossing": true,
+            "required_credentials": [
+              {
+                "credential_type": "GEOMETRIC_TOKEN"
+              }
+            ]
+          }
+        }
+      },
+      "inputs": {
+        "crossing_request": {
+          "source_domain": "ld://org/stack/source",
+          "target_domain": "ld://org/stack/target",
+          "principal": {
+            "type": "NETWORK",
+            "identifier": "net-123"
+          },
+          "requested_permissions": [
+            "TRAVERSE",
+            "READ"
+          ],
+          "credentials": [
+            {
+              "type": "GEOMETRIC_TOKEN",
+              "valid": true
+            }
+          ]
+        }
+      },
+      "expected": {
+        "allowed": true
+      },
+      "assertions": [
+        "geometric_token is not null",
+        "granted_permissions contains TRAVERSE"
+      ]
+    },
+    "test_enforce_boundary_crossing_denied": {
+      "description": "Deny boundary crossing without valid credentials",
+      "category": "unit",
+      "operation": "enforce_boundary_crossing",
+      "setup": {
+        "boundary": {
+          "crossing_policy": {
+            "allow_crossing": true,
+            "required_credentials": [
+              {
+                "credential_type": "GEOMETRIC_TOKEN"
+              }
+            ]
+          }
+        }
+      },
+      "inputs": {
+        "crossing_request": {
+          "source_domain": "ld://org/stack/source",
+          "target_domain": "ld://org/stack/target",
+          "principal": {
+            "type": "NETWORK",
+            "identifier": "net-123"
+          },
+          "requested_permissions": [
+            "TRAVERSE"
+          ],
+          "credentials": []
+        }
+      },
+      "expected": {
+        "allowed": false
+      },
+      "assertions": [
+        "denial_reasons contains credential requirement failure"
+      ]
+    },
+    "test_issue_and_validate_token": {
+      "description": "Issue and validate a geometric token",
+      "category": "integration",
+      "operations": [
+        "issue_geometric_token",
+        "validate_geometric_token"
+      ],
+      "setup": {
+        "source_domain": "ld://org/stack/source",
+        "target_domain": "ld://org/stack/target"
+      },
+      "steps": [
+        {
+          "operation": "issue_geometric_token",
+          "inputs": {
+            "source_domain": "ld://org/stack/source",
+            "target_domain": "ld://org/stack/target",
+            "principal": {
+              "type": "NETWORK",
+              "identifier": "net-123"
+            },
+            "capabilities": [
+              "READ",
+              "WRITE"
+            ],
+            "validity_duration": "1h"
+          }
+        },
+        {
+          "operation": "validate_geometric_token",
+          "inputs": {
+            "token": "from_step_1",
+            "crossing_point": {
+              "t": 1,
+              "x": 0,
+              "y": 0,
+              "z": 0
+            }
+          }
+        }
+      ],
+      "assertions": [
+        "token is not null",
+        "validation result is valid=true"
+      ]
+    },
+    "test_curvature_barrier_computation": {
+      "description": "Compute curvature barrier between domains",
+      "category": "unit",
+      "operation": "compute_curvature_barrier",
+      "setup": {
+        "domain_a": {
+          "id": "ld://org/stack/domain-a",
+          "curvature": -1.0
+        },
+        "domain_b": {
+          "id": "ld://org/stack/domain-b",
+          "curvature": -2.0
+        }
+      },
+      "inputs": {
+        "domain_a": "ld://org/stack/domain-a",
+        "domain_b": "ld://org/stack/domain-b"
+      },
+      "expected": {
+        "barrier_strength > 0": true
+      }
+    },
+    "test_access_control_allow": {
+      "description": "Check access control allows authorized principal",
+      "category": "unit",
+      "operation": "check_access",
+      "setup": {
+        "domain": {
+          "id": "ld://org/stack/domain",
+          "acl": [
+            {
+              "principal": {
+                "type": "ROLE",
+                "identifier": "reader"
+              },
+              "permissions": [
+                "READ",
+                "TRAVERSE"
+              ]
+            }
+          ]
+        }
+      },
+      "inputs": {
+        "domain_id": "ld://org/stack/domain",
+        "principal": {
+          "type": "ROLE",
+          "identifier": "reader"
+        },
+        "requested_permissions": [
+          "READ"
+        ]
+      },
+      "expected": {
+        "allowed": true,
+        "granted_permissions": [
+          "READ"
+        ]
+      }
+    },
+    "test_access_control_deny": {
+      "description": "Check access control denies unauthorized principal",
+      "category": "unit",
+      "operation": "check_access",
+      "setup": {
+        "domain": {
+          "id": "ld://org/stack/domain",
+          "acl": [
+            {
+              "principal": {
+                "type": "ROLE",
+                "identifier": "reader"
+              },
+              "permissions": [
+                "READ"
+              ]
+            }
+          ]
+        }
+      },
+      "inputs": {
+        "domain_id": "ld://org/stack/domain",
+        "principal": {
+          "type": "ROLE",
+          "identifier": "writer"
+        },
+        "requested_permissions": [
+          "WRITE"
+        ]
+      },
+      "expected": {
+        "allowed": false
+      }
+    },
+    "test_security_violation_recording": {
+      "description": "Record and retrieve security violation",
+      "category": "integration",
+      "operations": [
+        "record_security_violation",
+        "get_security_audit_log"
+      ],
+      "setup": {
+        "domain": "ld://org/stack/domain"
+      },
+      "steps": [
+        {
+          "operation": "record_security_violation",
+          "inputs": {
+            "violation": {
+              "source_domain": "ld://attacker/stack/malicious",
+              "target_domain": "ld://org/stack/domain",
+              "violation_type": "UNAUTHORIZED_CROSSING",
+              "blocked": true
+            }
+          }
+        },
+        {
+          "operation": "get_security_audit_log",
+          "inputs": {
+            "domain_id": "ld://org/stack/domain",
+            "filters": {
+              "event_types": [
+                "SECURITY_VIOLATION"
+              ]
+            }
+          }
+        }
+      ],
+      "assertions": [
+        "violation is recorded",
+        "audit log contains the violation"
+      ]
+    },
+    "test_credential_rotation": {
+      "description": "Test credential rotation with grace period",
+      "category": "unit",
+      "operation": "rotate_security_credentials",
+      "setup": {
+        "domain": {
+          "id": "ld://org/stack/domain",
+          "credentials": [
+            "cert-1",
+            "cert-2"
+          ]
+        }
+      },
+      "inputs": {
+        "domain_id": "ld://org/stack/domain",
+        "credential_types": [
+          "GEOMETRIC_TOKEN"
+        ],
+        "grace_period": "2h"
+      },
+      "expected": {
+        "rotated_credentials.length > 0": true
+      },
+      "assertions": [
+        "old_credentials_expire_at is 2 hours in future"
+      ]
+    },
+    "test_verify_proof_certificate": {
+      "description": "Verify a valid proof certificate",
+      "category": "unit",
+      "operation": "verify_proof_certificate",
+      "setup": {
+        "certificate": {
+          "certificate_id": "cert-123",
+          "domain_id": "ld://org/stack/domain",
+          "property_proven": {
+            "property_type": "CAUSAL_ISOLATION",
+            "strength": 1.0
+          },
+          "valid_until": "2027-01-01T00:00:00Z",
+          "issuer_signature": "valid_signature"
+        }
+      },
+      "inputs": {
+        "certificate": "from_setup"
+      },
+      "expected": {
+        "valid": true,
+        "verification_details.signature_valid": true,
+        "verification_details.not_expired": true
+      }
+    },
+    "test_zero_overhead_isolation": {
+      "description": "Verify isolation check has zero runtime overhead",
+      "category": "performance",
+      "operation": "verify_geometric_isolation",
+      "setup": {
+        "domains": "1000 sibling domains"
+      },
+      "performance_requirement": {
+        "description": "Isolation is verified at creation time, not runtime",
+        "runtime_check_time_ms": 0,
+        "creation_time_verification": true
+      }
+    }
+  },
+  "implementation_notes": {
+    "security_through_geometry": {
+      "description": "Core security model based on geometric properties",
+      "principles": [
+        "Isolation is a mathematical property, not a runtime check",
+        "Security boundaries are geometric structures (light cones, horizons)",
+        "Access control is geometric path authorization",
+        "Violations are geometrically impossible, not just prohibited"
+      ],
+      "zero_overhead": [
+        "Isolation verified once at domain creation",
+        "No runtime checks needed for isolated domains",
+        "Boundary crossing uses pre-computed geometric tokens",
+        "Audit logging is the only runtime cost"
+      ]
+    },
+    "curvature_security": {
+      "description": "Using spacetime curvature for security",
+      "mechanisms": [
+        "Negative curvature increases geodesic divergence",
+        "High curvature barriers prevent unauthorized traversal",
+        "Curvature discontinuities create natural boundaries",
+        "Horizon-like structures enforce one-way information flow"
+      ]
+    },
+    "proof_system": {
+      "description": "Formal proof system for security properties",
+      "features": [
+        "Algebraic proofs for causal isolation",
+        "Numerical verification for curvature barriers",
+        "Topological arguments for separation",
+        "Cryptographic binding of proofs to domains"
+      ]
+    },
+    "language_bindings": {
+      "rust": {
+        "crate": "hypersync-security",
+        "key_traits": [
+          "SecurityBoundary",
+          "GeometricToken",
+          "IsolationProof"
+        ]
+      },
+      "python": {
+        "package": "hypersync.security",
+        "key_classes": [
+          "SecurityBoundary",
+          "AccessControl",
+          "AuditLog"
+        ]
+      },
+      "typescript": {
+        "package": "@hypersync/security",
+        "key_interfaces": [
+          "ISecurityBoundary",
+          "IGeometricToken"
+        ]
+      }
+    }
+  }
+}

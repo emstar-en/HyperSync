@@ -1,0 +1,32 @@
+{
+  "schema_version": "v1.0",
+  "id": "hypersync.policies.fault_detection",
+  "version": "0.1.0",
+  "type": "policy",
+  "description": "Defines fault detection vectors and mitigation strategies",
+  "capabilities": {
+    "provides": [
+      "fault_monitoring",
+      "anomaly_detection"
+    ],
+    "requires": [
+      "telemetry_stream",
+      "node_health_metrics"
+    ],
+    "determinism_tier": "D0_bit_exact",
+    "latency_class": "realtime"
+  },
+  "governance": {
+    "tier": "core",
+    "audit_level": "standard",
+    "owner": "hypersync_ops_wg"
+  },
+  "runtime": {
+    "language": "python",
+    "requires_gpu": false,
+    "timeout_ms": 50
+  },
+  "interfaces": {
+    "python": "hypersync.policies.fault_detection.main:evaluate"
+  }
+}

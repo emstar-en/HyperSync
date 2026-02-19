@@ -85,9 +85,68 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for:
 
 ## 📚 Documentation
 
+**[📑 Documentation Index](docs/INDEX.md)** - Complete cross-referenced documentation guide
+
+### Quick Start
+- **[System Overview](docs/01_GETTING_STARTED/OVERVIEW.md)** - Architecture and concepts
+- **[Vision & Philosophy](docs/01_GETTING_STARTED/VISION.md)** - Project goals and approach
+- **[Glossary](docs/01_GETTING_STARTED/GLOSSARY.md)** - Terminology reference
+- **[AI Development Guide](AI_DEVELOPMENT_GUIDE.md)** - For AI agents working with HyperSync
+
+### Core Documentation
+
+#### Foundational Concepts
+- **[Geometric Principles](docs/02_CORE_CONCEPTS/GEOMETRIC_PRINCIPLES.md)** - Physics-based orchestration ⭐ Start here
+- **[Determinism Tiers](docs/02_CORE_CONCEPTS/DETERMINISM_TIERS.md)** - D0-D3 determinism levels
+- **[Holonic Architecture](docs/02_CORE_CONCEPTS/HOLONIC_ARCHITECTURE.md)** - Fractal/recursive design
+- **[Core Principles](docs/02_CORE_CONCEPTS/CORE_PRINCIPLES.md)** - Design foundations
+
+#### System Architecture
+- **[High-Level Architecture](docs/03_ARCHITECTURE/HIGH_LEVEL_ARCHITECTURE.md)** - Complete system design
+- **[Component Model](docs/03_ARCHITECTURE/COMPONENT_MODEL.md)** - Component interactions
+- **[Execution Model](docs/03_ARCHITECTURE/EXECUTION_MODEL.md)** - Execution patterns
+- **[State Management](docs/03_ARCHITECTURE/STATE_MANAGEMENT.md)** - State handling
+
+#### Components
+- **[AGUA](docs/04_COMPONENTS/AGUA.md)** - Determinism engine (foundation)
+- **[MOM](docs/04_COMPONENTS/MOM.md)** - Multi-model orchestration
+- **[VNES](docs/04_COMPONENTS/VNES.md)** - Extension system
+- **[HVS-NVM](docs/04_COMPONENTS/HVS_NVM.md)** - Vector store & memory
+- **[PCT](components/production/pct/docs/)** - Pathfinder → Cartographer → Trailblazer
+
+#### Operations
+- **[Startup Sequence](docs/06_OPERATIONS/STARTUP_SEQUENCE.md)** - System initialization
+- **[Monitoring Guide](docs/06_OPERATIONS/MONITORING_GUIDE.md)** - Operational monitoring
+
+#### Advanced Topics
+- **[Thermodynamic Logic](docs/08_ADVANCED_TOPICS/THERMODYNAMIC_LOGIC.md)** - Physics-based orchestration
+- **[Acceptance Gates](docs/08_ADVANCED_TOPICS/ACCEPTANCE_GATES.md)** - Validation mechanisms
+- **[Episode Recorder](docs/08_ADVANCED_TOPICS/EPISODE_RECORDER.md)** - Deterministic replay
+
+### Reference Materials
 - **[Component Catalog](CORE_CATALOG.json)** - Complete component metadata
 - **[Tier Boundaries](TIER_BOUNDARIES.md)** - Core vs. proprietary features
 - **[Tier Hierarchy](specifications/HYPERSYNC_COMPLETE_TIER_HIERARCHY.md)** - Complete tier system
+- **[Model Context](docs/10_REFERENCE/MODEL_CONTEXT.md)** - Context for AI models
+- **[STUNIR Overview](docs/09_STUNIR/OVERVIEW.md)** - Code generation system
+
+### Documentation Organization
+
+The documentation is organized into 11 categories:
+
+1. **Getting Started** - New user onboarding
+2. **Core Concepts** - Foundational principles (geometry, determinism, holonic architecture)
+3. **Architecture** - System design and structure
+4. **Components** - Individual component documentation
+5. **Internals** - Implementation details and geometry mathematics
+6. **Operations** - Running and maintaining HyperSync
+7. **Security** - Security considerations and threat models
+8. **Advanced Topics** - Advanced concepts and patterns
+9. **STUNIR** - Code generation system
+10. **Reference** - Reference materials and guidelines
+11. **VNES** - Extension system details
+
+**Navigation Tip:** Start with [Geometric Principles](docs/02_CORE_CONCEPTS/GEOMETRIC_PRINCIPLES.md) to understand HyperSync's unique approach, then explore the [Documentation Index](docs/INDEX.md) for complete navigation.
 
 ## 🔮 Comparison to Commercial Platforms
 

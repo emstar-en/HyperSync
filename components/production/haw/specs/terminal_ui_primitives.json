@@ -1,0 +1,1076 @@
+{
+  "version": "1.0.0",
+  "namespace": "hypersync.ui.primitives",
+  "description": "Terminal-native UI primitives for HyperSync with AI-adaptive rendering, graceful degradation, and packed storage. Defines core widgets and components that can be dynamically generated and rendered across all terminal types.",
+  
+  "types": {
+    "Primitive": {
+      "description": "Base widget/component primitive",
+      "fields": {
+        "id": {
+          "type": "string",
+          "description": "Unique primitive identifier",
+          "required": true
+        },
+        "type": {
+          "type": "PrimitiveType",
+          "description": "Primitive type (box, button, input, etc.)",
+          "required": true
+        },
+        "bounds": {
+          "type": "Bounds",
+          "description": "Position and size boundaries",
+          "required": true
+        },
+        "style": {
+          "type": "RenderStyle",
+          "description": "Visual styling configuration",
+          "required": true
+        },
+        "state": {
+          "type": "InteractionState",
+          "description": "Current interaction state",
+          "required": true
+        },
+        "metadata": {
+          "type": "map<string, any>",
+          "description": "Additional primitive-specific metadata",
+          "required": false
+        },
+        "children": {
+          "type": "array<Primitive>",
+          "description": "Child primitives for composition",
+          "required": false
+        }
+      }
+    },
+    
+    "PrimitiveType": {
+      "description": "Type of UI primitive",
+      "enum": ["box", "text", "button", "input", "list", "table", "progress", "chart", "tree", "dialog", "tabs", "statusbar", "tooltip", "notification", "custom"]
+    },
+    
+    "Bounds": {
+      "description": "Position and size boundaries",
+      "fields": {
+        "x": {"type": "integer", "description": "X position (columns)", "required": true},
+        "y": {"type": "integer", "description": "Y position (rows)", "required": true},
+        "width": {"type": "integer", "description": "Width in columns", "required": true},
+        "height": {"type": "integer", "description": "Height in rows", "required": true},
+        "positioning": {"type": "PositioningMode", "description": "Positioning mode", "required": true}
+      }
+    },
+    
+    "PositioningMode": {
+      "description": "How primitive is positioned",
+      "enum": ["absolute", "relative", "flow", "center", "stretch"]
+    },
+    
+    "RenderStyle": {
+      "description": "Visual styling configuration",
+      "fields": {
+        "border": {"type": "BorderStyle", "description": "Border style", "required": false},
+        "foreground": {"type": "Color", "description": "Foreground color", "required": false},
+        "background": {"type": "Color", "description": "Background color", "required": false},
+        "bold": {"type": "boolean", "description": "Bold text", "required": false},
+        "italic": {"type": "boolean", "description": "Italic text", "required": false},
+        "underline": {"type": "boolean", "description": "Underlined text", "required": false},
+        "alignment": {"type": "Alignment", "description": "Text alignment", "required": false},
+        "padding": {"type": "Padding", "description": "Internal padding", "required": false}
+      }
+    },
+    
+    "BorderStyle": {
+      "description": "Border rendering style",
+      "enum": ["none", "single", "double", "rounded", "thick", "ascii"]
+    },
+    
+    "Color": {
+      "description": "Terminal color specification",
+      "fields": {
+        "r": {"type": "integer", "description": "Red (0-255)", "required": false},
+        "g": {"type": "integer", "description": "Green (0-255)", "required": false},
+        "b": {"type": "integer", "description": "Blue (0-255)", "required": false},
+        "ansi": {"type": "integer", "description": "ANSI color code (0-255)", "required": false},
+        "name": {"type": "string", "description": "Named color", "required": false}
+      }
+    },
+    
+    "Alignment": {
+      "description": "Text alignment",
+      "enum": ["left", "center", "right", "justify"]
+    },
+    
+    "Padding": {
+      "description": "Internal padding",
+      "fields": {
+        "top": {"type": "integer", "description": "Top padding", "required": true},
+        "right": {"type": "integer", "description": "Right padding", "required": true},
+        "bottom": {"type": "integer", "description": "Bottom padding", "required": true},
+        "left": {"type": "integer", "description": "Left padding", "required": true}
+      }
+    },
+    
+    "InteractionState": {
+      "description": "Current widget interaction state",
+      "fields": {
+        "enabled": {"type": "boolean", "description": "Widget is enabled", "required": true},
+        "focused": {"type": "boolean", "description": "Widget has focus", "required": true},
+        "hovered": {"type": "boolean", "description": "Mouse is hovering", "required": false},
+        "pressed": {"type": "boolean", "description": "Widget is pressed", "required": false},
+        "selected": {"type": "boolean", "description": "Widget is selected", "required": false},
+        "value": {"type": "any", "description": "Current value", "required": false}
+      }
+    },
+    
+    "LayoutConstraints": {
+      "description": "Layout positioning constraints",
+      "fields": {
+        "min_width": {"type": "integer", "description": "Minimum width", "required": false},
+        "max_width": {"type": "integer", "description": "Maximum width", "required": false},
+        "min_height": {"type": "integer", "description": "Minimum height", "required": false},
+        "max_height": {"type": "integer", "description": "Maximum height", "required": false},
+        "aspect_ratio": {"type": "float", "description": "Aspect ratio to maintain", "required": false},
+        "anchor": {"type": "Anchor", "description": "Anchor point", "required": false}
+      }
+    },
+    
+    "Anchor": {
+      "description": "Anchor point for positioning",
+      "enum": ["top_left", "top_center", "top_right", "center_left", "center", "center_right", "bottom_left", "bottom_center", "bottom_right"]
+    },
+    
+    "PackedPrimitive": {
+      "description": "Serialized primitive in packed format",
+      "fields": {
+        "version": {"type": "string", "description": "Format version", "required": true},
+        "compressed": {"type": "boolean", "description": "Data is compressed", "required": true},
+        "encoding": {"type": "string", "description": "Encoding format", "required": true},
+        "data": {"type": "bytes", "description": "Packed primitive data", "required": true},
+        "checksum": {"type": "string", "description": "Data integrity checksum", "required": true},
+        "metadata": {"type": "map<string, string>", "description": "Packing metadata", "required": false}
+      }
+    },
+    
+    "TextContent": {
+      "description": "Text content with formatting",
+      "fields": {
+        "text": {"type": "string", "description": "Text content", "required": true},
+        "wrap": {"type": "boolean", "description": "Enable word wrap", "required": false},
+        "max_lines": {"type": "integer", "description": "Maximum lines", "required": false},
+        "ellipsis": {"type": "boolean", "description": "Use ellipsis for overflow", "required": false}
+      }
+    },
+    
+    "ButtonConfig": {
+      "description": "Button-specific configuration",
+      "fields": {
+        "label": {"type": "string", "description": "Button label", "required": true},
+        "action": {"type": "string", "description": "Action identifier", "required": true},
+        "shortcut": {"type": "string", "description": "Keyboard shortcut", "required": false},
+        "default": {"type": "boolean", "description": "Is default button", "required": false}
+      }
+    },
+    
+    "InputConfig": {
+      "description": "Input field configuration",
+      "fields": {
+        "input_type": {"type": "InputType", "description": "Input type", "required": true},
+        "placeholder": {"type": "string", "description": "Placeholder text", "required": false},
+        "mask_char": {"type": "string", "description": "Masking character (passwords)", "required": false},
+        "validation": {"type": "string", "description": "Validation regex", "required": false},
+        "max_length": {"type": "integer", "description": "Maximum length", "required": false}
+      }
+    },
+    
+    "InputType": {
+      "description": "Type of input field",
+      "enum": ["text", "password", "number", "email", "url", "multiline"]
+    },
+    
+    "ListConfig": {
+      "description": "List/menu configuration",
+      "fields": {
+        "items": {"type": "array<ListItem>", "description": "List items", "required": true},
+        "multi_select": {"type": "boolean", "description": "Allow multi-selection", "required": false},
+        "filterable": {"type": "boolean", "description": "Enable filtering", "required": false},
+        "selected_indices": {"type": "array<integer>", "description": "Selected item indices", "required": false}
+      }
+    },
+    
+    "ListItem": {
+      "description": "Individual list item",
+      "fields": {
+        "id": {"type": "string", "description": "Item identifier", "required": true},
+        "label": {"type": "string", "description": "Display label", "required": true},
+        "value": {"type": "any", "description": "Item value", "required": false},
+        "icon": {"type": "string", "description": "Item icon (Unicode)", "required": false},
+        "disabled": {"type": "boolean", "description": "Item is disabled", "required": false}
+      }
+    },
+    
+    "TableConfig": {
+      "description": "Table configuration",
+      "fields": {
+        "columns": {"type": "array<TableColumn>", "description": "Table columns", "required": true},
+        "rows": {"type": "array<array<any>>", "description": "Table data rows", "required": true},
+        "sortable": {"type": "boolean", "description": "Enable sorting", "required": false},
+        "sort_column": {"type": "integer", "description": "Current sort column", "required": false},
+        "sort_ascending": {"type": "boolean", "description": "Sort ascending", "required": false}
+      }
+    },
+    
+    "TableColumn": {
+      "description": "Table column definition",
+      "fields": {
+        "header": {"type": "string", "description": "Column header", "required": true},
+        "width": {"type": "integer", "description": "Column width", "required": false},
+        "alignment": {"type": "Alignment", "description": "Cell alignment", "required": false}
+      }
+    },
+    
+    "ProgressConfig": {
+      "description": "Progress bar configuration",
+      "fields": {
+        "progress_type": {"type": "ProgressType", "description": "Progress type", "required": true},
+        "value": {"type": "float", "description": "Progress value (0.0-1.0)", "required": false},
+        "label": {"type": "string", "description": "Progress label", "required": false},
+        "show_percentage": {"type": "boolean", "description": "Show percentage", "required": false}
+      }
+    },
+    
+    "ProgressType": {
+      "description": "Type of progress indicator",
+      "enum": ["bar", "spinner", "dots", "percentage"]
+    },
+    
+    "ChartConfig": {
+      "description": "Chart configuration",
+      "fields": {
+        "chart_type": {"type": "ChartType", "description": "Chart type", "required": true},
+        "data": {"type": "array<ChartSeries>", "description": "Chart data series", "required": true},
+        "x_label": {"type": "string", "description": "X-axis label", "required": false},
+        "y_label": {"type": "string", "description": "Y-axis label", "required": false},
+        "title": {"type": "string", "description": "Chart title", "required": false}
+      }
+    },
+    
+    "ChartType": {
+      "description": "Type of chart",
+      "enum": ["line", "bar", "scatter", "histogram", "sparkline"]
+    },
+    
+    "ChartSeries": {
+      "description": "Chart data series",
+      "fields": {
+        "name": {"type": "string", "description": "Series name", "required": true},
+        "data": {"type": "array<float>", "description": "Data points", "required": true},
+        "color": {"type": "Color", "description": "Series color", "required": false}
+      }
+    },
+    
+    "TreeConfig": {
+      "description": "Tree view configuration",
+      "fields": {
+        "root": {"type": "TreeNode", "description": "Root tree node", "required": true},
+        "show_root": {"type": "boolean", "description": "Show root node", "required": false},
+        "expand_all": {"type": "boolean", "description": "Expand all nodes", "required": false}
+      }
+    },
+    
+    "TreeNode": {
+      "description": "Tree node",
+      "fields": {
+        "id": {"type": "string", "description": "Node identifier", "required": true},
+        "label": {"type": "string", "description": "Node label", "required": true},
+        "expanded": {"type": "boolean", "description": "Node is expanded", "required": false},
+        "children": {"type": "array<TreeNode>", "description": "Child nodes", "required": false},
+        "icon": {"type": "string", "description": "Node icon", "required": false}
+      }
+    },
+    
+    "DialogConfig": {
+      "description": "Dialog configuration",
+      "fields": {
+        "dialog_type": {"type": "DialogType", "description": "Dialog type", "required": true},
+        "title": {"type": "string", "description": "Dialog title", "required": true},
+        "message": {"type": "string", "description": "Dialog message", "required": true},
+        "buttons": {"type": "array<string>", "description": "Dialog buttons", "required": false},
+        "default_button": {"type": "integer", "description": "Default button index", "required": false}
+      }
+    },
+    
+    "DialogType": {
+      "description": "Type of dialog",
+      "enum": ["info", "warning", "error", "confirm", "input"]
+    },
+    
+    "RenderContext": {
+      "description": "Rendering context",
+      "fields": {
+        "graphics_level": {"type": "integer", "description": "Graphics level (0-8)", "required": true},
+        "terminal_width": {"type": "integer", "description": "Terminal width", "required": true},
+        "terminal_height": {"type": "integer", "description": "Terminal height", "required": true},
+        "color_support": {"type": "string", "description": "Color support level", "required": true},
+        "sixel_support": {"type": "boolean", "description": "Sixel graphics support", "required": true}
+      }
+    }
+  },
+  
+  "operations": {
+    "render_box": {
+      "description": "Render box/panel primitive with borders and content. Supports multiple border styles with automatic degradation for terminal capabilities.",
+      "inputs": {
+        "bounds": {
+          "type": "Bounds",
+          "description": "Box position and size",
+          "required": true
+        },
+        "style": {
+          "type": "RenderStyle",
+          "description": "Box styling",
+          "required": true
+        },
+        "content": {
+          "type": "string",
+          "description": "Box content text",
+          "required": false
+        },
+        "title": {
+          "type": "string",
+          "description": "Box title (displayed in border)",
+          "required": false
+        },
+        "context": {
+          "type": "RenderContext",
+          "description": "Rendering context",
+          "required": true
+        }
+      },
+      "outputs": {
+        "primitive": {
+          "type": "Primitive",
+          "description": "Rendered box primitive"
+        },
+        "render_data": {
+          "type": "string",
+          "description": "Terminal escape sequences"
+        }
+      },
+      "errors": {
+        "INVALID_BOUNDS": "Bounds are invalid or out of terminal range",
+        "RENDER_FAILED": "Failed to render box primitive"
+      }
+    },
+    
+    "render_text": {
+      "description": "Render text with formatting (bold, italic, colors) and word wrapping. Degrades formatting based on terminal capabilities.",
+      "inputs": {
+        "content": {
+          "type": "TextContent",
+          "description": "Text content configuration",
+          "required": true
+        },
+        "bounds": {
+          "type": "Bounds",
+          "description": "Text area bounds",
+          "required": true
+        },
+        "style": {
+          "type": "RenderStyle",
+          "description": "Text styling",
+          "required": true
+        },
+        "context": {
+          "type": "RenderContext",
+          "description": "Rendering context",
+          "required": true
+        }
+      },
+      "outputs": {
+        "primitive": {
+          "type": "Primitive",
+          "description": "Rendered text primitive"
+        },
+        "line_count": {
+          "type": "integer",
+          "description": "Number of lines rendered"
+        }
+      },
+      "errors": {
+        "TEXT_TOO_LONG": "Text exceeds maximum lines",
+        "INVALID_STYLE": "Text style not supported in this context"
+      }
+    },
+    
+    "render_button": {
+      "description": "Render interactive button with state management (normal, hover, pressed, disabled). Includes keyboard navigation support.",
+      "inputs": {
+        "config": {
+          "type": "ButtonConfig",
+          "description": "Button configuration",
+          "required": true
+        },
+        "bounds": {
+          "type": "Bounds",
+          "description": "Button bounds",
+          "required": true
+        },
+        "style": {
+          "type": "RenderStyle",
+          "description": "Button styling",
+          "required": true
+        },
+        "state": {
+          "type": "InteractionState",
+          "description": "Current button state",
+          "required": true
+        },
+        "context": {
+          "type": "RenderContext",
+          "description": "Rendering context",
+          "required": true
+        }
+      },
+      "outputs": {
+        "primitive": {
+          "type": "Primitive",
+          "description": "Rendered button primitive"
+        },
+        "focusable": {
+          "type": "boolean",
+          "description": "Button can receive focus"
+        }
+      },
+      "errors": {
+        "INVALID_ACTION": "Button action identifier is invalid",
+        "RENDER_FAILED": "Failed to render button"
+      }
+    },
+    
+    "render_input": {
+      "description": "Render input field with validation, masking (passwords), and cursor handling. Supports text, number, and multiline inputs.",
+      "inputs": {
+        "config": {
+          "type": "InputConfig",
+          "description": "Input field configuration",
+          "required": true
+        },
+        "bounds": {
+          "type": "Bounds",
+          "description": "Input field bounds",
+          "required": true
+        },
+        "style": {
+          "type": "RenderStyle",
+          "description": "Input styling",
+          "required": true
+        },
+        "state": {
+          "type": "InteractionState",
+          "description": "Current input state (includes value)",
+          "required": true
+        },
+        "context": {
+          "type": "RenderContext",
+          "description": "Rendering context",
+          "required": true
+        }
+      },
+      "outputs": {
+        "primitive": {
+          "type": "Primitive",
+          "description": "Rendered input primitive"
+        },
+        "cursor_position": {
+          "type": "integer",
+          "description": "Cursor position in input"
+        },
+        "valid": {
+          "type": "boolean",
+          "description": "Current value is valid"
+        }
+      },
+      "errors": {
+        "VALIDATION_FAILED": "Input validation regex is invalid",
+        "INVALID_INPUT_TYPE": "Input type not supported"
+      }
+    },
+    
+    "render_list": {
+      "description": "Render list/menu with selection, scrolling, and multi-select support. Includes keyboard navigation and filtering.",
+      "inputs": {
+        "config": {
+          "type": "ListConfig",
+          "description": "List configuration",
+          "required": true
+        },
+        "bounds": {
+          "type": "Bounds",
+          "description": "List bounds",
+          "required": true
+        },
+        "style": {
+          "type": "RenderStyle",
+          "description": "List styling",
+          "required": true
+        },
+        "scroll_offset": {
+          "type": "integer",
+          "description": "Vertical scroll offset",
+          "required": false
+        },
+        "context": {
+          "type": "RenderContext",
+          "description": "Rendering context",
+          "required": true
+        }
+      },
+      "outputs": {
+        "primitive": {
+          "type": "Primitive",
+          "description": "Rendered list primitive"
+        },
+        "visible_items": {
+          "type": "integer",
+          "description": "Number of visible items"
+        },
+        "scroll_needed": {
+          "type": "boolean",
+          "description": "Scrolling is needed"
+        }
+      },
+      "errors": {
+        "EMPTY_LIST": "List has no items",
+        "INVALID_SELECTION": "Selected indices are invalid"
+      }
+    },
+    
+    "render_table": {
+      "description": "Render data table with columns, headers, sorting, and filtering. Supports horizontal and vertical scrolling.",
+      "inputs": {
+        "config": {
+          "type": "TableConfig",
+          "description": "Table configuration",
+          "required": true
+        },
+        "bounds": {
+          "type": "Bounds",
+          "description": "Table bounds",
+          "required": true
+        },
+        "style": {
+          "type": "RenderStyle",
+          "description": "Table styling",
+          "required": true
+        },
+        "scroll_x": {
+          "type": "integer",
+          "description": "Horizontal scroll offset",
+          "required": false
+        },
+        "scroll_y": {
+          "type": "integer",
+          "description": "Vertical scroll offset",
+          "required": false
+        },
+        "context": {
+          "type": "RenderContext",
+          "description": "Rendering context",
+          "required": true
+        }
+      },
+      "outputs": {
+        "primitive": {
+          "type": "Primitive",
+          "description": "Rendered table primitive"
+        },
+        "visible_rows": {
+          "type": "integer",
+          "description": "Number of visible rows"
+        },
+        "total_width": {
+          "type": "integer",
+          "description": "Total table width"
+        }
+      },
+      "errors": {
+        "COLUMN_MISMATCH": "Number of columns doesn't match data",
+        "INVALID_SORT_COLUMN": "Sort column index is invalid"
+      }
+    },
+    
+    "render_progress": {
+      "description": "Render progress indicator (bar, spinner, percentage). Supports determinate and indeterminate modes with ASCII fallback.",
+      "inputs": {
+        "config": {
+          "type": "ProgressConfig",
+          "description": "Progress configuration",
+          "required": true
+        },
+        "bounds": {
+          "type": "Bounds",
+          "description": "Progress bounds",
+          "required": true
+        },
+        "style": {
+          "type": "RenderStyle",
+          "description": "Progress styling",
+          "required": true
+        },
+        "context": {
+          "type": "RenderContext",
+          "description": "Rendering context",
+          "required": true
+        }
+      },
+      "outputs": {
+        "primitive": {
+          "type": "Primitive",
+          "description": "Rendered progress primitive"
+        },
+        "animated": {
+          "type": "boolean",
+          "description": "Progress requires animation"
+        }
+      },
+      "errors": {
+        "INVALID_PROGRESS_VALUE": "Progress value must be 0.0-1.0",
+        "RENDER_FAILED": "Failed to render progress indicator"
+      }
+    },
+    
+    "render_chart": {
+      "description": "Render chart/graph (line, bar, scatter) using Unicode/ASCII characters. Can upgrade to sixel for high-quality rendering.",
+      "inputs": {
+        "config": {
+          "type": "ChartConfig",
+          "description": "Chart configuration",
+          "required": true
+        },
+        "bounds": {
+          "type": "Bounds",
+          "description": "Chart bounds",
+          "required": true
+        },
+        "style": {
+          "type": "RenderStyle",
+          "description": "Chart styling",
+          "required": true
+        },
+        "context": {
+          "type": "RenderContext",
+          "description": "Rendering context",
+          "required": true
+        }
+      },
+      "outputs": {
+        "primitive": {
+          "type": "Primitive",
+          "description": "Rendered chart primitive"
+        },
+        "render_method": {
+          "type": "string",
+          "description": "Rendering method used (ascii, unicode, sixel)"
+        }
+      },
+      "errors": {
+        "EMPTY_DATA": "Chart has no data series",
+        "INVALID_CHART_TYPE": "Chart type not supported",
+        "RENDER_FAILED": "Failed to render chart"
+      }
+    },
+    
+    "render_tree": {
+      "description": "Render tree view with expand/collapse, navigation, and ASCII art fallback for non-Unicode terminals.",
+      "inputs": {
+        "config": {
+          "type": "TreeConfig",
+          "description": "Tree configuration",
+          "required": true
+        },
+        "bounds": {
+          "type": "Bounds",
+          "description": "Tree bounds",
+          "required": true
+        },
+        "style": {
+          "type": "RenderStyle",
+          "description": "Tree styling",
+          "required": true
+        },
+        "scroll_offset": {
+          "type": "integer",
+          "description": "Vertical scroll offset",
+          "required": false
+        },
+        "context": {
+          "type": "RenderContext",
+          "description": "Rendering context",
+          "required": true
+        }
+      },
+      "outputs": {
+        "primitive": {
+          "type": "Primitive",
+          "description": "Rendered tree primitive"
+        },
+        "visible_nodes": {
+          "type": "integer",
+          "description": "Number of visible nodes"
+        },
+        "total_depth": {
+          "type": "integer",
+          "description": "Maximum tree depth"
+        }
+      },
+      "errors": {
+        "INVALID_TREE_STRUCTURE": "Tree structure contains cycles",
+        "RENDER_FAILED": "Failed to render tree view"
+      }
+    },
+    
+    "render_dialog": {
+      "description": "Render modal dialog (info, warning, error, confirm) with buttons, input, and focus management.",
+      "inputs": {
+        "config": {
+          "type": "DialogConfig",
+          "description": "Dialog configuration",
+          "required": true
+        },
+        "style": {
+          "type": "RenderStyle",
+          "description": "Dialog styling",
+          "required": true
+        },
+        "context": {
+          "type": "RenderContext",
+          "description": "Rendering context",
+          "required": true
+        }
+      },
+      "outputs": {
+        "primitive": {
+          "type": "Primitive",
+          "description": "Rendered dialog primitive"
+        },
+        "centered_bounds": {
+          "type": "Bounds",
+          "description": "Auto-calculated centered bounds"
+        },
+        "modal": {
+          "type": "boolean",
+          "description": "Dialog is modal"
+        }
+      },
+      "errors": {
+        "INVALID_DIALOG_TYPE": "Dialog type not recognized",
+        "NO_BUTTONS": "Dialog must have at least one button"
+      }
+    },
+    
+    "render_tabs": {
+      "description": "Render tab control with tab switching, keyboard shortcuts, and active state highlighting.",
+      "inputs": {
+        "tabs": {
+          "type": "array<string>",
+          "description": "Tab labels",
+          "required": true
+        },
+        "active_index": {
+          "type": "integer",
+          "description": "Active tab index",
+          "required": true
+        },
+        "bounds": {
+          "type": "Bounds",
+          "description": "Tab control bounds",
+          "required": true
+        },
+        "style": {
+          "type": "RenderStyle",
+          "description": "Tab styling",
+          "required": true
+        },
+        "context": {
+          "type": "RenderContext",
+          "description": "Rendering context",
+          "required": true
+        }
+      },
+      "outputs": {
+        "primitive": {
+          "type": "Primitive",
+          "description": "Rendered tabs primitive"
+        },
+        "tab_widths": {
+          "type": "array<integer>",
+          "description": "Width of each tab"
+        }
+      },
+      "errors": {
+        "EMPTY_TABS": "Must have at least one tab",
+        "INVALID_ACTIVE_INDEX": "Active index out of range"
+      }
+    },
+    
+    "render_statusbar": {
+      "description": "Render status bar with sections, alignment, and real-time updates. Supports compact mode for narrow terminals.",
+      "inputs": {
+        "sections": {
+          "type": "array<StatusSection>",
+          "description": "Status bar sections",
+          "required": true
+        },
+        "bounds": {
+          "type": "Bounds",
+          "description": "Status bar bounds (typically full width)",
+          "required": true
+        },
+        "style": {
+          "type": "RenderStyle",
+          "description": "Status bar styling",
+          "required": true
+        },
+        "context": {
+          "type": "RenderContext",
+          "description": "Rendering context",
+          "required": true
+        }
+      },
+      "outputs": {
+        "primitive": {
+          "type": "Primitive",
+          "description": "Rendered status bar primitive"
+        },
+        "compact_mode": {
+          "type": "boolean",
+          "description": "Rendered in compact mode"
+        }
+      },
+      "errors": {
+        "SECTIONS_TOO_WIDE": "Status sections exceed available width"
+      }
+    },
+    
+    "render_tooltip": {
+      "description": "Render tooltip/help text with positioning, auto-hide, and context-sensitive content.",
+      "inputs": {
+        "content": {
+          "type": "string",
+          "description": "Tooltip content",
+          "required": true
+        },
+        "anchor_bounds": {
+          "type": "Bounds",
+          "description": "Anchor widget bounds",
+          "required": true
+        },
+        "position": {
+          "type": "string",
+          "description": "Tooltip position (above, below, left, right)",
+          "required": false
+        },
+        "style": {
+          "type": "RenderStyle",
+          "description": "Tooltip styling",
+          "required": true
+        },
+        "context": {
+          "type": "RenderContext",
+          "description": "Rendering context",
+          "required": true
+        }
+      },
+      "outputs": {
+        "primitive": {
+          "type": "Primitive",
+          "description": "Rendered tooltip primitive"
+        },
+        "calculated_bounds": {
+          "type": "Bounds",
+          "description": "Auto-calculated tooltip bounds"
+        }
+      },
+      "errors": {
+        "CONTENT_TOO_LONG": "Tooltip content exceeds maximum size",
+        "POSITIONING_FAILED": "Cannot position tooltip in terminal"
+      }
+    },
+    
+    "render_notification": {
+      "description": "Render notification toast (success, info, warning, error) with auto-dismiss and queue management.",
+      "inputs": {
+        "type": {
+          "type": "string",
+          "description": "Notification type (success, info, warning, error)",
+          "required": true
+        },
+        "message": {
+          "type": "string",
+          "description": "Notification message",
+          "required": true
+        },
+        "duration": {
+          "type": "integer",
+          "description": "Display duration in milliseconds (0 = no auto-dismiss)",
+          "required": false
+        },
+        "style": {
+          "type": "RenderStyle",
+          "description": "Notification styling",
+          "required": true
+        },
+        "context": {
+          "type": "RenderContext",
+          "description": "Rendering context",
+          "required": true
+        }
+      },
+      "outputs": {
+        "primitive": {
+          "type": "Primitive",
+          "description": "Rendered notification primitive"
+        },
+        "notification_id": {
+          "type": "string",
+          "description": "Unique notification identifier"
+        },
+        "bounds": {
+          "type": "Bounds",
+          "description": "Auto-calculated notification bounds"
+        }
+      },
+      "errors": {
+        "INVALID_NOTIFICATION_TYPE": "Notification type not recognized",
+        "QUEUE_FULL": "Notification queue is full"
+      }
+    },
+    
+    "pack_primitive": {
+      "description": "Pack primitive for efficient storage and transmission. Includes compression, serialization, and version tagging.",
+      "inputs": {
+        "primitive": {
+          "type": "Primitive",
+          "description": "Primitive to pack",
+          "required": true
+        },
+        "compression": {
+          "type": "boolean",
+          "description": "Enable compression",
+          "required": false
+        },
+        "include_children": {
+          "type": "boolean",
+          "description": "Include child primitives",
+          "required": false
+        }
+      },
+      "outputs": {
+        "packed": {
+          "type": "PackedPrimitive",
+          "description": "Packed primitive"
+        },
+        "size_bytes": {
+          "type": "integer",
+          "description": "Packed size in bytes"
+        },
+        "compression_ratio": {
+          "type": "float",
+          "description": "Compression ratio achieved"
+        }
+      },
+      "errors": {
+        "PACKING_FAILED": "Failed to pack primitive",
+        "COMPRESSION_ERROR": "Compression failed"
+      }
+    }
+  },
+  
+  "additional_types": {
+    "StatusSection": {
+      "description": "Status bar section",
+      "fields": {
+        "content": {"type": "string", "description": "Section content", "required": true},
+        "alignment": {"type": "Alignment", "description": "Section alignment", "required": false},
+        "width": {"type": "integer", "description": "Fixed width (or auto)", "required": false},
+        "style": {"type": "RenderStyle", "description": "Section-specific style", "required": false}
+      }
+    }
+  },
+  
+  "documentation": {
+    "overview": "Terminal UI Primitives defines all core widgets and components that can be rendered in terminal environments. The system is designed for AI-adaptive interfaces with graceful degradation across terminal capabilities (ASCII → Unicode → Sixel). All primitives support packed storage for efficient transmission and caching.",
+    
+    "rendering_pipeline": [
+      "1. Create primitive configuration (ButtonConfig, ListConfig, etc.)",
+      "2. Provide RenderContext with terminal capabilities",
+      "3. Call appropriate render_* operation",
+      "4. Receive Primitive with render_data (escape sequences)",
+      "5. Write render_data to terminal",
+      "6. Handle user interactions via state updates",
+      "7. Re-render on state changes"
+    ],
+    
+    "graceful_degradation": {
+      "description": "Primitives automatically degrade based on terminal capabilities",
+      "levels": {
+        "level_0": "ASCII only - basic characters",
+        "level_1": "Extended ASCII - box drawing characters",
+        "level_2": "Unicode blocks - block elements for graphics",
+        "level_3": "Full Unicode - all Unicode symbols",
+        "level_4": "16 colors - ANSI 16 color support",
+        "level_5": "256 colors - ANSI 256 color support",
+        "level_6": "True color - 24-bit RGB support",
+        "level_7": "Sixel basic - basic sixel graphics",
+        "level_8": "Sixel advanced - advanced sixel features"
+      },
+      "examples": {
+        "borders": "rounded → double → single → ASCII +--|",
+        "progress": "Unicode blocks → ASCII ====>",
+        "charts": "Sixel → Unicode blocks → ASCII art",
+        "colors": "24-bit RGB → 256 color → 16 color → monochrome"
+      }
+    },
+    
+    "interaction_model": {
+      "description": "All interactive primitives use InteractionState for state management",
+      "states": ["enabled", "focused", "hovered", "pressed", "selected"],
+      "navigation": "Tab/Shift+Tab for focus, Arrow keys for navigation, Enter for activation",
+      "events": "State changes trigger re-rendering with updated style"
+    },
+    
+    "packing_system": {
+      "description": "Primitives can be packed for efficient storage and transmission",
+      "benefits": ["Reduced memory usage", "Fast transmission", "Caching support"],
+      "format": "Versioned, compressed, checksummed binary format",
+      "use_cases": ["Pre-built UI libraries", "Network transmission", "Persistent storage"]
+    },
+    
+    "best_practices": [
+      "Always provide RenderContext with accurate terminal capabilities",
+      "Use LayoutConstraints for responsive layouts",
+      "Pack frequently-used primitives for performance",
+      "Test rendering at all graphics levels (0-8)",
+      "Provide keyboard alternatives for all interactions",
+      "Use semantic colors that degrade well",
+      "Keep primitive trees shallow for performance",
+      "Cache rendered primitives when possible"
+    ],
+    
+    "examples": {
+      "simple_button": {
+        "description": "Render a simple button",
+        "code": "render_button with ButtonConfig{label: 'Submit', action: 'submit_form'}, bounds, style, state, context"
+      },
+      "data_table": {
+        "description": "Render sortable data table",
+        "code": "render_table with TableConfig{columns, rows, sortable: true}, bounds, style, context"
+      },
+      "progress_bar": {
+        "description": "Render determinate progress bar",
+        "code": "render_progress with ProgressConfig{progress_type: 'bar', value: 0.65, show_percentage: true}, bounds, style, context"
+      }
+    }
+  }
+}

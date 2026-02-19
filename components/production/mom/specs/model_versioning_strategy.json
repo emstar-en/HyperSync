@@ -1,0 +1,3100 @@
+{
+  "component": "model_versioning_strategy",
+  "version": "1.0.0",
+  "description": "Comprehensive model versioning strategy with support for semantic versioning, custom schemes, and AI-managed version control",
+  "subsystem": "AI Management",
+  "dependencies": [
+    "iam_agent_handoff_protocol",
+    "agent_communication_protocols"
+  ],
+  "type_definitions": {
+    "Version": {
+      "type": "object",
+      "description": "Represents a version with scheme information",
+      "properties": {
+        "value": {
+          "type": "string",
+          "description": "Version string (e.g., '1.2.3', '2025.01.12')"
+        },
+        "scheme": {
+          "type": "VersionScheme",
+          "description": "Versioning scheme used"
+        },
+        "metadata": {
+          "type": "dict[string, any]",
+          "description": "Additional version metadata",
+          "optional": true
+        }
+      }
+    },
+    "VersionScheme": {
+      "type": "enum",
+      "values": [
+        "SemVer",
+        "CalVer",
+        "GitHash",
+        "Custom"
+      ],
+      "description": "Versioning scheme type"
+    },
+    "VersionConstraint": {
+      "type": "object",
+      "description": "Version constraint specification",
+      "properties": {
+        "expression": {
+          "type": "string",
+          "description": "Constraint expression (e.g., '^1.2.0', '>=2.0.0', '~1.2.3')"
+        },
+        "scheme": {
+          "type": "VersionScheme",
+          "description": "Versioning scheme for constraint"
+        }
+      }
+    },
+    "VersionHistory": {
+      "type": "object",
+      "description": "Complete version history with changelog",
+      "properties": {
+        "versions": {
+          "type": "array[Version]",
+          "description": "Ordered list of versions"
+        },
+        "changelog": {
+          "type": "dict[string, ChangelogEntry]",
+          "description": "Changelog entries keyed by version"
+        }
+      }
+    },
+    "ChangelogEntry": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "type": "Version",
+          "description": "Version for this entry"
+        },
+        "timestamp": {
+          "type": "ISO8601",
+          "description": "Release timestamp"
+        },
+        "changes": {
+          "type": "array[Change]",
+          "description": "List of changes"
+        },
+        "breaking_changes": {
+          "type": "array[Change]",
+          "description": "Breaking changes",
+          "optional": true
+        },
+        "migration_guide": {
+          "type": "string",
+          "description": "Migration instructions",
+          "optional": true
+        }
+      }
+    },
+    "Change": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "enum",
+          "values": [
+            "feature",
+            "bugfix",
+            "performance",
+            "breaking",
+            "security",
+            "documentation"
+          ],
+          "description": "Type of change"
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of change"
+        },
+        "impact": {
+          "type": "enum",
+          "values": [
+            "major",
+            "minor",
+            "patch"
+          ],
+          "description": "Impact level"
+        }
+      }
+    },
+    "CompatibilityResult": {
+      "type": "object",
+      "properties": {
+        "compatible": {
+          "type": "boolean",
+          "description": "Whether versions are compatible"
+        },
+        "reason": {
+          "type": "string",
+          "description": "Explanation of compatibility decision",
+          "optional": true
+        },
+        "warnings": {
+          "type": "array[string]",
+          "description": "Compatibility warnings",
+          "optional": true
+        }
+      }
+    },
+    "MigrationStrategy": {
+      "type": "object",
+      "properties": {
+        "from_version": {
+          "type": "Version",
+          "description": "Source version"
+        },
+        "to_version": {
+          "type": "Version",
+          "description": "Target version"
+        },
+        "steps": {
+          "type": "array[MigrationStep]",
+          "description": "Ordered migration steps"
+        },
+        "automatic": {
+          "type": "boolean",
+          "description": "Whether migration is automatic"
+        },
+        "rollback_supported": {
+          "type": "boolean",
+          "description": "Whether rollback is supported"
+        }
+      }
+    },
+    "MigrationStep": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string",
+          "description": "Step description"
+        },
+        "operation": {
+          "type": "string",
+          "description": "Operation to perform"
+        },
+        "parameters": {
+          "type": "dict[string, any]",
+          "description": "Operation parameters"
+        }
+      }
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "MVS-001",
+      "name": "version_model",
+      "category": "Version Management",
+      "description": "Assign version to model with automatic or manual version determination",
+      "signature": {
+        "inputs": {
+          "model_id": {
+            "type": "UUID",
+            "description": "Unique model identifier"
+          },
+          "version": {
+            "type": "string",
+            "description": "Version string (optional for auto-versioning)",
+            "optional": true
+          },
+          "scheme": {
+            "type": "VersionScheme",
+            "description": "Versioning scheme",
+            "default": "SemVer"
+          },
+          "changes": {
+            "type": "array[Change]",
+            "description": "List of changes for AI analysis",
+            "optional": true
+          },
+          "auto_version": {
+            "type": "boolean",
+            "description": "Enable automatic version determination",
+            "default": true
+          },
+          "metadata": {
+            "type": "dict[string, any]",
+            "description": "Version metadata",
+            "optional": true
+          }
+        },
+        "outputs": {
+          "version": {
+            "type": "Version",
+            "description": "Assigned version"
+          },
+          "model_id": {
+            "type": "UUID",
+            "description": "Model identifier"
+          },
+          "previous_version": {
+            "type": "Version",
+            "description": "Previous version",
+            "optional": true
+          }
+        }
+      },
+      "formula": {
+        "description": "Automatic SemVer version determination based on changes",
+        "steps": [
+          "1. If version specified, validate and use it directly",
+          "2. If auto_version=true, analyze changes:",
+          "   a. If breaking changes exist \u2192 MAJOR bump",
+          "   b. If new features exist \u2192 MINOR bump",
+          "   c. If only bugfixes/patches \u2192 PATCH bump",
+          "3. Get current version v_current = (M, m, p)",
+          "4. Compute new version based on bump type:",
+          "   - MAJOR: v_new = (M+1, 0, 0)",
+          "   - MINOR: v_new = (M, m+1, 0)",
+          "   - PATCH: v_new = (M, m, p+1)",
+          "5. Format version string: '{M}.{m}.{p}'",
+          "6. Store version with model_id and metadata",
+          "7. Return version object"
+        ],
+        "semver_rules": {
+          "format": "MAJOR.MINOR.PATCH",
+          "major_bump": "Breaking changes, incompatible API changes",
+          "minor_bump": "New features, backward compatible",
+          "patch_bump": "Bugfixes, backward compatible"
+        },
+        "calver_format": "YYYY.MM.DD[.MICRO]",
+        "githash_format": "40-character hex SHA-1"
+      },
+      "properties": {
+        "idempotency": "No (each call creates new version unless version specified)",
+        "atomicity": "Yes (version assignment is atomic)",
+        "consistency": "Strong (immediate visibility)",
+        "ai_managed": "Yes (automatic version determination)",
+        "time_complexity": "O(1)",
+        "space_complexity": "O(1)"
+      },
+      "edge_cases": [
+        {
+          "case": "No previous version exists",
+          "handling": "Initialize as 1.0.0 for SemVer, current date for CalVer",
+          "result": "First version created"
+        },
+        {
+          "case": "Invalid version format",
+          "handling": "Reject with validation error",
+          "error": "INVALID_VERSION_FORMAT"
+        },
+        {
+          "case": "Version already exists",
+          "handling": "Reject with conflict error",
+          "error": "VERSION_CONFLICT"
+        },
+        {
+          "case": "No changes provided for auto-versioning",
+          "handling": "Default to PATCH bump",
+          "warning": "NO_CHANGES_SPECIFIED"
+        },
+        {
+          "case": "Conflicting change types",
+          "handling": "Use highest impact (breaking > feature > patch)",
+          "result": "Conservative versioning"
+        },
+        {
+          "case": "Custom scheme without version",
+          "handling": "Require explicit version",
+          "error": "VERSION_REQUIRED_FOR_CUSTOM_SCHEME"
+        }
+      ],
+      "test_cases": [
+        {
+          "test_id": "MVS-001-T01",
+          "description": "Auto-version with breaking changes",
+          "input": {
+            "model_id": "model-123",
+            "changes": [
+              {
+                "type": "breaking",
+                "description": "API change"
+              }
+            ],
+            "auto_version": true
+          },
+          "precondition": "Current version is 1.5.3",
+          "expected_output": {
+            "version": {
+              "value": "2.0.0",
+              "scheme": "SemVer"
+            },
+            "previous_version": {
+              "value": "1.5.3",
+              "scheme": "SemVer"
+            }
+          }
+        },
+        {
+          "test_id": "MVS-001-T02",
+          "description": "Auto-version with new feature",
+          "input": {
+            "model_id": "model-123",
+            "changes": [
+              {
+                "type": "feature",
+                "description": "New capability"
+              }
+            ]
+          },
+          "precondition": "Current version is 1.5.3",
+          "expected_output": {
+            "version": {
+              "value": "1.6.0",
+              "scheme": "SemVer"
+            }
+          }
+        },
+        {
+          "test_id": "MVS-001-T03",
+          "description": "Auto-version with bugfix",
+          "input": {
+            "model_id": "model-123",
+            "changes": [
+              {
+                "type": "bugfix",
+                "description": "Fixed issue"
+              }
+            ]
+          },
+          "precondition": "Current version is 1.5.3",
+          "expected_output": {
+            "version": {
+              "value": "1.5.4",
+              "scheme": "SemVer"
+            }
+          }
+        },
+        {
+          "test_id": "MVS-001-T04",
+          "description": "Manual version specification",
+          "input": {
+            "model_id": "model-123",
+            "version": "3.0.0",
+            "auto_version": false
+          },
+          "expected_output": {
+            "version": {
+              "value": "3.0.0",
+              "scheme": "SemVer"
+            }
+          }
+        },
+        {
+          "test_id": "MVS-001-T05",
+          "description": "First version (no previous)",
+          "input": {
+            "model_id": "model-new",
+            "auto_version": true
+          },
+          "precondition": "No previous version",
+          "expected_output": {
+            "version": {
+              "value": "1.0.0",
+              "scheme": "SemVer"
+            }
+          }
+        },
+        {
+          "test_id": "MVS-001-T06",
+          "description": "CalVer versioning",
+          "input": {
+            "model_id": "model-123",
+            "scheme": "CalVer",
+            "auto_version": true
+          },
+          "expected_output": {
+            "version": {
+              "value": "2025.01.12",
+              "scheme": "CalVer"
+            }
+          }
+        },
+        {
+          "test_id": "MVS-001-T07",
+          "description": "Invalid version format",
+          "input": {
+            "model_id": "model-123",
+            "version": "invalid.version",
+            "auto_version": false
+          },
+          "expected_error": "INVALID_VERSION_FORMAT"
+        },
+        {
+          "test_id": "MVS-001-T08",
+          "description": "Version conflict",
+          "input": {
+            "model_id": "model-123",
+            "version": "1.5.3"
+          },
+          "precondition": "Version 1.5.3 already exists",
+          "expected_error": "VERSION_CONFLICT"
+        },
+        {
+          "test_id": "MVS-001-T09",
+          "description": "Mixed change types",
+          "input": {
+            "model_id": "model-123",
+            "changes": [
+              {
+                "type": "breaking",
+                "description": "Breaking change"
+              },
+              {
+                "type": "feature",
+                "description": "New feature"
+              },
+              {
+                "type": "bugfix",
+                "description": "Bug fix"
+              }
+            ]
+          },
+          "precondition": "Current version is 1.5.3",
+          "expected_output": {
+            "version": {
+              "value": "2.0.0",
+              "scheme": "SemVer"
+            }
+          },
+          "note": "Breaking change takes precedence"
+        },
+        {
+          "test_id": "MVS-001-T10",
+          "description": "Version with metadata",
+          "input": {
+            "model_id": "model-123",
+            "version": "1.0.0-beta.1",
+            "metadata": {
+              "stage": "beta"
+            }
+          },
+          "expected_output": {
+            "version": {
+              "value": "1.0.0-beta.1",
+              "scheme": "SemVer",
+              "metadata": {
+                "stage": "beta"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "operation_id": "MVS-002",
+      "name": "check_compatibility",
+      "category": "Compatibility",
+      "description": "Check version compatibility between two versions using scheme-specific rules",
+      "signature": {
+        "inputs": {
+          "version_a": {
+            "type": "Version",
+            "description": "First version to compare"
+          },
+          "version_b": {
+            "type": "Version",
+            "description": "Second version to compare"
+          },
+          "compatibility_level": {
+            "type": "enum",
+            "values": [
+              "strict",
+              "backward",
+              "forward",
+              "loose"
+            ],
+            "description": "Compatibility level to check",
+            "default": "backward"
+          }
+        },
+        "outputs": {
+          "result": {
+            "type": "CompatibilityResult",
+            "description": "Compatibility result with explanation"
+          }
+        }
+      },
+      "formula": {
+        "description": "SemVer compatibility checking algorithm",
+        "steps": [
+          "1. Parse versions: v_a = (M_a, m_a, p_a), v_b = (M_b, m_b, p_b)",
+          "2. Apply compatibility rules based on level:",
+          "   strict: v_a == v_b (exact match)",
+          "   backward: M_a == M_b AND (m_a > m_b OR (m_a == m_b AND p_a >= p_b))",
+          "   forward: M_a == M_b (same major version)",
+          "   loose: true (always compatible)",
+          "3. Check for special cases (pre-release, build metadata)",
+          "4. Generate compatibility reason",
+          "5. Generate warnings if applicable",
+          "6. Return CompatibilityResult"
+        ],
+        "semver_compatibility_rules": {
+          "major_version_zero": "0.y.z - API may change at any time",
+          "major_version_nonzero": "x.y.z - MAJOR incompatible, MINOR backward compatible",
+          "backward_compatible": "1.5.3 is compatible with 1.2.0 (same major, higher minor/patch)",
+          "breaking_change": "2.0.0 is NOT compatible with 1.x.x (different major)"
+        }
+      },
+      "properties": {
+        "idempotency": "Yes (same inputs always produce same result)",
+        "atomicity": "Yes",
+        "deterministic": "Yes",
+        "time_complexity": "O(1)",
+        "space_complexity": "O(1)"
+      },
+      "edge_cases": [
+        {
+          "case": "Different versioning schemes",
+          "handling": "Reject comparison",
+          "error": "INCOMPATIBLE_SCHEMES"
+        },
+        {
+          "case": "Pre-release versions (1.0.0-alpha)",
+          "handling": "Compare pre-release identifiers lexicographically",
+          "result": "Pre-release < release version"
+        },
+        {
+          "case": "Build metadata (+build.123)",
+          "handling": "Ignore build metadata in compatibility",
+          "note": "1.0.0+build1 == 1.0.0+build2 for compatibility"
+        },
+        {
+          "case": "Major version 0 (0.y.z)",
+          "handling": "Treat as unstable, strict compatibility only",
+          "warning": "UNSTABLE_VERSION"
+        },
+        {
+          "case": "Invalid version format",
+          "handling": "Reject with validation error",
+          "error": "INVALID_VERSION"
+        },
+        {
+          "case": "Null or missing version",
+          "handling": "Reject with error",
+          "error": "VERSION_REQUIRED"
+        }
+      ],
+      "test_cases": [
+        {
+          "test_id": "MVS-002-T01",
+          "description": "Backward compatible versions (same major)",
+          "input": {
+            "version_a": {
+              "value": "1.5.3",
+              "scheme": "SemVer"
+            },
+            "version_b": {
+              "value": "1.2.0",
+              "scheme": "SemVer"
+            },
+            "compatibility_level": "backward"
+          },
+          "expected_output": {
+            "result": {
+              "compatible": true,
+              "reason": "Same major version, higher minor/patch"
+            }
+          }
+        },
+        {
+          "test_id": "MVS-002-T02",
+          "description": "Incompatible major versions",
+          "input": {
+            "version_a": {
+              "value": "2.0.0",
+              "scheme": "SemVer"
+            },
+            "version_b": {
+              "value": "1.9.9",
+              "scheme": "SemVer"
+            },
+            "compatibility_level": "backward"
+          },
+          "expected_output": {
+            "result": {
+              "compatible": false,
+              "reason": "Different major versions indicate breaking changes"
+            }
+          }
+        },
+        {
+          "test_id": "MVS-002-T03",
+          "description": "Strict compatibility (exact match)",
+          "input": {
+            "version_a": {
+              "value": "1.5.3",
+              "scheme": "SemVer"
+            },
+            "version_b": {
+              "value": "1.5.3",
+              "scheme": "SemVer"
+            },
+            "compatibility_level": "strict"
+          },
+          "expected_output": {
+            "result": {
+              "compatible": true,
+              "reason": "Exact version match"
+            }
+          }
+        },
+        {
+          "test_id": "MVS-002-T04",
+          "description": "Forward compatibility (same major)",
+          "input": {
+            "version_a": {
+              "value": "1.2.0",
+              "scheme": "SemVer"
+            },
+            "version_b": {
+              "value": "1.5.3",
+              "scheme": "SemVer"
+            },
+            "compatibility_level": "forward"
+          },
+          "expected_output": {
+            "result": {
+              "compatible": true,
+              "reason": "Same major version"
+            }
+          }
+        },
+        {
+          "test_id": "MVS-002-T05",
+          "description": "Loose compatibility (always compatible)",
+          "input": {
+            "version_a": {
+              "value": "3.0.0",
+              "scheme": "SemVer"
+            },
+            "version_b": {
+              "value": "1.0.0",
+              "scheme": "SemVer"
+            },
+            "compatibility_level": "loose"
+          },
+          "expected_output": {
+            "result": {
+              "compatible": true,
+              "reason": "Loose compatibility allows all versions"
+            }
+          }
+        },
+        {
+          "test_id": "MVS-002-T06",
+          "description": "Pre-release version comparison",
+          "input": {
+            "version_a": {
+              "value": "1.0.0-beta.2",
+              "scheme": "SemVer"
+            },
+            "version_b": {
+              "value": "1.0.0-beta.1",
+              "scheme": "SemVer"
+            }
+          },
+          "expected_output": {
+            "result": {
+              "compatible": true,
+              "warnings": [
+                "Pre-release versions may have breaking changes"
+              ]
+            }
+          }
+        },
+        {
+          "test_id": "MVS-002-T07",
+          "description": "Different schemes",
+          "input": {
+            "version_a": {
+              "value": "1.0.0",
+              "scheme": "SemVer"
+            },
+            "version_b": {
+              "value": "2025.01.12",
+              "scheme": "CalVer"
+            }
+          },
+          "expected_error": "INCOMPATIBLE_SCHEMES"
+        },
+        {
+          "test_id": "MVS-002-T08",
+          "description": "Major version 0 (unstable)",
+          "input": {
+            "version_a": {
+              "value": "0.5.3",
+              "scheme": "SemVer"
+            },
+            "version_b": {
+              "value": "0.5.0",
+              "scheme": "SemVer"
+            }
+          },
+          "expected_output": {
+            "result": {
+              "compatible": false,
+              "reason": "Major version 0 indicates unstable API",
+              "warnings": [
+                "UNSTABLE_VERSION"
+              ]
+            }
+          }
+        },
+        {
+          "test_id": "MVS-002-T09",
+          "description": "Build metadata ignored",
+          "input": {
+            "version_a": {
+              "value": "1.0.0+build123",
+              "scheme": "SemVer"
+            },
+            "version_b": {
+              "value": "1.0.0+build456",
+              "scheme": "SemVer"
+            }
+          },
+          "expected_output": {
+            "result": {
+              "compatible": true,
+              "reason": "Build metadata ignored for compatibility"
+            }
+          }
+        },
+        {
+          "test_id": "MVS-002-T10",
+          "description": "Invalid version format",
+          "input": {
+            "version_a": {
+              "value": "invalid",
+              "scheme": "SemVer"
+            },
+            "version_b": {
+              "value": "1.0.0",
+              "scheme": "SemVer"
+            }
+          },
+          "expected_error": "INVALID_VERSION"
+        }
+      ]
+    },
+    {
+      "operation_id": "MVS-003",
+      "name": "resolve_version",
+      "category": "Version Resolution",
+      "description": "Resolve version constraints to find best matching version",
+      "signature": {
+        "inputs": {
+          "constraint": {
+            "type": "VersionConstraint",
+            "description": "Version constraint expression"
+          },
+          "available_versions": {
+            "type": "array[Version]",
+            "description": "List of available versions"
+          },
+          "prefer": {
+            "type": "enum",
+            "values": [
+              "latest",
+              "stable",
+              "earliest"
+            ],
+            "description": "Preference for version selection",
+            "default": "latest"
+          }
+        },
+        "outputs": {
+          "resolved_version": {
+            "type": "Version",
+            "description": "Best matching version",
+            "optional": true
+          },
+          "candidates": {
+            "type": "array[Version]",
+            "description": "All matching versions"
+          }
+        }
+      },
+      "formula": {
+        "description": "Version constraint resolution algorithm",
+        "steps": [
+          "1. Parse constraint expression (^, ~, >=, <=, =, etc.)",
+          "2. Filter available_versions by constraint:",
+          "   ^1.2.3: >=1.2.3 AND <2.0.0 (caret - compatible changes)",
+          "   ~1.2.3: >=1.2.3 AND <1.3.0 (tilde - patch updates)",
+          "   >=1.2.3: version >= 1.2.3",
+          "   1.2.x: any patch version in 1.2",
+          "   *: any version",
+          "3. Sort matching versions",
+          "4. Apply preference:",
+          "   latest: return max version",
+          "   stable: return max non-prerelease version",
+          "   earliest: return min version",
+          "5. Return resolved_version and all candidates"
+        ],
+        "constraint_operators": {
+          "^": "Compatible with (caret): ^1.2.3 := >=1.2.3 <2.0.0",
+          "~": "Approximately (tilde): ~1.2.3 := >=1.2.3 <1.3.0",
+          ">=": "Greater than or equal",
+          "<=": "Less than or equal",
+          ">": "Strictly greater",
+          "<": "Strictly less",
+          "=": "Exact match",
+          "x": "Wildcard: 1.2.x matches 1.2.0, 1.2.1, etc."
+        }
+      },
+      "properties": {
+        "idempotency": "Yes",
+        "deterministic": "Yes (for same available_versions)",
+        "time_complexity": "O(n log n) where n = |available_versions|",
+        "space_complexity": "O(n)"
+      },
+      "edge_cases": [
+        {
+          "case": "No matching versions",
+          "handling": "Return null resolved_version, empty candidates",
+          "warning": "NO_MATCHING_VERSION"
+        },
+        {
+          "case": "Invalid constraint expression",
+          "handling": "Reject with parse error",
+          "error": "INVALID_CONSTRAINT"
+        },
+        {
+          "case": "Empty available_versions",
+          "handling": "Return null resolved_version",
+          "warning": "NO_VERSIONS_AVAILABLE"
+        },
+        {
+          "case": "Conflicting constraints",
+          "handling": "Return intersection of constraints",
+          "example": ">=1.0.0 AND <0.5.0 \u2192 no matches"
+        },
+        {
+          "case": "Pre-release preference",
+          "handling": "Exclude pre-release unless prefer=latest and no stable",
+          "note": "Stable versions preferred by default"
+        },
+        {
+          "case": "Multiple wildcards",
+          "handling": "Support patterns like 1.x.x",
+          "result": "All versions matching pattern"
+        }
+      ],
+      "test_cases": [
+        {
+          "test_id": "MVS-003-T01",
+          "description": "Caret constraint (compatible)",
+          "input": {
+            "constraint": {
+              "expression": "^1.2.3",
+              "scheme": "SemVer"
+            },
+            "available_versions": [
+              "1.2.3",
+              "1.5.0",
+              "1.9.9",
+              "2.0.0"
+            ],
+            "prefer": "latest"
+          },
+          "expected_output": {
+            "resolved_version": {
+              "value": "1.9.9",
+              "scheme": "SemVer"
+            },
+            "candidates": [
+              "1.2.3",
+              "1.5.0",
+              "1.9.9"
+            ]
+          }
+        },
+        {
+          "test_id": "MVS-003-T02",
+          "description": "Tilde constraint (patch updates)",
+          "input": {
+            "constraint": {
+              "expression": "~1.2.3",
+              "scheme": "SemVer"
+            },
+            "available_versions": [
+              "1.2.3",
+              "1.2.5",
+              "1.3.0",
+              "1.5.0"
+            ]
+          },
+          "expected_output": {
+            "resolved_version": {
+              "value": "1.2.5",
+              "scheme": "SemVer"
+            },
+            "candidates": [
+              "1.2.3",
+              "1.2.5"
+            ]
+          }
+        },
+        {
+          "test_id": "MVS-003-T03",
+          "description": "Greater than or equal",
+          "input": {
+            "constraint": {
+              "expression": ">=2.0.0",
+              "scheme": "SemVer"
+            },
+            "available_versions": [
+              "1.5.0",
+              "2.0.0",
+              "2.5.0",
+              "3.0.0"
+            ],
+            "prefer": "stable"
+          },
+          "expected_output": {
+            "resolved_version": {
+              "value": "3.0.0",
+              "scheme": "SemVer"
+            },
+            "candidates": [
+              "2.0.0",
+              "2.5.0",
+              "3.0.0"
+            ]
+          }
+        },
+        {
+          "test_id": "MVS-003-T04",
+          "description": "Wildcard constraint",
+          "input": {
+            "constraint": {
+              "expression": "1.2.x",
+              "scheme": "SemVer"
+            },
+            "available_versions": [
+              "1.2.0",
+              "1.2.5",
+              "1.2.10",
+              "1.3.0"
+            ]
+          },
+          "expected_output": {
+            "resolved_version": {
+              "value": "1.2.10",
+              "scheme": "SemVer"
+            },
+            "candidates": [
+              "1.2.0",
+              "1.2.5",
+              "1.2.10"
+            ]
+          }
+        },
+        {
+          "test_id": "MVS-003-T05",
+          "description": "Prefer earliest",
+          "input": {
+            "constraint": {
+              "expression": "^1.0.0",
+              "scheme": "SemVer"
+            },
+            "available_versions": [
+              "1.0.0",
+              "1.5.0",
+              "1.9.9"
+            ],
+            "prefer": "earliest"
+          },
+          "expected_output": {
+            "resolved_version": {
+              "value": "1.0.0",
+              "scheme": "SemVer"
+            }
+          }
+        },
+        {
+          "test_id": "MVS-003-T06",
+          "description": "No matching versions",
+          "input": {
+            "constraint": {
+              "expression": "^5.0.0",
+              "scheme": "SemVer"
+            },
+            "available_versions": [
+              "1.0.0",
+              "2.0.0",
+              "3.0.0"
+            ]
+          },
+          "expected_output": {
+            "resolved_version": null,
+            "candidates": []
+          },
+          "expected_warning": "NO_MATCHING_VERSION"
+        },
+        {
+          "test_id": "MVS-003-T07",
+          "description": "Pre-release exclusion",
+          "input": {
+            "constraint": {
+              "expression": "^1.0.0",
+              "scheme": "SemVer"
+            },
+            "available_versions": [
+              "1.0.0",
+              "1.5.0-beta.1",
+              "1.9.9"
+            ],
+            "prefer": "stable"
+          },
+          "expected_output": {
+            "resolved_version": {
+              "value": "1.9.9",
+              "scheme": "SemVer"
+            },
+            "candidates": [
+              "1.0.0",
+              "1.9.9"
+            ]
+          }
+        },
+        {
+          "test_id": "MVS-003-T08",
+          "description": "Range constraint",
+          "input": {
+            "constraint": {
+              "expression": ">=1.0.0 <2.0.0",
+              "scheme": "SemVer"
+            },
+            "available_versions": [
+              "0.9.0",
+              "1.0.0",
+              "1.5.0",
+              "2.0.0"
+            ]
+          },
+          "expected_output": {
+            "resolved_version": {
+              "value": "1.5.0",
+              "scheme": "SemVer"
+            },
+            "candidates": [
+              "1.0.0",
+              "1.5.0"
+            ]
+          }
+        },
+        {
+          "test_id": "MVS-003-T09",
+          "description": "Any version (*)",
+          "input": {
+            "constraint": {
+              "expression": "*",
+              "scheme": "SemVer"
+            },
+            "available_versions": [
+              "0.1.0",
+              "1.0.0",
+              "2.0.0"
+            ]
+          },
+          "expected_output": {
+            "resolved_version": {
+              "value": "2.0.0",
+              "scheme": "SemVer"
+            },
+            "candidates": [
+              "0.1.0",
+              "1.0.0",
+              "2.0.0"
+            ]
+          }
+        },
+        {
+          "test_id": "MVS-003-T10",
+          "description": "Invalid constraint",
+          "input": {
+            "constraint": {
+              "expression": "invalid>>1.0.0",
+              "scheme": "SemVer"
+            },
+            "available_versions": [
+              "1.0.0"
+            ]
+          },
+          "expected_error": "INVALID_CONSTRAINT"
+        }
+      ]
+    },
+    {
+      "operation_id": "MVS-004",
+      "name": "migrate_version",
+      "category": "Migration",
+      "description": "Migrate model between versions with automatic strategy generation",
+      "signature": {
+        "inputs": {
+          "model_id": {
+            "type": "UUID",
+            "description": "Model to migrate"
+          },
+          "from_version": {
+            "type": "Version",
+            "description": "Source version"
+          },
+          "to_version": {
+            "type": "Version",
+            "description": "Target version"
+          },
+          "strategy": {
+            "type": "MigrationStrategy",
+            "description": "Migration strategy (optional, auto-generated if not provided)",
+            "optional": true
+          },
+          "dry_run": {
+            "type": "boolean",
+            "description": "Test migration without applying",
+            "default": false
+          }
+        },
+        "outputs": {
+          "success": {
+            "type": "boolean",
+            "description": "Whether migration succeeded"
+          },
+          "new_model_id": {
+            "type": "UUID",
+            "description": "Migrated model identifier"
+          },
+          "applied_strategy": {
+            "type": "MigrationStrategy",
+            "description": "Strategy that was applied"
+          },
+          "warnings": {
+            "type": "array[string]",
+            "description": "Migration warnings",
+            "optional": true
+          }
+        }
+      },
+      "formula": {
+        "description": "Version migration algorithm",
+        "steps": [
+          "1. Validate from_version and to_version",
+          "2. If strategy not provided:",
+          "   a. Analyze version differences",
+          "   b. Generate migration steps automatically",
+          "   c. Check for breaking changes",
+          "3. Create backup of current model state",
+          "4. If dry_run: simulate migration and return results",
+          "5. Execute migration steps sequentially:",
+          "   a. Apply data transformations",
+          "   b. Update model schema",
+          "   c. Migrate dependencies",
+          "6. Validate migrated model",
+          "7. If validation fails: rollback to backup",
+          "8. Update model version metadata",
+          "9. Return migration result"
+        ],
+        "migration_types": {
+          "schema_change": "Alter model structure (add/remove/rename fields)",
+          "data_transformation": "Transform data format or values",
+          "dependency_update": "Update dependency versions",
+          "configuration_change": "Update model configuration",
+          "breaking_change": "Incompatible API or behavior change"
+        }
+      },
+      "properties": {
+        "idempotency": "No (creates new model version)",
+        "atomicity": "Yes (all-or-nothing with rollback)",
+        "durability": "Yes (persisted after success)",
+        "rollback_supported": "Yes (automatic on failure)",
+        "time_complexity": "O(n) where n = model size",
+        "space_complexity": "O(n) for backup"
+      },
+      "edge_cases": [
+        {
+          "case": "Downgrade migration (to older version)",
+          "handling": "Allow with explicit confirmation, may lose data",
+          "warning": "DOWNGRADE_MAY_LOSE_DATA"
+        },
+        {
+          "case": "Migration across multiple major versions",
+          "handling": "Require intermediate migrations (1.x \u2192 2.x \u2192 3.x)",
+          "error": "MULTI_MAJOR_MIGRATION_UNSUPPORTED"
+        },
+        {
+          "case": "Incompatible schema changes",
+          "handling": "Reject if no transformation possible",
+          "error": "INCOMPATIBLE_SCHEMA"
+        },
+        {
+          "case": "Migration validation failure",
+          "handling": "Rollback automatically",
+          "result": "Original version restored"
+        },
+        {
+          "case": "Partial migration failure",
+          "handling": "Rollback to consistent state",
+          "guarantee": "No partial state left"
+        },
+        {
+          "case": "Missing migration path",
+          "handling": "Reject with error",
+          "error": "NO_MIGRATION_PATH"
+        }
+      ],
+      "test_cases": [
+        {
+          "test_id": "MVS-004-T01",
+          "description": "Simple upgrade migration",
+          "input": {
+            "model_id": "model-123",
+            "from_version": {
+              "value": "1.0.0",
+              "scheme": "SemVer"
+            },
+            "to_version": {
+              "value": "1.1.0",
+              "scheme": "SemVer"
+            },
+            "dry_run": false
+          },
+          "expected_output": {
+            "success": true,
+            "new_model_id": "model-123-v1.1.0"
+          }
+        },
+        {
+          "test_id": "MVS-004-T02",
+          "description": "Dry run migration",
+          "input": {
+            "model_id": "model-123",
+            "from_version": {
+              "value": "1.0.0",
+              "scheme": "SemVer"
+            },
+            "to_version": {
+              "value": "2.0.0",
+              "scheme": "SemVer"
+            },
+            "dry_run": true
+          },
+          "expected_output": {
+            "success": true,
+            "applied_strategy": "Generated strategy with steps"
+          },
+          "postcondition": "Original model unchanged"
+        },
+        {
+          "test_id": "MVS-004-T03",
+          "description": "Migration with custom strategy",
+          "input": {
+            "model_id": "model-123",
+            "from_version": {
+              "value": "1.0.0",
+              "scheme": "SemVer"
+            },
+            "to_version": {
+              "value": "2.0.0",
+              "scheme": "SemVer"
+            },
+            "strategy": {
+              "steps": [
+                {
+                  "operation": "rename_field",
+                  "parameters": {
+                    "old": "name",
+                    "new": "title"
+                  }
+                }
+              ]
+            }
+          },
+          "expected_output": {
+            "success": true,
+            "applied_strategy": "Custom strategy used"
+          }
+        },
+        {
+          "test_id": "MVS-004-T04",
+          "description": "Downgrade migration with warning",
+          "input": {
+            "model_id": "model-123",
+            "from_version": {
+              "value": "2.0.0",
+              "scheme": "SemVer"
+            },
+            "to_version": {
+              "value": "1.9.0",
+              "scheme": "SemVer"
+            }
+          },
+          "expected_output": {
+            "success": true,
+            "warnings": [
+              "DOWNGRADE_MAY_LOSE_DATA"
+            ]
+          }
+        },
+        {
+          "test_id": "MVS-004-T05",
+          "description": "Multi-major version migration rejected",
+          "input": {
+            "model_id": "model-123",
+            "from_version": {
+              "value": "1.0.0",
+              "scheme": "SemVer"
+            },
+            "to_version": {
+              "value": "3.0.0",
+              "scheme": "SemVer"
+            }
+          },
+          "expected_error": "MULTI_MAJOR_MIGRATION_UNSUPPORTED"
+        },
+        {
+          "test_id": "MVS-004-T06",
+          "description": "Migration validation failure triggers rollback",
+          "input": {
+            "model_id": "model-123",
+            "from_version": {
+              "value": "1.0.0",
+              "scheme": "SemVer"
+            },
+            "to_version": {
+              "value": "1.1.0",
+              "scheme": "SemVer"
+            }
+          },
+          "inject_failure": "Validation fails after migration",
+          "expected_output": {
+            "success": false
+          },
+          "postcondition": "Model reverted to version 1.0.0"
+        },
+        {
+          "test_id": "MVS-004-T07",
+          "description": "Incompatible schema change",
+          "input": {
+            "model_id": "model-123",
+            "from_version": {
+              "value": "1.0.0",
+              "scheme": "SemVer"
+            },
+            "to_version": {
+              "value": "2.0.0",
+              "scheme": "SemVer"
+            }
+          },
+          "precondition": "v2.0.0 removes required field with no default",
+          "expected_error": "INCOMPATIBLE_SCHEMA"
+        },
+        {
+          "test_id": "MVS-004-T08",
+          "description": "Auto-generated migration strategy",
+          "input": {
+            "model_id": "model-123",
+            "from_version": {
+              "value": "1.0.0",
+              "scheme": "SemVer"
+            },
+            "to_version": {
+              "value": "1.1.0",
+              "scheme": "SemVer"
+            }
+          },
+          "expected_output": {
+            "success": true,
+            "applied_strategy": {
+              "automatic": true,
+              "steps": "Generated based on version diff"
+            }
+          }
+        },
+        {
+          "test_id": "MVS-004-T09",
+          "description": "Migration with dependency updates",
+          "input": {
+            "model_id": "model-123",
+            "from_version": {
+              "value": "1.5.0",
+              "scheme": "SemVer"
+            },
+            "to_version": {
+              "value": "2.0.0",
+              "scheme": "SemVer"
+            }
+          },
+          "expected_output": {
+            "success": true,
+            "applied_strategy": {
+              "steps": [
+                "Update dependencies",
+                "Migrate schema",
+                "Transform data"
+              ]
+            }
+          }
+        },
+        {
+          "test_id": "MVS-004-T10",
+          "description": "Partial migration failure with rollback",
+          "input": {
+            "model_id": "model-123",
+            "from_version": {
+              "value": "1.0.0",
+              "scheme": "SemVer"
+            },
+            "to_version": {
+              "value": "1.1.0",
+              "scheme": "SemVer"
+            }
+          },
+          "inject_failure": "Failure in step 3 of 5",
+          "expected_output": {
+            "success": false
+          },
+          "postcondition": "Complete rollback to 1.0.0, no partial state"
+        }
+      ]
+    },
+    {
+      "operation_id": "MVS-005",
+      "name": "deprecate_version",
+      "category": "Lifecycle Management",
+      "description": "Mark version as deprecated with timeline and migration path",
+      "signature": {
+        "inputs": {
+          "version": {
+            "type": "Version",
+            "description": "Version to deprecate"
+          },
+          "deprecation_date": {
+            "type": "ISO8601",
+            "description": "Date when version is deprecated",
+            "default": "now"
+          },
+          "end_of_life_date": {
+            "type": "ISO8601",
+            "description": "Date when version will be removed",
+            "optional": true
+          },
+          "migration_target": {
+            "type": "Version",
+            "description": "Recommended migration target version",
+            "optional": true
+          },
+          "reason": {
+            "type": "string",
+            "description": "Reason for deprecation"
+          }
+        },
+        "outputs": {
+          "deprecation_record": {
+            "type": "object",
+            "description": "Deprecation record with timeline"
+          }
+        }
+      },
+      "formula": {
+        "description": "Version deprecation workflow",
+        "steps": [
+          "1. Validate version exists and is not already end-of-life",
+          "2. Check if end_of_life_date > deprecation_date",
+          "3. Create deprecation record with:",
+          "   - Version identifier",
+          "   - Deprecation date",
+          "   - End-of-life date",
+          "   - Migration target",
+          "   - Reason",
+          "4. Update version metadata with deprecation flag",
+          "5. Generate user notifications",
+          "6. Log deprecation event",
+          "7. Return deprecation record"
+        ],
+        "lifecycle_states": {
+          "active": "Version is fully supported",
+          "deprecated": "Version is discouraged but supported",
+          "end_of_life": "Version is no longer supported",
+          "archived": "Version is removed from active use"
+        }
+      },
+      "properties": {
+        "idempotency": "Yes (deprecating already deprecated version updates metadata)",
+        "atomicity": "Yes",
+        "time_complexity": "O(1)",
+        "space_complexity": "O(1)"
+      },
+      "edge_cases": [
+        {
+          "case": "Version already deprecated",
+          "handling": "Update deprecation metadata",
+          "warning": "VERSION_ALREADY_DEPRECATED"
+        },
+        {
+          "case": "Version is end-of-life",
+          "handling": "Reject deprecation",
+          "error": "VERSION_ALREADY_EOL"
+        },
+        {
+          "case": "End-of-life date before deprecation date",
+          "handling": "Reject with validation error",
+          "error": "INVALID_TIMELINE"
+        },
+        {
+          "case": "No migration target provided",
+          "handling": "Allow but generate warning",
+          "warning": "NO_MIGRATION_TARGET"
+        },
+        {
+          "case": "Deprecating latest version",
+          "handling": "Allow but generate critical warning",
+          "warning": "DEPRECATING_LATEST_VERSION"
+        },
+        {
+          "case": "Version does not exist",
+          "handling": "Reject with error",
+          "error": "VERSION_NOT_FOUND"
+        }
+      ],
+      "test_cases": [
+        {
+          "test_id": "MVS-005-T01",
+          "description": "Deprecate old version with migration target",
+          "input": {
+            "version": {
+              "value": "1.0.0",
+              "scheme": "SemVer"
+            },
+            "migration_target": {
+              "value": "2.0.0",
+              "scheme": "SemVer"
+            },
+            "reason": "Security vulnerabilities fixed in v2.0.0"
+          },
+          "expected_output": {
+            "deprecation_record": {
+              "version": "1.0.0",
+              "status": "deprecated",
+              "migration_target": "2.0.0"
+            }
+          }
+        },
+        {
+          "test_id": "MVS-005-T02",
+          "description": "Deprecate with end-of-life date",
+          "input": {
+            "version": {
+              "value": "1.5.0",
+              "scheme": "SemVer"
+            },
+            "deprecation_date": "2025-01-12T00:00:00Z",
+            "end_of_life_date": "2025-06-12T00:00:00Z",
+            "reason": "Replaced by improved architecture"
+          },
+          "expected_output": {
+            "deprecation_record": {
+              "deprecation_date": "2025-01-12T00:00:00Z",
+              "end_of_life_date": "2025-06-12T00:00:00Z"
+            }
+          }
+        },
+        {
+          "test_id": "MVS-005-T03",
+          "description": "Deprecate without migration target",
+          "input": {
+            "version": {
+              "value": "0.9.0",
+              "scheme": "SemVer"
+            },
+            "reason": "Pre-release version no longer supported"
+          },
+          "expected_output": {
+            "deprecation_record": {
+              "version": "0.9.0",
+              "status": "deprecated"
+            }
+          },
+          "expected_warning": "NO_MIGRATION_TARGET"
+        },
+        {
+          "test_id": "MVS-005-T04",
+          "description": "Update already deprecated version",
+          "input": {
+            "version": {
+              "value": "1.0.0",
+              "scheme": "SemVer"
+            },
+            "end_of_life_date": "2025-12-31T00:00:00Z",
+            "reason": "Extended EOL date"
+          },
+          "precondition": "Version 1.0.0 is already deprecated",
+          "expected_output": {
+            "deprecation_record": {
+              "end_of_life_date": "2025-12-31T00:00:00Z"
+            }
+          },
+          "expected_warning": "VERSION_ALREADY_DEPRECATED"
+        },
+        {
+          "test_id": "MVS-005-T05",
+          "description": "Reject EOL before deprecation",
+          "input": {
+            "version": {
+              "value": "1.0.0",
+              "scheme": "SemVer"
+            },
+            "deprecation_date": "2025-06-01T00:00:00Z",
+            "end_of_life_date": "2025-01-01T00:00:00Z",
+            "reason": "Test"
+          },
+          "expected_error": "INVALID_TIMELINE"
+        },
+        {
+          "test_id": "MVS-005-T06",
+          "description": "Deprecate latest version warning",
+          "input": {
+            "version": {
+              "value": "3.0.0",
+              "scheme": "SemVer"
+            },
+            "reason": "Test deprecation"
+          },
+          "precondition": "3.0.0 is the latest version",
+          "expected_output": {
+            "deprecation_record": {
+              "version": "3.0.0",
+              "status": "deprecated"
+            }
+          },
+          "expected_warning": "DEPRECATING_LATEST_VERSION"
+        },
+        {
+          "test_id": "MVS-005-T07",
+          "description": "Reject deprecating EOL version",
+          "input": {
+            "version": {
+              "value": "0.5.0",
+              "scheme": "SemVer"
+            },
+            "reason": "Test"
+          },
+          "precondition": "Version 0.5.0 is already end-of-life",
+          "expected_error": "VERSION_ALREADY_EOL"
+        },
+        {
+          "test_id": "MVS-005-T08",
+          "description": "Reject non-existent version",
+          "input": {
+            "version": {
+              "value": "99.0.0",
+              "scheme": "SemVer"
+            },
+            "reason": "Test"
+          },
+          "expected_error": "VERSION_NOT_FOUND"
+        },
+        {
+          "test_id": "MVS-005-T09",
+          "description": "Immediate deprecation",
+          "input": {
+            "version": {
+              "value": "1.2.0",
+              "scheme": "SemVer"
+            },
+            "deprecation_date": "now",
+            "reason": "Critical security issue"
+          },
+          "expected_output": {
+            "deprecation_record": {
+              "deprecation_date": "Current timestamp"
+            }
+          }
+        },
+        {
+          "test_id": "MVS-005-T10",
+          "description": "Deprecation with detailed reason",
+          "input": {
+            "version": {
+              "value": "1.8.0",
+              "scheme": "SemVer"
+            },
+            "reason": "Multiple critical bugs fixed in 2.0.0. Performance improvements. New features.",
+            "migration_target": {
+              "value": "2.0.0",
+              "scheme": "SemVer"
+            }
+          },
+          "expected_output": {
+            "deprecation_record": {
+              "reason": "Detailed reason preserved"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "operation_id": "MVS-006",
+      "name": "register_versioning_scheme",
+      "category": "Extensibility",
+      "description": "Register custom versioning scheme for extensibility",
+      "signature": {
+        "inputs": {
+          "scheme_name": {
+            "type": "string",
+            "description": "Name of custom scheme"
+          },
+          "validator": {
+            "type": "function",
+            "description": "Function to validate version string"
+          },
+          "comparator": {
+            "type": "function",
+            "description": "Function to compare two versions"
+          },
+          "incrementor": {
+            "type": "function",
+            "description": "Function to increment version",
+            "optional": true
+          },
+          "parser": {
+            "type": "function",
+            "description": "Function to parse version string",
+            "optional": true
+          }
+        },
+        "outputs": {
+          "success": {
+            "type": "boolean",
+            "description": "Whether registration succeeded"
+          },
+          "scheme": {
+            "type": "VersionScheme",
+            "description": "Registered scheme"
+          }
+        }
+      },
+      "formula": {
+        "description": "Custom scheme registration process",
+        "steps": [
+          "1. Validate scheme_name is unique",
+          "2. Validate required functions (validator, comparator)",
+          "3. Test functions with sample inputs",
+          "4. Register scheme in scheme registry",
+          "5. Make scheme available for all version operations",
+          "6. Return success and scheme reference"
+        ],
+        "required_function_signatures": {
+          "validator": "(version: string) -> boolean",
+          "comparator": "(v1: string, v2: string) -> int (-1, 0, 1)",
+          "incrementor": "(version: string, bump_type: string) -> string",
+          "parser": "(version: string) -> object"
+        }
+      },
+      "properties": {
+        "idempotency": "No (registering same scheme twice is error)",
+        "atomicity": "Yes",
+        "extensibility": "Full (any scheme can be implemented)",
+        "time_complexity": "O(1)",
+        "space_complexity": "O(1)"
+      },
+      "edge_cases": [
+        {
+          "case": "Scheme name already exists",
+          "handling": "Reject with error",
+          "error": "SCHEME_ALREADY_EXISTS"
+        },
+        {
+          "case": "Invalid function signature",
+          "handling": "Reject with validation error",
+          "error": "INVALID_FUNCTION_SIGNATURE"
+        },
+        {
+          "case": "Function throws exception on test",
+          "handling": "Reject with error",
+          "error": "FUNCTION_VALIDATION_FAILED"
+        },
+        {
+          "case": "Missing required function",
+          "handling": "Reject with error",
+          "error": "MISSING_REQUIRED_FUNCTION"
+        },
+        {
+          "case": "Reserved scheme name",
+          "handling": "Reject with error",
+          "error": "RESERVED_SCHEME_NAME"
+        },
+        {
+          "case": "Invalid scheme name format",
+          "handling": "Reject with validation error",
+          "error": "INVALID_SCHEME_NAME"
+        }
+      ],
+      "test_cases": [
+        {
+          "test_id": "MVS-006-T01",
+          "description": "Register custom date-based scheme",
+          "input": {
+            "scheme_name": "DateVersion",
+            "validator": "function(v) { return /^\\d{8}$/.test(v); }",
+            "comparator": "function(v1, v2) { return parseInt(v1) - parseInt(v2); }"
+          },
+          "expected_output": {
+            "success": true,
+            "scheme": "DateVersion"
+          }
+        },
+        {
+          "test_id": "MVS-006-T02",
+          "description": "Register with all optional functions",
+          "input": {
+            "scheme_name": "CustomScheme",
+            "validator": "...",
+            "comparator": "...",
+            "incrementor": "...",
+            "parser": "..."
+          },
+          "expected_output": {
+            "success": true
+          }
+        },
+        {
+          "test_id": "MVS-006-T03",
+          "description": "Reject duplicate scheme name",
+          "input": {
+            "scheme_name": "SemVer",
+            "validator": "...",
+            "comparator": "..."
+          },
+          "expected_error": "SCHEME_ALREADY_EXISTS"
+        },
+        {
+          "test_id": "MVS-006-T04",
+          "description": "Reject missing required function",
+          "input": {
+            "scheme_name": "IncompleteScheme",
+            "validator": "..."
+          },
+          "expected_error": "MISSING_REQUIRED_FUNCTION"
+        },
+        {
+          "test_id": "MVS-006-T05",
+          "description": "Reject invalid function signature",
+          "input": {
+            "scheme_name": "BadScheme",
+            "validator": "function() { return true; }",
+            "comparator": "..."
+          },
+          "expected_error": "INVALID_FUNCTION_SIGNATURE"
+        },
+        {
+          "test_id": "MVS-006-T06",
+          "description": "Function validation test failure",
+          "input": {
+            "scheme_name": "BrokenScheme",
+            "validator": "function(v) { throw new Error('Test'); }",
+            "comparator": "..."
+          },
+          "expected_error": "FUNCTION_VALIDATION_FAILED"
+        },
+        {
+          "test_id": "MVS-006-T07",
+          "description": "Reserved scheme name",
+          "input": {
+            "scheme_name": "INTERNAL",
+            "validator": "...",
+            "comparator": "..."
+          },
+          "expected_error": "RESERVED_SCHEME_NAME"
+        },
+        {
+          "test_id": "MVS-006-T08",
+          "description": "Invalid scheme name format",
+          "input": {
+            "scheme_name": "invalid-name-with-dashes!",
+            "validator": "...",
+            "comparator": "..."
+          },
+          "expected_error": "INVALID_SCHEME_NAME"
+        },
+        {
+          "test_id": "MVS-006-T09",
+          "description": "Register UUID-based scheme",
+          "input": {
+            "scheme_name": "UUIDVersion",
+            "validator": "function(v) { return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v); }",
+            "comparator": "function(v1, v2) { return v1.localeCompare(v2); }"
+          },
+          "expected_output": {
+            "success": true,
+            "scheme": "UUIDVersion"
+          }
+        },
+        {
+          "test_id": "MVS-006-T10",
+          "description": "Use registered custom scheme",
+          "input": {
+            "scheme_name": "TestScheme",
+            "validator": "...",
+            "comparator": "..."
+          },
+          "expected_output": {
+            "success": true
+          },
+          "postcondition": "TestScheme can be used in version_model operation"
+        }
+      ]
+    },
+    {
+      "operation_id": "MVS-007",
+      "name": "compare_versions",
+      "category": "Comparison",
+      "description": "Compare two versions and return ordering relationship",
+      "signature": {
+        "inputs": {
+          "version_a": {
+            "type": "Version",
+            "description": "First version"
+          },
+          "version_b": {
+            "type": "Version",
+            "description": "Second version"
+          }
+        },
+        "outputs": {
+          "result": {
+            "type": "enum",
+            "values": [
+              "newer",
+              "older",
+              "equal"
+            ],
+            "description": "Comparison result (version_a relative to version_b)"
+          },
+          "numeric_difference": {
+            "type": "integer",
+            "description": "Numeric comparison (-1, 0, 1)"
+          }
+        }
+      },
+      "formula": {
+        "description": "Version comparison algorithm for SemVer",
+        "steps": [
+          "1. Validate both versions use same scheme",
+          "2. Parse versions: v_a = (M_a, m_a, p_a), v_b = (M_b, m_b, p_b)",
+          "3. Compare major versions:",
+          "   if M_a != M_b: return sgn(M_a - M_b)",
+          "4. Compare minor versions:",
+          "   if m_a != m_b: return sgn(m_a - m_b)",
+          "5. Compare patch versions:",
+          "   if p_a != p_b: return sgn(p_a - p_b)",
+          "6. Compare pre-release versions if present:",
+          "   - Release > pre-release",
+          "   - Lexicographic comparison of pre-release identifiers",
+          "7. Build metadata ignored for comparison",
+          "8. Return comparison result"
+        ],
+        "comparison_rules": {
+          "major_precedence": "Major version difference takes precedence",
+          "prerelease_handling": "1.0.0-alpha < 1.0.0-alpha.1 < 1.0.0-beta < 1.0.0",
+          "build_metadata": "Build metadata ignored: 1.0.0+build1 = 1.0.0+build2"
+        }
+      },
+      "properties": {
+        "idempotency": "Yes",
+        "deterministic": "Yes",
+        "transitive": "Yes (if a > b and b > c, then a > c)",
+        "time_complexity": "O(1)",
+        "space_complexity": "O(1)"
+      },
+      "edge_cases": [
+        {
+          "case": "Different schemes",
+          "handling": "Reject comparison",
+          "error": "INCOMPATIBLE_SCHEMES"
+        },
+        {
+          "case": "Pre-release versions",
+          "handling": "Apply SemVer pre-release precedence rules",
+          "note": "Lexicographic comparison of identifiers"
+        },
+        {
+          "case": "Build metadata present",
+          "handling": "Ignore build metadata in comparison",
+          "example": "1.0.0+build1 == 1.0.0+build2"
+        },
+        {
+          "case": "Invalid version format",
+          "handling": "Reject with validation error",
+          "error": "INVALID_VERSION"
+        },
+        {
+          "case": "Null or missing version",
+          "handling": "Reject with error",
+          "error": "VERSION_REQUIRED"
+        },
+        {
+          "case": "Comparing version to itself",
+          "handling": "Return equal",
+          "result": "equal"
+        }
+      ],
+      "test_cases": [
+        {
+          "test_id": "MVS-007-T01",
+          "description": "Major version difference",
+          "input": {
+            "version_a": {
+              "value": "2.0.0",
+              "scheme": "SemVer"
+            },
+            "version_b": {
+              "value": "1.9.9",
+              "scheme": "SemVer"
+            }
+          },
+          "expected_output": {
+            "result": "newer",
+            "numeric_difference": 1
+          }
+        },
+        {
+          "test_id": "MVS-007-T02",
+          "description": "Minor version difference",
+          "input": {
+            "version_a": {
+              "value": "1.5.0",
+              "scheme": "SemVer"
+            },
+            "version_b": {
+              "value": "1.3.9",
+              "scheme": "SemVer"
+            }
+          },
+          "expected_output": {
+            "result": "newer",
+            "numeric_difference": 1
+          }
+        },
+        {
+          "test_id": "MVS-007-T03",
+          "description": "Patch version difference",
+          "input": {
+            "version_a": {
+              "value": "1.0.5",
+              "scheme": "SemVer"
+            },
+            "version_b": {
+              "value": "1.0.3",
+              "scheme": "SemVer"
+            }
+          },
+          "expected_output": {
+            "result": "newer",
+            "numeric_difference": 1
+          }
+        },
+        {
+          "test_id": "MVS-007-T04",
+          "description": "Equal versions",
+          "input": {
+            "version_a": {
+              "value": "1.2.3",
+              "scheme": "SemVer"
+            },
+            "version_b": {
+              "value": "1.2.3",
+              "scheme": "SemVer"
+            }
+          },
+          "expected_output": {
+            "result": "equal",
+            "numeric_difference": 0
+          }
+        },
+        {
+          "test_id": "MVS-007-T05",
+          "description": "Older version",
+          "input": {
+            "version_a": {
+              "value": "1.0.0",
+              "scheme": "SemVer"
+            },
+            "version_b": {
+              "value": "2.0.0",
+              "scheme": "SemVer"
+            }
+          },
+          "expected_output": {
+            "result": "older",
+            "numeric_difference": -1
+          }
+        },
+        {
+          "test_id": "MVS-007-T06",
+          "description": "Pre-release comparison",
+          "input": {
+            "version_a": {
+              "value": "1.0.0-beta.2",
+              "scheme": "SemVer"
+            },
+            "version_b": {
+              "value": "1.0.0-beta.1",
+              "scheme": "SemVer"
+            }
+          },
+          "expected_output": {
+            "result": "newer",
+            "numeric_difference": 1
+          }
+        },
+        {
+          "test_id": "MVS-007-T07",
+          "description": "Release vs pre-release",
+          "input": {
+            "version_a": {
+              "value": "1.0.0",
+              "scheme": "SemVer"
+            },
+            "version_b": {
+              "value": "1.0.0-beta",
+              "scheme": "SemVer"
+            }
+          },
+          "expected_output": {
+            "result": "newer",
+            "numeric_difference": 1
+          }
+        },
+        {
+          "test_id": "MVS-007-T08",
+          "description": "Build metadata ignored",
+          "input": {
+            "version_a": {
+              "value": "1.0.0+build123",
+              "scheme": "SemVer"
+            },
+            "version_b": {
+              "value": "1.0.0+build456",
+              "scheme": "SemVer"
+            }
+          },
+          "expected_output": {
+            "result": "equal",
+            "numeric_difference": 0
+          }
+        },
+        {
+          "test_id": "MVS-007-T09",
+          "description": "Different schemes rejected",
+          "input": {
+            "version_a": {
+              "value": "1.0.0",
+              "scheme": "SemVer"
+            },
+            "version_b": {
+              "value": "2025.01.12",
+              "scheme": "CalVer"
+            }
+          },
+          "expected_error": "INCOMPATIBLE_SCHEMES"
+        },
+        {
+          "test_id": "MVS-007-T10",
+          "description": "Invalid version format",
+          "input": {
+            "version_a": {
+              "value": "invalid",
+              "scheme": "SemVer"
+            },
+            "version_b": {
+              "value": "1.0.0",
+              "scheme": "SemVer"
+            }
+          },
+          "expected_error": "INVALID_VERSION"
+        }
+      ]
+    },
+    {
+      "operation_id": "MVS-008",
+      "name": "get_version_history",
+      "category": "History",
+      "description": "Get complete version history with changelog for model",
+      "signature": {
+        "inputs": {
+          "model_id": {
+            "type": "UUID",
+            "description": "Model identifier"
+          },
+          "from_version": {
+            "type": "Version",
+            "description": "Start of version range",
+            "optional": true
+          },
+          "to_version": {
+            "type": "Version",
+            "description": "End of version range",
+            "optional": true
+          },
+          "include_deprecated": {
+            "type": "boolean",
+            "description": "Include deprecated versions",
+            "default": true
+          }
+        },
+        "outputs": {
+          "history": {
+            "type": "VersionHistory",
+            "description": "Complete version history"
+          }
+        }
+      },
+      "formula": {
+        "description": "Version history retrieval algorithm",
+        "steps": [
+          "1. Retrieve all versions for model_id",
+          "2. If from_version specified: filter versions >= from_version",
+          "3. If to_version specified: filter versions <= to_version",
+          "4. If include_deprecated=false: filter out deprecated versions",
+          "5. Sort versions chronologically",
+          "6. For each version, retrieve changelog entry",
+          "7. Compile VersionHistory object",
+          "8. Return history"
+        ]
+      },
+      "properties": {
+        "idempotency": "Yes",
+        "consistency": "Strong (reflects current state)",
+        "time_complexity": "O(n log n) where n = number of versions",
+        "space_complexity": "O(n)"
+      },
+      "edge_cases": [
+        {
+          "case": "Model has no versions",
+          "handling": "Return empty history",
+          "result": "Empty VersionHistory object"
+        },
+        {
+          "case": "Version range is empty",
+          "handling": "Return empty history",
+          "result": "No versions in specified range"
+        },
+        {
+          "case": "Invalid version range (from > to)",
+          "handling": "Return empty history",
+          "warning": "INVALID_VERSION_RANGE"
+        },
+        {
+          "case": "Model does not exist",
+          "handling": "Reject with error",
+          "error": "MODEL_NOT_FOUND"
+        },
+        {
+          "case": "All versions deprecated",
+          "handling": "Return empty history if include_deprecated=false",
+          "result": "Empty history"
+        },
+        {
+          "case": "Changelog missing for version",
+          "handling": "Include version with empty changelog",
+          "warning": "INCOMPLETE_CHANGELOG"
+        }
+      ],
+      "test_cases": [
+        {
+          "test_id": "MVS-008-T01",
+          "description": "Get full version history",
+          "input": {
+            "model_id": "model-123",
+            "include_deprecated": true
+          },
+          "precondition": "Model has versions 1.0.0, 1.1.0, 2.0.0",
+          "expected_output": {
+            "history": {
+              "versions": [
+                "1.0.0",
+                "1.1.0",
+                "2.0.0"
+              ],
+              "changelog": "Complete changelog for all versions"
+            }
+          }
+        },
+        {
+          "test_id": "MVS-008-T02",
+          "description": "Get history for version range",
+          "input": {
+            "model_id": "model-123",
+            "from_version": {
+              "value": "1.1.0",
+              "scheme": "SemVer"
+            },
+            "to_version": {
+              "value": "2.0.0",
+              "scheme": "SemVer"
+            }
+          },
+          "expected_output": {
+            "history": {
+              "versions": [
+                "1.1.0",
+                "2.0.0"
+              ]
+            }
+          }
+        },
+        {
+          "test_id": "MVS-008-T03",
+          "description": "Exclude deprecated versions",
+          "input": {
+            "model_id": "model-123",
+            "include_deprecated": false
+          },
+          "precondition": "Version 1.0.0 is deprecated",
+          "expected_output": {
+            "history": {
+              "versions": [
+                "1.1.0",
+                "2.0.0"
+              ]
+            }
+          }
+        },
+        {
+          "test_id": "MVS-008-T04",
+          "description": "Empty version history",
+          "input": {
+            "model_id": "model-new"
+          },
+          "precondition": "Model has no versions",
+          "expected_output": {
+            "history": {
+              "versions": [],
+              "changelog": {}
+            }
+          }
+        },
+        {
+          "test_id": "MVS-008-T05",
+          "description": "Invalid version range",
+          "input": {
+            "model_id": "model-123",
+            "from_version": {
+              "value": "2.0.0",
+              "scheme": "SemVer"
+            },
+            "to_version": {
+              "value": "1.0.0",
+              "scheme": "SemVer"
+            }
+          },
+          "expected_output": {
+            "history": {
+              "versions": []
+            }
+          },
+          "expected_warning": "INVALID_VERSION_RANGE"
+        },
+        {
+          "test_id": "MVS-008-T06",
+          "description": "Model not found",
+          "input": {
+            "model_id": "nonexistent"
+          },
+          "expected_error": "MODEL_NOT_FOUND"
+        },
+        {
+          "test_id": "MVS-008-T07",
+          "description": "History with breaking changes",
+          "input": {
+            "model_id": "model-123"
+          },
+          "expected_output": {
+            "history": {
+              "versions": [
+                "1.0.0",
+                "2.0.0"
+              ],
+              "changelog": {
+                "2.0.0": {
+                  "breaking_changes": [
+                    "API change",
+                    "Removed deprecated methods"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        {
+          "test_id": "MVS-008-T08",
+          "description": "History with migration guides",
+          "input": {
+            "model_id": "model-123"
+          },
+          "expected_output": {
+            "history": {
+              "changelog": {
+                "2.0.0": {
+                  "migration_guide": "Follow these steps to migrate..."
+                }
+              }
+            }
+          }
+        },
+        {
+          "test_id": "MVS-008-T09",
+          "description": "Incomplete changelog warning",
+          "input": {
+            "model_id": "model-123"
+          },
+          "precondition": "Version 1.5.0 has no changelog",
+          "expected_output": {
+            "history": {
+              "versions": [
+                "1.0.0",
+                "1.5.0",
+                "2.0.0"
+              ]
+            }
+          },
+          "expected_warning": "INCOMPLETE_CHANGELOG"
+        },
+        {
+          "test_id": "MVS-008-T10",
+          "description": "History sorted chronologically",
+          "input": {
+            "model_id": "model-123"
+          },
+          "expected_output": {
+            "history": {
+              "versions": "Sorted in ascending order by version"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "operation_id": "MVS-009",
+      "name": "auto_version",
+      "category": "AI Management",
+      "description": "AI automatic versioning with intelligent change analysis",
+      "signature": {
+        "inputs": {
+          "model_id": {
+            "type": "UUID",
+            "description": "Model to version"
+          },
+          "previous_model_state": {
+            "type": "object",
+            "description": "Previous model state for comparison",
+            "optional": true
+          },
+          "current_model_state": {
+            "type": "object",
+            "description": "Current model state"
+          },
+          "user_hints": {
+            "type": "array[string]",
+            "description": "User-provided hints about changes",
+            "optional": true
+          }
+        },
+        "outputs": {
+          "version": {
+            "type": "Version",
+            "description": "Automatically determined version"
+          },
+          "changes": {
+            "type": "array[Change]",
+            "description": "Detected changes"
+          },
+          "confidence": {
+            "type": "float",
+            "description": "Confidence in version determination (0-1)"
+          }
+        }
+      },
+      "formula": {
+        "description": "AI-powered automatic version determination",
+        "steps": [
+          "1. If no previous_model_state: return 1.0.0 (first version)",
+          "2. Compute diff: \u0394 = current_model_state - previous_model_state",
+          "3. Analyze changes using AI:",
+          "   a. Schema changes (structure modifications)",
+          "   b. API changes (interface modifications)",
+          "   c. Behavior changes (logic modifications)",
+          "   d. Performance changes (efficiency improvements)",
+          "4. Classify each change:",
+          "   - Breaking: Requires MAJOR bump",
+          "   - Feature: Requires MINOR bump",
+          "   - Patch: Requires PATCH bump",
+          "5. Apply user_hints to refine classification",
+          "6. Determine version bump: max(change impacts)",
+          "7. Compute new version",
+          "8. Calculate confidence based on:",
+          "   - Change clarity: Clear vs ambiguous changes",
+          "   - User hint quality: Detailed vs vague",
+          "   - Historical patterns: Consistency with past",
+          "9. Return version, changes, confidence"
+        ],
+        "ai_analysis_factors": {
+          "schema_changes": "Added/removed/renamed fields, type changes",
+          "api_changes": "Method signature changes, parameter changes",
+          "behavior_changes": "Logic flow changes, algorithm changes",
+          "performance_changes": "Optimization, efficiency improvements",
+          "dependency_changes": "Library updates, dependency additions/removals"
+        },
+        "confidence_calculation": "confidence = w1\u00b7change_clarity + w2\u00b7hint_quality + w3\u00b7historical_consistency"
+      },
+      "properties": {
+        "idempotency": "No (may produce different results with updated AI)",
+        "ai_managed": "Yes (full AI control)",
+        "user_friendly": "Yes (non-technical users can rely on auto-versioning)",
+        "time_complexity": "O(n) where n = model size",
+        "space_complexity": "O(n)"
+      },
+      "edge_cases": [
+        {
+          "case": "No changes detected",
+          "handling": "Return current version without bump",
+          "warning": "NO_CHANGES_DETECTED"
+        },
+        {
+          "case": "Ambiguous changes",
+          "handling": "Conservative versioning (higher bump), lower confidence",
+          "result": "Err on side of caution"
+        },
+        {
+          "case": "First version (no previous state)",
+          "handling": "Return 1.0.0",
+          "result": "Initial version"
+        },
+        {
+          "case": "Contradictory user hints",
+          "handling": "Prioritize AI analysis, lower confidence",
+          "warning": "CONTRADICTORY_HINTS"
+        },
+        {
+          "case": "Low confidence (<0.5)",
+          "handling": "Suggest manual review",
+          "warning": "LOW_CONFIDENCE_VERSION"
+        },
+        {
+          "case": "Invalid model state",
+          "handling": "Reject with validation error",
+          "error": "INVALID_MODEL_STATE"
+        }
+      ],
+      "test_cases": [
+        {
+          "test_id": "MVS-009-T01",
+          "description": "First version (no previous state)",
+          "input": {
+            "model_id": "model-new",
+            "current_model_state": {
+              "schema": "..."
+            }
+          },
+          "expected_output": {
+            "version": {
+              "value": "1.0.0",
+              "scheme": "SemVer"
+            },
+            "confidence": 1.0
+          }
+        },
+        {
+          "test_id": "MVS-009-T02",
+          "description": "Breaking change detected",
+          "input": {
+            "model_id": "model-123",
+            "previous_model_state": {
+              "api": {
+                "method": "old_signature"
+              }
+            },
+            "current_model_state": {
+              "api": {
+                "method": "new_signature"
+              }
+            }
+          },
+          "precondition": "Current version is 1.5.0",
+          "expected_output": {
+            "version": {
+              "value": "2.0.0",
+              "scheme": "SemVer"
+            },
+            "changes": [
+              {
+                "type": "breaking",
+                "description": "API signature change"
+              }
+            ],
+            "confidence": ">0.8"
+          }
+        },
+        {
+          "test_id": "MVS-009-T03",
+          "description": "New feature added",
+          "input": {
+            "model_id": "model-123",
+            "previous_model_state": {
+              "features": [
+                "A",
+                "B"
+              ]
+            },
+            "current_model_state": {
+              "features": [
+                "A",
+                "B",
+                "C"
+              ]
+            }
+          },
+          "precondition": "Current version is 1.5.0",
+          "expected_output": {
+            "version": {
+              "value": "1.6.0",
+              "scheme": "SemVer"
+            },
+            "changes": [
+              {
+                "type": "feature",
+                "description": "Added feature C"
+              }
+            ]
+          }
+        },
+        {
+          "test_id": "MVS-009-T04",
+          "description": "Bugfix only",
+          "input": {
+            "model_id": "model-123",
+            "previous_model_state": {
+              "logic": "buggy_code"
+            },
+            "current_model_state": {
+              "logic": "fixed_code"
+            },
+            "user_hints": [
+              "Fixed critical bug"
+            ]
+          },
+          "precondition": "Current version is 1.5.3",
+          "expected_output": {
+            "version": {
+              "value": "1.5.4",
+              "scheme": "SemVer"
+            },
+            "changes": [
+              {
+                "type": "bugfix"
+              }
+            ]
+          }
+        },
+        {
+          "test_id": "MVS-009-T05",
+          "description": "No changes detected",
+          "input": {
+            "model_id": "model-123",
+            "previous_model_state": {
+              "data": "same"
+            },
+            "current_model_state": {
+              "data": "same"
+            }
+          },
+          "precondition": "Current version is 1.5.0",
+          "expected_output": {
+            "version": {
+              "value": "1.5.0",
+              "scheme": "SemVer"
+            }
+          },
+          "expected_warning": "NO_CHANGES_DETECTED"
+        },
+        {
+          "test_id": "MVS-009-T06",
+          "description": "Ambiguous changes (low confidence)",
+          "input": {
+            "model_id": "model-123",
+            "previous_model_state": {
+              "code": "complex_logic"
+            },
+            "current_model_state": {
+              "code": "refactored_logic"
+            }
+          },
+          "expected_output": {
+            "version": "Conservative version bump",
+            "confidence": "<0.5"
+          },
+          "expected_warning": "LOW_CONFIDENCE_VERSION"
+        },
+        {
+          "test_id": "MVS-009-T07",
+          "description": "User hints improve confidence",
+          "input": {
+            "model_id": "model-123",
+            "previous_model_state": {
+              "...": "..."
+            },
+            "current_model_state": {
+              "...": "..."
+            },
+            "user_hints": [
+              "Added backward-compatible feature X",
+              "Fixed bug Y"
+            ]
+          },
+          "expected_output": {
+            "version": {
+              "value": "1.6.0",
+              "scheme": "SemVer"
+            },
+            "confidence": ">0.9"
+          }
+        },
+        {
+          "test_id": "MVS-009-T08",
+          "description": "Mixed changes (breaking takes precedence)",
+          "input": {
+            "model_id": "model-123",
+            "previous_model_state": {
+              "...": "..."
+            },
+            "current_model_state": {
+              "...": "..."
+            }
+          },
+          "precondition": "Changes include: breaking, feature, bugfix",
+          "expected_output": {
+            "version": "MAJOR bump",
+            "changes": [
+              "breaking",
+              "feature",
+              "bugfix"
+            ]
+          }
+        },
+        {
+          "test_id": "MVS-009-T09",
+          "description": "Performance optimization (minor bump)",
+          "input": {
+            "model_id": "model-123",
+            "previous_model_state": {
+              "algorithm": "slow"
+            },
+            "current_model_state": {
+              "algorithm": "optimized"
+            },
+            "user_hints": [
+              "Performance improvement, no API changes"
+            ]
+          },
+          "expected_output": {
+            "version": "MINOR bump",
+            "changes": [
+              {
+                "type": "performance"
+              }
+            ]
+          }
+        },
+        {
+          "test_id": "MVS-009-T10",
+          "description": "Contradictory hints",
+          "input": {
+            "model_id": "model-123",
+            "previous_model_state": {
+              "...": "..."
+            },
+            "current_model_state": {
+              "...": "..."
+            },
+            "user_hints": [
+              "Breaking change",
+              "Backward compatible"
+            ]
+          },
+          "expected_output": {
+            "confidence": "Lower due to contradictory hints"
+          },
+          "expected_warning": "CONTRADICTORY_HINTS"
+        }
+      ]
+    },
+    {
+      "operation_id": "MVS-010",
+      "name": "validate_version",
+      "category": "Validation",
+      "description": "Validate version format according to scheme rules",
+      "signature": {
+        "inputs": {
+          "version_string": {
+            "type": "string",
+            "description": "Version string to validate"
+          },
+          "scheme": {
+            "type": "VersionScheme",
+            "description": "Versioning scheme to validate against"
+          }
+        },
+        "outputs": {
+          "valid": {
+            "type": "boolean",
+            "description": "Whether version is valid"
+          },
+          "errors": {
+            "type": "array[string]",
+            "description": "Validation errors if invalid",
+            "optional": true
+          },
+          "parsed_version": {
+            "type": "object",
+            "description": "Parsed version components",
+            "optional": true
+          }
+        }
+      },
+      "formula": {
+        "description": "Version validation algorithm",
+        "steps": [
+          "1. Get validation rules for scheme",
+          "2. Check format using regex or scheme-specific validator",
+          "3. For SemVer:",
+          "   a. Match regex: ^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$",
+          "   b. Validate numeric components are non-negative integers",
+          "   c. Validate pre-release and build metadata format",
+          "4. Collect all validation errors",
+          "5. If valid: parse version into components",
+          "6. Return validation result"
+        ],
+        "semver_rules": {
+          "format": "MAJOR.MINOR.PATCH[-PRERELEASE][+BUILD]",
+          "numeric_components": "Non-negative integers, no leading zeros",
+          "prerelease": "Alphanumeric identifiers separated by dots",
+          "build_metadata": "Alphanumeric identifiers separated by dots"
+        },
+        "calver_rules": {
+          "format": "YYYY.MM.DD[.MICRO]",
+          "year": "4-digit year",
+          "month": "2-digit month (01-12)",
+          "day": "2-digit day (01-31)"
+        }
+      },
+      "properties": {
+        "idempotency": "Yes",
+        "deterministic": "Yes",
+        "time_complexity": "O(n) where n = version string length",
+        "space_complexity": "O(n)"
+      },
+      "edge_cases": [
+        {
+          "case": "Empty version string",
+          "handling": "Invalid",
+          "error": "EMPTY_VERSION_STRING"
+        },
+        {
+          "case": "Leading zeros in numeric components",
+          "handling": "Invalid for SemVer",
+          "error": "LEADING_ZEROS_NOT_ALLOWED"
+        },
+        {
+          "case": "Negative numbers",
+          "handling": "Invalid",
+          "error": "NEGATIVE_VERSION_COMPONENT"
+        },
+        {
+          "case": "Invalid prerelease format",
+          "handling": "Invalid",
+          "error": "INVALID_PRERELEASE_FORMAT"
+        },
+        {
+          "case": "Unknown scheme",
+          "handling": "Invalid",
+          "error": "UNKNOWN_SCHEME"
+        },
+        {
+          "case": "Whitespace in version",
+          "handling": "Invalid",
+          "error": "WHITESPACE_NOT_ALLOWED"
+        }
+      ],
+      "test_cases": [
+        {
+          "test_id": "MVS-010-T01",
+          "description": "Valid SemVer",
+          "input": {
+            "version_string": "1.2.3",
+            "scheme": "SemVer"
+          },
+          "expected_output": {
+            "valid": true,
+            "parsed_version": {
+              "major": 1,
+              "minor": 2,
+              "patch": 3
+            }
+          }
+        },
+        {
+          "test_id": "MVS-010-T02",
+          "description": "Valid SemVer with prerelease",
+          "input": {
+            "version_string": "1.0.0-alpha.1",
+            "scheme": "SemVer"
+          },
+          "expected_output": {
+            "valid": true,
+            "parsed_version": {
+              "major": 1,
+              "minor": 0,
+              "patch": 0,
+              "prerelease": "alpha.1"
+            }
+          }
+        },
+        {
+          "test_id": "MVS-010-T03",
+          "description": "Valid SemVer with build metadata",
+          "input": {
+            "version_string": "1.0.0+build.123",
+            "scheme": "SemVer"
+          },
+          "expected_output": {
+            "valid": true,
+            "parsed_version": {
+              "build": "build.123"
+            }
+          }
+        },
+        {
+          "test_id": "MVS-010-T04",
+          "description": "Invalid SemVer (leading zero)",
+          "input": {
+            "version_string": "01.2.3",
+            "scheme": "SemVer"
+          },
+          "expected_output": {
+            "valid": false,
+            "errors": [
+              "LEADING_ZEROS_NOT_ALLOWED"
+            ]
+          }
+        },
+        {
+          "test_id": "MVS-010-T05",
+          "description": "Invalid SemVer (negative number)",
+          "input": {
+            "version_string": "-1.0.0",
+            "scheme": "SemVer"
+          },
+          "expected_output": {
+            "valid": false,
+            "errors": [
+              "NEGATIVE_VERSION_COMPONENT"
+            ]
+          }
+        },
+        {
+          "test_id": "MVS-010-T06",
+          "description": "Invalid SemVer (missing components)",
+          "input": {
+            "version_string": "1.0",
+            "scheme": "SemVer"
+          },
+          "expected_output": {
+            "valid": false,
+            "errors": [
+              "INVALID_SEMVER_FORMAT"
+            ]
+          }
+        },
+        {
+          "test_id": "MVS-010-T07",
+          "description": "Valid CalVer",
+          "input": {
+            "version_string": "2025.01.12",
+            "scheme": "CalVer"
+          },
+          "expected_output": {
+            "valid": true,
+            "parsed_version": {
+              "year": 2025,
+              "month": 1,
+              "day": 12
+            }
+          }
+        },
+        {
+          "test_id": "MVS-010-T08",
+          "description": "Empty version string",
+          "input": {
+            "version_string": "",
+            "scheme": "SemVer"
+          },
+          "expected_output": {
+            "valid": false,
+            "errors": [
+              "EMPTY_VERSION_STRING"
+            ]
+          }
+        },
+        {
+          "test_id": "MVS-010-T09",
+          "description": "Whitespace in version",
+          "input": {
+            "version_string": "1.0.0 ",
+            "scheme": "SemVer"
+          },
+          "expected_output": {
+            "valid": false,
+            "errors": [
+              "WHITESPACE_NOT_ALLOWED"
+            ]
+          }
+        },
+        {
+          "test_id": "MVS-010-T10",
+          "description": "Invalid prerelease format",
+          "input": {
+            "version_string": "1.0.0-",
+            "scheme": "SemVer"
+          },
+          "expected_output": {
+            "valid": false,
+            "errors": [
+              "INVALID_PRERELEASE_FORMAT"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "configuration": {
+    "default_scheme": "SemVer",
+    "auto_versioning_enabled": true,
+    "validation_strict": true,
+    "migration_backup_enabled": true,
+    "deprecation_notification_enabled": true
+  },
+  "license": {
+    "type": "AGPLv3",
+    "name": "GNU Affero General Public License v3.0",
+    "url": "https://www.gnu.org/licenses/agpl-3.0.html",
+    "description": "This specification is licensed under AGPLv3. Any implementation or derivative work must also be licensed under AGPLv3 and source code must be made available."
+  }
+}

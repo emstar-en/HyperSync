@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "id": "capsule.policies.fault_detection",
+    "type": "vnes_capsule",
+    "version": "0.1.0",
+    "status": "ALPHA"
+  },
+  "encapsulation": {
+    "target_spec": "specifications/policies/fault_detection.spec.json",
+    "isolation_level": "kernel_ring_0_monitor",
+    "state_management": "stateless_log_stream"
+  },
+  "interfaces": {
+    "ingress": [
+      "system_telemetry",
+      "heartbeat_signals"
+    ],
+    "egress": [
+      "alerts",
+      "mitigation_triggers"
+    ]
+  },
+  "vnes_config": {
+    "runtime": "rust_embedded_safe",
+    "resources": {
+      "cpu": "high_priority",
+      "memory": "low"
+    }
+  }
+}

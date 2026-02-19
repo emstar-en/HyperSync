@@ -1,0 +1,335 @@
+{
+  "name": "mxfy_factoryspec_format",
+  "version": "1.0.0",
+  "description": "MXFY FactorySpec Format Specification - Schema definition for application blueprints including required fields, metadata structure, dependency declarations, and validation rules",
+  "license": {
+    "type": "AGPLv3",
+    "text": "This specification is licensed under the GNU Affero General Public License v3.0. See https://www.gnu.org/licenses/agpl-3.0.html for full license text.",
+    "copyright": "Copyright (c) 2024-2026 HyperSync Project"
+  },
+  "subsystem": "MXFY",
+  "category": "factoryspec_format",
+  "stunir_compatible": true,
+  "dependencies": [
+    "mxfy_core_system@1.0.0"
+  ],
+  "factoryspec_schema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "FactorySpec",
+    "description": "Blueprint for MXFY application generation",
+    "type": "object",
+    "required": ["id", "name", "version", "intent", "primitives", "architecture"],
+    "properties": {
+      "id": {
+        "type": "string",
+        "format": "uuid",
+        "description": "Unique blueprint identifier"
+      },
+      "name": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 128,
+        "pattern": "^[a-z][a-z0-9_-]*$",
+        "description": "Application name (lowercase, alphanumeric, hyphens, underscores)"
+      },
+      "version": {
+        "type": "string",
+        "pattern": "^\\d+\\.\\d+\\.\\d+$",
+        "description": "Semantic version"
+      },
+      "description": {
+        "type": "string",
+        "maxLength": 1024,
+        "description": "Human-readable description"
+      },
+      "intent": {
+        "$ref": "#/definitions/Intent"
+      },
+      "primitives": {
+        "type": "array",
+        "items": {"$ref": "#/definitions/PrimitiveDeclaration"},
+        "minItems": 1,
+        "description": "List of primitives to compose"
+      },
+      "dependencies": {
+        "type": "array",
+        "items": {"$ref": "#/definitions/DependencyDeclaration"},
+        "description": "External dependencies"
+      },
+      "architecture": {
+        "$ref": "#/definitions/Architecture"
+      },
+      "resources": {
+        "$ref": "#/definitions/ResourceSpec"
+      },
+      "metadata": {
+        "$ref": "#/definitions/Metadata"
+      },
+      "generation_hints": {
+        "$ref": "#/definitions/GenerationHints"
+      }
+    },
+    "definitions": {
+      "Intent": {
+        "type": "object",
+        "required": ["application_type", "target_use_case"],
+        "properties": {
+          "application_type": {
+            "type": "string",
+            "description": "The X in 'Make X for Y'"
+          },
+          "target_use_case": {
+            "type": "string",
+            "description": "The Y in 'Make X for Y'"
+          },
+          "parameters": {
+            "type": "object",
+            "description": "Extracted parameters"
+          },
+          "implied_features": {
+            "type": "array",
+            "items": {"type": "string"}
+          },
+          "constraints": {
+            "type": "array",
+            "items": {"type": "string"}
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        }
+      },
+      "PrimitiveDeclaration": {
+        "type": "object",
+        "required": ["shard_id", "role"],
+        "properties": {
+          "shard_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "SDL shard ID"
+          },
+          "shard_name": {
+            "type": "string",
+            "description": "Human-readable name"
+          },
+          "shard_type": {
+            "type": "string",
+            "enum": ["code", "ui", "data", "model", "config"]
+          },
+          "role": {
+            "type": "string",
+            "description": "Role in application (e.g., 'main_view', 'data_handler')"
+          },
+          "configuration": {
+            "type": "object",
+            "description": "Primitive-specific configuration"
+          },
+          "required": {
+            "type": "boolean",
+            "default": true
+          }
+        }
+      },
+      "DependencyDeclaration": {
+        "type": "object",
+        "required": ["name", "version_constraint"],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "version_constraint": {
+            "type": "string",
+            "description": "Semver constraint (e.g., '^2.0.0', '>=1.5.0')"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["runtime", "build", "optional"]
+          }
+        }
+      },
+      "Architecture": {
+        "type": "object",
+        "required": ["pattern", "entry_point"],
+        "properties": {
+          "pattern": {
+            "type": "string",
+            "enum": ["single_component", "multi_component", "plugin_based", "microservice", "event_driven"]
+          },
+          "entry_point": {
+            "type": "string",
+            "description": "Main entry point file/function"
+          },
+          "components": {
+            "type": "array",
+            "items": {"$ref": "#/definitions/ComponentSpec"}
+          },
+          "data_flow": {
+            "type": "array",
+            "items": {"$ref": "#/definitions/DataFlowEdge"}
+          },
+          "layout": {
+            "$ref": "#/definitions/UILayout"
+          }
+        }
+      },
+      "ComponentSpec": {
+        "type": "object",
+        "required": ["id", "type"],
+        "properties": {
+          "id": {"type": "string"},
+          "type": {"type": "string"},
+          "primitives": {"type": "array", "items": {"type": "string"}},
+          "inputs": {"type": "array", "items": {"type": "string"}},
+          "outputs": {"type": "array", "items": {"type": "string"}}
+        }
+      },
+      "DataFlowEdge": {
+        "type": "object",
+        "required": ["from", "to"],
+        "properties": {
+          "from": {"type": "string"},
+          "to": {"type": "string"},
+          "data_type": {"type": "string"},
+          "transform": {"type": "string"}
+        }
+      },
+      "UILayout": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["single_panel", "horizontal_split", "vertical_split", "grid", "dashboard", "wizard", "free_form"]
+          },
+          "panels": {
+            "type": "array",
+            "items": {"type": "object"}
+          }
+        }
+      },
+      "ResourceSpec": {
+        "type": "object",
+        "properties": {
+          "memory_mb": {"type": "integer", "minimum": 16, "maximum": 4096},
+          "cpu_percent": {"type": "number", "minimum": 1, "maximum": 100},
+          "storage_mb": {"type": "integer", "minimum": 0},
+          "network_access": {"type": "boolean"},
+          "filesystem_scope": {"type": "string", "enum": ["none", "read_only", "sandboxed", "full"]}
+        }
+      },
+      "Metadata": {
+        "type": "object",
+        "properties": {
+          "author": {"type": "string"},
+          "created": {"type": "string", "format": "date-time"},
+          "modified": {"type": "string", "format": "date-time"},
+          "tags": {"type": "array", "items": {"type": "string"}},
+          "category": {"type": "string"},
+          "license": {"type": "string"}
+        }
+      },
+      "GenerationHints": {
+        "type": "object",
+        "properties": {
+          "preferred_language": {"type": "string"},
+          "optimization_target": {"type": "string", "enum": ["size", "speed", "memory", "balanced"]},
+          "style_preferences": {"type": "object"},
+          "skip_validations": {"type": "array", "items": {"type": "string"}}
+        }
+      }
+    }
+  },
+  "operations": [
+    {
+      "name": "factoryspec_create",
+      "description": "Create new FactorySpec",
+      "signature": "factoryspec_create(intent: ParsedIntent, primitives: array[PrimitiveReference]) -> FactorySpec",
+      "complexity": "O(n)",
+      "determinism": "D0"
+    },
+    {
+      "name": "factoryspec_validate",
+      "description": "Validate FactorySpec against schema",
+      "signature": "factoryspec_validate(spec: FactorySpec) -> ValidationResult",
+      "complexity": "O(n)",
+      "determinism": "D0"
+    },
+    {
+      "name": "factoryspec_serialize",
+      "description": "Serialize FactorySpec to JSON",
+      "signature": "factoryspec_serialize(spec: FactorySpec) -> string",
+      "complexity": "O(n)",
+      "determinism": "D0"
+    },
+    {
+      "name": "factoryspec_deserialize",
+      "description": "Deserialize FactorySpec from JSON",
+      "signature": "factoryspec_deserialize(json: string) -> FactorySpec",
+      "complexity": "O(n)",
+      "determinism": "D0"
+    },
+    {
+      "name": "factoryspec_merge",
+      "description": "Merge two FactorySpecs",
+      "signature": "factoryspec_merge(base: FactorySpec, overlay: FactorySpec) -> FactorySpec",
+      "complexity": "O(n + m)",
+      "determinism": "D0"
+    },
+    {
+      "name": "factoryspec_diff",
+      "description": "Compute diff between two FactorySpecs",
+      "signature": "factoryspec_diff(old: FactorySpec, new: FactorySpec) -> SpecDiff",
+      "complexity": "O(n + m)",
+      "determinism": "D0"
+    }
+  ],
+  "validation_rules": [
+    {
+      "rule": "required_fields",
+      "description": "All required fields must be present"
+    },
+    {
+      "rule": "primitive_existence",
+      "description": "All referenced primitives must exist in SDL"
+    },
+    {
+      "rule": "no_circular_dependencies",
+      "description": "Dependency graph must be acyclic"
+    },
+    {
+      "rule": "data_flow_validity",
+      "description": "All data flow edges must connect valid components"
+    },
+    {
+      "rule": "resource_bounds",
+      "description": "Resource requirements must be within system limits"
+    }
+  ],
+  "examples": {
+    "simple_file_browser": {
+      "id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+      "name": "dataset-file-browser",
+      "version": "1.0.0",
+      "description": "File browser for managing datasets",
+      "intent": {
+        "application_type": "file browser",
+        "target_use_case": "managing datasets",
+        "confidence": 0.95
+      },
+      "primitives": [
+        {"shard_id": "abc123", "shard_name": "tree_view", "shard_type": "ui", "role": "navigation"},
+        {"shard_id": "def456", "shard_name": "file_list", "shard_type": "ui", "role": "main_view"},
+        {"shard_id": "ghi789", "shard_name": "file_operations", "shard_type": "code", "role": "data_handler"}
+      ],
+      "dependencies": [
+        {"name": "hypersync_ui", "version_constraint": "^2.0.0", "type": "runtime"}
+      ],
+      "architecture": {
+        "pattern": "multi_component",
+        "entry_point": "main.py",
+        "layout": {"type": "horizontal_split"}
+      }
+    }
+  }
+}

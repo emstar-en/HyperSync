@@ -1,0 +1,2214 @@
+{
+  "metadata": {
+    "name": "federated_learning_system",
+    "version": "1.0.0",
+    "description": "Federated Learning System for HyperSync - Distributed model training across domains with secure aggregation, differential privacy, and gradient compression for communication efficiency",
+    "author": "HyperSync Framework",
+    "created": "2026-01-16T00:00:00Z",
+    "updated": "2026-01-16T00:00:00Z",
+    "stunir_version": "1.0",
+    "domain": "hypersync.distributed.federated",
+    "conformance_level": 3,
+    "dependencies": [
+      "hyperbolic_core",
+      "riemannian_optimization",
+      "secure_aggregation",
+      "differential_privacy"
+    ],
+    "license": {
+      "name": "AGPLv3",
+      "url": "https://www.gnu.org/licenses/agpl-3.0.html"
+    },
+    "authors": [
+      "HyperSync Team"
+    ],
+    "mathematical_foundation": {
+      "basis": "Federated Learning with Riemannian Geometry",
+      "key_equations": [
+        "FedAvg: w_{t+1} = \u03a3\u1d62 (n\u1d62/n) \u00b7 w\u1d62,\u209c\u208a\u2081",
+        "Riemannian FedAvg: \u03bc_{t+1} = Fr\u00e9chetMean(w\u1d62,\u209c\u208a\u2081, n\u1d62/n)",
+        "Secure Aggregation: \u03a3\u1d62(x\u1d62 + r\u1d62) mod p where \u03a3r\u1d62 = 0",
+        "DP-SGD: g\u0303 = clip(g, C) + N(0, \u03c3\u00b2C\u00b2I)",
+        "Gradient Compression: TopK(g) or SignSGD(g)"
+      ],
+      "properties": [
+        "Convergence under non-IID data distributions",
+        "Privacy amplification via subsampling",
+        "Communication efficiency via compression",
+        "Robustness to client dropout"
+      ]
+    },
+    "tags": [
+      "federated",
+      "learning",
+      "privacy",
+      "distributed",
+      "aggregation",
+      "important"
+    ]
+  },
+  "types": {
+    "FederatedConfig": {
+      "description": "Configuration for federated learning system",
+      "base_type": "object",
+      "properties": {
+        "num_clients": {
+          "type": "integer",
+          "minimum": 2
+        },
+        "rounds": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "clients_per_round": {
+          "type": "integer"
+        },
+        "local_epochs": {
+          "type": "integer",
+          "default": 1
+        },
+        "local_batch_size": {
+          "type": "integer",
+          "default": 32
+        },
+        "aggregation_method": {
+          "type": "string",
+          "enum": [
+            "fedavg",
+            "fedprox",
+            "scaffold",
+            "riemannian_fedavg"
+          ],
+          "default": "fedavg"
+        },
+        "client_selection": {
+          "type": "string",
+          "enum": [
+            "random",
+            "weighted",
+            "active"
+          ],
+          "default": "random"
+        }
+      }
+    },
+    "PrivacyConfig": {
+      "description": "Differential privacy configuration",
+      "base_type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": false
+        },
+        "epsilon": {
+          "type": "number",
+          "minimum": 0.01,
+          "description": "Privacy budget"
+        },
+        "delta": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Failure probability"
+        },
+        "noise_multiplier": {
+          "type": "number",
+          "minimum": 0
+        },
+        "max_grad_norm": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Gradient clipping bound"
+        },
+        "mechanism": {
+          "type": "string",
+          "enum": [
+            "gaussian",
+            "laplace",
+            "exponential"
+          ],
+          "default": "gaussian"
+        },
+        "accounting": {
+          "type": "string",
+          "enum": [
+            "rdp",
+            "moments",
+            "plrv"
+          ],
+          "default": "rdp"
+        }
+      }
+    },
+    "SecureAggregationConfig": {
+      "description": "Secure aggregation protocol configuration",
+      "base_type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "protocol": {
+          "type": "string",
+          "enum": [
+            "bell_boneh",
+            "bonawitz",
+            "lightweight"
+          ],
+          "default": "bonawitz"
+        },
+        "threshold": {
+          "type": "integer",
+          "description": "Minimum clients for reconstruction"
+        },
+        "dropout_tolerance": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 0.5
+        },
+        "key_agreement": {
+          "type": "string",
+          "enum": [
+            "dh",
+            "ecdh"
+          ],
+          "default": "ecdh"
+        }
+      }
+    },
+    "CompressionConfig": {
+      "description": "Gradient compression configuration",
+      "base_type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": false
+        },
+        "method": {
+          "type": "string",
+          "enum": [
+            "topk",
+            "random_k",
+            "signsgd",
+            "terngrad",
+            "qsgd"
+          ],
+          "default": "topk"
+        },
+        "compression_ratio": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "quantization_bits": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 32
+        },
+        "error_feedback": {
+          "type": "boolean",
+          "default": true
+        }
+      }
+    },
+    "ClientState": {
+      "description": "State of a federated learning client",
+      "base_type": "object",
+      "properties": {
+        "client_id": {
+          "type": "string"
+        },
+        "model_version": {
+          "type": "integer"
+        },
+        "local_data_size": {
+          "type": "integer"
+        },
+        "last_participation_round": {
+          "type": "integer"
+        },
+        "communication_latency_ms": {
+          "type": "integer"
+        },
+        "compute_capability": {
+          "type": "number"
+        },
+        "is_active": {
+          "type": "boolean"
+        }
+      }
+    },
+    "LocalUpdate": {
+      "description": "Local model update from client",
+      "base_type": "object",
+      "properties": {
+        "client_id": {
+          "type": "string"
+        },
+        "round_number": {
+          "type": "integer"
+        },
+        "model_delta": {
+          "type": "object",
+          "description": "Model weight changes"
+        },
+        "num_samples": {
+          "type": "integer"
+        },
+        "local_loss": {
+          "type": "number"
+        },
+        "training_time_ms": {
+          "type": "integer"
+        },
+        "compressed": {
+          "type": "boolean"
+        },
+        "encrypted": {
+          "type": "boolean"
+        }
+      }
+    },
+    "AggregatedUpdate": {
+      "description": "Server-side aggregated model update",
+      "base_type": "object",
+      "properties": {
+        "round_number": {
+          "type": "integer"
+        },
+        "aggregated_model": {
+          "type": "object"
+        },
+        "participating_clients": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "total_samples": {
+          "type": "integer"
+        },
+        "aggregation_time_ms": {
+          "type": "integer"
+        },
+        "privacy_spent": {
+          "type": "number",
+          "description": "Cumulative epsilon"
+        }
+      }
+    },
+    "RiemannianModel": {
+      "description": "Model with parameters on Riemannian manifolds",
+      "base_type": "object",
+      "properties": {
+        "model_id": {
+          "type": "string"
+        },
+        "euclidean_params": {
+          "type": "object"
+        },
+        "hyperbolic_params": {
+          "type": "object",
+          "properties": {
+            "embeddings": {
+              "type": "array"
+            },
+            "curvature": {
+              "type": "number"
+            }
+          }
+        },
+        "manifold_type": {
+          "type": "string",
+          "enum": [
+            "lorentz",
+            "poincare",
+            "product"
+          ]
+        }
+      }
+    },
+    "RiemannianGradient": {
+      "description": "Gradient in tangent space of Riemannian manifold",
+      "base_type": "object",
+      "properties": {
+        "gradient_components": {
+          "type": "array"
+        },
+        "base_point": {
+          "type": "object"
+        },
+        "manifold_type": {
+          "type": "string"
+        },
+        "is_normalized": {
+          "type": "boolean"
+        }
+      }
+    },
+    "FederatedRound": {
+      "description": "State of a single federated learning round",
+      "base_type": "object",
+      "properties": {
+        "round_number": {
+          "type": "integer"
+        },
+        "selected_clients": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "round_start_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "round_end_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "global_model_before": {
+          "type": "object"
+        },
+        "global_model_after": {
+          "type": "object"
+        },
+        "client_updates": {
+          "type": "array",
+          "items": {
+            "type": "LocalUpdate"
+          }
+        },
+        "aggregated_update": {
+          "type": "AggregatedUpdate"
+        },
+        "validation_metrics": {
+          "type": "object"
+        }
+      }
+    },
+    "PrivacyAccountant": {
+      "description": "Tracks cumulative privacy expenditure",
+      "base_type": "object",
+      "properties": {
+        "accounting_method": {
+          "type": "string"
+        },
+        "total_epsilon": {
+          "type": "number"
+        },
+        "total_delta": {
+          "type": "number"
+        },
+        "per_round_epsilon": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        },
+        "budget_remaining": {
+          "type": "number"
+        },
+        "composition_theorem": {
+          "type": "string",
+          "enum": [
+            "basic",
+            "advanced",
+            "optimal"
+          ]
+        }
+      }
+    },
+    "ClientCertificate": {
+      "description": "Certificate for client authentication",
+      "base_type": "object",
+      "properties": {
+        "client_id": {
+          "type": "string"
+        },
+        "public_key": {
+          "type": "string"
+        },
+        "issued_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "issuer": {
+          "type": "string"
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "operations": {
+    "initialize_federation": {
+      "description": "Initialize federated learning system with configuration",
+      "inputs": {
+        "config": {
+          "type": "FederatedConfig",
+          "required": true
+        },
+        "privacy_config": {
+          "type": "PrivacyConfig"
+        },
+        "secure_agg_config": {
+          "type": "SecureAggregationConfig"
+        },
+        "compression_config": {
+          "type": "CompressionConfig"
+        },
+        "initial_model": {
+          "type": "RiemannianModel",
+          "required": true
+        }
+      },
+      "outputs": {
+        "federation_id": {
+          "type": "string"
+        },
+        "server_public_key": {
+          "type": "string"
+        },
+        "initialization_time_ms": {
+          "type": "integer"
+        }
+      },
+      "preconditions": [
+        "config.num_clients >= 2",
+        "config.clients_per_round <= config.num_clients",
+        "If privacy_config.enabled: epsilon > 0, delta < 1/num_clients"
+      ],
+      "postconditions": [
+        "Federation ready to accept client registrations",
+        "Initial model distributed to coordinator"
+      ],
+      "error_conditions": [
+        "INVALID_CONFIG: Configuration parameters invalid",
+        "MODEL_INCOMPATIBLE: Model not compatible with manifold type"
+      ]
+    },
+    "register_client": {
+      "description": "Register a client to participate in federation",
+      "inputs": {
+        "federation_id": {
+          "type": "string",
+          "required": true
+        },
+        "client_certificate": {
+          "type": "ClientCertificate",
+          "required": true
+        },
+        "local_data_summary": {
+          "type": "object",
+          "description": "Statistics about local data (not raw data)"
+        }
+      },
+      "outputs": {
+        "client_state": {
+          "type": "ClientState"
+        },
+        "assigned_shard": {
+          "type": "integer"
+        }
+      },
+      "preconditions": [
+        "client_certificate is valid and not expired",
+        "Client not already registered"
+      ],
+      "postconditions": [
+        "Client can participate in future rounds"
+      ]
+    },
+    "select_clients": {
+      "description": "Select clients for participation in a round",
+      "inputs": {
+        "federation_id": {
+          "type": "string",
+          "required": true
+        },
+        "round_number": {
+          "type": "integer",
+          "required": true
+        },
+        "selection_method": {
+          "type": "string",
+          "default": "random"
+        },
+        "exclude_clients": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "outputs": {
+        "selected_clients": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "selection_weights": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        }
+      },
+      "postconditions": [
+        "Number of selected clients matches config.clients_per_round"
+      ]
+    },
+    "distribute_model": {
+      "description": "Distribute global model to selected clients",
+      "inputs": {
+        "federation_id": {
+          "type": "string",
+          "required": true
+        },
+        "round_number": {
+          "type": "integer",
+          "required": true
+        },
+        "target_clients": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "model": {
+          "type": "RiemannianModel",
+          "required": true
+        }
+      },
+      "outputs": {
+        "distribution_status": {
+          "type": "object"
+        },
+        "bytes_sent": {
+          "type": "integer"
+        },
+        "distribution_time_ms": {
+          "type": "integer"
+        }
+      },
+      "postconditions": [
+        "All reachable clients receive model"
+      ]
+    },
+    "local_train": {
+      "description": "Perform local training on client",
+      "inputs": {
+        "client_id": {
+          "type": "string",
+          "required": true
+        },
+        "global_model": {
+          "type": "RiemannianModel",
+          "required": true
+        },
+        "local_epochs": {
+          "type": "integer",
+          "required": true
+        },
+        "local_batch_size": {
+          "type": "integer",
+          "required": true
+        },
+        "privacy_config": {
+          "type": "PrivacyConfig"
+        },
+        "use_riemannian_sgd": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "outputs": {
+        "local_update": {
+          "type": "LocalUpdate"
+        },
+        "training_metrics": {
+          "type": "object"
+        }
+      },
+      "preconditions": [
+        "Client has local data",
+        "global_model compatible with local data"
+      ],
+      "postconditions": [
+        "local_update.model_delta represents improvement direction",
+        "If privacy_config.enabled: gradients are clipped and noised"
+      ],
+      "implementation_notes": {
+        "riemannian_sgd": "Use RSGD with parallel transport for manifold parameters",
+        "dp_sgd": "Per-example gradient clipping before aggregation"
+      }
+    },
+    "riemannian_local_train": {
+      "description": "Local training with Riemannian optimization for hyperbolic embeddings",
+      "inputs": {
+        "client_id": {
+          "type": "string",
+          "required": true
+        },
+        "model": {
+          "type": "RiemannianModel",
+          "required": true
+        },
+        "learning_rate": {
+          "type": "number",
+          "required": true
+        },
+        "local_epochs": {
+          "type": "integer",
+          "required": true
+        }
+      },
+      "outputs": {
+        "riemannian_gradient": {
+          "type": "RiemannianGradient"
+        },
+        "updated_model": {
+          "type": "RiemannianModel"
+        },
+        "manifold_constraint_violations": {
+          "type": "integer"
+        }
+      },
+      "postconditions": [
+        "Updated model parameters lie on manifold",
+        "Gradients are in tangent space"
+      ]
+    },
+    "compress_update": {
+      "description": "Compress local update for communication efficiency",
+      "inputs": {
+        "local_update": {
+          "type": "LocalUpdate",
+          "required": true
+        },
+        "compression_config": {
+          "type": "CompressionConfig",
+          "required": true
+        }
+      },
+      "outputs": {
+        "compressed_update": {
+          "type": "LocalUpdate"
+        },
+        "compression_ratio_achieved": {
+          "type": "number"
+        },
+        "residual_error": {
+          "type": "object",
+          "description": "Error for feedback"
+        }
+      },
+      "postconditions": [
+        "compressed_update.compressed = true",
+        "Compression ratio <= compression_config.compression_ratio"
+      ]
+    },
+    "encrypt_update": {
+      "description": "Encrypt local update for secure aggregation",
+      "inputs": {
+        "local_update": {
+          "type": "LocalUpdate",
+          "required": true
+        },
+        "secure_agg_config": {
+          "type": "SecureAggregationConfig",
+          "required": true
+        },
+        "shared_masks": {
+          "type": "object",
+          "description": "Masks from key agreement"
+        }
+      },
+      "outputs": {
+        "encrypted_update": {
+          "type": "LocalUpdate"
+        },
+        "encryption_time_ms": {
+          "type": "integer"
+        }
+      },
+      "postconditions": [
+        "encrypted_update.encrypted = true",
+        "Update cannot be decrypted without sufficient parties"
+      ]
+    },
+    "secure_aggregate": {
+      "description": "Securely aggregate encrypted updates from clients",
+      "inputs": {
+        "federation_id": {
+          "type": "string",
+          "required": true
+        },
+        "encrypted_updates": {
+          "type": "array",
+          "items": {
+            "type": "LocalUpdate"
+          },
+          "required": true
+        },
+        "secure_agg_config": {
+          "type": "SecureAggregationConfig",
+          "required": true
+        }
+      },
+      "outputs": {
+        "aggregated_update": {
+          "type": "AggregatedUpdate"
+        },
+        "dropped_clients": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "aggregation_time_ms": {
+          "type": "integer"
+        }
+      },
+      "preconditions": [
+        "len(encrypted_updates) >= secure_agg_config.threshold"
+      ],
+      "postconditions": [
+        "Individual updates not revealed to server",
+        "Aggregated result is correct sum"
+      ],
+      "error_conditions": [
+        "INSUFFICIENT_CLIENTS: Too many dropouts",
+        "DECRYPTION_FAILED: Key agreement failure"
+      ]
+    },
+    "riemannian_fedavg": {
+      "description": "Riemannian FedAvg aggregation using Fr\u00e9chet mean",
+      "inputs": {
+        "client_models": {
+          "type": "array",
+          "items": {
+            "type": "RiemannianModel"
+          },
+          "required": true
+        },
+        "weights": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "required": true
+        },
+        "manifold_type": {
+          "type": "string",
+          "required": true
+        },
+        "max_iterations": {
+          "type": "integer",
+          "default": 100
+        },
+        "tolerance": {
+          "type": "number",
+          "default": 1e-06
+        }
+      },
+      "outputs": {
+        "aggregated_model": {
+          "type": "RiemannianModel"
+        },
+        "iterations_used": {
+          "type": "integer"
+        },
+        "convergence_error": {
+          "type": "number"
+        }
+      },
+      "postconditions": [
+        "aggregated_model parameters lie on manifold",
+        "Result minimizes weighted sum of squared distances"
+      ],
+      "implementation_notes": {
+        "algorithm": "Iterative gradient descent in tangent space with exponential map",
+        "complexity": "O(iterations \u00d7 num_clients \u00d7 dimension)"
+      }
+    },
+    "add_noise_for_dp": {
+      "description": "Add calibrated noise for differential privacy",
+      "inputs": {
+        "aggregated_update": {
+          "type": "AggregatedUpdate",
+          "required": true
+        },
+        "privacy_config": {
+          "type": "PrivacyConfig",
+          "required": true
+        },
+        "num_participating_clients": {
+          "type": "integer",
+          "required": true
+        }
+      },
+      "outputs": {
+        "noised_update": {
+          "type": "AggregatedUpdate"
+        },
+        "noise_scale_used": {
+          "type": "number"
+        },
+        "epsilon_spent": {
+          "type": "number"
+        }
+      },
+      "postconditions": [
+        "Noise calibrated to achieve target epsilon",
+        "Privacy accountant updated"
+      ]
+    },
+    "update_global_model": {
+      "description": "Apply aggregated update to global model",
+      "inputs": {
+        "federation_id": {
+          "type": "string",
+          "required": true
+        },
+        "current_model": {
+          "type": "RiemannianModel",
+          "required": true
+        },
+        "aggregated_update": {
+          "type": "AggregatedUpdate",
+          "required": true
+        },
+        "learning_rate": {
+          "type": "number",
+          "default": 1.0
+        }
+      },
+      "outputs": {
+        "updated_model": {
+          "type": "RiemannianModel"
+        },
+        "model_change_magnitude": {
+          "type": "number"
+        }
+      },
+      "postconditions": [
+        "Model parameters on manifold (for Riemannian components)"
+      ]
+    },
+    "track_privacy_budget": {
+      "description": "Update privacy accountant with round's privacy expenditure",
+      "inputs": {
+        "federation_id": {
+          "type": "string",
+          "required": true
+        },
+        "round_number": {
+          "type": "integer",
+          "required": true
+        },
+        "epsilon_spent": {
+          "type": "number",
+          "required": true
+        },
+        "delta_spent": {
+          "type": "number",
+          "required": true
+        }
+      },
+      "outputs": {
+        "accountant": {
+          "type": "PrivacyAccountant"
+        },
+        "budget_exhausted": {
+          "type": "boolean"
+        }
+      },
+      "postconditions": [
+        "Cumulative privacy loss tracked",
+        "Alert if budget exceeded"
+      ]
+    },
+    "validate_round": {
+      "description": "Validate model after federated round",
+      "inputs": {
+        "federation_id": {
+          "type": "string",
+          "required": true
+        },
+        "round_number": {
+          "type": "integer",
+          "required": true
+        },
+        "model": {
+          "type": "RiemannianModel",
+          "required": true
+        },
+        "validation_data": {
+          "type": "object",
+          "description": "Server-side validation data"
+        }
+      },
+      "outputs": {
+        "metrics": {
+          "type": "object"
+        },
+        "model_improved": {
+          "type": "boolean"
+        }
+      }
+    },
+    "checkpoint_federation": {
+      "description": "Save federation state checkpoint",
+      "inputs": {
+        "federation_id": {
+          "type": "string",
+          "required": true
+        },
+        "round_number": {
+          "type": "integer",
+          "required": true
+        }
+      },
+      "outputs": {
+        "checkpoint_id": {
+          "type": "string"
+        },
+        "checkpoint_size_bytes": {
+          "type": "integer"
+        }
+      }
+    }
+  },
+  "tests": {
+    "conformance_blocks": [
+      {
+        "schema_version": "block-uni-1",
+        "block_id": "fed.learn.identity.001",
+        "metadata": {
+          "title": "Federation Identity - Initialization",
+          "description": "Verify federated learning system initializes correctly",
+          "created_at": "2026-01-16T00:00:00Z",
+          "authors": [
+            "HyperSync Test Suite"
+          ],
+          "tags": [
+            "identity",
+            "initialization",
+            "federated"
+          ]
+        },
+        "integrity": {
+          "manifest": [
+            {
+              "path": "test_fed_init.py",
+              "sha256": "placeholder_hash_201",
+              "role": "program"
+            }
+          ],
+          "dir_merkle_root": "placeholder_merkle_root_201",
+          "canonicalization": {
+            "field_order": "declared",
+            "byte_encoding": "utf8",
+            "float_format": "scientific",
+            "normalize_sign": true
+          },
+          "integrity_policy": {
+            "must_match_manifest": true,
+            "deny_unknown_files": true,
+            "allow_out_of_dir": false
+          }
+        },
+        "environment": {
+          "os": "linux",
+          "arch": "x86_64",
+          "accel": "cpu",
+          "precision": "fp64",
+          "deterministic_reductions": true,
+          "blas_threads": 1
+        },
+        "manifold": {
+          "model": "lorentz",
+          "dimension": 32,
+          "curvature": -1.0
+        },
+        "numeric_policy": {
+          "tolerance": 1e-06,
+          "max_iterations": 100
+        },
+        "substrate": {
+          "nodes": [
+            {
+              "node_id": "server",
+              "role": "aggregator"
+            },
+            {
+              "node_id": "client_0",
+              "role": "client"
+            },
+            {
+              "node_id": "client_1",
+              "role": "client"
+            },
+            {
+              "node_id": "client_2",
+              "role": "client"
+            }
+          ],
+          "links": [
+            {
+              "from": "server",
+              "to": "client_0"
+            },
+            {
+              "from": "server",
+              "to": "client_1"
+            },
+            {
+              "from": "server",
+              "to": "client_2"
+            }
+          ]
+        },
+        "semantics": {
+          "topics": [],
+          "policies": []
+        },
+        "fixtures": {
+          "config": {
+            "num_clients": 10,
+            "rounds": 5,
+            "clients_per_round": 3,
+            "local_epochs": 2
+          }
+        },
+        "program": [
+          {
+            "step": 1,
+            "op": "generate.random_riemannian_model",
+            "params": {
+              "dimension": 32,
+              "manifold_type": "lorentz"
+            }
+          },
+          {
+            "step": 2,
+            "op": "fed.initialize_federation",
+            "params": {
+              "config": "fixtures.config",
+              "initial_model": "step_1.model"
+            }
+          }
+        ],
+        "checks": [
+          {
+            "check_id": "federation_created",
+            "kind": "fed.federation_valid",
+            "params": {
+              "federation_id": "step_2.federation_id"
+            },
+            "expected": {
+              "valid": true
+            }
+          },
+          {
+            "check_id": "config_applied",
+            "kind": "fed.config_matches",
+            "params": {
+              "federation_id": "step_2.federation_id",
+              "expected_config": "fixtures.config"
+            },
+            "expected": {
+              "matches": true
+            }
+          }
+        ],
+        "coverage": {
+          "operations": [
+            "initialize_federation"
+          ],
+          "invariants": [
+            "INV.FED.INITIALIZATION"
+          ]
+        },
+        "receipts": []
+      },
+      {
+        "schema_version": "block-uni-1",
+        "block_id": "fed.learn.integrity.001",
+        "metadata": {
+          "title": "Federated Integrity - Round Completion",
+          "description": "Verify federated round completes correctly",
+          "created_at": "2026-01-16T00:00:00Z",
+          "authors": [
+            "HyperSync Test Suite"
+          ],
+          "tags": [
+            "integrity",
+            "round",
+            "aggregation"
+          ]
+        },
+        "integrity": {
+          "manifest": [
+            {
+              "path": "test_fed_round.py",
+              "sha256": "placeholder_hash_202",
+              "role": "program"
+            }
+          ],
+          "dir_merkle_root": "placeholder_merkle_root_202",
+          "canonicalization": {
+            "field_order": "declared",
+            "byte_encoding": "utf8",
+            "float_format": "scientific",
+            "normalize_sign": true
+          },
+          "integrity_policy": {
+            "must_match_manifest": true,
+            "deny_unknown_files": true,
+            "allow_out_of_dir": false
+          }
+        },
+        "environment": {
+          "os": "linux",
+          "arch": "x86_64",
+          "accel": "cpu",
+          "precision": "fp64",
+          "deterministic_reductions": true,
+          "blas_threads": 1
+        },
+        "manifold": {
+          "model": "lorentz",
+          "dimension": 16,
+          "curvature": -1.0
+        },
+        "numeric_policy": {
+          "tolerance": 1e-05,
+          "max_iterations": 100
+        },
+        "substrate": {
+          "nodes": [
+            {
+              "node_id": "server",
+              "role": "aggregator"
+            },
+            {
+              "node_id": "client_0",
+              "role": "client"
+            },
+            {
+              "node_id": "client_1",
+              "role": "client"
+            },
+            {
+              "node_id": "client_2",
+              "role": "client"
+            }
+          ],
+          "links": [
+            {
+              "from": "server",
+              "to": "client_0"
+            },
+            {
+              "from": "server",
+              "to": "client_1"
+            },
+            {
+              "from": "server",
+              "to": "client_2"
+            }
+          ]
+        },
+        "semantics": {
+          "topics": [],
+          "policies": []
+        },
+        "fixtures": {},
+        "program": [
+          {
+            "step": 1,
+            "op": "generate.random_riemannian_model",
+            "params": {
+              "dimension": 16
+            }
+          },
+          {
+            "step": 2,
+            "op": "fed.initialize_federation",
+            "params": {
+              "config": {
+                "num_clients": 3,
+                "rounds": 1,
+                "clients_per_round": 3
+              },
+              "initial_model": "step_1.model"
+            }
+          },
+          {
+            "step": 3,
+            "op": "fed.register_client",
+            "params": {
+              "federation_id": "step_2.federation_id",
+              "client_certificate": {
+                "client_id": "client_0"
+              }
+            }
+          },
+          {
+            "step": 4,
+            "op": "fed.register_client",
+            "params": {
+              "federation_id": "step_2.federation_id",
+              "client_certificate": {
+                "client_id": "client_1"
+              }
+            }
+          },
+          {
+            "step": 5,
+            "op": "fed.register_client",
+            "params": {
+              "federation_id": "step_2.federation_id",
+              "client_certificate": {
+                "client_id": "client_2"
+              }
+            }
+          },
+          {
+            "step": 6,
+            "op": "fed.select_clients",
+            "params": {
+              "federation_id": "step_2.federation_id",
+              "round_number": 1
+            }
+          },
+          {
+            "step": 7,
+            "op": "fed.distribute_model",
+            "params": {
+              "federation_id": "step_2.federation_id",
+              "round_number": 1,
+              "target_clients": "step_6.selected_clients",
+              "model": "step_1.model"
+            }
+          },
+          {
+            "step": 8,
+            "op": "fed.simulate_local_training",
+            "params": {
+              "clients": "step_6.selected_clients",
+              "model": "step_1.model"
+            }
+          }
+        ],
+        "checks": [
+          {
+            "check_id": "clients_selected",
+            "kind": "fed.client_selection_valid",
+            "params": {
+              "selected": "step_6.selected_clients"
+            },
+            "expected": {
+              "count": 3
+            }
+          },
+          {
+            "check_id": "model_distributed",
+            "kind": "fed.distribution_success",
+            "params": {
+              "status": "step_7.distribution_status"
+            },
+            "expected": {
+              "all_received": true
+            }
+          }
+        ],
+        "coverage": {
+          "operations": [
+            "select_clients",
+            "distribute_model"
+          ],
+          "invariants": [
+            "INV.FED.ROUND_INTEGRITY"
+          ]
+        },
+        "receipts": []
+      },
+      {
+        "schema_version": "block-uni-1",
+        "block_id": "fed.learn.transport.001",
+        "metadata": {
+          "title": "Network Transport - Model Distribution",
+          "description": "Verify efficient model distribution to clients",
+          "created_at": "2026-01-16T00:00:00Z",
+          "authors": [
+            "HyperSync Test Suite"
+          ],
+          "tags": [
+            "transport",
+            "network",
+            "distribution"
+          ]
+        },
+        "integrity": {
+          "manifest": [
+            {
+              "path": "test_transport.py",
+              "sha256": "placeholder_hash_203",
+              "role": "program"
+            }
+          ],
+          "dir_merkle_root": "placeholder_merkle_root_203",
+          "canonicalization": {
+            "field_order": "declared",
+            "byte_encoding": "utf8",
+            "float_format": "scientific",
+            "normalize_sign": true
+          },
+          "integrity_policy": {
+            "must_match_manifest": true,
+            "deny_unknown_files": true,
+            "allow_out_of_dir": false
+          }
+        },
+        "environment": {
+          "os": "linux",
+          "arch": "x86_64",
+          "accel": "cpu",
+          "precision": "fp64",
+          "deterministic_reductions": true,
+          "blas_threads": 1
+        },
+        "manifold": {
+          "model": "lorentz",
+          "dimension": 64,
+          "curvature": -1.0
+        },
+        "numeric_policy": {
+          "tolerance": 1e-06,
+          "max_iterations": 100
+        },
+        "substrate": {
+          "nodes": [
+            {
+              "node_id": "server",
+              "role": "aggregator"
+            },
+            {
+              "node_id": "client_0",
+              "role": "client"
+            },
+            {
+              "node_id": "client_1",
+              "role": "client"
+            }
+          ],
+          "links": [
+            {
+              "from": "server",
+              "to": "client_0",
+              "latency_ms": 50,
+              "bandwidth_mbps": 100
+            },
+            {
+              "from": "server",
+              "to": "client_1",
+              "latency_ms": 100,
+              "bandwidth_mbps": 50
+            }
+          ]
+        },
+        "semantics": {
+          "topics": [],
+          "policies": []
+        },
+        "fixtures": {
+          "compression_configs": [
+            {
+              "enabled": false
+            },
+            {
+              "enabled": true,
+              "method": "topk",
+              "compression_ratio": 0.1
+            }
+          ]
+        },
+        "program": [
+          {
+            "step": 1,
+            "op": "generate.random_riemannian_model",
+            "params": {
+              "dimension": 64,
+              "num_params": 100000
+            }
+          },
+          {
+            "step": 2,
+            "op": "fed.initialize_federation",
+            "params": {
+              "config": {
+                "num_clients": 2,
+                "rounds": 1,
+                "clients_per_round": 2
+              },
+              "initial_model": "step_1.model",
+              "compression_config": "fixtures.compression_configs[1]"
+            }
+          },
+          {
+            "step": 3,
+            "op": "fed.distribute_model",
+            "params": {
+              "federation_id": "step_2.federation_id",
+              "round_number": 1,
+              "target_clients": [
+                "client_0",
+                "client_1"
+              ],
+              "model": "step_1.model"
+            }
+          }
+        ],
+        "checks": [
+          {
+            "check_id": "compression_effective",
+            "kind": "transport.compression_ratio",
+            "params": {
+              "bytes_sent": "step_3.bytes_sent",
+              "original_size": "step_1.model.size_bytes"
+            },
+            "expected": {
+              "ratio_less_than": 0.2
+            }
+          },
+          {
+            "check_id": "distribution_time_reasonable",
+            "kind": "transport.latency",
+            "params": {
+              "time_ms": "step_3.distribution_time_ms"
+            },
+            "expected": {
+              "max_ms": 5000
+            }
+          }
+        ],
+        "coverage": {
+          "operations": [
+            "distribute_model",
+            "compress_update"
+          ],
+          "invariants": [
+            "INV.TRANSPORT.COMPRESSION",
+            "INV.TRANSPORT.LATENCY"
+          ]
+        },
+        "receipts": []
+      },
+      {
+        "schema_version": "block-uni-1",
+        "block_id": "fed.learn.privacy.001",
+        "metadata": {
+          "title": "Privacy Validation - Differential Privacy",
+          "description": "Verify differential privacy guarantees",
+          "created_at": "2026-01-16T00:00:00Z",
+          "authors": [
+            "HyperSync Test Suite"
+          ],
+          "tags": [
+            "privacy",
+            "differential_privacy",
+            "dp"
+          ]
+        },
+        "integrity": {
+          "manifest": [
+            {
+              "path": "test_dp.py",
+              "sha256": "placeholder_hash_204",
+              "role": "program"
+            }
+          ],
+          "dir_merkle_root": "placeholder_merkle_root_204",
+          "canonicalization": {
+            "field_order": "declared",
+            "byte_encoding": "utf8",
+            "float_format": "scientific",
+            "normalize_sign": true
+          },
+          "integrity_policy": {
+            "must_match_manifest": true,
+            "deny_unknown_files": true,
+            "allow_out_of_dir": false
+          }
+        },
+        "environment": {
+          "os": "linux",
+          "arch": "x86_64",
+          "accel": "cpu",
+          "precision": "fp64",
+          "deterministic_reductions": true,
+          "blas_threads": 1
+        },
+        "manifold": {
+          "model": "lorentz",
+          "dimension": 16,
+          "curvature": -1.0
+        },
+        "numeric_policy": {
+          "tolerance": 1e-06,
+          "max_iterations": 100
+        },
+        "substrate": {
+          "nodes": [
+            {
+              "node_id": "compute_node",
+              "role": "compute"
+            }
+          ],
+          "links": []
+        },
+        "semantics": {
+          "topics": [],
+          "policies": [
+            {
+              "policy_id": "dp_policy",
+              "rules": [
+                "epsilon <= 1.0",
+                "delta <= 1e-5"
+              ]
+            }
+          ]
+        },
+        "fixtures": {
+          "privacy_config": {
+            "enabled": true,
+            "epsilon": 1.0,
+            "delta": 1e-05,
+            "noise_multiplier": 1.1,
+            "max_grad_norm": 1.0
+          }
+        },
+        "program": [
+          {
+            "step": 1,
+            "op": "generate.random_gradients",
+            "params": {
+              "dimension": 16,
+              "count": 100
+            }
+          },
+          {
+            "step": 2,
+            "op": "fed.clip_gradients",
+            "params": {
+              "gradients": "step_1.gradients",
+              "max_norm": "fixtures.privacy_config.max_grad_norm"
+            }
+          },
+          {
+            "step": 3,
+            "op": "fed.add_noise_for_dp",
+            "params": {
+              "aggregated_update": {
+                "gradients": "step_2.clipped"
+              },
+              "privacy_config": "fixtures.privacy_config",
+              "num_participating_clients": 10
+            }
+          },
+          {
+            "step": 4,
+            "op": "privacy.compute_epsilon",
+            "params": {
+              "noise_multiplier": "fixtures.privacy_config.noise_multiplier",
+              "sample_rate": 0.1,
+              "num_steps": 1
+            }
+          }
+        ],
+        "checks": [
+          {
+            "check_id": "dp_epsilon_satisfied",
+            "kind": "privacy.dp_epsilon_leq",
+            "params": {
+              "result": "step_4.epsilon",
+              "epsilon_budget": 1.0
+            },
+            "expected": {
+              "satisfied": true
+            }
+          },
+          {
+            "check_id": "gradients_clipped",
+            "kind": "numeric.all_norms_leq",
+            "params": {
+              "vectors": "step_2.clipped",
+              "bound": 1.0
+            },
+            "expected": {
+              "all_satisfy": true
+            }
+          },
+          {
+            "check_id": "noise_added",
+            "kind": "privacy.noise_magnitude",
+            "params": {
+              "noised": "step_3.noised_update",
+              "original": "step_2.clipped"
+            },
+            "expected": {
+              "noise_detected": true
+            }
+          }
+        ],
+        "coverage": {
+          "operations": [
+            "add_noise_for_dp"
+          ],
+          "invariants": [
+            "INV.PRIVACY.DP_GUARANTEE"
+          ]
+        },
+        "receipts": []
+      },
+      {
+        "schema_version": "block-uni-1",
+        "block_id": "fed.learn.fault.001",
+        "metadata": {
+          "title": "Fault Model - Client Dropout Handling",
+          "description": "Verify system handles client dropouts gracefully",
+          "created_at": "2026-01-16T00:00:00Z",
+          "authors": [
+            "HyperSync Test Suite"
+          ],
+          "tags": [
+            "fault",
+            "dropout",
+            "resilience"
+          ]
+        },
+        "integrity": {
+          "manifest": [
+            {
+              "path": "test_dropout.py",
+              "sha256": "placeholder_hash_205",
+              "role": "program"
+            }
+          ],
+          "dir_merkle_root": "placeholder_merkle_root_205",
+          "canonicalization": {
+            "field_order": "declared",
+            "byte_encoding": "utf8",
+            "float_format": "scientific",
+            "normalize_sign": true
+          },
+          "integrity_policy": {
+            "must_match_manifest": true,
+            "deny_unknown_files": true,
+            "allow_out_of_dir": false
+          }
+        },
+        "environment": {
+          "os": "linux",
+          "arch": "x86_64",
+          "accel": "cpu",
+          "precision": "fp64",
+          "deterministic_reductions": true,
+          "blas_threads": 1
+        },
+        "manifold": {
+          "model": "lorentz",
+          "dimension": 16,
+          "curvature": -1.0
+        },
+        "numeric_policy": {
+          "tolerance": 1e-06,
+          "max_iterations": 100
+        },
+        "substrate": {
+          "nodes": [
+            {
+              "node_id": "server",
+              "role": "aggregator"
+            },
+            {
+              "node_id": "client_0",
+              "role": "client"
+            },
+            {
+              "node_id": "client_1",
+              "role": "client"
+            },
+            {
+              "node_id": "client_2",
+              "role": "client",
+              "dropout_prob": 0.5
+            }
+          ],
+          "links": []
+        },
+        "semantics": {
+          "topics": [],
+          "policies": []
+        },
+        "fixtures": {
+          "secure_agg_config": {
+            "enabled": true,
+            "protocol": "bonawitz",
+            "threshold": 2,
+            "dropout_tolerance": 0.3
+          }
+        },
+        "program": [
+          {
+            "step": 1,
+            "op": "generate.random_riemannian_model",
+            "params": {
+              "dimension": 16
+            }
+          },
+          {
+            "step": 2,
+            "op": "fed.initialize_federation",
+            "params": {
+              "config": {
+                "num_clients": 3,
+                "rounds": 1,
+                "clients_per_round": 3
+              },
+              "initial_model": "step_1.model",
+              "secure_agg_config": "fixtures.secure_agg_config"
+            }
+          },
+          {
+            "step": 3,
+            "op": "fed.simulate_round_with_dropout",
+            "params": {
+              "federation_id": "step_2.federation_id",
+              "dropout_clients": [
+                "client_2"
+              ]
+            }
+          }
+        ],
+        "checks": [
+          {
+            "check_id": "aggregation_succeeds_despite_dropout",
+            "kind": "fed.aggregation_success",
+            "params": {
+              "result": "step_3"
+            },
+            "expected": {
+              "success": true
+            }
+          },
+          {
+            "check_id": "dropout_handled",
+            "kind": "fed.dropped_clients_count",
+            "params": {
+              "dropped": "step_3.dropped_clients"
+            },
+            "expected": {
+              "count": 1
+            }
+          }
+        ],
+        "coverage": {
+          "operations": [
+            "secure_aggregate"
+          ],
+          "invariants": [
+            "INV.FAULT.DROPOUT_TOLERANCE"
+          ]
+        },
+        "receipts": []
+      },
+      {
+        "schema_version": "block-uni-1",
+        "block_id": "fed.learn.riemannian.001",
+        "metadata": {
+          "title": "Riemannian FedAvg - Manifold Aggregation",
+          "description": "Verify Riemannian aggregation preserves manifold constraints",
+          "created_at": "2026-01-16T00:00:00Z",
+          "authors": [
+            "HyperSync Test Suite"
+          ],
+          "tags": [
+            "riemannian",
+            "aggregation",
+            "manifold"
+          ]
+        },
+        "integrity": {
+          "manifest": [
+            {
+              "path": "test_riemannian_fed.py",
+              "sha256": "placeholder_hash_206",
+              "role": "program"
+            }
+          ],
+          "dir_merkle_root": "placeholder_merkle_root_206",
+          "canonicalization": {
+            "field_order": "declared",
+            "byte_encoding": "utf8",
+            "float_format": "scientific",
+            "normalize_sign": true
+          },
+          "integrity_policy": {
+            "must_match_manifest": true,
+            "deny_unknown_files": true,
+            "allow_out_of_dir": false
+          }
+        },
+        "environment": {
+          "os": "linux",
+          "arch": "x86_64",
+          "accel": "cpu",
+          "precision": "fp64",
+          "deterministic_reductions": true,
+          "blas_threads": 1
+        },
+        "manifold": {
+          "model": "lorentz",
+          "dimension": 32,
+          "curvature": -1.0
+        },
+        "numeric_policy": {
+          "tolerance": 1e-05,
+          "max_iterations": 200
+        },
+        "substrate": {
+          "nodes": [
+            {
+              "node_id": "aggregator",
+              "role": "compute"
+            }
+          ],
+          "links": []
+        },
+        "semantics": {
+          "topics": [],
+          "policies": []
+        },
+        "fixtures": {
+          "num_client_models": 5
+        },
+        "program": [
+          {
+            "step": 1,
+            "op": "generate.random_lorentz_points",
+            "params": {
+              "count": 5,
+              "dimension": 32
+            }
+          },
+          {
+            "step": 2,
+            "op": "fed.riemannian_fedavg",
+            "params": {
+              "client_models": "step_1.points",
+              "weights": [
+                0.2,
+                0.2,
+                0.2,
+                0.2,
+                0.2
+              ],
+              "manifold_type": "lorentz",
+              "max_iterations": 100
+            }
+          },
+          {
+            "step": 3,
+            "op": "manifold.verify_constraint",
+            "params": {
+              "point": "step_2.aggregated_model"
+            }
+          }
+        ],
+        "checks": [
+          {
+            "check_id": "result_on_manifold",
+            "kind": "manifold.on_hyperboloid",
+            "params": {
+              "point": "step_2.aggregated_model"
+            },
+            "expected": {
+              "on_manifold": true,
+              "tolerance": 1e-05
+            }
+          },
+          {
+            "check_id": "frechet_mean_converged",
+            "kind": "numeric.less_than",
+            "params": {
+              "value": "step_2.convergence_error",
+              "threshold": 1e-05
+            },
+            "expected": {
+              "satisfied": true
+            }
+          },
+          {
+            "check_id": "minimizes_squared_distances",
+            "kind": "optimization.local_minimum",
+            "params": {
+              "point": "step_2.aggregated_model",
+              "objective": "sum_squared_distances"
+            },
+            "expected": {
+              "is_minimum": true,
+              "tolerance": 0.0001
+            }
+          }
+        ],
+        "coverage": {
+          "operations": [
+            "riemannian_fedavg"
+          ],
+          "invariants": [
+            "INV.MANIFOLD.CONSTRAINT",
+            "INV.OPTIMIZATION.FRECHET_MEAN"
+          ]
+        },
+        "receipts": []
+      },
+      {
+        "schema_version": "block-uni-1",
+        "block_id": "fed.learn.secure_agg.001",
+        "metadata": {
+          "title": "Secure Aggregation Protocol",
+          "description": "Verify secure aggregation reveals only sum",
+          "created_at": "2026-01-16T00:00:00Z",
+          "authors": [
+            "HyperSync Test Suite"
+          ],
+          "tags": [
+            "secure_aggregation",
+            "privacy",
+            "protocol"
+          ]
+        },
+        "integrity": {
+          "manifest": [
+            {
+              "path": "test_secure_agg.py",
+              "sha256": "placeholder_hash_207",
+              "role": "program"
+            }
+          ],
+          "dir_merkle_root": "placeholder_merkle_root_207",
+          "canonicalization": {
+            "field_order": "declared",
+            "byte_encoding": "utf8",
+            "float_format": "scientific",
+            "normalize_sign": true
+          },
+          "integrity_policy": {
+            "must_match_manifest": true,
+            "deny_unknown_files": true,
+            "allow_out_of_dir": false
+          }
+        },
+        "environment": {
+          "os": "linux",
+          "arch": "x86_64",
+          "accel": "cpu",
+          "precision": "fp64",
+          "deterministic_reductions": true,
+          "blas_threads": 1
+        },
+        "manifold": {
+          "model": "lorentz",
+          "dimension": 16,
+          "curvature": -1.0
+        },
+        "numeric_policy": {
+          "tolerance": 1e-08,
+          "max_iterations": 100
+        },
+        "substrate": {
+          "nodes": [
+            {
+              "node_id": "server",
+              "role": "aggregator"
+            },
+            {
+              "node_id": "client_0",
+              "role": "client"
+            },
+            {
+              "node_id": "client_1",
+              "role": "client"
+            },
+            {
+              "node_id": "client_2",
+              "role": "client"
+            }
+          ],
+          "links": []
+        },
+        "semantics": {
+          "topics": [],
+          "policies": []
+        },
+        "fixtures": {
+          "client_updates": [
+            {
+              "values": [
+                1.0,
+                2.0,
+                3.0
+              ]
+            },
+            {
+              "values": [
+                4.0,
+                5.0,
+                6.0
+              ]
+            },
+            {
+              "values": [
+                7.0,
+                8.0,
+                9.0
+              ]
+            }
+          ],
+          "expected_sum": [
+            12.0,
+            15.0,
+            18.0
+          ]
+        },
+        "program": [
+          {
+            "step": 1,
+            "op": "fed.key_agreement",
+            "params": {
+              "parties": [
+                "client_0",
+                "client_1",
+                "client_2"
+              ]
+            }
+          },
+          {
+            "step": 2,
+            "op": "fed.encrypt_update",
+            "params": {
+              "local_update": "fixtures.client_updates[0]",
+              "shared_masks": "step_1.masks[0]"
+            }
+          },
+          {
+            "step": 3,
+            "op": "fed.encrypt_update",
+            "params": {
+              "local_update": "fixtures.client_updates[1]",
+              "shared_masks": "step_1.masks[1]"
+            }
+          },
+          {
+            "step": 4,
+            "op": "fed.encrypt_update",
+            "params": {
+              "local_update": "fixtures.client_updates[2]",
+              "shared_masks": "step_1.masks[2]"
+            }
+          },
+          {
+            "step": 5,
+            "op": "fed.secure_aggregate",
+            "params": {
+              "encrypted_updates": [
+                "step_2",
+                "step_3",
+                "step_4"
+              ],
+              "secure_agg_config": {
+                "threshold": 3
+              }
+            }
+          }
+        ],
+        "checks": [
+          {
+            "check_id": "sum_correct",
+            "kind": "numeric.array_equals",
+            "params": {
+              "computed": "step_5.aggregated_update.values",
+              "expected": "fixtures.expected_sum"
+            },
+            "expected": {
+              "equal": true,
+              "tolerance": 1e-08
+            }
+          },
+          {
+            "check_id": "individual_values_hidden",
+            "kind": "security.no_individual_leakage",
+            "params": {
+              "protocol_transcript": "step_5.transcript"
+            },
+            "expected": {
+              "hidden": true
+            }
+          }
+        ],
+        "coverage": {
+          "operations": [
+            "encrypt_update",
+            "secure_aggregate"
+          ],
+          "invariants": [
+            "INV.SECURE_AGG.CORRECTNESS",
+            "INV.SECURE_AGG.PRIVACY"
+          ]
+        },
+        "receipts": []
+      }
+    ]
+  },
+  "implementation_notes": {
+    "security_considerations": [
+      "Use authenticated channels for client-server communication",
+      "Implement certificate pinning for client authentication",
+      "Sanitize model updates to prevent poisoning attacks",
+      "Apply robust aggregation against Byzantine clients"
+    ],
+    "performance_optimization": [
+      "Use gradient compression for bandwidth-constrained clients",
+      "Implement asynchronous training for heterogeneous clients",
+      "Cache common computations across rounds",
+      "Use momentum-based aggregation for faster convergence"
+    ],
+    "privacy_considerations": [
+      "Track privacy budget across all rounds",
+      "Implement privacy amplification via subsampling",
+      "Use local differential privacy when central DP insufficient",
+      "Audit gradient values for potential memorization"
+    ],
+    "deployment_guidance": [
+      "Set appropriate timeouts for client responses",
+      "Implement exponential backoff for failed communications",
+      "Monitor for client drift and data distribution shifts",
+      "Checkpoint frequently for fault tolerance"
+    ]
+  }
+}

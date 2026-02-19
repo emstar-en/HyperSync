@@ -1,0 +1,1029 @@
+{
+  "version": "1.0.0",
+  "namespace": "hypersync.ui.assembly",
+  "description": "Dynamic widget assembly and composition system. Assembles complex widgets from primitives, manages composition, data binding, interaction wiring, and lifecycle. Enables runtime UI construction and modification.",
+  
+  "types": {
+    "AssembledWidget": {
+      "description": "Dynamically assembled widget",
+      "fields": {
+        "widget_id": {
+          "type": "string",
+          "description": "Unique widget identifier",
+          "required": true
+        },
+        "base_primitive": {
+          "type": "Primitive",
+          "description": "Base primitive component",
+          "required": true
+        },
+        "child_widgets": {
+          "type": "array<AssembledWidget>",
+          "description": "Child widgets in composition tree",
+          "required": false
+        },
+        "layout_config": {
+          "type": "LayoutConfig",
+          "description": "Layout configuration",
+          "required": true
+        },
+        "data_bindings": {
+          "type": "array<DataBinding>",
+          "description": "Data bindings",
+          "required": false
+        },
+        "interactions": {
+          "type": "array<Interaction>",
+          "description": "Interaction handlers",
+          "required": false
+        },
+        "theme": {
+          "type": "Theme",
+          "description": "Applied theme",
+          "required": false
+        },
+        "state": {
+          "type": "WidgetState",
+          "description": "Current widget state",
+          "required": true
+        }
+      }
+    },
+    
+    "LayoutConfig": {
+      "description": "Widget layout configuration",
+      "fields": {
+        "layout_type": {
+          "type": "LayoutType",
+          "description": "Type of layout",
+          "required": true
+        },
+        "direction": {
+          "type": "Direction",
+          "description": "Layout direction (horizontal, vertical)",
+          "required": false
+        },
+        "alignment": {
+          "type": "Alignment",
+          "description": "Child alignment",
+          "required": false
+        },
+        "spacing": {
+          "type": "integer",
+          "description": "Spacing between children",
+          "required": false
+        },
+        "wrap": {
+          "type": "boolean",
+          "description": "Wrap children if needed",
+          "required": false
+        }
+      }
+    },
+    
+    "LayoutType": {
+      "description": "Type of layout",
+      "enum": ["none", "flow", "stack", "grid", "flex", "absolute"]
+    },
+    
+    "Direction": {
+      "description": "Layout direction",
+      "enum": ["horizontal", "vertical"]
+    },
+    
+    "DataBinding": {
+      "description": "Data binding for widget",
+      "fields": {
+        "binding_id": {
+          "type": "string",
+          "description": "Binding identifier",
+          "required": true
+        },
+        "source_path": {
+          "type": "string",
+          "description": "Source data path (dot notation)",
+          "required": true
+        },
+        "target_property": {
+          "type": "string",
+          "description": "Target widget property",
+          "required": true
+        },
+        "mode": {
+          "type": "BindingMode",
+          "description": "Binding mode",
+          "required": true
+        },
+        "transform": {
+          "type": "string",
+          "description": "Transform function name",
+          "required": false
+        },
+        "format": {
+          "type": "string",
+          "description": "Format string",
+          "required": false
+        }
+      }
+    },
+    
+    "BindingMode": {
+      "description": "Data binding mode",
+      "enum": ["one_way", "two_way", "one_time"]
+    },
+    
+    "Interaction": {
+      "description": "Widget interaction handler",
+      "fields": {
+        "interaction_id": {
+          "type": "string",
+          "description": "Interaction identifier",
+          "required": true
+        },
+        "event_type": {
+          "type": "string",
+          "description": "Event type (click, change, focus, etc.)",
+          "required": true
+        },
+        "handler": {
+          "type": "string",
+          "description": "Handler function name or code",
+          "required": true
+        },
+        "propagate": {
+          "type": "boolean",
+          "description": "Propagate event to parent",
+          "required": false
+        },
+        "capture": {
+          "type": "boolean",
+          "description": "Capture event (before children)",
+          "required": false
+        }
+      }
+    },
+    
+    "Theme": {
+      "description": "Widget theme configuration",
+      "fields": {
+        "theme_id": {
+          "type": "string",
+          "description": "Theme identifier",
+          "required": true
+        },
+        "name": {
+          "type": "string",
+          "description": "Theme name",
+          "required": true
+        },
+        "colors": {
+          "type": "map<string, Color>",
+          "description": "Theme colors",
+          "required": true
+        },
+        "styles": {
+          "type": "map<string, RenderStyle>",
+          "description": "Widget type styles",
+          "required": false
+        },
+        "fonts": {
+          "type": "map<string, string>",
+          "description": "Font configurations",
+          "required": false
+        }
+      }
+    },
+    
+    "WidgetState": {
+      "description": "Widget state management",
+      "fields": {
+        "visible": {
+          "type": "boolean",
+          "description": "Widget is visible",
+          "required": true
+        },
+        "enabled": {
+          "type": "boolean",
+          "description": "Widget is enabled",
+          "required": true
+        },
+        "focused": {
+          "type": "boolean",
+          "description": "Widget has focus",
+          "required": false
+        },
+        "dirty": {
+          "type": "boolean",
+          "description": "Widget needs re-render",
+          "required": true
+        },
+        "custom_state": {
+          "type": "map<string, any>",
+          "description": "Widget-specific state",
+          "required": false
+        }
+      }
+    },
+    
+    "WidgetTree": {
+      "description": "Widget composition tree",
+      "fields": {
+        "root": {
+          "type": "AssembledWidget",
+          "description": "Root widget",
+          "required": true
+        },
+        "total_widgets": {
+          "type": "integer",
+          "description": "Total widgets in tree",
+          "required": true
+        },
+        "max_depth": {
+          "type": "integer",
+          "description": "Maximum tree depth",
+          "required": true
+        },
+        "dirty_widgets": {
+          "type": "array<string>",
+          "description": "Widget IDs needing update",
+          "required": false
+        }
+      }
+    },
+    
+    "CompositionResult": {
+      "description": "Result of widget composition",
+      "fields": {
+        "composed_widget": {
+          "type": "AssembledWidget",
+          "description": "Composed widget",
+          "required": true
+        },
+        "child_count": {
+          "type": "integer",
+          "description": "Number of children",
+          "required": true
+        },
+        "total_descendants": {
+          "type": "integer",
+          "description": "Total descendant count",
+          "required": true
+        }
+      }
+    },
+    
+    "ValidationResult": {
+      "description": "Widget tree validation result",
+      "fields": {
+        "valid": {
+          "type": "boolean",
+          "description": "Tree is valid",
+          "required": true
+        },
+        "errors": {
+          "type": "array<ValidationError>",
+          "description": "Validation errors",
+          "required": false
+        },
+        "warnings": {
+          "type": "array<string>",
+          "description": "Warnings",
+          "required": false
+        }
+      }
+    },
+    
+    "ValidationError": {
+      "description": "Widget validation error",
+      "fields": {
+        "widget_id": {
+          "type": "string",
+          "description": "Widget with error",
+          "required": true
+        },
+        "error_type": {
+          "type": "string",
+          "description": "Error type",
+          "required": true
+        },
+        "message": {
+          "type": "string",
+          "description": "Error message",
+          "required": true
+        }
+      }
+    },
+    
+    "OptimizationConfig": {
+      "description": "Widget tree optimization configuration",
+      "fields": {
+        "flatten": {
+          "type": "boolean",
+          "description": "Flatten unnecessary nesting",
+          "required": false
+        },
+        "merge_styles": {
+          "type": "boolean",
+          "description": "Merge duplicate styles",
+          "required": false
+        },
+        "cache_renders": {
+          "type": "boolean",
+          "description": "Cache widget renders",
+          "required": false
+        },
+        "lazy_children": {
+          "type": "boolean",
+          "description": "Lazy-load child widgets",
+          "required": false
+        }
+      }
+    },
+    
+    "SerializedTree": {
+      "description": "Serialized widget tree",
+      "fields": {
+        "version": {
+          "type": "string",
+          "description": "Serialization format version",
+          "required": true
+        },
+        "root_id": {
+          "type": "string",
+          "description": "Root widget ID",
+          "required": true
+        },
+        "widgets": {
+          "type": "map<string, any>",
+          "description": "Widget data by ID",
+          "required": true
+        },
+        "tree_structure": {
+          "type": "map<string, array<string>>",
+          "description": "Parent-child relationships",
+          "required": true
+        },
+        "metadata": {
+          "type": "map<string, any>",
+          "description": "Additional metadata",
+          "required": false
+        }
+      }
+    }
+  },
+  
+  "operations": {
+    "assemble_widget": {
+      "description": "Assemble widget from primitives with configuration, state initialization, and lifecycle setup.",
+      "inputs": {
+        "primitive": {
+          "type": "Primitive",
+          "description": "Base primitive",
+          "required": true
+        },
+        "layout": {
+          "type": "LayoutConfig",
+          "description": "Layout configuration",
+          "required": false
+        },
+        "theme": {
+          "type": "Theme",
+          "description": "Theme to apply",
+          "required": false
+        },
+        "initial_state": {
+          "type": "WidgetState",
+          "description": "Initial state",
+          "required": false
+        }
+      },
+      "outputs": {
+        "widget": {
+          "type": "AssembledWidget",
+          "description": "Assembled widget"
+        }
+      },
+      "errors": {
+        "ASSEMBLY_FAILED": "Failed to assemble widget",
+        "INVALID_PRIMITIVE": "Primitive is invalid",
+        "THEME_APPLICATION_FAILED": "Failed to apply theme"
+      }
+    },
+    
+    "compose_layout": {
+      "description": "Compose layout from multiple widgets with automatic positioning and sizing.",
+      "inputs": {
+        "widgets": {
+          "type": "array<AssembledWidget>",
+          "description": "Widgets to compose",
+          "required": true
+        },
+        "layout": {
+          "type": "LayoutConfig",
+          "description": "Layout configuration",
+          "required": true
+        },
+        "bounds": {
+          "type": "Bounds",
+          "description": "Container bounds",
+          "required": true
+        }
+      },
+      "outputs": {
+        "result": {
+          "type": "CompositionResult",
+          "description": "Composition result"
+        },
+        "calculated_bounds": {
+          "type": "array<Bounds>",
+          "description": "Calculated bounds for each widget"
+        }
+      },
+      "errors": {
+        "COMPOSITION_FAILED": "Failed to compose layout",
+        "INSUFFICIENT_SPACE": "Not enough space for widgets",
+        "LAYOUT_CONFLICT": "Layout configuration conflicts"
+      }
+    },
+    
+    "wire_interactions": {
+      "description": "Wire widget interactions and event handlers with propagation and capture support.",
+      "inputs": {
+        "widget": {
+          "type": "AssembledWidget",
+          "description": "Widget to wire",
+          "required": true
+        },
+        "interactions": {
+          "type": "array<Interaction>",
+          "description": "Interactions to wire",
+          "required": true
+        },
+        "recursive": {
+          "type": "boolean",
+          "description": "Wire child widgets recursively",
+          "required": false
+        }
+      },
+      "outputs": {
+        "wired_widget": {
+          "type": "AssembledWidget",
+          "description": "Widget with wired interactions"
+        },
+        "handler_count": {
+          "type": "integer",
+          "description": "Number of handlers wired"
+        }
+      },
+      "errors": {
+        "WIRING_FAILED": "Failed to wire interactions",
+        "INVALID_HANDLER": "Handler function not found",
+        "EVENT_TYPE_UNKNOWN": "Event type not recognized"
+      }
+    },
+    
+    "apply_theme": {
+      "description": "Apply theme to widget and optionally all descendants with style inheritance.",
+      "inputs": {
+        "widget": {
+          "type": "AssembledWidget",
+          "description": "Widget to theme",
+          "required": true
+        },
+        "theme": {
+          "type": "Theme",
+          "description": "Theme to apply",
+          "required": true
+        },
+        "recursive": {
+          "type": "boolean",
+          "description": "Apply to children",
+          "required": false
+        },
+        "override_custom": {
+          "type": "boolean",
+          "description": "Override custom styles",
+          "required": false
+        }
+      },
+      "outputs": {
+        "themed_widget": {
+          "type": "AssembledWidget",
+          "description": "Themed widget"
+        },
+        "widgets_themed": {
+          "type": "integer",
+          "description": "Number of widgets themed"
+        }
+      },
+      "errors": {
+        "THEME_APPLICATION_FAILED": "Failed to apply theme",
+        "INVALID_THEME": "Theme configuration is invalid"
+      }
+    },
+    
+    "bind_data": {
+      "description": "Bind data to widget properties with transform functions and format strings.",
+      "inputs": {
+        "widget": {
+          "type": "AssembledWidget",
+          "description": "Widget to bind",
+          "required": true
+        },
+        "bindings": {
+          "type": "array<DataBinding>",
+          "description": "Data bindings",
+          "required": true
+        },
+        "data_source": {
+          "type": "map<string, any>",
+          "description": "Data source object",
+          "required": true
+        }
+      },
+      "outputs": {
+        "bound_widget": {
+          "type": "AssembledWidget",
+          "description": "Widget with data bindings"
+        },
+        "binding_count": {
+          "type": "integer",
+          "description": "Number of bindings created"
+        }
+      },
+      "errors": {
+        "BINDING_FAILED": "Failed to bind data",
+        "SOURCE_PATH_INVALID": "Source path does not exist",
+        "TARGET_PROPERTY_INVALID": "Target property does not exist",
+        "TRANSFORM_FAILED": "Transform function failed"
+      }
+    },
+    
+    "update_widget": {
+      "description": "Update widget dynamically (state, properties, children) with minimal re-rendering.",
+      "inputs": {
+        "widget_id": {
+          "type": "string",
+          "description": "Widget to update",
+          "required": true
+        },
+        "updates": {
+          "type": "map<string, any>",
+          "description": "Property updates",
+          "required": true
+        },
+        "trigger_render": {
+          "type": "boolean",
+          "description": "Trigger re-render",
+          "required": false
+        }
+      },
+      "outputs": {
+        "updated_widget": {
+          "type": "AssembledWidget",
+          "description": "Updated widget"
+        },
+        "render_required": {
+          "type": "boolean",
+          "description": "Re-render is required"
+        }
+      },
+      "errors": {
+        "UPDATE_FAILED": "Failed to update widget",
+        "WIDGET_NOT_FOUND": "Widget ID not found",
+        "INVALID_PROPERTY": "Property does not exist"
+      }
+    },
+    
+    "destroy_widget": {
+      "description": "Destroy widget with cleanup (unbind data, remove handlers, free resources).",
+      "inputs": {
+        "widget_id": {
+          "type": "string",
+          "description": "Widget to destroy",
+          "required": true
+        },
+        "recursive": {
+          "type": "boolean",
+          "description": "Destroy children recursively",
+          "required": false
+        }
+      },
+      "outputs": {
+        "destroyed": {
+          "type": "boolean",
+          "description": "Widget was destroyed"
+        },
+        "widgets_destroyed": {
+          "type": "integer",
+          "description": "Number of widgets destroyed"
+        },
+        "resources_freed": {
+          "type": "integer",
+          "description": "Bytes of resources freed"
+        }
+      },
+      "errors": {
+        "DESTROY_FAILED": "Failed to destroy widget",
+        "WIDGET_NOT_FOUND": "Widget ID not found"
+      }
+    },
+    
+    "clone_widget": {
+      "description": "Clone widget instance with option to deep clone children and reset state.",
+      "inputs": {
+        "widget": {
+          "type": "AssembledWidget",
+          "description": "Widget to clone",
+          "required": true
+        },
+        "deep": {
+          "type": "boolean",
+          "description": "Deep clone (including children)",
+          "required": false
+        },
+        "reset_state": {
+          "type": "boolean",
+          "description": "Reset state to initial",
+          "required": false
+        },
+        "new_id": {
+          "type": "boolean",
+          "description": "Generate new widget IDs",
+          "required": false
+        }
+      },
+      "outputs": {
+        "cloned": {
+          "type": "AssembledWidget",
+          "description": "Cloned widget"
+        },
+        "widgets_cloned": {
+          "type": "integer",
+          "description": "Number of widgets cloned (if deep)"
+        }
+      },
+      "errors": {
+        "CLONE_FAILED": "Failed to clone widget",
+        "DEEP_CLONE_ERROR": "Deep clone encountered error"
+      }
+    },
+    
+    "serialize_widget_tree": {
+      "description": "Serialize widget tree to portable format for storage or transmission.",
+      "inputs": {
+        "tree": {
+          "type": "WidgetTree",
+          "description": "Widget tree to serialize",
+          "required": true
+        },
+        "include_state": {
+          "type": "boolean",
+          "description": "Include widget state",
+          "required": false
+        },
+        "compact": {
+          "type": "boolean",
+          "description": "Use compact format",
+          "required": false
+        }
+      },
+      "outputs": {
+        "serialized": {
+          "type": "SerializedTree",
+          "description": "Serialized tree"
+        },
+        "size_bytes": {
+          "type": "integer",
+          "description": "Serialized size"
+        }
+      },
+      "errors": {
+        "SERIALIZATION_FAILED": "Failed to serialize tree",
+        "TREE_TOO_LARGE": "Tree exceeds maximum serialization size"
+      }
+    },
+    
+    "deserialize_widget_tree": {
+      "description": "Deserialize widget tree from serialized format with validation and reconstruction.",
+      "inputs": {
+        "serialized": {
+          "type": "SerializedTree",
+          "description": "Serialized tree",
+          "required": true
+        },
+        "validate": {
+          "type": "boolean",
+          "description": "Validate before deserializing",
+          "required": false
+        }
+      },
+      "outputs": {
+        "tree": {
+          "type": "WidgetTree",
+          "description": "Deserialized widget tree"
+        },
+        "widgets_created": {
+          "type": "integer",
+          "description": "Number of widgets created"
+        }
+      },
+      "errors": {
+        "DESERIALIZATION_FAILED": "Failed to deserialize tree",
+        "INVALID_FORMAT": "Serialized format is invalid",
+        "VERSION_INCOMPATIBLE": "Format version not supported"
+      }
+    },
+    
+    "validate_widget_tree": {
+      "description": "Validate widget tree for correctness (structure, bindings, references, cycles).",
+      "inputs": {
+        "tree": {
+          "type": "WidgetTree",
+          "description": "Tree to validate",
+          "required": true
+        },
+        "strict": {
+          "type": "boolean",
+          "description": "Strict validation",
+          "required": false
+        }
+      },
+      "outputs": {
+        "result": {
+          "type": "ValidationResult",
+          "description": "Validation results"
+        }
+      },
+      "errors": {
+        "VALIDATION_FAILED": "Validation process failed"
+      }
+    },
+    
+    "optimize_widget_tree": {
+      "description": "Optimize widget tree for performance (flatten, merge, cache) with configurable strategies.",
+      "inputs": {
+        "tree": {
+          "type": "WidgetTree",
+          "description": "Tree to optimize",
+          "required": true
+        },
+        "config": {
+          "type": "OptimizationConfig",
+          "description": "Optimization configuration",
+          "required": false
+        }
+      },
+      "outputs": {
+        "optimized_tree": {
+          "type": "WidgetTree",
+          "description": "Optimized tree"
+        },
+        "optimizations": {
+          "type": "array<string>",
+          "description": "Optimizations applied"
+        },
+        "performance_gain": {
+          "type": "float",
+          "description": "Estimated performance improvement (%)"
+        }
+      },
+      "errors": {
+        "OPTIMIZATION_FAILED": "Failed to optimize tree",
+        "NO_OPTIMIZATIONS": "No optimizations possible"
+      }
+    }
+  },
+  
+  "documentation": {
+    "overview": "Dynamic Widget Assembly enables runtime construction of complex UI from primitives. Supports composition, data binding, theming, and lifecycle management for terminal-native interfaces.",
+    
+    "assembly_pipeline": [
+      "1. Create base primitive (render_box, render_button, etc.)",
+      "2. Assemble widget from primitive (assemble_widget)",
+      "3. Compose with other widgets (compose_layout)",
+      "4. Apply theme (apply_theme)",
+      "5. Bind data sources (bind_data)",
+      "6. Wire interactions (wire_interactions)",
+      "7. Validate tree (validate_widget_tree)",
+      "8. Optimize (optimize_widget_tree)",
+      "9. Render to terminal",
+      "10. Handle updates (update_widget)"
+    ],
+    
+    "composition_patterns": {
+      "container_content": {
+        "description": "Container with content children",
+        "structure": "Panel → [Header, Content, Footer]",
+        "use_case": "Standard panel layout"
+      },
+      "list_items": {
+        "description": "Repeated item pattern",
+        "structure": "List → [Item, Item, Item, ...]",
+        "use_case": "Dynamic lists, menus"
+      },
+      "form_fields": {
+        "description": "Form with labeled fields",
+        "structure": "Form → [Label+Input, Label+Input, ...]",
+        "use_case": "Data entry forms"
+      },
+      "split_view": {
+        "description": "Split layout",
+        "structure": "Split → [Left Panel, Right Panel]",
+        "use_case": "Side-by-side comparison"
+      },
+      "tabbed": {
+        "description": "Tabbed interface",
+        "structure": "Tabs → TabBar + [TabPanel, TabPanel, ...]",
+        "use_case": "Multi-page interfaces"
+      }
+    },
+    
+    "layout_system": {
+      "description": "Flexible layout engine for widget positioning",
+      "types": {
+        "flow": "Natural flow layout, left-to-right or top-to-bottom",
+        "stack": "Stacked layout, widgets on top of each other",
+        "grid": "Grid layout with rows and columns",
+        "flex": "Flexible box layout with grow/shrink",
+        "absolute": "Absolute positioning, manual coordinates"
+      },
+      "algorithm": "Calculate bounds → Position children → Handle overflow → Apply spacing",
+      "responsiveness": "Layouts adapt to terminal size changes"
+    },
+    
+    "data_binding": {
+      "description": "Connect data sources to widget properties",
+      "modes": {
+        "one_way": "Data → Widget (read-only)",
+        "two_way": "Data ↔ Widget (sync both directions)",
+        "one_time": "Data → Widget once (snapshot)"
+      },
+      "path_syntax": "Dot notation (e.g., 'user.name', 'data.items[0].value')",
+      "transforms": "Apply functions to transform data (e.g., format dates, calculate)",
+      "format_strings": "String formatting for display (e.g., '{0:02d}:{1:02d}')",
+      "reactivity": "Automatic updates when data changes (for one_way and two_way)"
+    },
+    
+    "interaction_wiring": {
+      "description": "Event handling and user interactions",
+      "events": [
+        "click - Mouse click or Enter key",
+        "change - Value changed",
+        "focus - Widget gained focus",
+        "blur - Widget lost focus",
+        "keypress - Key pressed while focused",
+        "submit - Form submitted"
+      ],
+      "propagation": {
+        "bubble": "Event bubbles up to parent (default)",
+        "capture": "Event captured before children",
+        "stop": "Stop propagation to prevent bubbling"
+      },
+      "handlers": "Functions called on events, receive event data"
+    },
+    
+    "theming": {
+      "description": "Consistent styling across widgets",
+      "theme_structure": {
+        "colors": "Named colors (primary, secondary, background, etc.)",
+        "styles": "Widget type styles (all buttons, all inputs, etc.)",
+        "fonts": "Font configurations (if terminal supports)"
+      },
+      "inheritance": "Child widgets inherit parent theme",
+      "override": "Individual widgets can override theme",
+      "dynamic": "Themes can be switched at runtime",
+      "examples": ["dark_theme", "light_theme", "high_contrast", "custom"]
+    },
+    
+    "state_management": {
+      "description": "Widget state tracking and updates",
+      "standard_state": {
+        "visible": "Widget is rendered",
+        "enabled": "Widget accepts interaction",
+        "focused": "Widget has keyboard focus",
+        "dirty": "Widget needs re-rendering"
+      },
+      "custom_state": "Widget-specific state (form values, selected items, etc.)",
+      "updates": "State changes trigger re-rendering",
+      "immutability": "State updates create new state (functional approach)"
+    },
+    
+    "lifecycle": {
+      "description": "Widget lifecycle management",
+      "phases": {
+        "create": "assemble_widget - Widget is created",
+        "mount": "Widget added to tree, bindings activated",
+        "update": "update_widget - State/properties changed",
+        "render": "Widget rendered to terminal",
+        "unmount": "Widget removed from tree, cleanup starts",
+        "destroy": "destroy_widget - Resources freed"
+      },
+      "hooks": "Lifecycle hooks for custom logic",
+      "cleanup": "Important to prevent memory leaks"
+    },
+    
+    "tree_operations": {
+      "traversal": "Depth-first or breadth-first tree traversal",
+      "search": "Find widget by ID, type, property",
+      "modification": "Add, remove, replace nodes",
+      "dirty_tracking": "Track which widgets need update",
+      "batch_updates": "Batch multiple updates for efficiency"
+    },
+    
+    "serialization": {
+      "description": "Save and restore widget trees",
+      "use_cases": [
+        "Save UI state between sessions",
+        "Transmit UI over network",
+        "Undo/redo functionality",
+        "UI templates and presets"
+      ],
+      "format": "JSON-compatible structure",
+      "compression": "Can compress for storage",
+      "versioning": "Format version for compatibility"
+    },
+    
+    "optimization_techniques": {
+      "flattening": {
+        "description": "Remove unnecessary nesting",
+        "benefit": "Reduces tree depth, faster traversal"
+      },
+      "style_merging": {
+        "description": "Merge duplicate styles",
+        "benefit": "Reduces memory, faster rendering"
+      },
+      "render_caching": {
+        "description": "Cache rendered output",
+        "benefit": "Skip re-rendering unchanged widgets"
+      },
+      "lazy_children": {
+        "description": "Don't create off-screen children",
+        "benefit": "Faster initial load, less memory"
+      },
+      "virtual_scrolling": {
+        "description": "Only render visible items",
+        "benefit": "Handle large lists efficiently"
+      }
+    },
+    
+    "best_practices": [
+      "Keep tree shallow - avoid deep nesting",
+      "Use appropriate layout types",
+      "Batch updates to minimize re-renders",
+      "Clean up destroyed widgets properly",
+      "Cache frequently-used widgets",
+      "Validate trees during development",
+      "Optimize trees for production",
+      "Use data binding over manual updates",
+      "Theme consistently across app",
+      "Profile performance and optimize bottlenecks"
+    ],
+    
+    "performance_considerations": {
+      "tree_depth": "Deeper trees = slower traversal",
+      "widget_count": "More widgets = more memory",
+      "bindings": "Many bindings = update overhead",
+      "handlers": "Complex handlers = slower events",
+      "rendering": "Minimize re-renders with dirty tracking",
+      "target": "< 16ms per update cycle for smooth 60 FPS"
+    },
+    
+    "examples": {
+      "simple_form": {
+        "description": "Build a simple form",
+        "steps": [
+          "1. Create input widgets: name_input, email_input",
+          "2. Create button: submit_button",
+          "3. Compose layout: form_layout with inputs and button",
+          "4. Bind data: bind_data(name_input, 'user.name')",
+          "5. Wire interaction: submit_button.on_click → validate_and_submit",
+          "6. Apply theme: apply_theme(form, theme)",
+          "7. Render form"
+        ]
+      },
+      "data_table": {
+        "description": "Build data table with sorting",
+        "steps": [
+          "1. Create table widget from primitives",
+          "2. Bind data: bind_data(table, 'data.rows', mode='one_way')",
+          "3. Wire sorting: header.on_click → sort_by_column",
+          "4. Optimize: lazy load rows (virtual scrolling)",
+          "5. Update on data change: auto-updates via binding"
+        ]
+      },
+      "dynamic_dashboard": {
+        "description": "Build dashboard with live updates",
+        "steps": [
+          "1. Create grid layout: 2x2 panels",
+          "2. Create widgets: chart, table, metrics, status",
+          "3. Compose: place widgets in grid",
+          "4. Bind data: each widget to data source",
+          "5. Set update interval: refresh data every N seconds",
+          "6. Auto-update: bindings trigger widget updates",
+          "7. Optimize: cache unchanged widgets"
+        ]
+      }
+    }
+  }
+}

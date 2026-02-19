@@ -35,7 +35,7 @@
   "files": {
     "specs": {
       "location": "./specs",
-      "count": 0,
+      "count": 40,
       "format": ["json"],
       "index": "./specs/index.json"
     },

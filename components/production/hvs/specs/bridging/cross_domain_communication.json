@@ -1,0 +1,1661 @@
+{
+  "metadata": {
+    "name": "cross_domain_communication",
+    "version": "1.0.0",
+    "description": "Cross-domain communication protocols for HyperSync - inter-domain message passing, boundary crossing protocols, synchronization, and isolation guarantees for Lorentzian Domains",
+    "author": "HyperSync Framework",
+    "created": "2026-01-16",
+    "updated": "2026-01-16",
+    "stunir_version": "1.0",
+    "domain": "hypersync.domains.communication",
+    "dependencies": [
+      "lorentzian_domains",
+      "domain_addressing",
+      "domain_security",
+      "domain_operations",
+      "agua_geometry_spec"
+    ],
+    "protocol_version": "1.0",
+    "tags": [
+      "communication",
+      "messaging",
+      "synchronization",
+      "protocol",
+      "boundary",
+      "cross-domain"
+    ],
+    "license": {
+      "name": "AGPLv3",
+      "url": "https://www.gnu.org/licenses/agpl-3.0.html"
+    }
+  },
+  "types": {
+    "DomainMessage": {
+      "description": "Message passed between domains",
+      "base_type": "object",
+      "properties": {
+        "message_id": {
+          "type": "string",
+          "required": true
+        },
+        "source_domain": {
+          "type": "DomainAddress",
+          "required": true
+        },
+        "target_domain": {
+          "type": "DomainAddress",
+          "required": true
+        },
+        "source_entity": {
+          "type": "EntityAddress",
+          "required": false
+        },
+        "target_entity": {
+          "type": "EntityAddress",
+          "required": false
+        },
+        "message_type": {
+          "type": "MessageType",
+          "required": true
+        },
+        "payload": {
+          "type": "MessagePayload",
+          "required": true
+        },
+        "headers": {
+          "type": "MessageHeaders"
+        },
+        "routing_info": {
+          "type": "RoutingInfo"
+        },
+        "created_at": {
+          "type": "Timestamp",
+          "required": true
+        },
+        "expires_at": {
+          "type": "Timestamp"
+        },
+        "priority": {
+          "type": "enum",
+          "values": [
+            "LOW",
+            "NORMAL",
+            "HIGH",
+            "CRITICAL"
+          ],
+          "default": "NORMAL"
+        }
+      }
+    },
+    "MessageType": {
+      "description": "Type of cross-domain message",
+      "base_type": "enum",
+      "values": [
+        "REQUEST",
+        "RESPONSE",
+        "EVENT",
+        "NOTIFICATION",
+        "SYNC",
+        "HEARTBEAT",
+        "CONTROL"
+      ]
+    },
+    "MessagePayload": {
+      "description": "Payload of a domain message",
+      "base_type": "object",
+      "properties": {
+        "content_type": {
+          "type": "string",
+          "default": "application/json"
+        },
+        "encoding": {
+          "type": "enum",
+          "values": [
+            "RAW",
+            "BASE64",
+            "GZIP",
+            "ENCRYPTED"
+          ],
+          "default": "RAW"
+        },
+        "data": {
+          "type": "any"
+        },
+        "schema_version": {
+          "type": "string"
+        },
+        "checksum": {
+          "type": "string"
+        }
+      }
+    },
+    "MessageHeaders": {
+      "description": "Headers for domain message",
+      "base_type": "object",
+      "properties": {
+        "correlation_id": {
+          "type": "string",
+          "description": "ID linking related messages"
+        },
+        "causation_id": {
+          "type": "string",
+          "description": "ID of message that caused this one"
+        },
+        "trace_id": {
+          "type": "string",
+          "description": "Distributed tracing ID"
+        },
+        "span_id": {
+          "type": "string"
+        },
+        "geometric_token": {
+          "type": "GeometricToken",
+          "description": "Authorization token for boundary crossing"
+        },
+        "hop_count": {
+          "type": "integer",
+          "default": 0
+        },
+        "max_hops": {
+          "type": "integer",
+          "default": 10
+        },
+        "custom": {
+          "type": "object"
+        }
+      }
+    },
+    "RoutingInfo": {
+      "description": "Routing information for message delivery",
+      "base_type": "object",
+      "properties": {
+        "route": {
+          "type": "RouteInfo"
+        },
+        "current_hop": {
+          "type": "integer"
+        },
+        "visited_domains": {
+          "type": "array",
+          "items": {
+            "type": "DomainAddress"
+          }
+        },
+        "remaining_path": {
+          "type": "array",
+          "items": {
+            "type": "DomainAddress"
+          }
+        }
+      }
+    },
+    "BoundaryCrossingRequest": {
+      "description": "Request to cross a domain boundary",
+      "base_type": "object",
+      "properties": {
+        "request_id": {
+          "type": "string"
+        },
+        "message": {
+          "type": "DomainMessage"
+        },
+        "crossing_point": {
+          "type": "Point4D"
+        },
+        "requested_at": {
+          "type": "Timestamp"
+        },
+        "timeout": {
+          "type": "Duration"
+        }
+      }
+    },
+    "BoundaryCrossingResult": {
+      "description": "Result of boundary crossing attempt",
+      "base_type": "object",
+      "properties": {
+        "request_id": {
+          "type": "string"
+        },
+        "success": {
+          "type": "boolean"
+        },
+        "crossed_at": {
+          "type": "Timestamp"
+        },
+        "actual_crossing_point": {
+          "type": "Point4D"
+        },
+        "latency_ms": {
+          "type": "number"
+        },
+        "failure_reason": {
+          "type": "string"
+        },
+        "transformed_message": {
+          "type": "DomainMessage",
+          "description": "Message after any transformations"
+        }
+      }
+    },
+    "SyncState": {
+      "description": "Synchronization state between domains",
+      "base_type": "object",
+      "properties": {
+        "domain_a": {
+          "type": "DomainAddress"
+        },
+        "domain_b": {
+          "type": "DomainAddress"
+        },
+        "sync_mode": {
+          "type": "enum",
+          "values": [
+            "FULL",
+            "INCREMENTAL",
+            "EVENTUAL",
+            "CAUSAL"
+          ]
+        },
+        "last_sync_time": {
+          "type": "Timestamp"
+        },
+        "sync_lag_ms": {
+          "type": "number"
+        },
+        "pending_changes": {
+          "type": "integer"
+        },
+        "conflict_count": {
+          "type": "integer"
+        },
+        "status": {
+          "type": "enum",
+          "values": [
+            "SYNCED",
+            "SYNCING",
+            "LAGGING",
+            "DIVERGED",
+            "ERROR"
+          ]
+        }
+      }
+    },
+    "Channel": {
+      "description": "Communication channel between domains",
+      "base_type": "object",
+      "properties": {
+        "channel_id": {
+          "type": "string"
+        },
+        "source_domain": {
+          "type": "DomainAddress"
+        },
+        "target_domain": {
+          "type": "DomainAddress"
+        },
+        "channel_type": {
+          "type": "enum",
+          "values": [
+            "UNIDIRECTIONAL",
+            "BIDIRECTIONAL",
+            "BROADCAST"
+          ]
+        },
+        "reliability": {
+          "type": "enum",
+          "values": [
+            "BEST_EFFORT",
+            "AT_LEAST_ONCE",
+            "AT_MOST_ONCE",
+            "EXACTLY_ONCE"
+          ]
+        },
+        "ordering": {
+          "type": "enum",
+          "values": [
+            "NONE",
+            "FIFO",
+            "CAUSAL",
+            "TOTAL"
+          ]
+        },
+        "state": {
+          "type": "enum",
+          "values": [
+            "OPENING",
+            "OPEN",
+            "CLOSING",
+            "CLOSED",
+            "ERROR"
+          ]
+        },
+        "geodesic_path": {
+          "type": "GeodesicPath",
+          "description": "Geometric path through domain boundaries"
+        },
+        "bandwidth_limit": {
+          "type": "number"
+        },
+        "created_at": {
+          "type": "Timestamp"
+        }
+      }
+    },
+    "IsolationGuarantee": {
+      "description": "Guarantee of isolation between domains",
+      "base_type": "object",
+      "properties": {
+        "guarantee_type": {
+          "type": "enum",
+          "values": [
+            "NO_DIRECT_COMMUNICATION",
+            "NO_INFORMATION_LEAK",
+            "NO_TIMING_CHANNEL",
+            "CAUSAL_ISOLATION",
+            "COMPLETE_ISOLATION"
+          ]
+        },
+        "domains": {
+          "type": "array",
+          "items": {
+            "type": "DomainAddress"
+          }
+        },
+        "proof": {
+          "type": "IsolationProof"
+        },
+        "verified_at": {
+          "type": "Timestamp"
+        },
+        "valid_until": {
+          "type": "Timestamp"
+        }
+      }
+    },
+    "SyncConflict": {
+      "description": "Conflict detected during synchronization",
+      "base_type": "object",
+      "properties": {
+        "conflict_id": {
+          "type": "string"
+        },
+        "entity_address": {
+          "type": "EntityAddress"
+        },
+        "domain_a_value": {
+          "type": "any"
+        },
+        "domain_b_value": {
+          "type": "any"
+        },
+        "domain_a_timestamp": {
+          "type": "Timestamp"
+        },
+        "domain_b_timestamp": {
+          "type": "Timestamp"
+        },
+        "resolution_strategy": {
+          "type": "enum",
+          "values": [
+            "LAST_WRITE_WINS",
+            "FIRST_WRITE_WINS",
+            "MERGE",
+            "MANUAL",
+            "CUSTOM"
+          ]
+        },
+        "resolved": {
+          "type": "boolean"
+        },
+        "resolved_value": {
+          "type": "any"
+        }
+      }
+    },
+    "MessageQueue": {
+      "description": "Queue for pending cross-domain messages",
+      "base_type": "object",
+      "properties": {
+        "queue_id": {
+          "type": "string"
+        },
+        "source_domain": {
+          "type": "DomainAddress"
+        },
+        "target_domain": {
+          "type": "DomainAddress"
+        },
+        "pending_count": {
+          "type": "integer"
+        },
+        "oldest_message_age": {
+          "type": "Duration"
+        },
+        "processing_rate": {
+          "type": "number",
+          "description": "Messages per second"
+        },
+        "max_size": {
+          "type": "integer"
+        }
+      }
+    },
+    "DeliveryReceipt": {
+      "description": "Receipt confirming message delivery",
+      "base_type": "object",
+      "properties": {
+        "message_id": {
+          "type": "string"
+        },
+        "delivered_at": {
+          "type": "Timestamp"
+        },
+        "delivered_to": {
+          "type": "DomainAddress"
+        },
+        "delivery_status": {
+          "type": "enum",
+          "values": [
+            "DELIVERED",
+            "ACKNOWLEDGED",
+            "PROCESSED",
+            "REJECTED"
+          ]
+        },
+        "signature": {
+          "type": "string"
+        }
+      }
+    },
+    "CommunicationPolicy": {
+      "description": "Policy governing cross-domain communication",
+      "base_type": "object",
+      "properties": {
+        "policy_id": {
+          "type": "string"
+        },
+        "source_pattern": {
+          "type": "WildcardAddress"
+        },
+        "target_pattern": {
+          "type": "WildcardAddress"
+        },
+        "allowed_message_types": {
+          "type": "array",
+          "items": {
+            "type": "MessageType"
+          }
+        },
+        "rate_limit": {
+          "type": "RateLimits"
+        },
+        "max_payload_size": {
+          "type": "integer"
+        },
+        "require_encryption": {
+          "type": "boolean"
+        },
+        "require_authentication": {
+          "type": "boolean"
+        },
+        "priority": {
+          "type": "integer"
+        }
+      }
+    },
+    "ProtocolNegotiation": {
+      "description": "Result of protocol negotiation between domains",
+      "base_type": "object",
+      "properties": {
+        "negotiation_id": {
+          "type": "string"
+        },
+        "source_domain": {
+          "type": "DomainAddress"
+        },
+        "target_domain": {
+          "type": "DomainAddress"
+        },
+        "agreed_protocol_version": {
+          "type": "string"
+        },
+        "agreed_encoding": {
+          "type": "string"
+        },
+        "agreed_compression": {
+          "type": "string"
+        },
+        "agreed_encryption": {
+          "type": "string"
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "operations": {
+    "send_message": {
+      "description": "Send a message to another domain",
+      "category": "messaging",
+      "inputs": {
+        "message": {
+          "type": "DomainMessage",
+          "required": true
+        },
+        "delivery_mode": {
+          "type": "enum",
+          "values": [
+            "FIRE_AND_FORGET",
+            "WAIT_FOR_DELIVERY",
+            "WAIT_FOR_ACK",
+            "WAIT_FOR_RESPONSE"
+          ],
+          "default": "WAIT_FOR_DELIVERY"
+        },
+        "timeout": {
+          "type": "Duration",
+          "default": "30s"
+        }
+      },
+      "outputs": {
+        "sent": {
+          "type": "boolean"
+        },
+        "message_id": {
+          "type": "string"
+        },
+        "delivery_receipt": {
+          "type": "DeliveryReceipt"
+        },
+        "response": {
+          "type": "DomainMessage",
+          "description": "Only if delivery_mode is WAIT_FOR_RESPONSE"
+        }
+      },
+      "preconditions": [
+        "Source domain is authorized to send to target",
+        "Message payload is valid",
+        "Route exists between domains"
+      ],
+      "postconditions": [
+        "Message is queued or delivered",
+        "Hop count incremented"
+      ],
+      "error_conditions": {
+        "UNAUTHORIZED": "Source not authorized to send to target",
+        "NO_ROUTE": "No route to target domain",
+        "PAYLOAD_TOO_LARGE": "Payload exceeds maximum size",
+        "TIMEOUT": "Delivery timed out",
+        "TARGET_UNAVAILABLE": "Target domain is unavailable",
+        "ISOLATED": "Domains are causally isolated"
+      }
+    },
+    "receive_message": {
+      "description": "Receive messages from other domains",
+      "category": "messaging",
+      "inputs": {
+        "domain_id": {
+          "type": "DomainIdentifier",
+          "required": true
+        },
+        "filters": {
+          "type": "object",
+          "properties": {
+            "source_domains": {
+              "type": "array",
+              "items": {
+                "type": "DomainAddress"
+              }
+            },
+            "message_types": {
+              "type": "array",
+              "items": {
+                "type": "MessageType"
+              }
+            },
+            "min_priority": {
+              "type": "string"
+            }
+          }
+        },
+        "max_messages": {
+          "type": "integer",
+          "default": 10
+        },
+        "timeout": {
+          "type": "Duration",
+          "default": "30s"
+        }
+      },
+      "outputs": {
+        "messages": {
+          "type": "array",
+          "items": {
+            "type": "DomainMessage"
+          }
+        },
+        "has_more": {
+          "type": "boolean"
+        }
+      },
+      "preconditions": [
+        "Domain exists",
+        "Caller has receive permission"
+      ],
+      "postconditions": [
+        "Messages are marked as received"
+      ],
+      "error_conditions": {
+        "DOMAIN_NOT_FOUND": "Domain not found",
+        "PERMISSION_DENIED": "Caller lacks receive permission"
+      }
+    },
+    "acknowledge_message": {
+      "description": "Acknowledge receipt of a message",
+      "category": "messaging",
+      "inputs": {
+        "message_id": {
+          "type": "string",
+          "required": true
+        },
+        "acknowledgment_type": {
+          "type": "enum",
+          "values": [
+            "RECEIVED",
+            "PROCESSED",
+            "REJECTED"
+          ],
+          "default": "RECEIVED"
+        },
+        "rejection_reason": {
+          "type": "string"
+        }
+      },
+      "outputs": {
+        "acknowledged": {
+          "type": "boolean"
+        },
+        "receipt": {
+          "type": "DeliveryReceipt"
+        }
+      },
+      "preconditions": [
+        "Message exists",
+        "Message was delivered to acknowledging domain"
+      ],
+      "postconditions": [
+        "Acknowledgment recorded",
+        "Sender notified if requested"
+      ],
+      "error_conditions": {
+        "MESSAGE_NOT_FOUND": "Message not found",
+        "ALREADY_ACKNOWLEDGED": "Message already acknowledged"
+      }
+    },
+    "open_channel": {
+      "description": "Open a persistent communication channel between domains",
+      "category": "channel",
+      "inputs": {
+        "source_domain": {
+          "type": "DomainIdentifier",
+          "required": true
+        },
+        "target_domain": {
+          "type": "DomainIdentifier",
+          "required": true
+        },
+        "channel_config": {
+          "type": "object",
+          "properties": {
+            "channel_type": {
+              "type": "string",
+              "default": "BIDIRECTIONAL"
+            },
+            "reliability": {
+              "type": "string",
+              "default": "AT_LEAST_ONCE"
+            },
+            "ordering": {
+              "type": "string",
+              "default": "FIFO"
+            },
+            "bandwidth_limit": {
+              "type": "number"
+            }
+          }
+        }
+      },
+      "outputs": {
+        "channel": {
+          "type": "Channel"
+        },
+        "negotiation_result": {
+          "type": "ProtocolNegotiation"
+        }
+      },
+      "preconditions": [
+        "Both domains exist",
+        "Communication is allowed by policy",
+        "Route exists"
+      ],
+      "postconditions": [
+        "Channel is OPEN",
+        "Both domains are aware of channel"
+      ],
+      "error_conditions": {
+        "DOMAIN_NOT_FOUND": "Domain not found",
+        "POLICY_VIOLATION": "Communication not allowed by policy",
+        "NEGOTIATION_FAILED": "Protocol negotiation failed",
+        "ISOLATED_DOMAINS": "Domains are causally isolated"
+      }
+    },
+    "close_channel": {
+      "description": "Close a communication channel",
+      "category": "channel",
+      "inputs": {
+        "channel_id": {
+          "type": "string",
+          "required": true
+        },
+        "reason": {
+          "type": "string"
+        },
+        "graceful": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "outputs": {
+        "closed": {
+          "type": "boolean"
+        },
+        "pending_messages_handled": {
+          "type": "integer"
+        }
+      },
+      "preconditions": [
+        "Channel exists"
+      ],
+      "postconditions": [
+        "Channel state is CLOSED",
+        "Resources released"
+      ],
+      "error_conditions": {
+        "CHANNEL_NOT_FOUND": "Channel not found",
+        "DRAIN_TIMEOUT": "Could not drain pending messages"
+      }
+    },
+    "send_on_channel": {
+      "description": "Send a message on an established channel",
+      "category": "channel",
+      "inputs": {
+        "channel_id": {
+          "type": "string",
+          "required": true
+        },
+        "payload": {
+          "type": "MessagePayload",
+          "required": true
+        },
+        "headers": {
+          "type": "MessageHeaders"
+        }
+      },
+      "outputs": {
+        "message_id": {
+          "type": "string"
+        },
+        "queued": {
+          "type": "boolean"
+        }
+      },
+      "preconditions": [
+        "Channel is OPEN",
+        "Payload is valid"
+      ],
+      "postconditions": [
+        "Message queued for delivery"
+      ],
+      "error_conditions": {
+        "CHANNEL_NOT_FOUND": "Channel not found",
+        "CHANNEL_NOT_OPEN": "Channel is not open",
+        "RATE_LIMITED": "Rate limit exceeded"
+      }
+    },
+    "request_boundary_crossing": {
+      "description": "Request permission to cross a domain boundary",
+      "category": "boundary",
+      "inputs": {
+        "request": {
+          "type": "BoundaryCrossingRequest",
+          "required": true
+        }
+      },
+      "outputs": {
+        "result": {
+          "type": "BoundaryCrossingResult"
+        }
+      },
+      "preconditions": [
+        "Source domain is valid",
+        "Target domain is valid",
+        "Boundary exists"
+      ],
+      "postconditions": [
+        "Request is processed",
+        "Result indicates success or failure"
+      ],
+      "error_conditions": {
+        "UNAUTHORIZED": "Crossing not authorized",
+        "BOUNDARY_CLOSED": "Boundary is currently closed",
+        "TIMEOUT": "Crossing request timed out",
+        "GEOMETRIC_VIOLATION": "Crossing violates geometric constraints"
+      }
+    },
+    "start_sync": {
+      "description": "Start synchronization between two domains",
+      "category": "synchronization",
+      "inputs": {
+        "domain_a": {
+          "type": "DomainIdentifier",
+          "required": true
+        },
+        "domain_b": {
+          "type": "DomainIdentifier",
+          "required": true
+        },
+        "sync_config": {
+          "type": "object",
+          "properties": {
+            "sync_mode": {
+              "type": "string",
+              "default": "INCREMENTAL"
+            },
+            "entities_to_sync": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "conflict_resolution": {
+              "type": "string",
+              "default": "LAST_WRITE_WINS"
+            }
+          }
+        }
+      },
+      "outputs": {
+        "sync_id": {
+          "type": "string"
+        },
+        "initial_state": {
+          "type": "SyncState"
+        }
+      },
+      "preconditions": [
+        "Both domains exist",
+        "Sync is not already active",
+        "Communication allowed"
+      ],
+      "postconditions": [
+        "Sync process started",
+        "Initial state captured"
+      ],
+      "error_conditions": {
+        "DOMAIN_NOT_FOUND": "Domain not found",
+        "SYNC_ALREADY_ACTIVE": "Sync already in progress",
+        "INCOMPATIBLE_SCHEMAS": "Domain schemas are incompatible"
+      }
+    },
+    "get_sync_state": {
+      "description": "Get current synchronization state",
+      "category": "synchronization",
+      "inputs": {
+        "domain_a": {
+          "type": "DomainIdentifier",
+          "required": true
+        },
+        "domain_b": {
+          "type": "DomainIdentifier",
+          "required": true
+        }
+      },
+      "outputs": {
+        "state": {
+          "type": "SyncState"
+        }
+      },
+      "preconditions": [
+        "Sync relationship exists"
+      ],
+      "postconditions": [],
+      "error_conditions": {
+        "NO_SYNC_RELATIONSHIP": "No sync relationship between domains"
+      }
+    },
+    "resolve_sync_conflict": {
+      "description": "Resolve a synchronization conflict",
+      "category": "synchronization",
+      "inputs": {
+        "conflict_id": {
+          "type": "string",
+          "required": true
+        },
+        "resolution": {
+          "type": "enum",
+          "values": [
+            "USE_A",
+            "USE_B",
+            "MERGE",
+            "CUSTOM"
+          ],
+          "required": true
+        },
+        "custom_value": {
+          "type": "any",
+          "description": "Custom resolved value if resolution is CUSTOM"
+        }
+      },
+      "outputs": {
+        "resolved": {
+          "type": "boolean"
+        },
+        "conflict": {
+          "type": "SyncConflict"
+        }
+      },
+      "preconditions": [
+        "Conflict exists",
+        "Conflict is unresolved"
+      ],
+      "postconditions": [
+        "Conflict is marked resolved",
+        "Resolved value propagated"
+      ],
+      "error_conditions": {
+        "CONFLICT_NOT_FOUND": "Conflict not found",
+        "ALREADY_RESOLVED": "Conflict already resolved",
+        "INVALID_RESOLUTION": "Resolution value is invalid"
+      }
+    },
+    "stop_sync": {
+      "description": "Stop synchronization between domains",
+      "category": "synchronization",
+      "inputs": {
+        "domain_a": {
+          "type": "DomainIdentifier",
+          "required": true
+        },
+        "domain_b": {
+          "type": "DomainIdentifier",
+          "required": true
+        },
+        "final_sync": {
+          "type": "boolean",
+          "default": true,
+          "description": "Perform final sync before stopping"
+        }
+      },
+      "outputs": {
+        "stopped": {
+          "type": "boolean"
+        },
+        "final_state": {
+          "type": "SyncState"
+        }
+      },
+      "preconditions": [
+        "Sync relationship exists"
+      ],
+      "postconditions": [
+        "Sync is stopped",
+        "Final state recorded"
+      ],
+      "error_conditions": {
+        "NO_SYNC_RELATIONSHIP": "No sync relationship",
+        "FINAL_SYNC_FAILED": "Final sync could not complete"
+      }
+    },
+    "verify_isolation_guarantee": {
+      "description": "Verify that isolation guarantees are maintained",
+      "category": "isolation",
+      "inputs": {
+        "domains": {
+          "type": "array",
+          "items": {
+            "type": "DomainIdentifier"
+          },
+          "required": true
+        },
+        "guarantee_type": {
+          "type": "string",
+          "required": true
+        }
+      },
+      "outputs": {
+        "guarantee": {
+          "type": "IsolationGuarantee"
+        },
+        "violations": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      },
+      "preconditions": [
+        "All domains exist"
+      ],
+      "postconditions": [
+        "Guarantee is verified or violations reported"
+      ],
+      "error_conditions": {
+        "DOMAIN_NOT_FOUND": "Domain not found"
+      }
+    },
+    "set_communication_policy": {
+      "description": "Set communication policy for cross-domain messaging",
+      "category": "policy",
+      "inputs": {
+        "policy": {
+          "type": "CommunicationPolicy",
+          "required": true
+        }
+      },
+      "outputs": {
+        "policy_id": {
+          "type": "string"
+        },
+        "effective_from": {
+          "type": "Timestamp"
+        }
+      },
+      "preconditions": [
+        "Policy is valid",
+        "Caller has policy management permission"
+      ],
+      "postconditions": [
+        "Policy is active"
+      ],
+      "error_conditions": {
+        "INVALID_POLICY": "Policy configuration is invalid",
+        "PERMISSION_DENIED": "Caller lacks permission"
+      }
+    },
+    "get_message_queue_status": {
+      "description": "Get status of message queues between domains",
+      "category": "monitoring",
+      "inputs": {
+        "source_domain": {
+          "type": "DomainIdentifier",
+          "required": true
+        },
+        "target_domain": {
+          "type": "DomainIdentifier",
+          "required": false
+        }
+      },
+      "outputs": {
+        "queues": {
+          "type": "array",
+          "items": {
+            "type": "MessageQueue"
+          }
+        }
+      },
+      "preconditions": [
+        "Source domain exists"
+      ],
+      "postconditions": [],
+      "error_conditions": {
+        "DOMAIN_NOT_FOUND": "Domain not found"
+      }
+    },
+    "negotiate_protocol": {
+      "description": "Negotiate communication protocol between domains",
+      "category": "protocol",
+      "inputs": {
+        "source_domain": {
+          "type": "DomainIdentifier",
+          "required": true
+        },
+        "target_domain": {
+          "type": "DomainIdentifier",
+          "required": true
+        },
+        "preferences": {
+          "type": "object",
+          "properties": {
+            "preferred_encoding": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "preferred_compression": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "preferred_encryption": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "required_capabilities": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "outputs": {
+        "negotiation": {
+          "type": "ProtocolNegotiation"
+        }
+      },
+      "preconditions": [
+        "Both domains exist",
+        "Communication is allowed"
+      ],
+      "postconditions": [
+        "Protocol parameters agreed"
+      ],
+      "error_conditions": {
+        "DOMAIN_NOT_FOUND": "Domain not found",
+        "NO_COMMON_PROTOCOL": "No compatible protocol found",
+        "CAPABILITY_NOT_SUPPORTED": "Required capability not supported"
+      }
+    },
+    "broadcast_to_children": {
+      "description": "Broadcast a message to all child domains",
+      "category": "messaging",
+      "inputs": {
+        "parent_domain": {
+          "type": "DomainIdentifier",
+          "required": true
+        },
+        "message": {
+          "type": "DomainMessage",
+          "required": true
+        },
+        "recursive": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "outputs": {
+        "sent_count": {
+          "type": "integer"
+        },
+        "failed_domains": {
+          "type": "array",
+          "items": {
+            "type": "DomainAddress"
+          }
+        }
+      },
+      "preconditions": [
+        "Parent domain exists",
+        "Has child domains"
+      ],
+      "postconditions": [
+        "Message sent to all children"
+      ],
+      "error_conditions": {
+        "DOMAIN_NOT_FOUND": "Domain not found",
+        "NO_CHILDREN": "Domain has no children"
+      }
+    }
+  },
+  "tests": {
+    "test_send_message_basic": {
+      "description": "Send basic message between domains",
+      "category": "unit",
+      "operation": "send_message",
+      "setup": {
+        "source_domain": "ld://acme/prod/service-a",
+        "target_domain": "ld://acme/prod/service-b"
+      },
+      "inputs": {
+        "message": {
+          "source_domain": "ld://acme/prod/service-a",
+          "target_domain": "ld://acme/prod/service-b",
+          "message_type": "REQUEST",
+          "payload": {
+            "data": {
+              "action": "get_status"
+            }
+          }
+        },
+        "delivery_mode": "WAIT_FOR_DELIVERY"
+      },
+      "expected": {
+        "sent": true
+      }
+    },
+    "test_send_message_isolated_domains": {
+      "description": "Cannot send message to isolated domain",
+      "category": "unit",
+      "operation": "send_message",
+      "setup": {
+        "source_domain": "ld://org-a/prod/domain-a",
+        "target_domain": "ld://org-b/prod/domain-b",
+        "isolated": true
+      },
+      "inputs": {
+        "message": {
+          "source_domain": "ld://org-a/prod/domain-a",
+          "target_domain": "ld://org-b/prod/domain-b",
+          "message_type": "REQUEST",
+          "payload": {}
+        }
+      },
+      "expected_error": "ISOLATED"
+    },
+    "test_open_channel": {
+      "description": "Open bidirectional channel between domains",
+      "category": "unit",
+      "operation": "open_channel",
+      "setup": {
+        "source_domain": "ld://acme/prod/service-a",
+        "target_domain": "ld://acme/prod/service-b"
+      },
+      "inputs": {
+        "source_domain": "ld://acme/prod/service-a",
+        "target_domain": "ld://acme/prod/service-b",
+        "channel_config": {
+          "channel_type": "BIDIRECTIONAL",
+          "reliability": "EXACTLY_ONCE"
+        }
+      },
+      "expected": {
+        "channel.state": "OPEN"
+      }
+    },
+    "test_send_on_channel": {
+      "description": "Send message on established channel",
+      "category": "unit",
+      "operation": "send_on_channel",
+      "setup": {
+        "channel": {
+          "channel_id": "chan-123",
+          "state": "OPEN"
+        }
+      },
+      "inputs": {
+        "channel_id": "chan-123",
+        "payload": {
+          "data": {
+            "event": "user_action"
+          }
+        }
+      },
+      "expected": {
+        "queued": true
+      }
+    },
+    "test_boundary_crossing_authorized": {
+      "description": "Successful boundary crossing with valid token",
+      "category": "unit",
+      "operation": "request_boundary_crossing",
+      "setup": {
+        "boundary": {
+          "allow_crossing": true,
+          "requires_token": true
+        },
+        "token": "valid_geometric_token"
+      },
+      "inputs": {
+        "request": {
+          "message": {
+            "headers": {
+              "geometric_token": "valid"
+            }
+          },
+          "crossing_point": {
+            "t": 1,
+            "x": 0,
+            "y": 0,
+            "z": 0
+          }
+        }
+      },
+      "expected": {
+        "result.success": true
+      }
+    },
+    "test_boundary_crossing_unauthorized": {
+      "description": "Reject boundary crossing without token",
+      "category": "unit",
+      "operation": "request_boundary_crossing",
+      "setup": {
+        "boundary": {
+          "allow_crossing": true,
+          "requires_token": true
+        }
+      },
+      "inputs": {
+        "request": {
+          "message": {
+            "headers": {}
+          },
+          "crossing_point": {
+            "t": 1,
+            "x": 0,
+            "y": 0,
+            "z": 0
+          }
+        }
+      },
+      "expected_error": "UNAUTHORIZED"
+    },
+    "test_start_sync": {
+      "description": "Start incremental sync between domains",
+      "category": "unit",
+      "operation": "start_sync",
+      "setup": {
+        "domain_a": "ld://acme/prod/primary",
+        "domain_b": "ld://acme/prod/secondary"
+      },
+      "inputs": {
+        "domain_a": "ld://acme/prod/primary",
+        "domain_b": "ld://acme/prod/secondary",
+        "sync_config": {
+          "sync_mode": "INCREMENTAL"
+        }
+      },
+      "expected": {
+        "sync_id is not null": true,
+        "initial_state.status": "SYNCING"
+      }
+    },
+    "test_resolve_sync_conflict": {
+      "description": "Resolve sync conflict using last-write-wins",
+      "category": "unit",
+      "operation": "resolve_sync_conflict",
+      "setup": {
+        "conflict": {
+          "conflict_id": "conflict-123",
+          "domain_a_value": "old",
+          "domain_b_value": "new",
+          "resolved": false
+        }
+      },
+      "inputs": {
+        "conflict_id": "conflict-123",
+        "resolution": "USE_B"
+      },
+      "expected": {
+        "resolved": true,
+        "conflict.resolved_value": "new"
+      }
+    },
+    "test_verify_isolation_guarantee": {
+      "description": "Verify causal isolation between domains",
+      "category": "unit",
+      "operation": "verify_isolation_guarantee",
+      "setup": {
+        "domains": [
+          "ld://org/stack/a",
+          "ld://org/stack/b"
+        ],
+        "isolated": true
+      },
+      "inputs": {
+        "domains": [
+          "ld://org/stack/a",
+          "ld://org/stack/b"
+        ],
+        "guarantee_type": "CAUSAL_ISOLATION"
+      },
+      "expected": {
+        "guarantee.guarantee_type": "CAUSAL_ISOLATION",
+        "violations.length": 0
+      }
+    },
+    "test_set_communication_policy": {
+      "description": "Set rate-limited communication policy",
+      "category": "unit",
+      "operation": "set_communication_policy",
+      "inputs": {
+        "policy": {
+          "source_pattern": {
+            "pattern": "ld://acme/*"
+          },
+          "target_pattern": {
+            "pattern": "ld://acme/*"
+          },
+          "allowed_message_types": [
+            "REQUEST",
+            "RESPONSE"
+          ],
+          "rate_limit": {
+            "max_crossings_per_second": 100
+          },
+          "require_authentication": true
+        }
+      },
+      "expected": {
+        "policy_id is not null": true
+      }
+    },
+    "test_negotiate_protocol": {
+      "description": "Negotiate encryption and compression",
+      "category": "unit",
+      "operation": "negotiate_protocol",
+      "setup": {
+        "source_capabilities": [
+          "gzip",
+          "aes256"
+        ],
+        "target_capabilities": [
+          "gzip",
+          "lz4",
+          "aes256",
+          "chacha20"
+        ]
+      },
+      "inputs": {
+        "source_domain": "ld://acme/prod/source",
+        "target_domain": "ld://acme/prod/target",
+        "preferences": {
+          "preferred_compression": [
+            "gzip",
+            "lz4"
+          ],
+          "preferred_encryption": [
+            "aes256"
+          ]
+        }
+      },
+      "expected": {
+        "negotiation.agreed_compression": "gzip",
+        "negotiation.agreed_encryption": "aes256"
+      }
+    },
+    "test_broadcast_to_children": {
+      "description": "Broadcast message to all child domains",
+      "category": "unit",
+      "operation": "broadcast_to_children",
+      "setup": {
+        "parent": "ld://acme/prod/parent",
+        "children": [
+          "ld://acme/prod/child-1",
+          "ld://acme/prod/child-2",
+          "ld://acme/prod/child-3"
+        ]
+      },
+      "inputs": {
+        "parent_domain": "ld://acme/prod/parent",
+        "message": {
+          "message_type": "NOTIFICATION",
+          "payload": {
+            "event": "config_update"
+          }
+        },
+        "recursive": false
+      },
+      "expected": {
+        "sent_count": 3,
+        "failed_domains.length": 0
+      }
+    },
+    "test_message_queue_monitoring": {
+      "description": "Monitor message queue status",
+      "category": "unit",
+      "operation": "get_message_queue_status",
+      "setup": {
+        "domain": "ld://acme/prod/service",
+        "queues": [
+          {
+            "target": "ld://acme/prod/target-1",
+            "pending": 10
+          },
+          {
+            "target": "ld://acme/prod/target-2",
+            "pending": 5
+          }
+        ]
+      },
+      "inputs": {
+        "source_domain": "ld://acme/prod/service"
+      },
+      "expected": {
+        "queues.length": 2
+      }
+    },
+    "test_full_request_response_flow": {
+      "description": "Complete request-response message exchange",
+      "category": "integration",
+      "operations": [
+        "send_message",
+        "receive_message",
+        "acknowledge_message"
+      ],
+      "setup": {
+        "source": "ld://acme/prod/client",
+        "target": "ld://acme/prod/server"
+      },
+      "steps": [
+        {
+          "operation": "send_message",
+          "inputs": {
+            "message": {
+              "message_type": "REQUEST"
+            },
+            "delivery_mode": "WAIT_FOR_RESPONSE"
+          }
+        }
+      ],
+      "assertions": [
+        "Request is delivered",
+        "Response is received",
+        "Round-trip completed"
+      ]
+    },
+    "test_channel_lifecycle": {
+      "description": "Test full channel lifecycle: open, send, close",
+      "category": "integration",
+      "operations": [
+        "open_channel",
+        "send_on_channel",
+        "close_channel"
+      ],
+      "steps": [
+        {
+          "operation": "open_channel"
+        },
+        {
+          "operation": "send_on_channel"
+        },
+        {
+          "operation": "send_on_channel"
+        },
+        {
+          "operation": "close_channel",
+          "inputs": {
+            "graceful": true
+          }
+        }
+      ],
+      "assertions": [
+        "Channel opens successfully",
+        "Messages are sent",
+        "Channel closes gracefully"
+      ]
+    }
+  },
+  "implementation_notes": {
+    "messaging_model": {
+      "description": "Cross-domain messaging follows geodesic paths through domain hierarchy",
+      "properties": [
+        "Messages traverse hierarchical path through common ancestor",
+        "Each boundary crossing requires geometric authorization",
+        "Message ordering preserved along geodesic path",
+        "No direct communication between isolated domains"
+      ]
+    },
+    "synchronization_model": {
+      "description": "Synchronization respects causal structure",
+      "modes": {
+        "FULL": "Complete state transfer - high bandwidth, consistent",
+        "INCREMENTAL": "Delta-based sync - efficient for frequent updates",
+        "EVENTUAL": "Async replication - eventually consistent",
+        "CAUSAL": "Respects causal order - preserves happens-before"
+      }
+    },
+    "isolation_enforcement": {
+      "description": "Isolation is geometric, not policy-based",
+      "guarantees": [
+        "Causally isolated domains have no timelike paths",
+        "Messages cannot bypass isolation through timing channels",
+        "Isolation is verified at domain creation, not runtime"
+      ]
+    },
+    "channel_implementation": {
+      "description": "Channels are pre-computed geodesic paths",
+      "features": [
+        "Path computed once at channel open",
+        "Boundary crossings pre-authorized",
+        "Lower latency than ad-hoc messaging",
+        "Reliable delivery guarantees"
+      ]
+    },
+    "language_bindings": {
+      "rust": {
+        "crate": "hypersync-comm",
+        "key_traits": [
+          "MessageSender",
+          "ChannelManager",
+          "SyncController"
+        ]
+      },
+      "python": {
+        "package": "hypersync.communication",
+        "key_classes": [
+          "DomainMessenger",
+          "Channel",
+          "SyncManager"
+        ]
+      },
+      "typescript": {
+        "package": "@hypersync/communication",
+        "key_interfaces": [
+          "IDomainMessenger",
+          "IChannel",
+          "ISyncState"
+        ]
+      }
+    }
+  }
+}

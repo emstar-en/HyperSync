@@ -1,0 +1,235 @@
+{
+  "name": "mxfy_injection_system",
+  "version": "1.0.0",
+  "description": "MXFY Injection System Specification - Hot-loading generated applications into HyperSync environment including capsule instantiation, environment preparation, and lifecycle management",
+  "license": {
+    "type": "AGPLv3",
+    "text": "This specification is licensed under the GNU Affero General Public License v3.0. See https://www.gnu.org/licenses/agpl-3.0.html for full license text.",
+    "copyright": "Copyright (c) 2024-2026 HyperSync Project"
+  },
+  "subsystem": "MXFY",
+  "category": "injection_system",
+  "stunir_compatible": true,
+  "dependencies": [
+    "mxfy_core_system@1.0.0",
+    "mxfy_fabrication_engine@1.0.0",
+    "hypersync_capsule_system@2.0.0",
+    "hypersync_terminal_ui@2.0.0"
+  ],
+  "architecture": {
+    "overview": "Injection System is Phase 4 of MXFY - deploying generated applications into running environment",
+    "pipeline": {
+      "environment_preparation": "Prepare runtime environment",
+      "capsule_packaging": "Package application as UCF capsule",
+      "capsule_registration": "Register with capsule registry",
+      "dependency_injection": "Inject required dependencies",
+      "hot_loading": "Hot-load into running environment",
+      "ui_binding": "Bind to terminal UI",
+      "lifecycle_activation": "Activate lifecycle management"
+    },
+    "hot_loading_mechanism": {
+      "description": "Atomic injection of new applications without restart",
+      "requirements": [
+        "No global state in generated applications",
+        "Dependency injection for all external resources",
+        "Cleanup methods for graceful unloading",
+        "State migration support if needed"
+      ],
+      "process": [
+        "1. Compile to ephemeral package",
+        "2. Validate against core API",
+        "3. Allocate resources",
+        "4. Initialize state",
+        "5. Swap implementation atomically",
+        "6. Trigger UI refresh"
+      ]
+    }
+  },
+  "type_definitions": {
+    "InjectionContext": {
+      "description": "Context for injection operation",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "target_environment": {"type": "string"},
+          "session_id": {"type": "UUID"},
+          "user_context": {"type": "object"},
+          "resource_limits": {"$ref": "#/type_definitions/ResourceLimits"}
+        }
+      }
+    },
+    "ResourceLimits": {
+      "description": "Resource limits for injected application",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "max_memory_mb": {"type": "integer", "default": 256},
+          "max_cpu_percent": {"type": "number", "default": 25},
+          "max_storage_mb": {"type": "integer", "default": 100},
+          "network_access": {"type": "boolean", "default": true},
+          "filesystem_access": {"type": "string", "enum": ["none", "read_only", "sandboxed", "full"]}
+        }
+      }
+    },
+    "PackagedCapsule": {
+      "description": "Packaged capsule ready for injection",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "manifest": {"type": "object"},
+          "code_bundle": {"type": "bytes"},
+          "assets": {"type": "object"},
+          "hash": {"type": "string"},
+          "signature": {"type": "string"}
+        }
+      }
+    },
+    "CapsuleRegistration": {
+      "description": "Registered capsule in system",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "capsule_id": {"type": "UUID"},
+          "name": {"type": "string"},
+          "version": {"type": "string"},
+          "vnes_binding": {"type": "string"},
+          "status": {"type": "string", "enum": ["registered", "loading", "active", "paused", "unloading", "error"]},
+          "registration_time": {"type": "datetime"}
+        }
+      }
+    },
+    "LifecycleHandle": {
+      "description": "Handle for managing capsule lifecycle",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "capsule_id": {"type": "UUID"},
+          "process_id": {"type": "string"},
+          "status": {"type": "string"},
+          "metrics": {"type": "object"},
+          "control_methods": {"type": "array", "items": {"type": "string"}}
+        }
+      }
+    },
+    "UIBinding": {
+      "description": "Binding between capsule and terminal UI",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "capsule_id": {"type": "UUID"},
+          "ui_panel_id": {"type": "string"},
+          "render_context": {"type": "object"},
+          "event_handlers": {"type": "object"},
+          "refresh_strategy": {"type": "string", "enum": ["manual", "on_change", "periodic"]}
+        }
+      }
+    }
+  },
+  "operations": [
+    {
+      "name": "injection_prepare_environment",
+      "description": "Prepare runtime environment for injection",
+      "signature": "injection_prepare_environment(context: InjectionContext) -> EnvironmentHandle",
+      "complexity": "O(1)",
+      "determinism": "D0"
+    },
+    {
+      "name": "injection_package_capsule",
+      "description": "Package generated application as UCF capsule",
+      "signature": "injection_package_capsule(app: GeneratedApplication) -> PackagedCapsule",
+      "complexity": "O(n)",
+      "determinism": "D0"
+    },
+    {
+      "name": "injection_register_capsule",
+      "description": "Register capsule with system registry",
+      "signature": "injection_register_capsule(capsule: PackagedCapsule) -> CapsuleRegistration",
+      "complexity": "O(1)",
+      "determinism": "D0"
+    },
+    {
+      "name": "injection_resolve_dependencies",
+      "description": "Resolve and inject runtime dependencies",
+      "signature": "injection_resolve_dependencies(registration: CapsuleRegistration) -> boolean",
+      "complexity": "O(d) where d = dependency count",
+      "determinism": "D0"
+    },
+    {
+      "name": "injection_hot_load",
+      "description": "Hot-load capsule into running environment",
+      "signature": "injection_hot_load(registration: CapsuleRegistration, env: EnvironmentHandle) -> LifecycleHandle",
+      "complexity": "O(1)",
+      "determinism": "D0"
+    },
+    {
+      "name": "injection_bind_ui",
+      "description": "Bind capsule to terminal UI",
+      "signature": "injection_bind_ui(handle: LifecycleHandle, ui_config: object) -> UIBinding",
+      "complexity": "O(1)",
+      "determinism": "D0"
+    },
+    {
+      "name": "injection_activate",
+      "description": "Activate capsule lifecycle",
+      "signature": "injection_activate(handle: LifecycleHandle) -> boolean",
+      "complexity": "O(1)",
+      "determinism": "D0"
+    },
+    {
+      "name": "injection_execute",
+      "description": "Execute complete injection pipeline",
+      "signature": "injection_execute(app: GeneratedApplication, context: InjectionContext) -> InjectionResult",
+      "complexity": "O(n)",
+      "determinism": "D0"
+    },
+    {
+      "name": "injection_unload",
+      "description": "Gracefully unload injected capsule",
+      "signature": "injection_unload(handle: LifecycleHandle) -> boolean",
+      "complexity": "O(1)",
+      "determinism": "D0"
+    },
+    {
+      "name": "injection_hot_swap",
+      "description": "Hot-swap existing capsule with new version",
+      "signature": "injection_hot_swap(old_handle: LifecycleHandle, new_app: GeneratedApplication) -> LifecycleHandle",
+      "complexity": "O(1)",
+      "determinism": "D0"
+    }
+  ],
+  "lifecycle_states": {
+    "description": "Capsule lifecycle state machine",
+    "states": [
+      {"name": "created", "description": "Capsule created but not loaded"},
+      {"name": "loading", "description": "Loading into environment"},
+      {"name": "initializing", "description": "Running initialization"},
+      {"name": "active", "description": "Running and accepting requests"},
+      {"name": "paused", "description": "Temporarily paused"},
+      {"name": "unloading", "description": "Gracefully shutting down"},
+      {"name": "terminated", "description": "Fully unloaded"},
+      {"name": "error", "description": "Error state"}
+    ],
+    "transitions": [
+      {"from": "created", "to": "loading", "trigger": "injection_hot_load"},
+      {"from": "loading", "to": "initializing", "trigger": "load_complete"},
+      {"from": "initializing", "to": "active", "trigger": "injection_activate"},
+      {"from": "active", "to": "paused", "trigger": "pause"},
+      {"from": "paused", "to": "active", "trigger": "resume"},
+      {"from": "active", "to": "unloading", "trigger": "injection_unload"},
+      {"from": "unloading", "to": "terminated", "trigger": "cleanup_complete"},
+      {"from": "*", "to": "error", "trigger": "error_occurred"}
+    ]
+  },
+  "test_cases": [
+    {
+      "id": "INJECT_TC_001",
+      "description": "Inject simple application",
+      "expected": {"success": true, "state": "active"}
+    },
+    {
+      "id": "INJECT_TC_002",
+      "description": "Hot-swap running application",
+      "expected": {"success": true, "no_downtime": true}
+    }
+  ]
+}

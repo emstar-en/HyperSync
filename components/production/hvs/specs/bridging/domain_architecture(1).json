@@ -1,0 +1,4071 @@
+{
+  "specification": "domain_architecture",
+  "version": "1.0.0",
+  "status": "complete",
+  "author": "HyperSync Architecture Team",
+  "created": "2026-01-12",
+  "description": "Complete architectural specification for the HyperSync domain system, defining the foundational structure for security boundaries, operational isolation, and geometric properties",
+  "metadata": {
+    "stunir_version": "3.0",
+    "category": "architecture",
+    "tags": [
+      "domains",
+      "security",
+      "geometry",
+      "lorentzian",
+      "architecture"
+    ],
+    "dependencies": [
+      "lorentzian_domain_specification",
+      "domain_addressing_system",
+      "domain_security_model"
+    ],
+    "priority": "critical",
+    "implementation_status": "required",
+    "license": {
+      "name": "AGPLv3",
+      "url": "https://www.gnu.org/licenses/agpl-3.0.html"
+    }
+  },
+  "types": {
+    "Domain": {
+      "description": "Base domain type representing a security, operational, and semantic boundary",
+      "properties": {
+        "domain_id": {
+          "type": "DomainID",
+          "required": true,
+          "description": "Unique identifier for this domain"
+        },
+        "label": {
+          "type": "string",
+          "required": true,
+          "description": "Human-readable name"
+        },
+        "curvature_type": {
+          "type": "CurvatureType",
+          "required": true,
+          "description": "Type of curvature defining this domain"
+        },
+        "parent_domain": {
+          "type": "DomainID",
+          "required": false,
+          "description": "Parent domain in hierarchy, null for LD(0)"
+        },
+        "properties": {
+          "type": "DomainProperties",
+          "required": true,
+          "description": "Configuration properties"
+        },
+        "metrics": {
+          "type": "DomainMetrics",
+          "required": true,
+          "description": "Current metrics and statistics"
+        },
+        "state": {
+          "type": "DomainState",
+          "required": true,
+          "description": "Current operational state"
+        },
+        "created_at": {
+          "type": "timestamp",
+          "required": true,
+          "description": "Creation timestamp"
+        },
+        "updated_at": {
+          "type": "timestamp",
+          "required": true,
+          "description": "Last update timestamp"
+        }
+      },
+      "constraints": {
+        "domain_id_format": "Must follow ld://org/stack/domain-hash format",
+        "label_length": "1-256 characters",
+        "parent_acyclicity": "Parent relationships must form DAG (no cycles)"
+      }
+    },
+    "DomainID": {
+      "description": "Unique domain identifier in ld:// format",
+      "base_type": "string",
+      "format": "ld://organization/stack/domain-hash",
+      "pattern": "^ld://[a-zA-Z0-9_-]+/[a-zA-Z0-9_-]+/[a-fA-F0-9]{64}$",
+      "examples": [
+        "ld://hypersync/base/ld0",
+        "ld://org/networks/a7f3c1d2e5b4a6f8",
+        "ld://org/dev/test-1.0001"
+      ],
+      "constraints": {
+        "immutable": true,
+        "globally_unique": true,
+        "cryptographically_secure": true
+      }
+    },
+    "CurvatureType": {
+      "description": "Type of geometric curvature defining domain",
+      "type": "enum",
+      "values": [
+        "lorentzian",
+        "riemannian",
+        "euclidean",
+        "de_sitter",
+        "anti_de_sitter",
+        "hyperbolic",
+        "spherical",
+        "flat"
+      ],
+      "properties": {
+        "lorentzian": {
+          "curvature": "\u03ba \u2264 0",
+          "signature": "(-,+,+,+)",
+          "description": "Most common, negative or zero curvature"
+        },
+        "riemannian": {
+          "curvature": "\u03ba > 0",
+          "signature": "(+,+,+,+)",
+          "description": "Positive curvature, no timelike dimension"
+        },
+        "euclidean": {
+          "curvature": "\u03ba = 0",
+          "signature": "(+,+,+,+)",
+          "description": "Zero curvature, flat space"
+        },
+        "de_sitter": {
+          "curvature": "\u03ba > 0",
+          "signature": "(-,+,+,+)",
+          "description": "Positive curvature Lorentzian"
+        },
+        "anti_de_sitter": {
+          "curvature": "\u03ba < 0",
+          "signature": "(-,+,+,+)",
+          "description": "Negative curvature Lorentzian"
+        }
+      }
+    },
+    "DomainProperties": {
+      "description": "Configuration properties for a domain",
+      "properties": {
+        "security_level": {
+          "type": "SecurityLevel",
+          "required": true,
+          "description": "Security isolation level"
+        },
+        "curvature_parameters": {
+          "type": "CurvatureParameters",
+          "required": true,
+          "description": "Geometric curvature parameters"
+        },
+        "resource_limits": {
+          "type": "ResourceLimits",
+          "required": true,
+          "description": "Resource quotas and limits"
+        },
+        "policies": {
+          "type": "PolicySet",
+          "required": true,
+          "description": "Security and operational policies"
+        },
+        "metadata": {
+          "type": "object",
+          "required": false,
+          "description": "User-defined metadata"
+        }
+      }
+    },
+    "SecurityLevel": {
+      "description": "Domain security isolation level",
+      "type": "enum",
+      "values": [
+        "public",
+        "restricted",
+        "secure",
+        "isolated"
+      ],
+      "properties": {
+        "public": "Open access, minimal isolation",
+        "restricted": "Limited access with authentication",
+        "secure": "Strong isolation, audited operations",
+        "isolated": "Maximum isolation, air-gapped equivalent"
+      }
+    },
+    "CurvatureParameters": {
+      "description": "Geometric parameters defining curvature",
+      "properties": {
+        "curvature_constant": {
+          "type": "float",
+          "description": "Curvature constant \u03ba"
+        },
+        "metric_signature": {
+          "type": "array",
+          "items": {
+            "type": "int",
+            "values": [
+              -1,
+              1
+            ]
+          },
+          "description": "Metric signature (e.g., [-1,1,1,1])"
+        },
+        "dimension": {
+          "type": "int",
+          "description": "Manifold dimension"
+        },
+        "connection_type": {
+          "type": "string",
+          "description": "Connection/covariant derivative type"
+        }
+      }
+    },
+    "ResourceLimits": {
+      "description": "Resource quotas and limits",
+      "properties": {
+        "max_operations_per_second": {
+          "type": "int"
+        },
+        "max_memory_bytes": {
+          "type": "int"
+        },
+        "max_storage_bytes": {
+          "type": "int"
+        },
+        "max_network_bandwidth_bps": {
+          "type": "int"
+        },
+        "max_child_domains": {
+          "type": "int"
+        }
+      }
+    },
+    "PolicySet": {
+      "description": "Security and operational policies",
+      "properties": {
+        "allowed_operations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "denied_operations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "allowed_file_paths": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "allowed_network_hosts": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "elevation_required": {
+          "type": "boolean"
+        },
+        "audit_level": {
+          "type": "string",
+          "values": [
+            "none",
+            "minimal",
+            "standard",
+            "full"
+          ]
+        }
+      }
+    },
+    "DomainMetrics": {
+      "description": "Domain performance and usage metrics",
+      "properties": {
+        "total_operations": {
+          "type": "int"
+        },
+        "operations_per_second": {
+          "type": "float"
+        },
+        "memory_used_bytes": {
+          "type": "int"
+        },
+        "storage_used_bytes": {
+          "type": "int"
+        },
+        "network_bytes_sent": {
+          "type": "int"
+        },
+        "network_bytes_received": {
+          "type": "int"
+        },
+        "child_domain_count": {
+          "type": "int"
+        },
+        "security_violations": {
+          "type": "int"
+        },
+        "last_activity": {
+          "type": "timestamp"
+        }
+      }
+    },
+    "DomainState": {
+      "description": "Current operational state of domain",
+      "type": "enum",
+      "values": [
+        "initializing",
+        "active",
+        "suspended",
+        "frozen",
+        "destroying",
+        "destroyed"
+      ],
+      "transitions": {
+        "initializing": [
+          "active",
+          "destroying"
+        ],
+        "active": [
+          "suspended",
+          "frozen",
+          "destroying"
+        ],
+        "suspended": [
+          "active",
+          "frozen",
+          "destroying"
+        ],
+        "frozen": [
+          "active",
+          "destroying"
+        ],
+        "destroying": [
+          "destroyed"
+        ],
+        "destroyed": []
+      }
+    },
+    "DomainHierarchy": {
+      "description": "Tree structure of domain relationships",
+      "properties": {
+        "root": {
+          "type": "DomainID",
+          "description": "Root domain (usually LD(0))"
+        },
+        "nodes": {
+          "type": "map",
+          "key": "DomainID",
+          "value": "DomainNode",
+          "description": "Map of all domains"
+        }
+      }
+    },
+    "DomainNode": {
+      "description": "Node in domain hierarchy tree",
+      "properties": {
+        "domain": {
+          "type": "Domain"
+        },
+        "parent": {
+          "type": "DomainID"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "type": "DomainID"
+          }
+        },
+        "depth": {
+          "type": "int"
+        },
+        "path": {
+          "type": "array",
+          "items": {
+            "type": "DomainID"
+          }
+        }
+      }
+    },
+    "DomainSnapshot": {
+      "description": "Point-in-time snapshot of domain state",
+      "properties": {
+        "snapshot_id": {
+          "type": "string"
+        },
+        "domain_id": {
+          "type": "DomainID"
+        },
+        "timestamp": {
+          "type": "timestamp"
+        },
+        "domain_state": {
+          "type": "Domain"
+        },
+        "checksum": {
+          "type": "string",
+          "format": "sha256"
+        }
+      }
+    },
+    "DomainHandle": {
+      "description": "Handle for accessing a domain",
+      "properties": {
+        "domain_id": {
+          "type": "DomainID"
+        },
+        "access_token": {
+          "type": "string"
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "expires_at": {
+          "type": "timestamp"
+        }
+      }
+    }
+  },
+  "operations": {
+    "initialize_domain_system": {
+      "description": "Initialize the domain subsystem and create LD(0) base domain",
+      "category": "initialization",
+      "inputs": {
+        "config": {
+          "type": "object",
+          "required": true,
+          "description": "System configuration",
+          "properties": {
+            "base_domain_label": {
+              "type": "string",
+              "default": "LD(0)"
+            },
+            "default_security_level": {
+              "type": "SecurityLevel",
+              "default": "secure"
+            },
+            "registry_backend": {
+              "type": "string",
+              "default": "memory"
+            }
+          }
+        }
+      },
+      "outputs": {
+        "success": {
+          "type": "boolean",
+          "description": "Operation success status"
+        },
+        "base_domain": {
+          "type": "Domain",
+          "description": "Created LD(0) base domain"
+        },
+        "registry_handle": {
+          "type": "object",
+          "description": "Domain registry handle"
+        }
+      },
+      "preconditions": [
+        "Domain system not already initialized",
+        "Valid configuration provided",
+        "Sufficient system resources"
+      ],
+      "postconditions": [
+        "LD(0) base domain created and active",
+        "Domain registry initialized",
+        "Default policies configured"
+      ],
+      "side_effects": [
+        "Creates global domain registry",
+        "Initializes LD(0) with default properties",
+        "Sets up audit logging system"
+      ],
+      "formulas": {
+        "base_domain_id": "ld://hypersync/base/ld0",
+        "base_curvature": "\u03ba = 0 (flat Lorentzian)",
+        "base_metric": "ds\u00b2 = -c\u00b2dt\u00b2 + dx\u00b2 + dy\u00b2 + dz\u00b2"
+      },
+      "edge_cases": [
+        {
+          "case": "Already initialized",
+          "handling": "Return existing LD(0), do not recreate",
+          "outcome": "Idempotent operation"
+        },
+        {
+          "case": "Invalid configuration",
+          "handling": "Return error, do not create partial state",
+          "outcome": "Atomic operation"
+        },
+        {
+          "case": "Insufficient resources",
+          "handling": "Return error with required resources",
+          "outcome": "Fail fast with diagnostic info"
+        },
+        {
+          "case": "Registry backend unavailable",
+          "handling": "Fall back to in-memory registry",
+          "outcome": "Degrade gracefully"
+        },
+        {
+          "case": "Concurrent initialization",
+          "handling": "Use distributed lock, first wins",
+          "outcome": "Ensure single LD(0)"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "Basic initialization",
+          "input": {
+            "config": {
+              "base_domain_label": "LD(0)"
+            }
+          },
+          "expected_output": {
+            "success": true,
+            "base_domain": {
+              "domain_id": "ld://hypersync/base/ld0",
+              "label": "LD(0)",
+              "curvature_type": "lorentzian",
+              "state": "active"
+            }
+          }
+        },
+        {
+          "name": "Custom security level",
+          "input": {
+            "config": {
+              "default_security_level": "isolated"
+            }
+          },
+          "expected_output": {
+            "success": true,
+            "base_domain": {
+              "properties": {
+                "security_level": "isolated"
+              }
+            }
+          }
+        },
+        {
+          "name": "Idempotent initialization",
+          "setup": "System already initialized",
+          "input": {
+            "config": {}
+          },
+          "expected_output": {
+            "success": true,
+            "note": "Returns existing LD(0)"
+          }
+        },
+        {
+          "name": "Invalid configuration",
+          "input": {
+            "config": {
+              "default_security_level": "invalid"
+            }
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Invalid security level"
+          }
+        },
+        {
+          "name": "Persistent registry",
+          "input": {
+            "config": {
+              "registry_backend": "postgresql"
+            }
+          },
+          "expected_output": {
+            "success": true,
+            "registry_handle": {
+              "backend": "postgresql"
+            }
+          }
+        },
+        {
+          "name": "Concurrent initialization",
+          "setup": "Multiple concurrent calls",
+          "input": {
+            "config": {}
+          },
+          "expected_output": {
+            "success": true,
+            "note": "Only one LD(0) created"
+          }
+        },
+        {
+          "name": "Resource constraints",
+          "setup": "Low memory environment",
+          "input": {
+            "config": {}
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Insufficient resources"
+          }
+        },
+        {
+          "name": "Registry fallback",
+          "setup": "PostgreSQL unavailable",
+          "input": {
+            "config": {
+              "registry_backend": "postgresql"
+            }
+          },
+          "expected_output": {
+            "success": true,
+            "registry_handle": {
+              "backend": "memory"
+            }
+          }
+        }
+      ],
+      "security_properties": [
+        "LD(0) created with secure defaults",
+        "Audit logging enabled from start",
+        "No unauthorized access to registry"
+      ],
+      "performance": {
+        "complexity": "O(1)",
+        "typical_duration_ms": "< 100",
+        "resource_overhead": "Minimal - one-time initialization"
+      }
+    },
+    "create_domain": {
+      "description": "Create a new domain with specified geometric and security properties",
+      "category": "lifecycle",
+      "inputs": {
+        "curvature_type": {
+          "type": "CurvatureType",
+          "required": true,
+          "description": "Type of curvature for this domain"
+        },
+        "label": {
+          "type": "string",
+          "required": true,
+          "description": "Human-readable domain name"
+        },
+        "parent_domain": {
+          "type": "DomainID",
+          "required": false,
+          "default": "ld://hypersync/base/ld0",
+          "description": "Parent domain in hierarchy"
+        },
+        "properties": {
+          "type": "DomainProperties",
+          "required": false,
+          "description": "Domain configuration properties"
+        }
+      },
+      "outputs": {
+        "success": {
+          "type": "boolean"
+        },
+        "domain_id": {
+          "type": "DomainID",
+          "description": "Unique ID of created domain"
+        },
+        "domain_handle": {
+          "type": "DomainHandle",
+          "description": "Handle for accessing domain"
+        },
+        "domain": {
+          "type": "Domain",
+          "description": "Complete domain object"
+        }
+      },
+      "preconditions": [
+        "Domain system initialized",
+        "Parent domain exists and is active",
+        "Valid curvature type specified",
+        "Sufficient resources available"
+      ],
+      "postconditions": [
+        "New domain created and active",
+        "Domain registered in registry",
+        "Parent-child relationship established",
+        "Audit log entry created"
+      ],
+      "formulas": {
+        "domain_id_generation": "domain_id = ld://org/stack/SHA256(genesis_config || timestamp || random)",
+        "curvature_constraint": "For lorentzian: \u03ba \u2264 0",
+        "metric_inheritance": "Child domain inherits parent metric structure",
+        "geodesic_distance": "d_parent_child = \u222b \u221a|g_\u03bc\u03bd dx^\u03bc dx^\u03bd|"
+      },
+      "edge_cases": [
+        {
+          "case": "Parent domain does not exist",
+          "handling": "Return error with domain not found",
+          "outcome": "Operation fails atomically"
+        },
+        {
+          "case": "Parent domain is not active",
+          "handling": "Return error, cannot create child of inactive domain",
+          "outcome": "Enforce lifecycle constraints"
+        },
+        {
+          "case": "Duplicate label under same parent",
+          "handling": "Allow (labels not required to be unique)",
+          "outcome": "Different domain_ids, same label"
+        },
+        {
+          "case": "Cyclic parent reference",
+          "handling": "Detect and reject cycle",
+          "outcome": "Maintain DAG invariant"
+        },
+        {
+          "case": "Resource limits exceeded",
+          "handling": "Return error with quota details",
+          "outcome": "Respect parent domain limits"
+        },
+        {
+          "case": "Invalid curvature parameters",
+          "handling": "Validate and reject if inconsistent",
+          "outcome": "Ensure geometric validity"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "Create basic Lorentzian domain",
+          "input": {
+            "curvature_type": "lorentzian",
+            "label": "test-domain",
+            "parent_domain": "ld://hypersync/base/ld0"
+          },
+          "expected_output": {
+            "success": true,
+            "domain_id": "ld://hypersync/test/[hash]",
+            "domain": {
+              "label": "test-domain",
+              "curvature_type": "lorentzian",
+              "state": "active"
+            }
+          }
+        },
+        {
+          "name": "Create with custom properties",
+          "input": {
+            "curvature_type": "lorentzian",
+            "label": "secure-domain",
+            "properties": {
+              "security_level": "isolated"
+            }
+          },
+          "expected_output": {
+            "success": true,
+            "domain": {
+              "properties": {
+                "security_level": "isolated"
+              }
+            }
+          }
+        },
+        {
+          "name": "Create de Sitter domain",
+          "input": {
+            "curvature_type": "de_sitter",
+            "label": "temporal-domain"
+          },
+          "expected_output": {
+            "success": true,
+            "domain": {
+              "curvature_type": "de_sitter"
+            }
+          }
+        },
+        {
+          "name": "Parent domain not found",
+          "input": {
+            "curvature_type": "lorentzian",
+            "label": "orphan",
+            "parent_domain": "ld://invalid/domain/id"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Parent domain not found"
+          }
+        },
+        {
+          "name": "Create nested domain",
+          "setup": "Create parent domain first",
+          "input": {
+            "curvature_type": "lorentzian",
+            "label": "child",
+            "parent_domain": "ld://hypersync/test/parent"
+          },
+          "expected_output": {
+            "success": true,
+            "domain": {
+              "parent_domain": "ld://hypersync/test/parent"
+            }
+          }
+        },
+        {
+          "name": "Duplicate labels allowed",
+          "setup": "Create domain with label 'test'",
+          "input": {
+            "curvature_type": "lorentzian",
+            "label": "test"
+          },
+          "expected_output": {
+            "success": true,
+            "note": "Different domain_id despite same label"
+          }
+        },
+        {
+          "name": "Resource limit exceeded",
+          "setup": "Parent at max_child_domains limit",
+          "input": {
+            "curvature_type": "lorentzian",
+            "label": "over-limit"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Resource limit exceeded: max_child_domains"
+          }
+        },
+        {
+          "name": "Invalid curvature parameters",
+          "input": {
+            "curvature_type": "lorentzian",
+            "label": "invalid",
+            "properties": {
+              "curvature_parameters": {
+                "curvature_constant": 1.0
+              }
+            }
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Invalid curvature: lorentzian requires \u03ba \u2264 0"
+          }
+        }
+      ],
+      "security_properties": [
+        "New domain isolated from siblings by default",
+        "Inherits parent security constraints",
+        "Domain creation audited",
+        "Access token generated securely"
+      ],
+      "performance": {
+        "complexity": "O(1)",
+        "typical_duration_ms": "< 50",
+        "resource_overhead": "Minimal per domain"
+      }
+    },
+    "destroy_domain": {
+      "description": "Destroy a domain, cleaning up all resources and revoking addresses",
+      "category": "lifecycle",
+      "inputs": {
+        "domain_id": {
+          "type": "DomainID",
+          "required": true,
+          "description": "Domain to destroy"
+        },
+        "cascade": {
+          "type": "boolean",
+          "required": false,
+          "default": false,
+          "description": "Also destroy child domains"
+        },
+        "force": {
+          "type": "boolean",
+          "required": false,
+          "default": false,
+          "description": "Force destroy even if active resources"
+        }
+      },
+      "outputs": {
+        "success": {
+          "type": "boolean"
+        },
+        "destroyed_domains": {
+          "type": "array",
+          "items": {
+            "type": "DomainID"
+          }
+        },
+        "cleanup_summary": {
+          "type": "object"
+        }
+      },
+      "preconditions": [
+        "Domain exists",
+        "Caller has destroy permission",
+        "Domain not LD(0) (cannot destroy base domain)",
+        "If cascade=false, domain has no children"
+      ],
+      "postconditions": [
+        "Domain state set to 'destroyed'",
+        "All resources cleaned up",
+        "Addresses revoked",
+        "Parent-child links updated",
+        "Audit log entry created"
+      ],
+      "formulas": {
+        "cascade_order": "Destroy children before parents (post-order traversal)",
+        "resource_cleanup": "Total_cleanup = \u03a3(domain_resources) + \u03a3(child_resources)"
+      },
+      "edge_cases": [
+        {
+          "case": "Destroy LD(0)",
+          "handling": "Reject - cannot destroy base domain",
+          "outcome": "Operation fails with error"
+        },
+        {
+          "case": "Domain has children, cascade=false",
+          "handling": "Reject - must destroy children first or use cascade",
+          "outcome": "Prevent orphaning children"
+        },
+        {
+          "case": "Domain not found",
+          "handling": "Idempotent - return success",
+          "outcome": "Already destroyed or never existed"
+        },
+        {
+          "case": "Active resources, force=false",
+          "handling": "Reject - wait for resources to release",
+          "outcome": "Protect against data loss"
+        },
+        {
+          "case": "Concurrent destroy",
+          "handling": "Use lock, first wins",
+          "outcome": "Only one destroy succeeds"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "Destroy simple domain",
+          "setup": "Create test domain",
+          "input": {
+            "domain_id": "ld://hypersync/test/simple"
+          },
+          "expected_output": {
+            "success": true,
+            "destroyed_domains": [
+              "ld://hypersync/test/simple"
+            ]
+          }
+        },
+        {
+          "name": "Destroy with cascade",
+          "setup": "Create domain with children",
+          "input": {
+            "domain_id": "ld://hypersync/test/parent",
+            "cascade": true
+          },
+          "expected_output": {
+            "success": true,
+            "destroyed_domains": [
+              "ld://hypersync/test/child1",
+              "ld://hypersync/test/child2",
+              "ld://hypersync/test/parent"
+            ]
+          }
+        },
+        {
+          "name": "Destroy LD(0) rejected",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Cannot destroy base domain LD(0)"
+          }
+        },
+        {
+          "name": "Domain has children without cascade",
+          "setup": "Create domain with children",
+          "input": {
+            "domain_id": "ld://hypersync/test/parent",
+            "cascade": false
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Domain has children, use cascade=true"
+          }
+        },
+        {
+          "name": "Domain not found",
+          "input": {
+            "domain_id": "ld://invalid/domain/id"
+          },
+          "expected_output": {
+            "success": true,
+            "note": "Idempotent operation"
+          }
+        },
+        {
+          "name": "Active resources without force",
+          "setup": "Domain with active operations",
+          "input": {
+            "domain_id": "ld://hypersync/test/active"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Domain has active resources"
+          }
+        },
+        {
+          "name": "Force destroy with active resources",
+          "setup": "Domain with active operations",
+          "input": {
+            "domain_id": "ld://hypersync/test/active",
+            "force": true
+          },
+          "expected_output": {
+            "success": true,
+            "cleanup_summary": {
+              "forced_cleanup": true
+            }
+          }
+        },
+        {
+          "name": "Concurrent destroy",
+          "setup": "Multiple concurrent destroy calls",
+          "input": {
+            "domain_id": "ld://hypersync/test/concurrent"
+          },
+          "expected_output": {
+            "success": true,
+            "note": "First call succeeds, others idempotent"
+          }
+        }
+      ],
+      "security_properties": [
+        "Requires elevated permissions",
+        "Audited operation",
+        "Cannot destroy base domain",
+        "Resource cleanup verified"
+      ],
+      "performance": {
+        "complexity": "O(n) where n = number of descendant domains",
+        "typical_duration_ms": "< 200 (without cascade), < 1000 (with cascade)",
+        "resource_overhead": "Temporary memory for cleanup"
+      }
+    },
+    "get_domain_info": {
+      "description": "Retrieve complete information about a domain",
+      "category": "query",
+      "inputs": {
+        "domain_id": {
+          "type": "DomainID",
+          "required": true,
+          "description": "Domain to query"
+        },
+        "include_metrics": {
+          "type": "boolean",
+          "required": false,
+          "default": true,
+          "description": "Include performance metrics"
+        },
+        "include_children": {
+          "type": "boolean",
+          "required": false,
+          "default": false,
+          "description": "Include child domain list"
+        }
+      },
+      "outputs": {
+        "success": {
+          "type": "boolean"
+        },
+        "domain": {
+          "type": "Domain",
+          "description": "Complete domain information"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "type": "DomainID"
+          }
+        },
+        "metrics": {
+          "type": "DomainMetrics"
+        }
+      },
+      "preconditions": [
+        "Domain exists",
+        "Caller has read permission"
+      ],
+      "postconditions": [
+        "Domain information returned",
+        "No side effects"
+      ],
+      "formulas": {
+        "metric_calculation": "Real-time aggregation from monitoring system"
+      },
+      "edge_cases": [
+        {
+          "case": "Domain not found",
+          "handling": "Return error with domain_not_found",
+          "outcome": "Clear error message"
+        },
+        {
+          "case": "No read permission",
+          "handling": "Return permission_denied error",
+          "outcome": "Enforce access control"
+        },
+        {
+          "case": "Domain in destroying state",
+          "handling": "Return current state with warning",
+          "outcome": "Show transitional state"
+        },
+        {
+          "case": "Metrics unavailable",
+          "handling": "Return partial data with flag",
+          "outcome": "Degrade gracefully"
+        },
+        {
+          "case": "Very large child count",
+          "handling": "Paginate or return count only",
+          "outcome": "Prevent memory issues"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "Get LD(0) info",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0"
+          },
+          "expected_output": {
+            "success": true,
+            "domain": {
+              "domain_id": "ld://hypersync/base/ld0",
+              "label": "LD(0)",
+              "state": "active"
+            }
+          }
+        },
+        {
+          "name": "Get with metrics",
+          "input": {
+            "domain_id": "ld://hypersync/test/domain",
+            "include_metrics": true
+          },
+          "expected_output": {
+            "success": true,
+            "metrics": {
+              "total_operations": 1000,
+              "operations_per_second": 10.5
+            }
+          }
+        },
+        {
+          "name": "Get with children",
+          "input": {
+            "domain_id": "ld://hypersync/test/parent",
+            "include_children": true
+          },
+          "expected_output": {
+            "success": true,
+            "children": [
+              "ld://hypersync/test/child1",
+              "ld://hypersync/test/child2"
+            ]
+          }
+        },
+        {
+          "name": "Domain not found",
+          "input": {
+            "domain_id": "ld://invalid/domain/id"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Domain not found"
+          }
+        },
+        {
+          "name": "Permission denied",
+          "setup": "Caller without read permission",
+          "input": {
+            "domain_id": "ld://hypersync/secure/domain"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Permission denied"
+          }
+        },
+        {
+          "name": "Domain being destroyed",
+          "setup": "Domain in destroying state",
+          "input": {
+            "domain_id": "ld://hypersync/test/destroying"
+          },
+          "expected_output": {
+            "success": true,
+            "domain": {
+              "state": "destroying"
+            },
+            "warning": "Domain is being destroyed"
+          }
+        },
+        {
+          "name": "Metrics unavailable",
+          "setup": "Monitoring system down",
+          "input": {
+            "domain_id": "ld://hypersync/test/domain",
+            "include_metrics": true
+          },
+          "expected_output": {
+            "success": true,
+            "metrics": null,
+            "metrics_unavailable": true
+          }
+        },
+        {
+          "name": "Minimal query",
+          "input": {
+            "domain_id": "ld://hypersync/test/domain",
+            "include_metrics": false,
+            "include_children": false
+          },
+          "expected_output": {
+            "success": true,
+            "domain": {
+              "domain_id": "ld://hypersync/test/domain"
+            }
+          }
+        }
+      ],
+      "security_properties": [
+        "Read permission enforced",
+        "No information leakage",
+        "Audit trail for sensitive domains"
+      ],
+      "performance": {
+        "complexity": "O(1) without children, O(n) with children",
+        "typical_duration_ms": "< 10",
+        "resource_overhead": "Minimal"
+      }
+    },
+    "list_domains": {
+      "description": "List all domains with optional filtering",
+      "category": "query",
+      "inputs": {
+        "filter": {
+          "type": "object",
+          "required": false,
+          "description": "Filter criteria",
+          "properties": {
+            "curvature_type": {
+              "type": "CurvatureType"
+            },
+            "security_level": {
+              "type": "SecurityLevel"
+            },
+            "parent_domain": {
+              "type": "DomainID"
+            },
+            "state": {
+              "type": "DomainState"
+            },
+            "label_pattern": {
+              "type": "string"
+            }
+          }
+        },
+        "order_by": {
+          "type": "string",
+          "required": false,
+          "default": "created_at",
+          "values": [
+            "created_at",
+            "updated_at",
+            "label",
+            "domain_id"
+          ]
+        },
+        "limit": {
+          "type": "int",
+          "required": false,
+          "default": 100,
+          "description": "Maximum results to return"
+        },
+        "offset": {
+          "type": "int",
+          "required": false,
+          "default": 0,
+          "description": "Pagination offset"
+        }
+      },
+      "outputs": {
+        "success": {
+          "type": "boolean"
+        },
+        "domains": {
+          "type": "array",
+          "items": {
+            "type": "Domain"
+          }
+        },
+        "total_count": {
+          "type": "int"
+        },
+        "has_more": {
+          "type": "boolean"
+        }
+      },
+      "preconditions": [
+        "Domain system initialized",
+        "Valid filter criteria"
+      ],
+      "postconditions": [
+        "Filtered list returned",
+        "No side effects"
+      ],
+      "formulas": {
+        "pagination": "Results = All_domains[offset:offset+limit]",
+        "filter_match": "Match if all specified filter criteria satisfied"
+      },
+      "edge_cases": [
+        {
+          "case": "No domains match filter",
+          "handling": "Return empty array with success=true",
+          "outcome": "Empty result is valid"
+        },
+        {
+          "case": "Invalid filter criteria",
+          "handling": "Return error with validation details",
+          "outcome": "Fail fast with helpful message"
+        },
+        {
+          "case": "Limit exceeds maximum",
+          "handling": "Cap at system maximum (e.g., 1000)",
+          "outcome": "Prevent resource exhaustion"
+        },
+        {
+          "case": "Offset beyond results",
+          "handling": "Return empty array with has_more=false",
+          "outcome": "Handle pagination edge"
+        },
+        {
+          "case": "Concurrent domain creation",
+          "handling": "Return consistent snapshot",
+          "outcome": "Eventual consistency acceptable"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "List all domains",
+          "input": {},
+          "expected_output": {
+            "success": true,
+            "domains": "[array of all domains]",
+            "total_count": 10
+          }
+        },
+        {
+          "name": "Filter by curvature type",
+          "input": {
+            "filter": {
+              "curvature_type": "lorentzian"
+            }
+          },
+          "expected_output": {
+            "success": true,
+            "domains": "[only lorentzian domains]"
+          }
+        },
+        {
+          "name": "Filter by parent",
+          "input": {
+            "filter": {
+              "parent_domain": "ld://hypersync/base/ld0"
+            }
+          },
+          "expected_output": {
+            "success": true,
+            "domains": "[only direct children of LD(0)]"
+          }
+        },
+        {
+          "name": "Filter by state",
+          "input": {
+            "filter": {
+              "state": "active"
+            }
+          },
+          "expected_output": {
+            "success": true,
+            "domains": "[only active domains]"
+          }
+        },
+        {
+          "name": "Label pattern matching",
+          "input": {
+            "filter": {
+              "label_pattern": "test-*"
+            }
+          },
+          "expected_output": {
+            "success": true,
+            "domains": "[domains with labels starting with 'test-']"
+          }
+        },
+        {
+          "name": "Pagination",
+          "input": {
+            "limit": 10,
+            "offset": 0
+          },
+          "expected_output": {
+            "success": true,
+            "domains": "[first 10 domains]",
+            "has_more": true
+          }
+        },
+        {
+          "name": "No matches",
+          "input": {
+            "filter": {
+              "label_pattern": "nonexistent"
+            }
+          },
+          "expected_output": {
+            "success": true,
+            "domains": [],
+            "total_count": 0
+          }
+        },
+        {
+          "name": "Order by label",
+          "input": {
+            "order_by": "label"
+          },
+          "expected_output": {
+            "success": true,
+            "domains": "[domains sorted by label]"
+          }
+        }
+      ],
+      "security_properties": [
+        "Only returns domains caller can read",
+        "No information leakage through counts",
+        "Sensitive domain filtering"
+      ],
+      "performance": {
+        "complexity": "O(n) where n = total domains",
+        "typical_duration_ms": "< 50",
+        "resource_overhead": "Memory for result set"
+      }
+    },
+    "get_domain_hierarchy": {
+      "description": "Get the complete domain hierarchy tree",
+      "category": "query",
+      "inputs": {
+        "root_domain": {
+          "type": "DomainID",
+          "required": false,
+          "default": "ld://hypersync/base/ld0",
+          "description": "Root of subtree to return"
+        },
+        "max_depth": {
+          "type": "int",
+          "required": false,
+          "default": -1,
+          "description": "Maximum depth to traverse (-1 = unlimited)"
+        }
+      },
+      "outputs": {
+        "success": {
+          "type": "boolean"
+        },
+        "hierarchy": {
+          "type": "DomainHierarchy"
+        },
+        "node_count": {
+          "type": "int"
+        },
+        "max_depth": {
+          "type": "int"
+        }
+      },
+      "preconditions": [
+        "Root domain exists",
+        "Caller has read permission on root"
+      ],
+      "postconditions": [
+        "Tree structure returned",
+        "Parent-child relationships preserved",
+        "No side effects"
+      ],
+      "formulas": {
+        "tree_traversal": "Depth-first or breadth-first traversal",
+        "depth_calculation": "depth(node) = depth(parent) + 1, depth(root) = 0"
+      },
+      "edge_cases": [
+        {
+          "case": "Root domain not found",
+          "handling": "Return error",
+          "outcome": "Invalid root"
+        },
+        {
+          "case": "Max depth 0",
+          "handling": "Return only root node",
+          "outcome": "No children included"
+        },
+        {
+          "case": "Circular reference detected",
+          "handling": "Break cycle and log error",
+          "outcome": "Data corruption detected"
+        },
+        {
+          "case": "Very large hierarchy",
+          "handling": "Stream results or paginate",
+          "outcome": "Prevent memory exhaustion"
+        },
+        {
+          "case": "Partial permission",
+          "handling": "Include accessible nodes only",
+          "outcome": "Sparse tree with gaps"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "Get full hierarchy from LD(0)",
+          "input": {},
+          "expected_output": {
+            "success": true,
+            "hierarchy": {
+              "root": "ld://hypersync/base/ld0",
+              "nodes": "[complete tree]"
+            }
+          }
+        },
+        {
+          "name": "Get subtree",
+          "input": {
+            "root_domain": "ld://hypersync/test/parent"
+          },
+          "expected_output": {
+            "success": true,
+            "hierarchy": {
+              "root": "ld://hypersync/test/parent",
+              "nodes": "[subtree]"
+            }
+          }
+        },
+        {
+          "name": "Limit depth",
+          "input": {
+            "max_depth": 2
+          },
+          "expected_output": {
+            "success": true,
+            "hierarchy": "[only nodes within 2 levels]",
+            "max_depth": 2
+          }
+        },
+        {
+          "name": "Single node (depth 0)",
+          "input": {
+            "max_depth": 0
+          },
+          "expected_output": {
+            "success": true,
+            "hierarchy": {
+              "nodes": "[only root]"
+            },
+            "node_count": 1
+          }
+        },
+        {
+          "name": "Root not found",
+          "input": {
+            "root_domain": "ld://invalid/domain/id"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Root domain not found"
+          }
+        },
+        {
+          "name": "Empty subtree",
+          "setup": "Leaf domain with no children",
+          "input": {
+            "root_domain": "ld://hypersync/test/leaf"
+          },
+          "expected_output": {
+            "success": true,
+            "hierarchy": {
+              "nodes": "[single node]"
+            },
+            "node_count": 1
+          }
+        },
+        {
+          "name": "Large hierarchy",
+          "setup": "1000+ domains",
+          "input": {},
+          "expected_output": {
+            "success": true,
+            "note": "Returns complete tree efficiently"
+          }
+        },
+        {
+          "name": "Partial permissions",
+          "setup": "Some nodes inaccessible",
+          "input": {},
+          "expected_output": {
+            "success": true,
+            "hierarchy": "[tree with gaps]",
+            "note": "Only accessible nodes included"
+          }
+        }
+      ],
+      "security_properties": [
+        "Respects read permissions",
+        "No information leakage through structure",
+        "Sensitive domains filtered"
+      ],
+      "performance": {
+        "complexity": "O(n) where n = number of nodes",
+        "typical_duration_ms": "< 100",
+        "resource_overhead": "Memory proportional to tree size"
+      }
+    },
+    "set_domain_properties": {
+      "description": "Update domain configuration properties",
+      "category": "management",
+      "inputs": {
+        "domain_id": {
+          "type": "DomainID",
+          "required": true
+        },
+        "properties": {
+          "type": "DomainProperties",
+          "required": true,
+          "description": "Properties to update (partial update)"
+        }
+      },
+      "outputs": {
+        "success": {
+          "type": "boolean"
+        },
+        "domain": {
+          "type": "Domain"
+        },
+        "updated_fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "preconditions": [
+        "Domain exists",
+        "Domain is active or suspended",
+        "Caller has write permission",
+        "Properties are valid"
+      ],
+      "postconditions": [
+        "Properties updated",
+        "Domain validation passed",
+        "Audit log created"
+      ],
+      "formulas": {
+        "property_merge": "new_props = current_props \u222a update_props (update takes precedence)"
+      },
+      "edge_cases": [
+        {
+          "case": "Domain not found",
+          "handling": "Return error",
+          "outcome": "Cannot update nonexistent domain"
+        },
+        {
+          "case": "Domain in destroyed state",
+          "handling": "Return error",
+          "outcome": "Cannot update destroyed domain"
+        },
+        {
+          "case": "Invalid property value",
+          "handling": "Validate and reject",
+          "outcome": "Atomic update"
+        },
+        {
+          "case": "Conflicting curvature parameters",
+          "handling": "Detect and reject",
+          "outcome": "Maintain geometric consistency"
+        },
+        {
+          "case": "Permission denied",
+          "handling": "Return error",
+          "outcome": "Enforce access control"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "Update security level",
+          "input": {
+            "domain_id": "ld://hypersync/test/domain",
+            "properties": {
+              "security_level": "isolated"
+            }
+          },
+          "expected_output": {
+            "success": true,
+            "updated_fields": [
+              "security_level"
+            ]
+          }
+        },
+        {
+          "name": "Update resource limits",
+          "input": {
+            "domain_id": "ld://hypersync/test/domain",
+            "properties": {
+              "resource_limits": {
+                "max_memory_bytes": 1073741824
+              }
+            }
+          },
+          "expected_output": {
+            "success": true,
+            "updated_fields": [
+              "resource_limits"
+            ]
+          }
+        },
+        {
+          "name": "Update multiple properties",
+          "input": {
+            "domain_id": "ld://hypersync/test/domain",
+            "properties": {
+              "security_level": "secure",
+              "metadata": {
+                "owner": "team-a"
+              }
+            }
+          },
+          "expected_output": {
+            "success": true,
+            "updated_fields": [
+              "security_level",
+              "metadata"
+            ]
+          }
+        },
+        {
+          "name": "Invalid security level",
+          "input": {
+            "domain_id": "ld://hypersync/test/domain",
+            "properties": {
+              "security_level": "invalid"
+            }
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Invalid security level"
+          }
+        },
+        {
+          "name": "Domain not found",
+          "input": {
+            "domain_id": "ld://invalid/domain/id",
+            "properties": {}
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Domain not found"
+          }
+        },
+        {
+          "name": "Permission denied",
+          "setup": "Caller without write permission",
+          "input": {
+            "domain_id": "ld://hypersync/test/domain",
+            "properties": {}
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Permission denied"
+          }
+        },
+        {
+          "name": "Update destroyed domain",
+          "setup": "Domain in destroyed state",
+          "input": {
+            "domain_id": "ld://hypersync/test/destroyed",
+            "properties": {}
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Cannot update destroyed domain"
+          }
+        },
+        {
+          "name": "Conflicting curvature",
+          "input": {
+            "domain_id": "ld://hypersync/test/lorentzian",
+            "properties": {
+              "curvature_parameters": {
+                "curvature_constant": 1.0
+              }
+            }
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Curvature constraint violated"
+          }
+        }
+      ],
+      "security_properties": [
+        "Write permission enforced",
+        "Property validation ensures security",
+        "Audit trail created"
+      ],
+      "performance": {
+        "complexity": "O(1)",
+        "typical_duration_ms": "< 20",
+        "resource_overhead": "Minimal"
+      }
+    },
+    "get_domain_metrics": {
+      "description": "Get performance and usage metrics for a domain",
+      "category": "monitoring",
+      "inputs": {
+        "domain_id": {
+          "type": "DomainID",
+          "required": true
+        },
+        "time_range": {
+          "type": "object",
+          "required": false,
+          "properties": {
+            "start": {
+              "type": "timestamp"
+            },
+            "end": {
+              "type": "timestamp"
+            }
+          }
+        },
+        "metrics": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "required": false,
+          "description": "Specific metrics to return (default: all)"
+        }
+      },
+      "outputs": {
+        "success": {
+          "type": "boolean"
+        },
+        "metrics": {
+          "type": "DomainMetrics"
+        },
+        "time_series": {
+          "type": "array",
+          "description": "Historical data if time_range specified"
+        }
+      },
+      "preconditions": [
+        "Domain exists",
+        "Monitoring enabled"
+      ],
+      "postconditions": [
+        "Metrics returned",
+        "No side effects"
+      ],
+      "edge_cases": [
+        {
+          "case": "Domain not found",
+          "handling": "Return error",
+          "outcome": "Cannot get metrics for nonexistent domain"
+        },
+        {
+          "case": "Monitoring disabled",
+          "handling": "Return null with flag",
+          "outcome": "Indicate monitoring unavailable"
+        },
+        {
+          "case": "Invalid time range",
+          "handling": "Return error with validation",
+          "outcome": "Require valid time range"
+        },
+        {
+          "case": "No data in time range",
+          "handling": "Return empty array",
+          "outcome": "Valid empty result"
+        },
+        {
+          "case": "Very large time range",
+          "handling": "Downsample or paginate",
+          "outcome": "Prevent memory issues"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "Get current metrics",
+          "input": {
+            "domain_id": "ld://hypersync/test/domain"
+          },
+          "expected_output": {
+            "success": true,
+            "metrics": {
+              "total_operations": 1000,
+              "operations_per_second": 10.5,
+              "memory_used_bytes": 1048576
+            }
+          }
+        },
+        {
+          "name": "Get specific metrics",
+          "input": {
+            "domain_id": "ld://hypersync/test/domain",
+            "metrics": [
+              "operations_per_second",
+              "memory_used_bytes"
+            ]
+          },
+          "expected_output": {
+            "success": true,
+            "metrics": {
+              "operations_per_second": 10.5,
+              "memory_used_bytes": 1048576
+            }
+          }
+        },
+        {
+          "name": "Get time series",
+          "input": {
+            "domain_id": "ld://hypersync/test/domain",
+            "time_range": {
+              "start": "2026-01-12T00:00:00Z",
+              "end": "2026-01-12T23:59:59Z"
+            }
+          },
+          "expected_output": {
+            "success": true,
+            "time_series": "[array of metric snapshots]"
+          }
+        },
+        {
+          "name": "Domain not found",
+          "input": {
+            "domain_id": "ld://invalid/domain/id"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Domain not found"
+          }
+        },
+        {
+          "name": "Monitoring disabled",
+          "setup": "Domain with monitoring disabled",
+          "input": {
+            "domain_id": "ld://hypersync/test/no-monitoring"
+          },
+          "expected_output": {
+            "success": true,
+            "metrics": null,
+            "monitoring_disabled": true
+          }
+        },
+        {
+          "name": "Invalid time range",
+          "input": {
+            "domain_id": "ld://hypersync/test/domain",
+            "time_range": {
+              "start": "2026-01-13",
+              "end": "2026-01-12"
+            }
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Invalid time range: end before start"
+          }
+        },
+        {
+          "name": "No data in range",
+          "input": {
+            "domain_id": "ld://hypersync/test/domain",
+            "time_range": {
+              "start": "2020-01-01T00:00:00Z",
+              "end": "2020-01-02T00:00:00Z"
+            }
+          },
+          "expected_output": {
+            "success": true,
+            "time_series": []
+          }
+        },
+        {
+          "name": "Invalid metric name",
+          "input": {
+            "domain_id": "ld://hypersync/test/domain",
+            "metrics": [
+              "invalid_metric"
+            ]
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Invalid metric name: invalid_metric"
+          }
+        }
+      ],
+      "security_properties": [
+        "Read permission enforced",
+        "No sensitive data leakage"
+      ],
+      "performance": {
+        "complexity": "O(1) for current, O(n) for time series",
+        "typical_duration_ms": "< 20",
+        "resource_overhead": "Minimal"
+      }
+    },
+    "validate_domain": {
+      "description": "Validate domain integrity and consistency",
+      "category": "validation",
+      "inputs": {
+        "domain_id": {
+          "type": "DomainID",
+          "required": true
+        },
+        "checks": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "required": false,
+          "default": [
+            "all"
+          ],
+          "description": "Specific validation checks to run"
+        }
+      },
+      "outputs": {
+        "success": {
+          "type": "boolean"
+        },
+        "valid": {
+          "type": "boolean"
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "warnings": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "check_results": {
+          "type": "object"
+        }
+      },
+      "preconditions": [
+        "Domain exists"
+      ],
+      "postconditions": [
+        "Validation results returned",
+        "No modifications made"
+      ],
+      "formulas": {
+        "geometric_consistency": "Verify curvature constraint: \u03ba \u2264 0 for lorentzian",
+        "metric_validity": "Verify metric signature matches curvature type",
+        "boundary_integrity": "Verify parent-child relationships form DAG"
+      },
+      "edge_cases": [
+        {
+          "case": "Domain not found",
+          "handling": "Return error",
+          "outcome": "Cannot validate nonexistent domain"
+        },
+        {
+          "case": "Invalid check name",
+          "handling": "Return error",
+          "outcome": "Require valid check names"
+        },
+        {
+          "case": "Validation takes too long",
+          "handling": "Timeout and return partial results",
+          "outcome": "Prevent hanging"
+        },
+        {
+          "case": "Validation finds corruption",
+          "handling": "Return detailed error report",
+          "outcome": "Enable diagnosis"
+        },
+        {
+          "case": "Domain being modified",
+          "handling": "Lock or snapshot for consistent validation",
+          "outcome": "Ensure consistency"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "Validate healthy domain",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0"
+          },
+          "expected_output": {
+            "success": true,
+            "valid": true,
+            "errors": [],
+            "warnings": []
+          }
+        },
+        {
+          "name": "Validate with specific checks",
+          "input": {
+            "domain_id": "ld://hypersync/test/domain",
+            "checks": [
+              "geometric_consistency",
+              "boundary_integrity"
+            ]
+          },
+          "expected_output": {
+            "success": true,
+            "valid": true,
+            "check_results": {
+              "geometric_consistency": "pass",
+              "boundary_integrity": "pass"
+            }
+          }
+        },
+        {
+          "name": "Detect curvature violation",
+          "setup": "Domain with inconsistent curvature",
+          "input": {
+            "domain_id": "ld://hypersync/test/invalid"
+          },
+          "expected_output": {
+            "success": true,
+            "valid": false,
+            "errors": [
+              "Curvature constraint violated: lorentzian requires \u03ba \u2264 0"
+            ]
+          }
+        },
+        {
+          "name": "Detect circular reference",
+          "setup": "Corrupted domain with cyclic parent reference",
+          "input": {
+            "domain_id": "ld://hypersync/test/cyclic"
+          },
+          "expected_output": {
+            "success": true,
+            "valid": false,
+            "errors": [
+              "Circular parent reference detected"
+            ]
+          }
+        },
+        {
+          "name": "Warning for resource usage",
+          "setup": "Domain near resource limits",
+          "input": {
+            "domain_id": "ld://hypersync/test/high-usage"
+          },
+          "expected_output": {
+            "success": true,
+            "valid": true,
+            "warnings": [
+              "Memory usage at 95% of limit"
+            ]
+          }
+        },
+        {
+          "name": "Domain not found",
+          "input": {
+            "domain_id": "ld://invalid/domain/id"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Domain not found"
+          }
+        },
+        {
+          "name": "Invalid check name",
+          "input": {
+            "domain_id": "ld://hypersync/test/domain",
+            "checks": [
+              "invalid_check"
+            ]
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Invalid check name: invalid_check"
+          }
+        },
+        {
+          "name": "All checks pass",
+          "input": {
+            "domain_id": "ld://hypersync/test/domain",
+            "checks": [
+              "all"
+            ]
+          },
+          "expected_output": {
+            "success": true,
+            "valid": true,
+            "check_results": {
+              "geometric_consistency": "pass",
+              "security_properties": "pass",
+              "boundary_integrity": "pass",
+              "metric_validity": "pass"
+            }
+          }
+        }
+      ],
+      "security_properties": [
+        "Read-only operation",
+        "No side effects",
+        "Detailed error reporting"
+      ],
+      "performance": {
+        "complexity": "O(1) for single domain, O(n) for hierarchy checks",
+        "typical_duration_ms": "< 50",
+        "resource_overhead": "Minimal"
+      }
+    },
+    "migrate_domain": {
+      "description": "Migrate domain to different parent in hierarchy",
+      "category": "management",
+      "inputs": {
+        "domain_id": {
+          "type": "DomainID",
+          "required": true
+        },
+        "new_parent_domain": {
+          "type": "DomainID",
+          "required": true
+        },
+        "preserve_addresses": {
+          "type": "boolean",
+          "required": false,
+          "default": true,
+          "description": "Keep existing addresses or regenerate"
+        }
+      },
+      "outputs": {
+        "success": {
+          "type": "boolean"
+        },
+        "domain": {
+          "type": "Domain"
+        },
+        "address_changes": {
+          "type": "array"
+        }
+      },
+      "preconditions": [
+        "Domain exists and not LD(0)",
+        "New parent exists and is active",
+        "Migration does not create cycle",
+        "Caller has write permission"
+      ],
+      "postconditions": [
+        "Domain parent updated",
+        "Hierarchy consistency maintained",
+        "Addresses updated if needed",
+        "Audit log created"
+      ],
+      "formulas": {
+        "cycle_detection": "Check if new_parent is descendant of domain",
+        "address_update": "Update ld:// paths if preserve_addresses=false"
+      },
+      "edge_cases": [
+        {
+          "case": "Migrate LD(0)",
+          "handling": "Reject - cannot migrate base domain",
+          "outcome": "Base domain immutable"
+        },
+        {
+          "case": "Create cycle",
+          "handling": "Detect and reject",
+          "outcome": "Maintain DAG invariant"
+        },
+        {
+          "case": "New parent not found",
+          "handling": "Return error",
+          "outcome": "Require valid parent"
+        },
+        {
+          "case": "Same parent",
+          "handling": "Idempotent - succeed with no changes",
+          "outcome": "No-op migration"
+        },
+        {
+          "case": "Address conflicts",
+          "handling": "Resolve or reject",
+          "outcome": "Ensure unique addresses"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "Migrate to new parent",
+          "input": {
+            "domain_id": "ld://hypersync/test/child",
+            "new_parent_domain": "ld://hypersync/test/new-parent"
+          },
+          "expected_output": {
+            "success": true,
+            "domain": {
+              "parent_domain": "ld://hypersync/test/new-parent"
+            }
+          }
+        },
+        {
+          "name": "Migrate LD(0) rejected",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0",
+            "new_parent_domain": "ld://hypersync/test/parent"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Cannot migrate base domain LD(0)"
+          }
+        },
+        {
+          "name": "Cycle detection",
+          "setup": "Trying to make domain its own ancestor",
+          "input": {
+            "domain_id": "ld://hypersync/test/parent",
+            "new_parent_domain": "ld://hypersync/test/child"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Migration would create cycle"
+          }
+        },
+        {
+          "name": "Parent not found",
+          "input": {
+            "domain_id": "ld://hypersync/test/domain",
+            "new_parent_domain": "ld://invalid/domain/id"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "New parent domain not found"
+          }
+        },
+        {
+          "name": "Same parent (no-op)",
+          "setup": "Domain already has this parent",
+          "input": {
+            "domain_id": "ld://hypersync/test/child",
+            "new_parent_domain": "ld://hypersync/base/ld0"
+          },
+          "expected_output": {
+            "success": true,
+            "note": "No changes made"
+          }
+        },
+        {
+          "name": "Regenerate addresses",
+          "input": {
+            "domain_id": "ld://hypersync/test/domain",
+            "new_parent_domain": "ld://hypersync/test/new-parent",
+            "preserve_addresses": false
+          },
+          "expected_output": {
+            "success": true,
+            "address_changes": "[list of updated addresses]"
+          }
+        },
+        {
+          "name": "Permission denied",
+          "setup": "Caller without write permission",
+          "input": {
+            "domain_id": "ld://hypersync/test/domain",
+            "new_parent_domain": "ld://hypersync/test/parent"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Permission denied"
+          }
+        },
+        {
+          "name": "Migrate with children",
+          "setup": "Domain has children",
+          "input": {
+            "domain_id": "ld://hypersync/test/parent-with-children",
+            "new_parent_domain": "ld://hypersync/test/new-parent"
+          },
+          "expected_output": {
+            "success": true,
+            "note": "Children remain with domain"
+          }
+        }
+      ],
+      "security_properties": [
+        "Write permission enforced",
+        "Cycle prevention",
+        "Audit trail created"
+      ],
+      "performance": {
+        "complexity": "O(depth) for cycle detection",
+        "typical_duration_ms": "< 50",
+        "resource_overhead": "Minimal"
+      }
+    },
+    "clone_domain": {
+      "description": "Create an isolated copy of a domain",
+      "category": "management",
+      "inputs": {
+        "source_domain_id": {
+          "type": "DomainID",
+          "required": true
+        },
+        "new_label": {
+          "type": "string",
+          "required": false,
+          "description": "Label for cloned domain (default: '{original}-clone')"
+        },
+        "clone_children": {
+          "type": "boolean",
+          "required": false,
+          "default": false,
+          "description": "Also clone child domains"
+        }
+      },
+      "outputs": {
+        "success": {
+          "type": "boolean"
+        },
+        "cloned_domain_id": {
+          "type": "DomainID"
+        },
+        "cloned_domains": {
+          "type": "array",
+          "items": {
+            "type": "DomainID"
+          },
+          "description": "All cloned domains if clone_children=true"
+        }
+      },
+      "preconditions": [
+        "Source domain exists",
+        "Caller has read permission on source",
+        "Caller has create permission on parent"
+      ],
+      "postconditions": [
+        "New domain created with copied properties",
+        "New unique domain_id assigned",
+        "No shared state with original"
+      ],
+      "formulas": {
+        "property_copy": "Clone all properties except domain_id, created_at, updated_at",
+        "hierarchy_clone": "Preserve relative parent-child relationships in clone"
+      },
+      "edge_cases": [
+        {
+          "case": "Source not found",
+          "handling": "Return error",
+          "outcome": "Cannot clone nonexistent domain"
+        },
+        {
+          "case": "Clone LD(0)",
+          "handling": "Allow but with restrictions",
+          "outcome": "Cloned LD(0) is not base domain"
+        },
+        {
+          "case": "Insufficient permissions",
+          "handling": "Return error",
+          "outcome": "Enforce access control"
+        },
+        {
+          "case": "Clone with deep hierarchy",
+          "handling": "Recursively clone maintaining structure",
+          "outcome": "Preserve relationships"
+        },
+        {
+          "case": "Resource limits exceeded",
+          "handling": "Return error",
+          "outcome": "Respect quotas"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "Clone simple domain",
+          "input": {
+            "source_domain_id": "ld://hypersync/test/original"
+          },
+          "expected_output": {
+            "success": true,
+            "cloned_domain_id": "ld://hypersync/test/[new-hash]",
+            "note": "New domain with copied properties"
+          }
+        },
+        {
+          "name": "Clone with custom label",
+          "input": {
+            "source_domain_id": "ld://hypersync/test/original",
+            "new_label": "my-clone"
+          },
+          "expected_output": {
+            "success": true,
+            "cloned_domain_id": "ld://hypersync/test/[new-hash]",
+            "label": "my-clone"
+          }
+        },
+        {
+          "name": "Clone with children",
+          "input": {
+            "source_domain_id": "ld://hypersync/test/parent",
+            "clone_children": true
+          },
+          "expected_output": {
+            "success": true,
+            "cloned_domains": [
+              "ld://hypersync/test/[parent-hash]",
+              "ld://hypersync/test/[child1-hash]",
+              "ld://hypersync/test/[child2-hash]"
+            ]
+          }
+        },
+        {
+          "name": "Source not found",
+          "input": {
+            "source_domain_id": "ld://invalid/domain/id"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Source domain not found"
+          }
+        },
+        {
+          "name": "Permission denied",
+          "setup": "Caller without read permission",
+          "input": {
+            "source_domain_id": "ld://hypersync/secure/domain"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Permission denied"
+          }
+        },
+        {
+          "name": "Clone LD(0)",
+          "input": {
+            "source_domain_id": "ld://hypersync/base/ld0"
+          },
+          "expected_output": {
+            "success": true,
+            "cloned_domain_id": "ld://hypersync/test/[new-hash]",
+            "note": "Clone is not base domain"
+          }
+        },
+        {
+          "name": "Resource limit exceeded",
+          "setup": "At max domain quota",
+          "input": {
+            "source_domain_id": "ld://hypersync/test/domain"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Resource limit exceeded"
+          }
+        },
+        {
+          "name": "Clone preserves properties",
+          "input": {
+            "source_domain_id": "ld://hypersync/test/configured"
+          },
+          "expected_output": {
+            "success": true,
+            "note": "Security level, curvature, policies all copied"
+          }
+        }
+      ],
+      "security_properties": [
+        "Read permission on source enforced",
+        "Create permission on parent enforced",
+        "Clones are fully isolated",
+        "No shared secrets"
+      ],
+      "performance": {
+        "complexity": "O(1) without children, O(n) with children",
+        "typical_duration_ms": "< 100",
+        "resource_overhead": "Full copy of domain state"
+      }
+    },
+    "merge_domains": {
+      "description": "Merge two domains into one, combining resources",
+      "category": "management",
+      "inputs": {
+        "domain_id_1": {
+          "type": "DomainID",
+          "required": true
+        },
+        "domain_id_2": {
+          "type": "DomainID",
+          "required": true
+        },
+        "target_domain_id": {
+          "type": "DomainID",
+          "required": false,
+          "description": "Keep this domain (default: domain_id_1)"
+        },
+        "conflict_resolution": {
+          "type": "string",
+          "required": false,
+          "default": "prefer_target",
+          "values": [
+            "prefer_target",
+            "prefer_source",
+            "merge",
+            "error"
+          ]
+        }
+      },
+      "outputs": {
+        "success": {
+          "type": "boolean"
+        },
+        "merged_domain_id": {
+          "type": "DomainID"
+        },
+        "conflicts_resolved": {
+          "type": "array"
+        }
+      },
+      "preconditions": [
+        "Both domains exist",
+        "Both domains have same curvature type",
+        "Caller has write permission on both",
+        "Neither domain is LD(0)"
+      ],
+      "postconditions": [
+        "Target domain contains merged resources",
+        "Source domain destroyed",
+        "Addresses updated to target"
+      ],
+      "formulas": {
+        "resource_merge": "Total_resources = resources_1 \u222a resources_2",
+        "property_merge": "Use conflict_resolution strategy"
+      },
+      "edge_cases": [
+        {
+          "case": "Merge LD(0)",
+          "handling": "Reject - cannot merge base domain",
+          "outcome": "Protect base domain"
+        },
+        {
+          "case": "Different curvature types",
+          "handling": "Reject - geometric incompatibility",
+          "outcome": "Enforce consistency"
+        },
+        {
+          "case": "Conflicting properties",
+          "handling": "Apply conflict resolution strategy",
+          "outcome": "Deterministic merge"
+        },
+        {
+          "case": "One domain not found",
+          "handling": "Return error",
+          "outcome": "Require both domains"
+        },
+        {
+          "case": "Domains have children",
+          "handling": "Merge children under target or reject",
+          "outcome": "Handle hierarchy"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "Merge two domains",
+          "input": {
+            "domain_id_1": "ld://hypersync/test/domain1",
+            "domain_id_2": "ld://hypersync/test/domain2"
+          },
+          "expected_output": {
+            "success": true,
+            "merged_domain_id": "ld://hypersync/test/domain1",
+            "note": "domain2 merged into domain1"
+          }
+        },
+        {
+          "name": "Merge LD(0) rejected",
+          "input": {
+            "domain_id_1": "ld://hypersync/base/ld0",
+            "domain_id_2": "ld://hypersync/test/domain"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Cannot merge base domain LD(0)"
+          }
+        },
+        {
+          "name": "Different curvature types",
+          "setup": "domain1 is lorentzian, domain2 is riemannian",
+          "input": {
+            "domain_id_1": "ld://hypersync/test/lorentzian",
+            "domain_id_2": "ld://hypersync/test/riemannian"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Cannot merge domains with different curvature types"
+          }
+        },
+        {
+          "name": "Conflict resolution - prefer target",
+          "setup": "Domains have conflicting properties",
+          "input": {
+            "domain_id_1": "ld://hypersync/test/domain1",
+            "domain_id_2": "ld://hypersync/test/domain2",
+            "conflict_resolution": "prefer_target"
+          },
+          "expected_output": {
+            "success": true,
+            "conflicts_resolved": [
+              "security_level: kept domain1 value"
+            ]
+          }
+        },
+        {
+          "name": "Specify target domain",
+          "input": {
+            "domain_id_1": "ld://hypersync/test/domain1",
+            "domain_id_2": "ld://hypersync/test/domain2",
+            "target_domain_id": "ld://hypersync/test/domain2"
+          },
+          "expected_output": {
+            "success": true,
+            "merged_domain_id": "ld://hypersync/test/domain2"
+          }
+        },
+        {
+          "name": "Domain not found",
+          "input": {
+            "domain_id_1": "ld://hypersync/test/domain1",
+            "domain_id_2": "ld://invalid/domain/id"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Domain not found"
+          }
+        },
+        {
+          "name": "Permission denied",
+          "setup": "Caller without write permission",
+          "input": {
+            "domain_id_1": "ld://hypersync/test/domain1",
+            "domain_id_2": "ld://hypersync/test/domain2"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Permission denied"
+          }
+        },
+        {
+          "name": "Merge domains with children",
+          "setup": "Both domains have children",
+          "input": {
+            "domain_id_1": "ld://hypersync/test/parent1",
+            "domain_id_2": "ld://hypersync/test/parent2"
+          },
+          "expected_output": {
+            "success": true,
+            "note": "All children now under merged domain"
+          }
+        }
+      ],
+      "security_properties": [
+        "Write permission on both domains enforced",
+        "Merged domain maintains strongest security",
+        "Audit trail for merge operation"
+      ],
+      "performance": {
+        "complexity": "O(n + m) where n, m are resource counts",
+        "typical_duration_ms": "< 500",
+        "resource_overhead": "Temporary memory for merge"
+      }
+    },
+    "split_domain": {
+      "description": "Split a domain into multiple domains",
+      "category": "management",
+      "inputs": {
+        "domain_id": {
+          "type": "DomainID",
+          "required": true
+        },
+        "split_strategy": {
+          "type": "string",
+          "required": true,
+          "values": [
+            "by_resource_type",
+            "by_label_pattern",
+            "by_custom_function"
+          ],
+          "description": "How to partition resources"
+        },
+        "split_config": {
+          "type": "object",
+          "required": true,
+          "description": "Strategy-specific configuration"
+        }
+      },
+      "outputs": {
+        "success": {
+          "type": "boolean"
+        },
+        "created_domains": {
+          "type": "array",
+          "items": {
+            "type": "DomainID"
+          }
+        },
+        "original_destroyed": {
+          "type": "boolean"
+        }
+      },
+      "preconditions": [
+        "Domain exists and not LD(0)",
+        "Domain has resources to split",
+        "Caller has write permission"
+      ],
+      "postconditions": [
+        "Multiple new domains created",
+        "Resources partitioned",
+        "Original domain destroyed or preserved based on config"
+      ],
+      "formulas": {
+        "partition": "Resources = Partition_1 \u222a Partition_2 \u222a ... \u222a Partition_n",
+        "disjoint": "Partition_i \u2229 Partition_j = \u2205 for i \u2260 j"
+      },
+      "edge_cases": [
+        {
+          "case": "Split LD(0)",
+          "handling": "Reject - cannot split base domain",
+          "outcome": "Protect base domain"
+        },
+        {
+          "case": "Empty partitions",
+          "handling": "Skip empty partitions or create empty domains",
+          "outcome": "Configurable behavior"
+        },
+        {
+          "case": "Single partition",
+          "handling": "No split needed, return original",
+          "outcome": "Idempotent"
+        },
+        {
+          "case": "Invalid split strategy",
+          "handling": "Return error",
+          "outcome": "Require valid strategy"
+        },
+        {
+          "case": "Resource conflicts",
+          "handling": "Apply tie-breaking rules",
+          "outcome": "Deterministic split"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "Split by resource type",
+          "input": {
+            "domain_id": "ld://hypersync/test/mixed",
+            "split_strategy": "by_resource_type",
+            "split_config": {}
+          },
+          "expected_output": {
+            "success": true,
+            "created_domains": [
+              "ld://hypersync/test/mixed-type1",
+              "ld://hypersync/test/mixed-type2"
+            ]
+          }
+        },
+        {
+          "name": "Split LD(0) rejected",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0",
+            "split_strategy": "by_resource_type",
+            "split_config": {}
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Cannot split base domain LD(0)"
+          }
+        },
+        {
+          "name": "Split by label pattern",
+          "input": {
+            "domain_id": "ld://hypersync/test/domain",
+            "split_strategy": "by_label_pattern",
+            "split_config": {
+              "patterns": [
+                "prod-*",
+                "dev-*"
+              ]
+            }
+          },
+          "expected_output": {
+            "success": true,
+            "created_domains": [
+              "ld://hypersync/test/domain-prod",
+              "ld://hypersync/test/domain-dev"
+            ]
+          }
+        },
+        {
+          "name": "No resources to split",
+          "setup": "Empty domain",
+          "input": {
+            "domain_id": "ld://hypersync/test/empty",
+            "split_strategy": "by_resource_type",
+            "split_config": {}
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Domain has no resources to split"
+          }
+        },
+        {
+          "name": "Single partition (no split)",
+          "setup": "All resources match single criterion",
+          "input": {
+            "domain_id": "ld://hypersync/test/uniform",
+            "split_strategy": "by_resource_type",
+            "split_config": {}
+          },
+          "expected_output": {
+            "success": true,
+            "created_domains": [],
+            "note": "No split needed"
+          }
+        },
+        {
+          "name": "Invalid strategy",
+          "input": {
+            "domain_id": "ld://hypersync/test/domain",
+            "split_strategy": "invalid_strategy",
+            "split_config": {}
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Invalid split strategy"
+          }
+        },
+        {
+          "name": "Permission denied",
+          "setup": "Caller without write permission",
+          "input": {
+            "domain_id": "ld://hypersync/test/domain",
+            "split_strategy": "by_resource_type",
+            "split_config": {}
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Permission denied"
+          }
+        },
+        {
+          "name": "Custom split function",
+          "input": {
+            "domain_id": "ld://hypersync/test/domain",
+            "split_strategy": "by_custom_function",
+            "split_config": {
+              "function": "split_by_size"
+            }
+          },
+          "expected_output": {
+            "success": true,
+            "created_domains": "[multiple domains]"
+          }
+        }
+      ],
+      "security_properties": [
+        "Write permission enforced",
+        "New domains inherit security properties",
+        "Audit trail created"
+      ],
+      "performance": {
+        "complexity": "O(n) where n = resource count",
+        "typical_duration_ms": "< 1000",
+        "resource_overhead": "Memory for partitioning"
+      }
+    },
+    "snapshot_domain": {
+      "description": "Create point-in-time snapshot of domain state",
+      "category": "backup",
+      "inputs": {
+        "domain_id": {
+          "type": "DomainID",
+          "required": true
+        },
+        "snapshot_label": {
+          "type": "string",
+          "required": false,
+          "description": "Human-readable snapshot name"
+        },
+        "include_children": {
+          "type": "boolean",
+          "required": false,
+          "default": false
+        }
+      },
+      "outputs": {
+        "success": {
+          "type": "boolean"
+        },
+        "snapshot_id": {
+          "type": "string"
+        },
+        "snapshot": {
+          "type": "DomainSnapshot"
+        },
+        "checksum": {
+          "type": "string",
+          "format": "sha256"
+        }
+      },
+      "preconditions": [
+        "Domain exists",
+        "Caller has read permission"
+      ],
+      "postconditions": [
+        "Snapshot created and stored",
+        "Checksum computed",
+        "No modifications to domain"
+      ],
+      "formulas": {
+        "checksum": "SHA256(domain_state || timestamp || nonce)"
+      },
+      "edge_cases": [
+        {
+          "case": "Domain not found",
+          "handling": "Return error",
+          "outcome": "Cannot snapshot nonexistent domain"
+        },
+        {
+          "case": "Domain being modified",
+          "handling": "Create consistent snapshot (lock or MVCC)",
+          "outcome": "Ensure consistency"
+        },
+        {
+          "case": "Very large domain",
+          "handling": "Stream snapshot to storage",
+          "outcome": "Prevent memory exhaustion"
+        },
+        {
+          "case": "Storage full",
+          "handling": "Return error",
+          "outcome": "Require space for snapshot"
+        },
+        {
+          "case": "Snapshot with deep hierarchy",
+          "handling": "Recursively snapshot children",
+          "outcome": "Complete state capture"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "Snapshot simple domain",
+          "input": {
+            "domain_id": "ld://hypersync/test/domain"
+          },
+          "expected_output": {
+            "success": true,
+            "snapshot_id": "[unique-id]",
+            "checksum": "[sha256-hash]"
+          }
+        },
+        {
+          "name": "Snapshot with label",
+          "input": {
+            "domain_id": "ld://hypersync/test/domain",
+            "snapshot_label": "before-upgrade"
+          },
+          "expected_output": {
+            "success": true,
+            "snapshot": {
+              "snapshot_label": "before-upgrade"
+            }
+          }
+        },
+        {
+          "name": "Snapshot with children",
+          "input": {
+            "domain_id": "ld://hypersync/test/parent",
+            "include_children": true
+          },
+          "expected_output": {
+            "success": true,
+            "note": "Snapshot includes all child domains"
+          }
+        },
+        {
+          "name": "Domain not found",
+          "input": {
+            "domain_id": "ld://invalid/domain/id"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Domain not found"
+          }
+        },
+        {
+          "name": "Permission denied",
+          "setup": "Caller without read permission",
+          "input": {
+            "domain_id": "ld://hypersync/secure/domain"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Permission denied"
+          }
+        },
+        {
+          "name": "Snapshot LD(0)",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0"
+          },
+          "expected_output": {
+            "success": true,
+            "note": "Base domain snapshot created"
+          }
+        },
+        {
+          "name": "Concurrent snapshots",
+          "setup": "Multiple concurrent snapshot calls",
+          "input": {
+            "domain_id": "ld://hypersync/test/domain"
+          },
+          "expected_output": {
+            "success": true,
+            "note": "Each creates independent snapshot"
+          }
+        },
+        {
+          "name": "Storage full",
+          "setup": "Insufficient storage space",
+          "input": {
+            "domain_id": "ld://hypersync/test/domain"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Insufficient storage space"
+          }
+        }
+      ],
+      "security_properties": [
+        "Read permission enforced",
+        "Snapshot integrity via checksum",
+        "No modification to original"
+      ],
+      "performance": {
+        "complexity": "O(n) where n = domain state size",
+        "typical_duration_ms": "< 200",
+        "resource_overhead": "Full copy of domain state"
+      }
+    },
+    "restore_domain": {
+      "description": "Restore domain from snapshot",
+      "category": "backup",
+      "inputs": {
+        "snapshot_id": {
+          "type": "string",
+          "required": true
+        },
+        "target_domain_id": {
+          "type": "DomainID",
+          "required": false,
+          "description": "Restore to this domain (default: original domain)"
+        },
+        "verify_checksum": {
+          "type": "boolean",
+          "required": false,
+          "default": true
+        }
+      },
+      "outputs": {
+        "success": {
+          "type": "boolean"
+        },
+        "restored_domain_id": {
+          "type": "DomainID"
+        },
+        "checksum_valid": {
+          "type": "boolean"
+        }
+      },
+      "preconditions": [
+        "Snapshot exists",
+        "Caller has write permission on target",
+        "Target domain exists or will be created"
+      ],
+      "postconditions": [
+        "Domain state restored from snapshot",
+        "Checksum verified if requested",
+        "Audit log created"
+      ],
+      "formulas": {
+        "checksum_verification": "Verify SHA256(restored_state) == snapshot.checksum"
+      },
+      "edge_cases": [
+        {
+          "case": "Snapshot not found",
+          "handling": "Return error",
+          "outcome": "Cannot restore from nonexistent snapshot"
+        },
+        {
+          "case": "Checksum mismatch",
+          "handling": "Abort restore, return error",
+          "outcome": "Protect against corruption"
+        },
+        {
+          "case": "Target domain active",
+          "handling": "Require confirmation or force flag",
+          "outcome": "Prevent accidental overwrite"
+        },
+        {
+          "case": "Restore LD(0)",
+          "handling": "Restrict or reject",
+          "outcome": "Protect base domain"
+        },
+        {
+          "case": "Incompatible versions",
+          "handling": "Attempt migration or reject",
+          "outcome": "Handle schema evolution"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "Restore domain",
+          "input": {
+            "snapshot_id": "[snapshot-id]"
+          },
+          "expected_output": {
+            "success": true,
+            "restored_domain_id": "ld://hypersync/test/domain",
+            "checksum_valid": true
+          }
+        },
+        {
+          "name": "Restore to different domain",
+          "input": {
+            "snapshot_id": "[snapshot-id]",
+            "target_domain_id": "ld://hypersync/test/new-domain"
+          },
+          "expected_output": {
+            "success": true,
+            "restored_domain_id": "ld://hypersync/test/new-domain"
+          }
+        },
+        {
+          "name": "Snapshot not found",
+          "input": {
+            "snapshot_id": "invalid-snapshot-id"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Snapshot not found"
+          }
+        },
+        {
+          "name": "Checksum mismatch",
+          "setup": "Corrupted snapshot",
+          "input": {
+            "snapshot_id": "[corrupted-snapshot-id]"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Snapshot checksum verification failed"
+          }
+        },
+        {
+          "name": "Skip checksum verification",
+          "input": {
+            "snapshot_id": "[snapshot-id]",
+            "verify_checksum": false
+          },
+          "expected_output": {
+            "success": true,
+            "checksum_valid": null
+          }
+        },
+        {
+          "name": "Permission denied",
+          "setup": "Caller without write permission",
+          "input": {
+            "snapshot_id": "[snapshot-id]"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Permission denied"
+          }
+        },
+        {
+          "name": "Restore LD(0)",
+          "input": {
+            "snapshot_id": "[ld0-snapshot-id]",
+            "target_domain_id": "ld://hypersync/base/ld0"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Cannot restore base domain LD(0)"
+          }
+        },
+        {
+          "name": "Restore creates new domain",
+          "input": {
+            "snapshot_id": "[snapshot-id]",
+            "target_domain_id": "ld://hypersync/test/new-domain"
+          },
+          "expected_output": {
+            "success": true,
+            "note": "New domain created from snapshot"
+          }
+        }
+      ],
+      "security_properties": [
+        "Write permission enforced",
+        "Checksum verification prevents corruption",
+        "Audit trail created"
+      ],
+      "performance": {
+        "complexity": "O(n) where n = snapshot size",
+        "typical_duration_ms": "< 500",
+        "resource_overhead": "Temporary memory for restore"
+      }
+    },
+    "monitor_domain": {
+      "description": "Set up real-time monitoring for a domain",
+      "category": "monitoring",
+      "inputs": {
+        "domain_id": {
+          "type": "DomainID",
+          "required": true
+        },
+        "metrics": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "required": false,
+          "default": [
+            "all"
+          ],
+          "description": "Metrics to monitor"
+        },
+        "sampling_interval_ms": {
+          "type": "int",
+          "required": false,
+          "default": 1000
+        },
+        "alert_thresholds": {
+          "type": "object",
+          "required": false,
+          "description": "Alert thresholds for metrics"
+        }
+      },
+      "outputs": {
+        "success": {
+          "type": "boolean"
+        },
+        "monitor_id": {
+          "type": "string"
+        },
+        "stream_url": {
+          "type": "string",
+          "description": "WebSocket URL for metric stream"
+        }
+      },
+      "preconditions": [
+        "Domain exists",
+        "Caller has read permission",
+        "Monitoring system available"
+      ],
+      "postconditions": [
+        "Monitoring active",
+        "Metrics streaming to client",
+        "Alerts configured"
+      ],
+      "edge_cases": [
+        {
+          "case": "Domain not found",
+          "handling": "Return error",
+          "outcome": "Cannot monitor nonexistent domain"
+        },
+        {
+          "case": "Monitoring system unavailable",
+          "handling": "Return error with fallback options",
+          "outcome": "Graceful degradation"
+        },
+        {
+          "case": "Invalid sampling interval",
+          "handling": "Clamp to valid range",
+          "outcome": "Prevent resource abuse"
+        },
+        {
+          "case": "Too many monitors",
+          "handling": "Return error with quota info",
+          "outcome": "Limit resource usage"
+        },
+        {
+          "case": "Domain destroyed during monitoring",
+          "handling": "Close stream gracefully",
+          "outcome": "Clean termination"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "Monitor domain",
+          "input": {
+            "domain_id": "ld://hypersync/test/domain"
+          },
+          "expected_output": {
+            "success": true,
+            "monitor_id": "[monitor-id]",
+            "stream_url": "ws://monitoring/[monitor-id]"
+          }
+        },
+        {
+          "name": "Monitor specific metrics",
+          "input": {
+            "domain_id": "ld://hypersync/test/domain",
+            "metrics": [
+              "operations_per_second",
+              "memory_used_bytes"
+            ]
+          },
+          "expected_output": {
+            "success": true,
+            "note": "Only specified metrics streamed"
+          }
+        },
+        {
+          "name": "Custom sampling interval",
+          "input": {
+            "domain_id": "ld://hypersync/test/domain",
+            "sampling_interval_ms": 5000
+          },
+          "expected_output": {
+            "success": true,
+            "note": "Metrics sampled every 5 seconds"
+          }
+        },
+        {
+          "name": "With alert thresholds",
+          "input": {
+            "domain_id": "ld://hypersync/test/domain",
+            "alert_thresholds": {
+              "memory_used_bytes": {
+                "critical": 1073741824
+              }
+            }
+          },
+          "expected_output": {
+            "success": true,
+            "note": "Alerts configured"
+          }
+        },
+        {
+          "name": "Domain not found",
+          "input": {
+            "domain_id": "ld://invalid/domain/id"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Domain not found"
+          }
+        },
+        {
+          "name": "Permission denied",
+          "setup": "Caller without read permission",
+          "input": {
+            "domain_id": "ld://hypersync/secure/domain"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Permission denied"
+          }
+        },
+        {
+          "name": "Invalid sampling interval",
+          "input": {
+            "domain_id": "ld://hypersync/test/domain",
+            "sampling_interval_ms": 10
+          },
+          "expected_output": {
+            "success": true,
+            "note": "Sampling interval clamped to minimum (100ms)"
+          }
+        },
+        {
+          "name": "Monitor quota exceeded",
+          "setup": "Too many active monitors",
+          "input": {
+            "domain_id": "ld://hypersync/test/domain"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Monitor quota exceeded"
+          }
+        }
+      ],
+      "security_properties": [
+        "Read permission enforced",
+        "Metric streaming authenticated",
+        "Resource limits prevent abuse"
+      ],
+      "performance": {
+        "complexity": "O(1) to start, O(sampling_rate) for streaming",
+        "typical_duration_ms": "< 50 to start",
+        "resource_overhead": "Memory for metric buffer"
+      }
+    },
+    "audit_domain": {
+      "description": "Perform security and compliance audit of domain",
+      "category": "security",
+      "inputs": {
+        "domain_id": {
+          "type": "DomainID",
+          "required": true
+        },
+        "audit_type": {
+          "type": "string",
+          "required": false,
+          "default": "full",
+          "values": [
+            "full",
+            "security",
+            "compliance",
+            "access"
+          ]
+        },
+        "time_range": {
+          "type": "object",
+          "required": false,
+          "properties": {
+            "start": {
+              "type": "timestamp"
+            },
+            "end": {
+              "type": "timestamp"
+            }
+          }
+        }
+      },
+      "outputs": {
+        "success": {
+          "type": "boolean"
+        },
+        "audit_report": {
+          "type": "object"
+        },
+        "findings": {
+          "type": "array"
+        },
+        "compliance_status": {
+          "type": "string"
+        }
+      },
+      "preconditions": [
+        "Domain exists",
+        "Caller has audit permission",
+        "Audit logs available"
+      ],
+      "postconditions": [
+        "Audit report generated",
+        "Findings documented",
+        "No modifications made"
+      ],
+      "edge_cases": [
+        {
+          "case": "Domain not found",
+          "handling": "Return error",
+          "outcome": "Cannot audit nonexistent domain"
+        },
+        {
+          "case": "Audit logs unavailable",
+          "handling": "Return partial report with flag",
+          "outcome": "Best-effort audit"
+        },
+        {
+          "case": "Very large time range",
+          "handling": "Paginate or sample logs",
+          "outcome": "Prevent resource exhaustion"
+        },
+        {
+          "case": "Audit finds critical issues",
+          "handling": "Flag for immediate attention",
+          "outcome": "Prioritize findings"
+        },
+        {
+          "case": "Permission denied",
+          "handling": "Return error",
+          "outcome": "Restrict sensitive operation"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "Full audit",
+          "input": {
+            "domain_id": "ld://hypersync/test/domain"
+          },
+          "expected_output": {
+            "success": true,
+            "audit_report": "[complete report]",
+            "compliance_status": "compliant"
+          }
+        },
+        {
+          "name": "Security audit",
+          "input": {
+            "domain_id": "ld://hypersync/test/domain",
+            "audit_type": "security"
+          },
+          "expected_output": {
+            "success": true,
+            "findings": "[security findings]"
+          }
+        },
+        {
+          "name": "Compliance audit",
+          "input": {
+            "domain_id": "ld://hypersync/test/domain",
+            "audit_type": "compliance"
+          },
+          "expected_output": {
+            "success": true,
+            "compliance_status": "compliant"
+          }
+        },
+        {
+          "name": "Access audit with time range",
+          "input": {
+            "domain_id": "ld://hypersync/test/domain",
+            "audit_type": "access",
+            "time_range": {
+              "start": "2026-01-01T00:00:00Z",
+              "end": "2026-01-12T23:59:59Z"
+            }
+          },
+          "expected_output": {
+            "success": true,
+            "findings": "[access log analysis]"
+          }
+        },
+        {
+          "name": "Domain not found",
+          "input": {
+            "domain_id": "ld://invalid/domain/id"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Domain not found"
+          }
+        },
+        {
+          "name": "Permission denied",
+          "setup": "Caller without audit permission",
+          "input": {
+            "domain_id": "ld://hypersync/test/domain"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Permission denied"
+          }
+        },
+        {
+          "name": "Audit finds violations",
+          "setup": "Domain with security violations",
+          "input": {
+            "domain_id": "ld://hypersync/test/insecure"
+          },
+          "expected_output": {
+            "success": true,
+            "findings": "[list of violations]",
+            "compliance_status": "non-compliant"
+          }
+        },
+        {
+          "name": "Partial audit (logs unavailable)",
+          "setup": "Some logs missing",
+          "input": {
+            "domain_id": "ld://hypersync/test/domain"
+          },
+          "expected_output": {
+            "success": true,
+            "audit_report": "[partial report]",
+            "warnings": [
+              "Some audit logs unavailable"
+            ]
+          }
+        }
+      ],
+      "security_properties": [
+        "Audit permission enforced",
+        "Read-only operation",
+        "Comprehensive logging"
+      ],
+      "performance": {
+        "complexity": "O(n) where n = audit log entries",
+        "typical_duration_ms": "< 1000",
+        "resource_overhead": "Memory for log analysis"
+      }
+    },
+    "optimize_domain": {
+      "description": "Optimize domain for performance and efficiency",
+      "category": "optimization",
+      "inputs": {
+        "domain_id": {
+          "type": "DomainID",
+          "required": true
+        },
+        "optimization_goals": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "required": false,
+          "default": [
+            "performance"
+          ],
+          "values": [
+            "performance",
+            "security",
+            "resource_usage",
+            "cost"
+          ]
+        },
+        "dry_run": {
+          "type": "boolean",
+          "required": false,
+          "default": false,
+          "description": "Preview optimizations without applying"
+        }
+      },
+      "outputs": {
+        "success": {
+          "type": "boolean"
+        },
+        "optimizations_applied": {
+          "type": "array"
+        },
+        "performance_improvement": {
+          "type": "object"
+        },
+        "recommendations": {
+          "type": "array"
+        }
+      },
+      "preconditions": [
+        "Domain exists",
+        "Caller has write permission",
+        "Domain is active"
+      ],
+      "postconditions": [
+        "Optimizations applied",
+        "Performance metrics improved",
+        "Audit log created"
+      ],
+      "formulas": {
+        "performance_gain": "improvement = (new_metric - old_metric) / old_metric",
+        "resource_savings": "savings = old_usage - new_usage"
+      },
+      "edge_cases": [
+        {
+          "case": "Domain not found",
+          "handling": "Return error",
+          "outcome": "Cannot optimize nonexistent domain"
+        },
+        {
+          "case": "Domain already optimal",
+          "handling": "Return success with no changes",
+          "outcome": "Idempotent operation"
+        },
+        {
+          "case": "Conflicting optimization goals",
+          "handling": "Balance goals or prioritize",
+          "outcome": "Best-effort optimization"
+        },
+        {
+          "case": "Optimization fails",
+          "handling": "Rollback and return error",
+          "outcome": "Maintain consistency"
+        },
+        {
+          "case": "Domain under heavy load",
+          "handling": "Defer optimization or proceed carefully",
+          "outcome": "Minimize disruption"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "Optimize for performance",
+          "input": {
+            "domain_id": "ld://hypersync/test/domain",
+            "optimization_goals": [
+              "performance"
+            ]
+          },
+          "expected_output": {
+            "success": true,
+            "optimizations_applied": [
+              "curvature tuning",
+              "metric caching"
+            ],
+            "performance_improvement": {
+              "ops_per_second": "+15%"
+            }
+          }
+        },
+        {
+          "name": "Dry run optimization",
+          "input": {
+            "domain_id": "ld://hypersync/test/domain",
+            "dry_run": true
+          },
+          "expected_output": {
+            "success": true,
+            "optimizations_applied": [],
+            "recommendations": "[list of potential optimizations]"
+          }
+        },
+        {
+          "name": "Optimize for security",
+          "input": {
+            "domain_id": "ld://hypersync/test/domain",
+            "optimization_goals": [
+              "security"
+            ]
+          },
+          "expected_output": {
+            "success": true,
+            "optimizations_applied": [
+              "strengthen curvature barrier"
+            ]
+          }
+        },
+        {
+          "name": "Optimize for resource usage",
+          "input": {
+            "domain_id": "ld://hypersync/test/high-usage",
+            "optimization_goals": [
+              "resource_usage"
+            ]
+          },
+          "expected_output": {
+            "success": true,
+            "performance_improvement": {
+              "memory_saved": "20%"
+            }
+          }
+        },
+        {
+          "name": "Multiple optimization goals",
+          "input": {
+            "domain_id": "ld://hypersync/test/domain",
+            "optimization_goals": [
+              "performance",
+              "security"
+            ]
+          },
+          "expected_output": {
+            "success": true,
+            "note": "Balanced optimization applied"
+          }
+        },
+        {
+          "name": "Domain not found",
+          "input": {
+            "domain_id": "ld://invalid/domain/id"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Domain not found"
+          }
+        },
+        {
+          "name": "Permission denied",
+          "setup": "Caller without write permission",
+          "input": {
+            "domain_id": "ld://hypersync/test/domain"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Permission denied"
+          }
+        },
+        {
+          "name": "Already optimal",
+          "setup": "Domain already optimized",
+          "input": {
+            "domain_id": "ld://hypersync/test/optimal"
+          },
+          "expected_output": {
+            "success": true,
+            "optimizations_applied": [],
+            "note": "Domain already optimal"
+          }
+        }
+      ],
+      "security_properties": [
+        "Write permission enforced",
+        "Optimization preserves security",
+        "Rollback on failure"
+      ],
+      "performance": {
+        "complexity": "O(n) where n = domain complexity",
+        "typical_duration_ms": "< 500",
+        "resource_overhead": "Temporary memory for analysis"
+      }
+    }
+  },
+  "integration_points": {
+    "lorentzian_domain_specification": {
+      "operations": [
+        "create_lorentzian_domain",
+        "compute_lorentz_metric",
+        "verify_lorentzian_properties"
+      ],
+      "types": [
+        "LorentzianDomain",
+        "LorentzMetric"
+      ]
+    },
+    "domain_addressing_system": {
+      "operations": [
+        "create_domain_address",
+        "resolve_domain_address",
+        "validate_domain_address"
+      ],
+      "types": [
+        "DomainAddress",
+        "AddressRegistry"
+      ]
+    },
+    "domain_security_model": {
+      "operations": [
+        "enforce_domain_boundary",
+        "verify_domain_isolation",
+        "check_domain_access"
+      ],
+      "types": [
+        "SecurityMetric",
+        "DomainBoundary"
+      ]
+    },
+    "domain_operations": {
+      "operations": [
+        "enter_domain",
+        "exit_domain",
+        "execute_in_domain"
+      ],
+      "types": [
+        "DomainContext",
+        "DomainTransition"
+      ]
+    }
+  },
+  "examples": {
+    "basic_usage": {
+      "description": "Initialize system and create a domain",
+      "code": [
+        "# Initialize domain system",
+        "result = initialize_domain_system({config: {}})",
+        "base_domain = result.base_domain",
+        "",
+        "# Create a new domain",
+        "domain = create_domain({",
+        "  curvature_type: 'lorentzian',",
+        "  label: 'production-network',",
+        "  parent_domain: base_domain.domain_id,",
+        "  properties: {",
+        "    security_level: 'isolated'",
+        "  }",
+        "})"
+      ]
+    },
+    "network_isolation": {
+      "description": "Isolate networks in separate domains",
+      "code": [
+        "# Create separate domains for networks",
+        "prod_domain = create_domain({",
+        "  curvature_type: 'lorentzian',",
+        "  label: 'production-network',",
+        "  properties: { security_level: 'isolated' }",
+        "})",
+        "",
+        "dev_domain = create_domain({",
+        "  curvature_type: 'lorentzian',",
+        "  label: 'development-network',",
+        "  properties: { security_level: 'secure' }",
+        "})",
+        "",
+        "# Networks are now geometrically isolated",
+        "verify_domain_isolation({",
+        "  domain_id_1: prod_domain.domain_id,",
+        "  domain_id_2: dev_domain.domain_id",
+        "})"
+      ]
+    },
+    "domain_hierarchy": {
+      "description": "Create and query domain hierarchy",
+      "code": [
+        "# Create parent domain",
+        "parent = create_domain({",
+        "  curvature_type: 'lorentzian',",
+        "  label: 'services'",
+        "})",
+        "",
+        "# Create child domains",
+        "web = create_domain({",
+        "  curvature_type: 'lorentzian',",
+        "  label: 'web-services',",
+        "  parent_domain: parent.domain_id",
+        "})",
+        "",
+        "api = create_domain({",
+        "  curvature_type: 'lorentzian',",
+        "  label: 'api-services',",
+        "  parent_domain: parent.domain_id",
+        "})",
+        "",
+        "# Get hierarchy",
+        "hierarchy = get_domain_hierarchy({",
+        "  root_domain: parent.domain_id",
+        "})"
+      ]
+    },
+    "backup_restore": {
+      "description": "Snapshot and restore domain",
+      "code": [
+        "# Create snapshot before changes",
+        "snapshot = snapshot_domain({",
+        "  domain_id: domain.domain_id,",
+        "  snapshot_label: 'before-upgrade'",
+        "})",
+        "",
+        "# ... make changes ...",
+        "",
+        "# Restore if needed",
+        "restore_domain({",
+        "  snapshot_id: snapshot.snapshot_id,",
+        "  verify_checksum: true",
+        "})"
+      ]
+    }
+  },
+  "security_considerations": {
+    "permission_model": "Role-based access control with geometric constraints",
+    "audit_requirements": "All domain operations must be audited",
+    "isolation_guarantees": "Domains provide mathematical isolation through geometry",
+    "zero_runtime_overhead": "Security enforced at compile-time via type system"
+  },
+  "performance_considerations": {
+    "domain_creation": "O(1) operation with minimal overhead",
+    "domain_lookup": "O(1) with registry index",
+    "hierarchy_traversal": "O(depth) for parent chain, O(n) for full tree",
+    "resource_limits": "Enforce quotas to prevent unbounded growth"
+  },
+  "compliance": {
+    "stunir_version": "3.0",
+    "validation_status": "complete",
+    "test_coverage": "100% of operations",
+    "documentation_complete": true
+  }
+}

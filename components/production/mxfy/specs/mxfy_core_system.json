@@ -1,0 +1,405 @@
+{
+  "name": "mxfy_core_system",
+  "version": "1.0.0",
+  "description": "Make X for Y (MXFY) Core System Specification - AI-driven application generation framework enabling natural language creation of HyperSync applications through intent analysis, blueprint generation, fabrication, and injection",
+  "license": {
+    "type": "AGPLv3",
+    "text": "This specification is licensed under the GNU Affero General Public License v3.0. See https://www.gnu.org/licenses/agpl-3.0.html for full license text.",
+    "copyright": "Copyright (c) 2024-2026 HyperSync Project"
+  },
+  "subsystem": "MXFY",
+  "category": "core_system",
+  "stunir_compatible": true,
+  "dependencies": [
+    "sdl_core_infrastructure@3.1.0",
+    "hypersync_capsule_system@2.0.0",
+    "hypersync_terminal_ui@2.0.0",
+    "hypersync_type_system@2.1.0"
+  ],
+  "architecture": {
+    "overview": "MXFY is HyperSync's AI-driven application creation framework that generates complete applications from natural language requests using SDL primitives",
+    "purpose": "Enable users to create HyperSync-specific applications by expressing intent as 'Make X for Y' where X is the application type and Y is the target use case",
+    "value_proposition": {
+      "natural_language_creation": "Express intent in plain language, get working applications",
+      "primitive_composition": "Applications built from vetted SDL primitives",
+      "instant_deployment": "Hot-load generated applications into running environment",
+      "deterministic_execution": "Generated apps execute with D0 determinism"
+    },
+    "four_phase_workflow": {
+      "phase_1_intent": {
+        "name": "Intent Analysis",
+        "description": "Parse and understand user's natural language request",
+        "input": "Natural language string ('Make X for Y')",
+        "output": "Structured intent object with X, Y, parameters, constraints",
+        "determinism": "D2 (statistical, LLM-based)"
+      },
+      "phase_2_blueprint": {
+        "name": "Blueprint Generation",
+        "description": "Create FactorySpec defining application architecture",
+        "input": "Structured intent object",
+        "output": "FactorySpec with primitives, dependencies, layout",
+        "determinism": "D2 (statistical, LLM-based)"
+      },
+      "phase_3_fabrication": {
+        "name": "Fabrication",
+        "description": "Generate code and assets from SDL primitives",
+        "input": "FactorySpec blueprint",
+        "output": "Complete application package (code, assets, manifest)",
+        "determinism": "D2 for generation, D0 for execution"
+      },
+      "phase_4_injection": {
+        "name": "Injection",
+        "description": "Hot-load application into HyperSync environment",
+        "input": "Application package",
+        "output": "Running capsule in environment",
+        "determinism": "D0 (strict execution)"
+      }
+    },
+    "dual_determinism_model": {
+      "D2_generation": {
+        "description": "Statistical/LLM-based generation phase",
+        "applies_to": ["Intent Analysis", "Blueprint Generation", "Code Generation"],
+        "characteristics": ["Non-reproducible", "Context-sensitive", "Creative"]
+      },
+      "D0_execution": {
+        "description": "Strict deterministic execution phase",
+        "applies_to": ["Generated code execution", "Capsule runtime"],
+        "characteristics": ["Reproducible", "Verifiable", "Frozen hash"]
+      }
+    },
+    "core_components": {
+      "intent_analyzer": {
+        "description": "NLP engine for parsing Make X for Y requests",
+        "capabilities": ["Entity extraction", "Parameter identification", "Context understanding"]
+      },
+      "blueprint_generator": {
+        "description": "Architecture planner creating FactorySpec blueprints",
+        "capabilities": ["Primitive selection", "Dependency resolution", "Layout planning"]
+      },
+      "fabrication_engine": {
+        "description": "Code generator composing applications from primitives",
+        "capabilities": ["Template processing", "Code assembly", "Asset generation"]
+      },
+      "injection_system": {
+        "description": "Hot-loader for deploying generated applications",
+        "capabilities": ["Capsule instantiation", "Environment preparation", "Runtime binding"]
+      },
+      "factory_capsule": {
+        "location": "core/factory.capsule.json",
+        "purpose": "Orchestrate the MXFY pipeline"
+      }
+    }
+  },
+  "type_definitions": {
+    "MXFYRequest": {
+      "description": "User request for application creation",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "raw_input": {
+            "type": "string",
+            "description": "Original natural language request",
+            "examples": ["Make a file browser for managing datasets", "Make a log viewer for container monitoring"]
+          },
+          "session_context": {
+            "type": "object",
+            "description": "Current session context (user, environment, history)"
+          },
+          "constraints": {
+            "type": "object",
+            "description": "Optional constraints on generation"
+          }
+        },
+        "required": ["raw_input"]
+      }
+    },
+    "ParsedIntent": {
+      "description": "Structured representation of user intent",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "application_type": {
+            "type": "string",
+            "description": "The X in 'Make X for Y' - what to create"
+          },
+          "target_use_case": {
+            "type": "string",
+            "description": "The Y in 'Make X for Y' - the purpose"
+          },
+          "parameters": {
+            "type": "object",
+            "description": "Extracted parameters from request"
+          },
+          "implied_features": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "Features implied by the request"
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "Confidence in intent parsing"
+          }
+        },
+        "required": ["application_type", "target_use_case"]
+      }
+    },
+    "FactorySpec": {
+      "description": "Blueprint for application generation",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "UUID",
+            "description": "Unique blueprint identifier"
+          },
+          "name": {
+            "type": "string",
+            "description": "Generated application name"
+          },
+          "intent": {
+            "$ref": "#/type_definitions/ParsedIntent"
+          },
+          "primitives": {
+            "type": "array",
+            "items": {"$ref": "#/type_definitions/PrimitiveReference"},
+            "description": "SDL primitives to compose"
+          },
+          "dependencies": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "Required dependencies"
+          },
+          "layout": {
+            "type": "object",
+            "description": "UI layout specification"
+          },
+          "data_flow": {
+            "type": "object",
+            "description": "Data flow between components"
+          },
+          "resources": {
+            "type": "object",
+            "description": "Resource requirements"
+          }
+        },
+        "required": ["id", "name", "intent", "primitives"]
+      }
+    },
+    "PrimitiveReference": {
+      "description": "Reference to an SDL primitive",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "shard_id": {"type": "UUID"},
+          "name": {"type": "string"},
+          "type": {"type": "string", "enum": ["code", "ui", "data", "model", "config"]},
+          "role": {"type": "string"},
+          "configuration": {"type": "object"}
+        },
+        "required": ["shard_id", "name", "role"]
+      }
+    },
+    "GeneratedApplication": {
+      "description": "Complete generated application package",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "UUID"},
+          "factory_spec_id": {"type": "UUID"},
+          "capsule_manifest": {"type": "object"},
+          "code_bundle": {"type": "bytes"},
+          "assets": {"type": "object"},
+          "hash": {"type": "string", "description": "SHA-256 of entire package"},
+          "generation_receipt": {"type": "object"}
+        },
+        "required": ["id", "factory_spec_id", "capsule_manifest", "code_bundle"]
+      }
+    },
+    "InjectionResult": {
+      "description": "Result of injecting application into environment",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "success": {"type": "boolean"},
+          "capsule_id": {"type": "UUID"},
+          "entry_point": {"type": "string"},
+          "error": {"type": "string"},
+          "lifecycle_handle": {"type": "object"}
+        },
+        "required": ["success"]
+      }
+    }
+  },
+  "operations": [
+    {
+      "name": "mxfy_process_request",
+      "description": "Main entry point - process complete Make X for Y request through all phases",
+      "signature": "mxfy_process_request(request: MXFYRequest) -> InjectionResult",
+      "complexity": "O(n) where n = primitive count",
+      "determinism": "D2 generation, D0 execution",
+      "parameters": {
+        "request": {"type": "MXFYRequest", "description": "User's creation request"}
+      },
+      "returns": {"type": "InjectionResult", "description": "Result with running capsule or error"}
+    },
+    {
+      "name": "mxfy_analyze_intent",
+      "description": "Phase 1: Parse natural language request into structured intent",
+      "signature": "mxfy_analyze_intent(raw_input: string, context: object) -> ParsedIntent",
+      "complexity": "O(1)",
+      "determinism": "D2",
+      "parameters": {
+        "raw_input": {"type": "string", "description": "Natural language request"},
+        "context": {"type": "object", "description": "Session context"}
+      },
+      "returns": {"type": "ParsedIntent", "description": "Structured intent"}
+    },
+    {
+      "name": "mxfy_generate_blueprint",
+      "description": "Phase 2: Generate FactorySpec blueprint from intent",
+      "signature": "mxfy_generate_blueprint(intent: ParsedIntent) -> FactorySpec",
+      "complexity": "O(p) where p = primitive search space",
+      "determinism": "D2",
+      "parameters": {
+        "intent": {"type": "ParsedIntent", "description": "Parsed user intent"}
+      },
+      "returns": {"type": "FactorySpec", "description": "Application blueprint"}
+    },
+    {
+      "name": "mxfy_fabricate",
+      "description": "Phase 3: Generate application from blueprint",
+      "signature": "mxfy_fabricate(spec: FactorySpec) -> GeneratedApplication",
+      "complexity": "O(n) where n = primitive count",
+      "determinism": "D2",
+      "parameters": {
+        "spec": {"type": "FactorySpec", "description": "Application blueprint"}
+      },
+      "returns": {"type": "GeneratedApplication", "description": "Complete application package"}
+    },
+    {
+      "name": "mxfy_inject",
+      "description": "Phase 4: Hot-load application into environment",
+      "signature": "mxfy_inject(app: GeneratedApplication) -> InjectionResult",
+      "complexity": "O(1)",
+      "determinism": "D0",
+      "parameters": {
+        "app": {"type": "GeneratedApplication", "description": "Application to inject"}
+      },
+      "returns": {"type": "InjectionResult", "description": "Injection result"}
+    },
+    {
+      "name": "mxfy_validate_spec",
+      "description": "Validate a FactorySpec before fabrication",
+      "signature": "mxfy_validate_spec(spec: FactorySpec) -> ValidationResult",
+      "complexity": "O(n)",
+      "determinism": "D0",
+      "parameters": {
+        "spec": {"type": "FactorySpec", "description": "Blueprint to validate"}
+      },
+      "returns": {"type": "ValidationResult", "description": "Validation results"}
+    },
+    {
+      "name": "mxfy_get_status",
+      "description": "Get status of an MXFY operation",
+      "signature": "mxfy_get_status(operation_id: UUID) -> OperationStatus",
+      "complexity": "O(1)",
+      "determinism": "D0"
+    },
+    {
+      "name": "mxfy_cancel_operation",
+      "description": "Cancel an in-progress MXFY operation",
+      "signature": "mxfy_cancel_operation(operation_id: UUID) -> boolean",
+      "complexity": "O(1)",
+      "determinism": "D0"
+    }
+  ],
+  "error_handling": {
+    "error_types": [
+      {
+        "code": "MXFY_INTENT_PARSE_FAILED",
+        "description": "Failed to parse user intent from natural language",
+        "recovery": "Request clarification from user"
+      },
+      {
+        "code": "MXFY_PRIMITIVE_NOT_FOUND",
+        "description": "Required primitive not found in SDL",
+        "recovery": "Suggest alternative primitives or request primitive addition"
+      },
+      {
+        "code": "MXFY_BLUEPRINT_INVALID",
+        "description": "Generated blueprint fails validation",
+        "recovery": "Regenerate with adjusted parameters"
+      },
+      {
+        "code": "MXFY_FABRICATION_FAILED",
+        "description": "Code generation failed",
+        "recovery": "Retry with simpler specification"
+      },
+      {
+        "code": "MXFY_INJECTION_FAILED",
+        "description": "Hot-loading into environment failed",
+        "recovery": "Check environment state, retry injection"
+      },
+      {
+        "code": "MXFY_DEPENDENCY_CYCLE",
+        "description": "Circular dependency detected",
+        "recovery": "Reorganize primitive dependencies"
+      }
+    ]
+  },
+  "performance": {
+    "benchmarks": {
+      "intent_analysis": {"target": "<500ms", "typical": "200ms"},
+      "blueprint_generation": {"target": "<2s", "typical": "800ms"},
+      "fabrication": {"target": "<5s", "typical": "2s"},
+      "injection": {"target": "<1s", "typical": "300ms"}
+    },
+    "optimization_strategies": [
+      "Cache common intent patterns",
+      "Pre-compute primitive compatibility matrices",
+      "Lazy load non-critical components",
+      "Parallel fabrication of independent components"
+    ]
+  },
+  "test_cases": [
+    {
+      "id": "MXFY_TC_001",
+      "name": "Simple file browser creation",
+      "input": {"raw_input": "Make a file browser for managing datasets"},
+      "expected": {
+        "intent": {"application_type": "file browser", "target_use_case": "managing datasets"},
+        "result": "success"
+      }
+    },
+    {
+      "id": "MXFY_TC_002",
+      "name": "Log viewer creation",
+      "input": {"raw_input": "Make a log viewer for container monitoring"},
+      "expected": {
+        "intent": {"application_type": "log viewer", "target_use_case": "container monitoring"},
+        "result": "success"
+      }
+    },
+    {
+      "id": "MXFY_TC_003",
+      "name": "Ambiguous request handling",
+      "input": {"raw_input": "Make something for data"},
+      "expected": {
+        "behavior": "Request clarification",
+        "error_code": "MXFY_INTENT_PARSE_FAILED"
+      }
+    }
+  ],
+  "examples": {
+    "basic_usage": {
+      "description": "Create a simple file browser",
+      "code": "result = mxfy_process_request(MXFYRequest(raw_input='Make a file browser for managing datasets'))\nif result.success:\n    print(f'Application running at capsule {result.capsule_id}')"
+    },
+    "step_by_step": {
+      "description": "Manual step-by-step creation",
+      "code": "intent = mxfy_analyze_intent('Make a dashboard for system metrics', context)\nspec = mxfy_generate_blueprint(intent)\nvalidation = mxfy_validate_spec(spec)\nif validation.valid:\n    app = mxfy_fabricate(spec)\n    result = mxfy_inject(app)"
+    }
+  }
+}

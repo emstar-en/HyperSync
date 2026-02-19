@@ -1,0 +1,872 @@
+{
+  "version": "1.0.0",
+  "namespace": "hypersync.ui.xterm",
+  "description": "xterm-specific integration for terminal UI with feature detection, mode management, event handling, and optimization. Provides solid xterm support as recommended for HyperSync terminal-native interfaces.",
+  "types": {
+    "XtermCapability": {
+      "description": "xterm feature capabilities",
+      "fields": {
+        "version": {
+          "type": "string",
+          "description": "xterm version (if detectable)",
+          "required": false
+        },
+        "mouse_support": {
+          "type": "array<string>",
+          "description": "Supported mouse protocols (X10, X11, SGR, URXVT)",
+          "required": true
+        },
+        "alternate_screen": {
+          "type": "boolean",
+          "description": "Supports alternate screen buffer",
+          "required": true
+        },
+        "bracketed_paste": {
+          "type": "boolean",
+          "description": "Supports bracketed paste mode",
+          "required": true
+        },
+        "focus_events": {
+          "type": "boolean",
+          "description": "Supports focus in/out events",
+          "required": false
+        },
+        "clipboard": {
+          "type": "boolean",
+          "description": "Supports OSC 52 clipboard",
+          "required": false
+        },
+        "window_ops": {
+          "type": "boolean",
+          "description": "Supports window operations",
+          "required": false
+        },
+        "title_stack": {
+          "type": "boolean",
+          "description": "Supports title stack (push/pop)",
+          "required": false
+        },
+        "dynamic_colors": {
+          "type": "boolean",
+          "description": "Supports dynamic color changes",
+          "required": false
+        },
+        "sixel": {
+          "type": "boolean",
+          "description": "Supports sixel graphics",
+          "required": false
+        }
+      }
+    },
+    "XtermMode": {
+      "description": "xterm terminal mode",
+      "fields": {
+        "mode_number": {
+          "type": "integer",
+          "description": "DEC private mode number",
+          "required": true
+        },
+        "name": {
+          "type": "string",
+          "description": "Mode name",
+          "required": true
+        },
+        "enabled": {
+          "type": "boolean",
+          "description": "Mode is enabled",
+          "required": true
+        },
+        "description": {
+          "type": "string",
+          "description": "Mode description",
+          "required": false
+        }
+      }
+    },
+    "XtermEvent": {
+      "description": "xterm event data",
+      "fields": {
+        "event_type": {
+          "type": "XtermEventType",
+          "description": "Type of event",
+          "required": true
+        },
+        "timestamp": {
+          "type": "integer",
+          "description": "Event timestamp (ms)",
+          "required": true
+        },
+        "data": {
+          "type": "map<string, any>",
+          "description": "Event-specific data",
+          "required": true
+        }
+      }
+    },
+    "XtermEventType": {
+      "description": "Type of xterm event",
+      "enum": [
+        "mouse_click",
+        "mouse_move",
+        "mouse_drag",
+        "mouse_scroll",
+        "key_press",
+        "resize",
+        "focus_in",
+        "focus_out",
+        "paste"
+      ]
+    },
+    "MouseEvent": {
+      "description": "Mouse event data",
+      "fields": {
+        "x": {
+          "type": "integer",
+          "description": "X position (column, 0-based)",
+          "required": true
+        },
+        "y": {
+          "type": "integer",
+          "description": "Y position (row, 0-based)",
+          "required": true
+        },
+        "button": {
+          "type": "integer",
+          "description": "Button number (0=left, 1=middle, 2=right, 3/4=scroll)",
+          "required": true
+        },
+        "modifiers": {
+          "type": "array<string>",
+          "description": "Modifier keys (shift, ctrl, alt, meta)",
+          "required": false
+        },
+        "action": {
+          "type": "string",
+          "description": "Action (press, release, move, drag)",
+          "required": true
+        }
+      }
+    },
+    "KeyEvent": {
+      "description": "Keyboard event data",
+      "fields": {
+        "key": {
+          "type": "string",
+          "description": "Key name or character",
+          "required": true
+        },
+        "code": {
+          "type": "integer",
+          "description": "Key code",
+          "required": false
+        },
+        "modifiers": {
+          "type": "array<string>",
+          "description": "Modifier keys",
+          "required": false
+        },
+        "sequence": {
+          "type": "string",
+          "description": "Raw escape sequence",
+          "required": false
+        }
+      }
+    },
+    "ResizeEvent": {
+      "description": "Terminal resize event",
+      "fields": {
+        "old_width": {
+          "type": "integer",
+          "description": "Previous width in columns",
+          "required": true
+        },
+        "old_height": {
+          "type": "integer",
+          "description": "Previous height in rows",
+          "required": true
+        },
+        "new_width": {
+          "type": "integer",
+          "description": "New width in columns",
+          "required": true
+        },
+        "new_height": {
+          "type": "integer",
+          "description": "New height in rows",
+          "required": true
+        }
+      }
+    },
+    "XtermConfig": {
+      "description": "xterm configuration",
+      "fields": {
+        "enable_mouse": {
+          "type": "boolean",
+          "description": "Enable mouse support",
+          "required": false
+        },
+        "mouse_protocol": {
+          "type": "string",
+          "description": "Mouse protocol (SGR recommended)",
+          "required": false
+        },
+        "alternate_screen": {
+          "type": "boolean",
+          "description": "Use alternate screen buffer",
+          "required": false
+        },
+        "bracketed_paste": {
+          "type": "boolean",
+          "description": "Enable bracketed paste",
+          "required": false
+        },
+        "focus_events": {
+          "type": "boolean",
+          "description": "Enable focus events",
+          "required": false
+        },
+        "save_cursor": {
+          "type": "boolean",
+          "description": "Save cursor position on init",
+          "required": false
+        }
+      }
+    },
+    "CursorPosition": {
+      "description": "Cursor position",
+      "fields": {
+        "row": {
+          "type": "integer",
+          "description": "Row (1-based)",
+          "required": true
+        },
+        "column": {
+          "type": "integer",
+          "description": "Column (1-based)",
+          "required": true
+        }
+      }
+    },
+    "ScrollRegion": {
+      "description": "Scrolling region",
+      "fields": {
+        "top": {
+          "type": "integer",
+          "description": "Top row (1-based)",
+          "required": true
+        },
+        "bottom": {
+          "type": "integer",
+          "description": "Bottom row (1-based)",
+          "required": true
+        }
+      }
+    },
+    "ColorPalette": {
+      "description": "xterm color palette configuration",
+      "fields": {
+        "colors": {
+          "type": "array<string>",
+          "description": "Color values (hex format #RRGGBB)",
+          "required": true
+        },
+        "indices": {
+          "type": "array<integer>",
+          "description": "Color indices to set (0-255)",
+          "required": false
+        }
+      }
+    },
+    "ClipboardData": {
+      "description": "Clipboard data (OSC 52)",
+      "fields": {
+        "content": {
+          "type": "string",
+          "description": "Clipboard content",
+          "required": true
+        },
+        "selection": {
+          "type": "string",
+          "description": "Selection buffer (c=clipboard, p=primary, s=secondary)",
+          "required": false
+        },
+        "base64": {
+          "type": "boolean",
+          "description": "Content is base64 encoded",
+          "required": true
+        }
+      }
+    },
+    "WindowTitle": {
+      "description": "Window title configuration",
+      "fields": {
+        "text": {
+          "type": "string",
+          "description": "Title text",
+          "required": true
+        },
+        "icon": {
+          "type": "string",
+          "description": "Icon name (separate from title)",
+          "required": false
+        },
+        "use_stack": {
+          "type": "boolean",
+          "description": "Push to title stack",
+          "required": false
+        }
+      }
+    },
+    "OptimizationConfig": {
+      "description": "xterm optimization configuration",
+      "fields": {
+        "buffer_writes": {
+          "type": "boolean",
+          "description": "Buffer output writes",
+          "required": false
+        },
+        "minimize_escapes": {
+          "type": "boolean",
+          "description": "Minimize escape sequences",
+          "required": false
+        },
+        "use_cached_positions": {
+          "type": "boolean",
+          "description": "Cache cursor positions",
+          "required": false
+        },
+        "batch_updates": {
+          "type": "boolean",
+          "description": "Batch screen updates",
+          "required": false
+        }
+      }
+    }
+  },
+  "operations": {
+    "initialize_xterm": {
+      "description": "Initialize xterm connection with feature detection, mode configuration, and setup. Prepares terminal for interactive use.",
+      "inputs": {
+        "config": {
+          "type": "XtermConfig",
+          "description": "xterm configuration",
+          "required": false
+        },
+        "detect_features": {
+          "type": "boolean",
+          "description": "Detect features before initialization",
+          "required": false
+        }
+      },
+      "outputs": {
+        "capability": {
+          "type": "XtermCapability",
+          "description": "Detected xterm capabilities"
+        },
+        "active_modes": {
+          "type": "array<XtermMode>",
+          "description": "Active terminal modes"
+        },
+        "terminal_size": {
+          "type": "ResizeEvent",
+          "description": "Initial terminal size"
+        }
+      },
+      "errors": {
+        "INIT_FAILED": "Failed to initialize xterm",
+        "UNSUPPORTED_TERMINAL": "Terminal is not xterm-compatible",
+        "FEATURE_DETECTION_FAILED": "Feature detection failed"
+      }
+    },
+    "query_xterm_capabilities": {
+      "description": "Query xterm features through device attributes and capability queries. Returns comprehensive feature set.",
+      "inputs": {
+        "timeout_ms": {
+          "type": "integer",
+          "description": "Query timeout in milliseconds",
+          "required": false
+        },
+        "query_all": {
+          "type": "boolean",
+          "description": "Query all features (vs quick essentials)",
+          "required": false
+        }
+      },
+      "outputs": {
+        "capability": {
+          "type": "XtermCapability",
+          "description": "Detected capabilities"
+        },
+        "query_time_ms": {
+          "type": "integer",
+          "description": "Time taken for queries"
+        }
+      },
+      "errors": {
+        "QUERY_TIMEOUT": "Terminal did not respond",
+        "QUERY_FAILED": "Capability query failed"
+      }
+    },
+    "set_xterm_mode": {
+      "description": "Set xterm mode (mouse support, alternate screen, bracketed paste, etc.). Enables specific terminal features.",
+      "inputs": {
+        "mode": {
+          "type": "XtermMode",
+          "description": "Mode to set",
+          "required": true
+        },
+        "verify": {
+          "type": "boolean",
+          "description": "Verify mode was set successfully",
+          "required": false
+        }
+      },
+      "outputs": {
+        "success": {
+          "type": "boolean",
+          "description": "Mode was set successfully"
+        },
+        "previous_state": {
+          "type": "boolean",
+          "description": "Previous mode state"
+        }
+      },
+      "errors": {
+        "MODE_NOT_SUPPORTED": "Mode is not supported by terminal",
+        "SET_FAILED": "Failed to set mode",
+        "VERIFICATION_FAILED": "Mode verification failed"
+      }
+    },
+    "handle_xterm_events": {
+      "description": "Handle xterm events (mouse, keyboard, resize, focus). Parses escape sequences and dispatches events.",
+      "inputs": {
+        "input_data": {
+          "type": "string",
+          "description": "Raw terminal input data",
+          "required": true
+        },
+        "event_mask": {
+          "type": "array<XtermEventType>",
+          "description": "Event types to handle (empty = all)",
+          "required": false
+        }
+      },
+      "outputs": {
+        "events": {
+          "type": "array<XtermEvent>",
+          "description": "Parsed events"
+        },
+        "remaining_data": {
+          "type": "string",
+          "description": "Unparsed data (incomplete sequences)"
+        }
+      },
+      "errors": {
+        "PARSE_FAILED": "Failed to parse input data",
+        "INVALID_SEQUENCE": "Invalid escape sequence encountered"
+      }
+    },
+    "manipulate_xterm_screen": {
+      "description": "Manipulate screen (cursor control, scrolling regions, screen clearing). Provides fine-grained screen control.",
+      "inputs": {
+        "operation": {
+          "type": "string",
+          "description": "Operation (move_cursor, set_scroll_region, clear_screen, etc.)",
+          "required": true
+        },
+        "parameters": {
+          "type": "map<string, any>",
+          "description": "Operation-specific parameters",
+          "required": false
+        }
+      },
+      "outputs": {
+        "escape_sequence": {
+          "type": "string",
+          "description": "Escape sequence to send"
+        },
+        "success": {
+          "type": "boolean",
+          "description": "Operation successful"
+        }
+      },
+      "errors": {
+        "INVALID_OPERATION": "Operation is not recognized",
+        "INVALID_PARAMETERS": "Parameters are invalid for operation",
+        "OPERATION_FAILED": "Failed to perform operation"
+      }
+    },
+    "set_xterm_title": {
+      "description": "Set window title and icon name with optional title stack support for save/restore.",
+      "inputs": {
+        "title": {
+          "type": "WindowTitle",
+          "description": "Title configuration",
+          "required": true
+        }
+      },
+      "outputs": {
+        "escape_sequence": {
+          "type": "string",
+          "description": "Escape sequence to send"
+        },
+        "stack_depth": {
+          "type": "integer",
+          "description": "Title stack depth (if using stack)"
+        }
+      },
+      "errors": {
+        "TITLE_TOO_LONG": "Title exceeds maximum length",
+        "STACK_OVERFLOW": "Title stack is full"
+      }
+    },
+    "use_xterm_clipboard": {
+      "description": "Use clipboard via OSC 52 (copy/paste, selection handling). Enables terminal clipboard integration.",
+      "inputs": {
+        "operation": {
+          "type": "string",
+          "description": "Operation (read, write)",
+          "required": true
+        },
+        "data": {
+          "type": "ClipboardData",
+          "description": "Clipboard data (for write operation)",
+          "required": false
+        }
+      },
+      "outputs": {
+        "escape_sequence": {
+          "type": "string",
+          "description": "Escape sequence to send (for write)"
+        },
+        "clipboard_content": {
+          "type": "string",
+          "description": "Clipboard content (for read)"
+        }
+      },
+      "errors": {
+        "CLIPBOARD_NOT_SUPPORTED": "Terminal doesn't support OSC 52",
+        "READ_FAILED": "Failed to read clipboard",
+        "WRITE_FAILED": "Failed to write clipboard"
+      }
+    },
+    "configure_xterm_colors": {
+      "description": "Configure color palette and dynamic colors. Allows customization of terminal color scheme.",
+      "inputs": {
+        "palette": {
+          "type": "ColorPalette",
+          "description": "Color palette configuration",
+          "required": true
+        },
+        "dynamic": {
+          "type": "boolean",
+          "description": "Use dynamic color changes",
+          "required": false
+        }
+      },
+      "outputs": {
+        "escape_sequences": {
+          "type": "array<string>",
+          "description": "Escape sequences to send"
+        },
+        "colors_set": {
+          "type": "integer",
+          "description": "Number of colors configured"
+        }
+      },
+      "errors": {
+        "INVALID_COLOR_FORMAT": "Color format is invalid",
+        "DYNAMIC_COLORS_NOT_SUPPORTED": "Terminal doesn't support dynamic colors",
+        "CONFIGURE_FAILED": "Failed to configure colors"
+      }
+    },
+    "enable_xterm_mouse": {
+      "description": "Enable mouse support with protocol selection (SGR recommended). Enables mouse events (click, drag, scroll).",
+      "inputs": {
+        "protocol": {
+          "type": "string",
+          "description": "Mouse protocol (X10, X11, SGR, URXVT)",
+          "required": false
+        },
+        "track_motion": {
+          "type": "boolean",
+          "description": "Track mouse motion events",
+          "required": false
+        },
+        "track_all": {
+          "type": "boolean",
+          "description": "Track all mouse events (including move without buttons)",
+          "required": false
+        }
+      },
+      "outputs": {
+        "escape_sequences": {
+          "type": "array<string>",
+          "description": "Escape sequences to enable mouse"
+        },
+        "protocol_used": {
+          "type": "string",
+          "description": "Mouse protocol that was enabled"
+        }
+      },
+      "errors": {
+        "MOUSE_NOT_SUPPORTED": "Mouse support not available",
+        "INVALID_PROTOCOL": "Mouse protocol not recognized",
+        "ENABLE_FAILED": "Failed to enable mouse"
+      }
+    },
+    "optimize_for_xterm": {
+      "description": "Optimize rendering and operations for xterm performance. Applies best practices and efficiency improvements.",
+      "inputs": {
+        "config": {
+          "type": "OptimizationConfig",
+          "description": "Optimization configuration",
+          "required": false
+        },
+        "profile": {
+          "type": "boolean",
+          "description": "Profile performance before/after",
+          "required": false
+        }
+      },
+      "outputs": {
+        "optimizations_applied": {
+          "type": "array<string>",
+          "description": "List of optimizations applied"
+        },
+        "estimated_improvement": {
+          "type": "float",
+          "description": "Estimated performance improvement (%)"
+        },
+        "profile_data": {
+          "type": "map<string, any>",
+          "description": "Performance profile data",
+          "required": false
+        }
+      },
+      "errors": {
+        "OPTIMIZATION_FAILED": "Failed to apply optimizations",
+        "PROFILING_FAILED": "Performance profiling failed"
+      }
+    }
+  },
+  "documentation": {
+    "overview": "xterm Integration provides comprehensive support for xterm and xterm-compatible terminals. Includes feature detection, mode management, event handling, and performance optimization for terminal-native interfaces.",
+    "xterm_compatibility": {
+      "description": "xterm is the reference terminal emulator with widespread compatibility",
+      "compatible_terminals": [
+        "xterm (reference implementation)",
+        "gnome-terminal (GNOME default)",
+        "konsole (KDE default)",
+        "iTerm2 (macOS popular terminal)",
+        "kitty (modern GPU-accelerated)",
+        "alacritty (fast, GPU-accelerated)",
+        "wezterm (Rust-based, feature-rich)",
+        "mintty (Windows/Cygwin)",
+        "Windows Terminal (Windows 10/11)",
+        "tmux/screen (terminal multiplexers)"
+      ],
+      "note": "Most modern terminals implement xterm escape sequences"
+    },
+    "feature_detection": {
+      "description": "Robust feature detection ensures compatibility",
+      "methods": [
+        "Device Attribute queries (DA, Primary/Secondary)",
+        "XTGETTCAP queries (termcap/terminfo)",
+        "XTVERSION query (xterm-specific)",
+        "Mode queries (DECRQM)",
+        "Test sequences with response parsing"
+      ],
+      "caching": "Cache results per session to avoid repeated queries",
+      "fallback": "Assume minimal features if detection fails"
+    },
+    "mouse_support": {
+      "description": "Multiple mouse protocols with varying capabilities",
+      "protocols": {
+        "X10": "Basic - only click events, limited coordinates",
+        "X11": "Normal - click and release, motion tracking",
+        "SGR": "Recommended - extended coordinates, reliable parsing",
+        "URXVT": "Alternative extended coordinates"
+      },
+      "events": [
+        "Click - Button press",
+        "Release - Button release",
+        "Drag - Motion with button held",
+        "Scroll - Scroll wheel",
+        "Motion - Mouse movement (if enabled)"
+      ],
+      "best_practice": "Use SGR protocol (mode 1006) for best compatibility and reliability"
+    },
+    "alternate_screen": {
+      "description": "Alternate screen buffer for clean UI separation",
+      "use_case": "Full-screen applications that should not affect scrollback",
+      "activation": "CSI ? 1049 h (enable), CSI ? 1049 l (disable)",
+      "benefits": [
+        "Preserves scrollback buffer",
+        "Clean exit restores original screen",
+        "Standard for TUI applications"
+      ],
+      "example": "vim, less, htop all use alternate screen"
+    },
+    "bracketed_paste": {
+      "description": "Distinguishes pasted text from typed text",
+      "activation": "CSI ? 2004 h (enable), CSI ? 2004 l (disable)",
+      "format": "Pasted text wrapped in CSI 200~ ... CSI 201~",
+      "benefits": [
+        "Prevents command injection",
+        "Allows special handling of pasted content",
+        "Improves security"
+      ],
+      "best_practice": "Always enable for applications accepting user input"
+    },
+    "cursor_manipulation": {
+      "description": "Fine-grained cursor control",
+      "operations": {
+        "move": "CSI row ; col H (absolute), CSI n A/B/C/D (relative)",
+        "save": "CSI s (save), CSI u (restore) or ESC 7, ESC 8",
+        "hide": "CSI ? 25 l (hide), CSI ? 25 h (show)",
+        "style": "CSI Sp q (blinking block, steady block, etc.)"
+      },
+      "best_practice": "Use absolute positioning for predictability, relative for efficiency"
+    },
+    "scroll_regions": {
+      "description": "Define scrolling regions for efficient updates",
+      "activation": "CSI top ; bottom r",
+      "use_case": "Status bars, split views, panels",
+      "benefits": [
+        "Efficient partial screen updates",
+        "No need to redraw entire screen",
+        "Smooth scrolling in region"
+      ],
+      "example": "Status bar at bottom, scrolling content above"
+    },
+    "color_support": {
+      "description": "Comprehensive color support in xterm",
+      "levels": {
+        "16_colors": "SGR 30-37, 90-97 (foreground), 40-47, 100-107 (background)",
+        "256_colors": "SGR 38;5;n (foreground), 48;5;n (background)",
+        "true_color": "SGR 38;2;r;g;b (foreground), 48;2;r;g;b (background)"
+      },
+      "dynamic_colors": "OSC 4 ; c ; spec ST (set color c to spec)",
+      "query": "OSC 4 ; c ; ? ST (query color c)"
+    },
+    "clipboard_integration": {
+      "description": "OSC 52 clipboard integration",
+      "format": "OSC 52 ; selection ; data ST",
+      "selections": {
+        "c": "Clipboard (most common)",
+        "p": "Primary selection",
+        "s": "Secondary selection"
+      },
+      "encoding": "Base64 encoding required for data",
+      "limitations": [
+        "Not all terminals support OSC 52",
+        "Some terminals require explicit enabling",
+        "Size limits vary by terminal",
+        "Security considerations (some terminals disable by default)"
+      ],
+      "best_practice": "Provide fallback method (e.g., display text for manual copy)"
+    },
+    "window_operations": {
+      "description": "Window manipulation and queries",
+      "operations": {
+        "title": "OSC 0 ; text ST (window title)",
+        "icon": "OSC 1 ; text ST (icon name)",
+        "resize": "CSI 8 ; height ; width t",
+        "query_size": "CSI 18 t (text area size)",
+        "query_position": "CSI 13 t (window position)"
+      },
+      "security": "Many terminals disable window operations by default for security",
+      "best_practice": "Don't rely on window operations for critical functionality"
+    },
+    "performance_optimization": {
+      "techniques": [
+        "Buffering - Batch escape sequences before writing",
+        "Minimal escapes - Only send necessary sequences",
+        "Cursor optimization - Use relative moves when shorter",
+        "Region scrolling - Scroll regions instead of full redraws",
+        "Dirty tracking - Only redraw changed areas",
+        "Double buffering - Prepare off-screen, swap when ready"
+      ],
+      "benchmarking": "Measure escape sequences per frame and total bytes sent",
+      "target": "< 60ms per frame for smooth 60 FPS rendering"
+    },
+    "best_practices": [
+      "Always detect features before using them",
+      "Use SGR mouse protocol (1006) for mouse support",
+      "Enable bracketed paste for security",
+      "Use alternate screen for full-screen apps",
+      "Buffer output for better performance",
+      "Cache cursor positions to minimize queries",
+      "Test on multiple terminal emulators",
+      "Provide fallbacks for unsupported features",
+      "Handle terminal resize events",
+      "Clean up (reset modes) on exit"
+    ],
+    "initialization_sequence": {
+      "description": "Recommended initialization sequence",
+      "steps": [
+        "1. Query terminal type (TERM environment variable)",
+        "2. Send Primary DA (query device attributes)",
+        "3. Query terminal size (CSI 18 t or ioctl)",
+        "4. Test Unicode support (try rendering Unicode character)",
+        "5. Enable desired modes (mouse, alternate screen, etc.)",
+        "6. Configure colors if needed",
+        "7. Clear screen and position cursor",
+        "8. Begin rendering"
+      ]
+    },
+    "cleanup_sequence": {
+      "description": "Proper cleanup on exit",
+      "steps": [
+        "1. Disable mouse support",
+        "2. Exit alternate screen (if used)",
+        "3. Disable bracketed paste",
+        "4. Show cursor (if hidden)",
+        "5. Reset colors (if changed)",
+        "6. Reset scroll region",
+        "7. Move cursor to bottom",
+        "8. Send newline"
+      ],
+      "importance": "Critical for clean terminal state after exit"
+    },
+    "examples": {
+      "basic_initialization": {
+        "description": "Basic xterm initialization",
+        "steps": [
+          "1. initialize_xterm(config) \u2192 capability",
+          "2. set_xterm_mode(alternate_screen, enable)",
+          "3. enable_xterm_mouse('SGR')",
+          "4. set_xterm_mode(bracketed_paste, enable)",
+          "5. Begin rendering UI"
+        ]
+      },
+      "mouse_handling": {
+        "description": "Handle mouse events",
+        "steps": [
+          "1. enable_xterm_mouse('SGR', track_motion=true)",
+          "2. Read input: input_data = read_stdin()",
+          "3. handle_xterm_events(input_data) \u2192 events",
+          "4. For each event: if event.type == 'mouse_click': handle_click(event.data)",
+          "5. Update UI based on events"
+        ]
+      },
+      "efficient_rendering": {
+        "description": "Optimize rendering performance",
+        "steps": [
+          "1. optimize_for_xterm(config)",
+          "2. Create output buffer",
+          "3. For each UI update: append escape sequences to buffer",
+          "4. Batch write buffer to terminal",
+          "5. Clear buffer"
+        ]
+      }
+    }
+  },
+  "metadata": {
+    "license": {
+      "name": "AGPLv3",
+      "url": "https://www.gnu.org/licenses/agpl-3.0.html"
+    }
+  }
+}

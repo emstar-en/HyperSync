@@ -1,0 +1,2646 @@
+{
+  "metadata": {
+    "name": "data_integration_system",
+    "version": "1.0.0",
+    "description": "Data Integration System for HyperSync - Multi-source data ingestion from REST APIs, databases, files, and streams with schema mapping, ETL pipelines supporting geometric transformations, and comprehensive data quality validation",
+    "author": "HyperSync Framework",
+    "created": "2026-01-16T00:00:00Z",
+    "updated": "2026-01-16T00:00:00Z",
+    "stunir_version": "1.0",
+    "domain": "hypersync.data.integration",
+    "conformance_level": 3,
+    "dependencies": [
+      "hyperbolic_core",
+      "network_transport",
+      "schema_registry",
+      "quality_validation"
+    ],
+    "license": {
+      "name": "AGPLv3",
+      "url": "https://www.gnu.org/licenses/agpl-3.0.html"
+    },
+    "authors": [
+      "HyperSync Data Team"
+    ],
+    "operational_model": {
+      "ingestion": "Multi-source data ingestion with connectors",
+      "transformation": "ETL pipelines with geometric operations",
+      "validation": "Data quality checks and cleansing",
+      "provenance": "Full data lineage and transaction certificates"
+    },
+    "tags": [
+      "data-integration",
+      "etl",
+      "schema-mapping",
+      "data-quality",
+      "network"
+    ]
+  },
+  "types": {
+    "DataSource": {
+      "description": "Configuration for a data source",
+      "base_type": "object",
+      "properties": {
+        "source_id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "rest_api",
+            "database",
+            "file",
+            "stream",
+            "object_store",
+            "message_queue"
+          ]
+        },
+        "connection": {
+          "type": "ConnectionConfig"
+        },
+        "schema": {
+          "type": "SourceSchema"
+        },
+        "refresh_policy": {
+          "type": "RefreshPolicy"
+        },
+        "credentials_ref": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "ConnectionConfig": {
+      "description": "Connection configuration for data source",
+      "base_type": "object",
+      "properties": {
+        "endpoint": {
+          "type": "string"
+        },
+        "port": {
+          "type": "integer"
+        },
+        "protocol": {
+          "type": "string",
+          "enum": [
+            "http",
+            "https",
+            "jdbc",
+            "odbc",
+            "s3",
+            "gcs",
+            "kafka",
+            "grpc"
+          ]
+        },
+        "database": {
+          "type": "string"
+        },
+        "options": {
+          "type": "object"
+        },
+        "ssl_config": {
+          "type": "SSLConfig"
+        },
+        "retry_policy": {
+          "type": "RetryPolicy"
+        },
+        "timeout_ms": {
+          "type": "integer",
+          "default": 30000
+        },
+        "pool_size": {
+          "type": "integer",
+          "default": 10
+        }
+      }
+    },
+    "SSLConfig": {
+      "description": "SSL/TLS configuration",
+      "base_type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "verify_certificate": {
+          "type": "boolean",
+          "default": true
+        },
+        "ca_cert_path": {
+          "type": "string"
+        },
+        "client_cert_path": {
+          "type": "string"
+        },
+        "client_key_path": {
+          "type": "string"
+        },
+        "min_version": {
+          "type": "string",
+          "enum": [
+            "TLS1.2",
+            "TLS1.3"
+          ],
+          "default": "TLS1.2"
+        }
+      }
+    },
+    "RetryPolicy": {
+      "description": "Retry policy for connections",
+      "base_type": "object",
+      "properties": {
+        "max_retries": {
+          "type": "integer",
+          "default": 3
+        },
+        "initial_backoff_ms": {
+          "type": "integer",
+          "default": 1000
+        },
+        "max_backoff_ms": {
+          "type": "integer",
+          "default": 30000
+        },
+        "backoff_multiplier": {
+          "type": "number",
+          "default": 2.0
+        },
+        "retryable_errors": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "SourceSchema": {
+      "description": "Schema definition for a data source",
+      "base_type": "object",
+      "properties": {
+        "schema_id": {
+          "type": "string"
+        },
+        "version": {
+          "type": "integer"
+        },
+        "fields": {
+          "type": "array",
+          "items": {
+            "type": "FieldDefinition"
+          }
+        },
+        "primary_key": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "partitioning": {
+          "type": "PartitioningSpec"
+        },
+        "format": {
+          "type": "string",
+          "enum": [
+            "json",
+            "avro",
+            "parquet",
+            "csv",
+            "protobuf",
+            "xml"
+          ]
+        }
+      }
+    },
+    "FieldDefinition": {
+      "description": "Definition of a field in schema",
+      "base_type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "string",
+            "int32",
+            "int64",
+            "float32",
+            "float64",
+            "boolean",
+            "bytes",
+            "timestamp",
+            "date",
+            "array",
+            "map",
+            "struct",
+            "geometric_point",
+            "geometric_vector"
+          ]
+        },
+        "nullable": {
+          "type": "boolean",
+          "default": true
+        },
+        "default_value": {
+          "type": "any"
+        },
+        "constraints": {
+          "type": "array",
+          "items": {
+            "type": "FieldConstraint"
+          }
+        },
+        "geometric_config": {
+          "type": "GeometricFieldConfig"
+        },
+        "nested_schema": {
+          "type": "SourceSchema"
+        }
+      }
+    },
+    "FieldConstraint": {
+      "description": "Constraint on a field",
+      "base_type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "not_null",
+            "unique",
+            "range",
+            "pattern",
+            "enum",
+            "foreign_key",
+            "geometric_valid"
+          ]
+        },
+        "parameters": {
+          "type": "object"
+        }
+      }
+    },
+    "GeometricFieldConfig": {
+      "description": "Configuration for geometric fields",
+      "base_type": "object",
+      "properties": {
+        "manifold": {
+          "type": "string",
+          "enum": [
+            "hyperboloid",
+            "poincare_ball",
+            "euclidean"
+          ]
+        },
+        "dimension": {
+          "type": "integer",
+          "minimum": 2
+        },
+        "curvature": {
+          "type": "number",
+          "default": -1.0
+        },
+        "coordinate_order": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "PartitioningSpec": {
+      "description": "Partitioning specification",
+      "base_type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "hash",
+            "range",
+            "list",
+            "time"
+          ]
+        },
+        "columns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "partition_count": {
+          "type": "integer"
+        },
+        "time_granularity": {
+          "type": "string",
+          "enum": [
+            "hour",
+            "day",
+            "week",
+            "month"
+          ]
+        }
+      }
+    },
+    "RefreshPolicy": {
+      "description": "Policy for data refresh",
+      "base_type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "full",
+            "incremental",
+            "cdc",
+            "streaming"
+          ]
+        },
+        "schedule": {
+          "type": "string",
+          "description": "Cron expression"
+        },
+        "incremental_key": {
+          "type": "string"
+        },
+        "watermark_column": {
+          "type": "string"
+        },
+        "lookback_window": {
+          "type": "string"
+        }
+      }
+    },
+    "SchemaMapping": {
+      "description": "Mapping between source and target schemas",
+      "base_type": "object",
+      "properties": {
+        "mapping_id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "source_schema": {
+          "type": "string"
+        },
+        "target_schema": {
+          "type": "string"
+        },
+        "field_mappings": {
+          "type": "array",
+          "items": {
+            "type": "FieldMapping"
+          }
+        },
+        "transformations": {
+          "type": "array",
+          "items": {
+            "type": "Transformation"
+          }
+        },
+        "validation_rules": {
+          "type": "array",
+          "items": {
+            "type": "ValidationRule"
+          }
+        },
+        "version": {
+          "type": "integer"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "FieldMapping": {
+      "description": "Mapping for a single field",
+      "base_type": "object",
+      "properties": {
+        "source_field": {
+          "type": "string"
+        },
+        "target_field": {
+          "type": "string"
+        },
+        "transformation": {
+          "type": "Transformation"
+        },
+        "default_value": {
+          "type": "any"
+        },
+        "on_null": {
+          "type": "string",
+          "enum": [
+            "use_default",
+            "skip",
+            "error"
+          ]
+        }
+      }
+    },
+    "Transformation": {
+      "description": "Data transformation operation",
+      "base_type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "identity",
+            "cast",
+            "rename",
+            "expression",
+            "lookup",
+            "aggregate",
+            "to_hyperboloid",
+            "to_poincare",
+            "normalize_embedding",
+            "project_to_manifold",
+            "parallel_transport",
+            "apply_isometry",
+            "compute_distance",
+            "compute_centroid"
+          ]
+        },
+        "parameters": {
+          "type": "object"
+        },
+        "expression": {
+          "type": "string"
+        },
+        "lookup_config": {
+          "type": "LookupConfig"
+        },
+        "geometric_transform": {
+          "type": "GeometricTransform"
+        }
+      }
+    },
+    "LookupConfig": {
+      "description": "Configuration for lookup transformation",
+      "base_type": "object",
+      "properties": {
+        "lookup_table": {
+          "type": "string"
+        },
+        "lookup_key": {
+          "type": "string"
+        },
+        "return_columns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "cache_enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "on_miss": {
+          "type": "string",
+          "enum": [
+            "null",
+            "default",
+            "error"
+          ]
+        }
+      }
+    },
+    "GeometricTransform": {
+      "description": "Geometric transformation specification",
+      "base_type": "object",
+      "properties": {
+        "operation": {
+          "type": "string",
+          "enum": [
+            "lift_to_hyperboloid",
+            "project_to_poincare",
+            "apply_boost",
+            "parallel_transport_batch",
+            "normalize_to_manifold",
+            "rescale_curvature"
+          ]
+        },
+        "source_manifold": {
+          "type": "string"
+        },
+        "target_manifold": {
+          "type": "string"
+        },
+        "parameters": {
+          "type": "object"
+        }
+      }
+    },
+    "ValidationRule": {
+      "description": "Data validation rule",
+      "base_type": "object",
+      "properties": {
+        "rule_id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "not_null",
+            "unique",
+            "range",
+            "pattern",
+            "custom",
+            "referential_integrity",
+            "cross_field",
+            "statistical",
+            "geometric_valid",
+            "on_manifold",
+            "distance_bounds"
+          ]
+        },
+        "expression": {
+          "type": "string"
+        },
+        "parameters": {
+          "type": "object"
+        },
+        "severity": {
+          "type": "string",
+          "enum": [
+            "info",
+            "warning",
+            "error",
+            "critical"
+          ]
+        },
+        "on_failure": {
+          "type": "string",
+          "enum": [
+            "log",
+            "quarantine",
+            "reject",
+            "fix"
+          ]
+        }
+      }
+    },
+    "ETLPipeline": {
+      "description": "ETL pipeline definition",
+      "base_type": "object",
+      "properties": {
+        "pipeline_id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "stages": {
+          "type": "array",
+          "items": {
+            "type": "PipelineStage"
+          }
+        },
+        "schedule": {
+          "type": "string"
+        },
+        "dependencies": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "parameters": {
+          "type": "object"
+        },
+        "error_handling": {
+          "type": "ErrorHandlingConfig"
+        },
+        "monitoring": {
+          "type": "MonitoringConfig"
+        },
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "version": {
+          "type": "integer"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "PipelineStage": {
+      "description": "Stage in ETL pipeline",
+      "base_type": "object",
+      "properties": {
+        "stage_id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "extract",
+            "transform",
+            "load",
+            "validate",
+            "geometric_transform",
+            "branch",
+            "merge"
+          ]
+        },
+        "config": {
+          "type": "StageConfig"
+        },
+        "inputs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "outputs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "retry_policy": {
+          "type": "RetryPolicy"
+        },
+        "timeout_ms": {
+          "type": "integer"
+        }
+      }
+    },
+    "StageConfig": {
+      "description": "Configuration for pipeline stage",
+      "base_type": "object",
+      "properties": {
+        "source": {
+          "type": "string"
+        },
+        "target": {
+          "type": "string"
+        },
+        "query": {
+          "type": "string"
+        },
+        "mapping": {
+          "type": "string"
+        },
+        "transformations": {
+          "type": "array",
+          "items": {
+            "type": "Transformation"
+          }
+        },
+        "validations": {
+          "type": "array",
+          "items": {
+            "type": "ValidationRule"
+          }
+        },
+        "batch_size": {
+          "type": "integer",
+          "default": 1000
+        },
+        "parallelism": {
+          "type": "integer",
+          "default": 1
+        }
+      }
+    },
+    "ErrorHandlingConfig": {
+      "description": "Error handling configuration",
+      "base_type": "object",
+      "properties": {
+        "on_error": {
+          "type": "string",
+          "enum": [
+            "fail",
+            "skip",
+            "retry",
+            "quarantine"
+          ]
+        },
+        "max_errors": {
+          "type": "integer"
+        },
+        "error_threshold_pct": {
+          "type": "number"
+        },
+        "dead_letter_destination": {
+          "type": "string"
+        },
+        "alert_on_failure": {
+          "type": "boolean",
+          "default": true
+        }
+      }
+    },
+    "MonitoringConfig": {
+      "description": "Monitoring configuration for pipeline",
+      "base_type": "object",
+      "properties": {
+        "metrics_enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "logging_level": {
+          "type": "string",
+          "enum": [
+            "debug",
+            "info",
+            "warn",
+            "error"
+          ]
+        },
+        "alerts": {
+          "type": "array",
+          "items": {
+            "type": "AlertConfig"
+          }
+        },
+        "sla_ms": {
+          "type": "integer"
+        }
+      }
+    },
+    "AlertConfig": {
+      "description": "Alert configuration",
+      "base_type": "object",
+      "properties": {
+        "condition": {
+          "type": "string"
+        },
+        "threshold": {
+          "type": "number"
+        },
+        "channel": {
+          "type": "string"
+        },
+        "severity": {
+          "type": "string",
+          "enum": [
+            "info",
+            "warning",
+            "critical"
+          ]
+        }
+      }
+    },
+    "PipelineRun": {
+      "description": "Instance of pipeline execution",
+      "base_type": "object",
+      "properties": {
+        "run_id": {
+          "type": "string"
+        },
+        "pipeline_id": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "pending",
+            "running",
+            "completed",
+            "failed",
+            "cancelled"
+          ]
+        },
+        "started_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "completed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "stage_runs": {
+          "type": "array",
+          "items": {
+            "type": "StageRun"
+          }
+        },
+        "metrics": {
+          "type": "PipelineMetrics"
+        },
+        "parameters": {
+          "type": "object"
+        },
+        "error": {
+          "type": "string"
+        }
+      }
+    },
+    "StageRun": {
+      "description": "Instance of stage execution",
+      "base_type": "object",
+      "properties": {
+        "stage_id": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "pending",
+            "running",
+            "completed",
+            "failed",
+            "skipped"
+          ]
+        },
+        "started_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "completed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "records_in": {
+          "type": "integer"
+        },
+        "records_out": {
+          "type": "integer"
+        },
+        "records_error": {
+          "type": "integer"
+        },
+        "metrics": {
+          "type": "object"
+        }
+      }
+    },
+    "PipelineMetrics": {
+      "description": "Metrics for pipeline execution",
+      "base_type": "object",
+      "properties": {
+        "total_records": {
+          "type": "integer"
+        },
+        "successful_records": {
+          "type": "integer"
+        },
+        "failed_records": {
+          "type": "integer"
+        },
+        "duration_ms": {
+          "type": "integer"
+        },
+        "bytes_processed": {
+          "type": "integer"
+        },
+        "geometric_operations": {
+          "type": "integer"
+        }
+      }
+    },
+    "DataQualityReport": {
+      "description": "Data quality report",
+      "base_type": "object",
+      "properties": {
+        "report_id": {
+          "type": "string"
+        },
+        "source_id": {
+          "type": "string"
+        },
+        "generated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "total_records": {
+          "type": "integer"
+        },
+        "valid_records": {
+          "type": "integer"
+        },
+        "invalid_records": {
+          "type": "integer"
+        },
+        "rule_results": {
+          "type": "array",
+          "items": {
+            "type": "RuleResult"
+          }
+        },
+        "statistics": {
+          "type": "DataStatistics"
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "RuleResult": {
+      "description": "Result of validation rule",
+      "base_type": "object",
+      "properties": {
+        "rule_id": {
+          "type": "string"
+        },
+        "passed": {
+          "type": "boolean"
+        },
+        "violations_count": {
+          "type": "integer"
+        },
+        "sample_violations": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "DataStatistics": {
+      "description": "Statistical summary of data",
+      "base_type": "object",
+      "properties": {
+        "row_count": {
+          "type": "integer"
+        },
+        "column_stats": {
+          "type": "object"
+        },
+        "null_counts": {
+          "type": "object"
+        },
+        "distinct_counts": {
+          "type": "object"
+        },
+        "geometric_stats": {
+          "type": "GeometricStatistics"
+        }
+      }
+    },
+    "GeometricStatistics": {
+      "description": "Statistics for geometric data",
+      "base_type": "object",
+      "properties": {
+        "centroid": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        },
+        "variance": {
+          "type": "number"
+        },
+        "min_distance": {
+          "type": "number"
+        },
+        "max_distance": {
+          "type": "number"
+        },
+        "avg_distance": {
+          "type": "number"
+        },
+        "bounding_ball_radius": {
+          "type": "number"
+        },
+        "on_manifold_pct": {
+          "type": "number"
+        }
+      }
+    },
+    "TransactionCertificate": {
+      "description": "Certificate for data transaction",
+      "base_type": "object",
+      "properties": {
+        "certificate_id": {
+          "type": "string"
+        },
+        "transaction_id": {
+          "type": "string"
+        },
+        "source_id": {
+          "type": "string"
+        },
+        "target_id": {
+          "type": "string"
+        },
+        "input_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "output_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "transformation_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "signature": {
+          "type": "string"
+        },
+        "issuer": {
+          "type": "string"
+        }
+      }
+    },
+    "QuarantineRecord": {
+      "description": "Record in quarantine zone",
+      "base_type": "object",
+      "properties": {
+        "record_id": {
+          "type": "string"
+        },
+        "source_id": {
+          "type": "string"
+        },
+        "original_data": {
+          "type": "object"
+        },
+        "violations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "quarantined_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "pending_review",
+            "approved",
+            "rejected",
+            "fixed"
+          ]
+        },
+        "resolution": {
+          "type": "string"
+        }
+      }
+    },
+    "ConnectionRegistry": {
+      "description": "Registry of data connections",
+      "base_type": "object",
+      "properties": {
+        "registry_id": {
+          "type": "string"
+        },
+        "connections": {
+          "type": "array",
+          "items": {
+            "type": "ConnectionEntry"
+          }
+        },
+        "version": {
+          "type": "integer"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "ConnectionEntry": {
+      "description": "Entry in connection registry",
+      "base_type": "object",
+      "properties": {
+        "connection_id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "config": {
+          "type": "ConnectionConfig"
+        },
+        "allowlist": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "rate_limits": {
+          "type": "RateLimits"
+        },
+        "version": {
+          "type": "integer"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "RateLimits": {
+      "description": "Rate limits for connection",
+      "base_type": "object",
+      "properties": {
+        "requests_per_second": {
+          "type": "number"
+        },
+        "bytes_per_second": {
+          "type": "integer"
+        },
+        "concurrent_connections": {
+          "type": "integer"
+        },
+        "daily_quota": {
+          "type": "integer"
+        }
+      }
+    }
+  },
+  "operations": {
+    "register_source": {
+      "description": "Register a new data source",
+      "inputs": {
+        "source_config": {
+          "type": "DataSource",
+          "required": true
+        },
+        "test_connection": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "outputs": {
+        "source_id": {
+          "type": "string"
+        },
+        "connection_status": {
+          "type": "string"
+        },
+        "discovered_schema": {
+          "type": "SourceSchema"
+        }
+      },
+      "preconditions": [
+        "connection parameters are valid",
+        "credentials are valid if required",
+        "source name is unique"
+      ],
+      "postconditions": [
+        "source is registered in catalog",
+        "schema is discovered if auto-detect enabled",
+        "connection pool is initialized"
+      ],
+      "error_conditions": [
+        {
+          "code": "CONNECTION_FAILED",
+          "description": "Cannot connect to data source"
+        },
+        {
+          "code": "AUTH_FAILED",
+          "description": "Authentication failed"
+        },
+        {
+          "code": "DUPLICATE_SOURCE",
+          "description": "Source with same name exists"
+        },
+        {
+          "code": "INVALID_CONFIG",
+          "description": "Invalid configuration"
+        }
+      ],
+      "performance_characteristics": {
+        "latency_p50_ms": 500,
+        "latency_p99_ms": 5000,
+        "idempotent": false
+      }
+    },
+    "create_schema_mapping": {
+      "description": "Create a schema mapping between source and target",
+      "inputs": {
+        "mapping": {
+          "type": "SchemaMapping",
+          "required": true
+        },
+        "validate": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "outputs": {
+        "mapping_id": {
+          "type": "string"
+        },
+        "validation_result": {
+          "type": "object"
+        }
+      },
+      "preconditions": [
+        "source and target schemas exist",
+        "all field references are valid",
+        "transformations are compatible with types"
+      ],
+      "postconditions": [
+        "mapping is stored in registry",
+        "mapping can be used by pipelines"
+      ],
+      "error_conditions": [
+        {
+          "code": "SCHEMA_NOT_FOUND",
+          "description": "Referenced schema not found"
+        },
+        {
+          "code": "INVALID_MAPPING",
+          "description": "Mapping is invalid"
+        },
+        {
+          "code": "TYPE_MISMATCH",
+          "description": "Type mismatch in transformation"
+        }
+      ],
+      "performance_characteristics": {
+        "latency_p50_ms": 50,
+        "latency_p99_ms": 200,
+        "idempotent": false
+      }
+    },
+    "create_pipeline": {
+      "description": "Create an ETL pipeline",
+      "inputs": {
+        "pipeline": {
+          "type": "ETLPipeline",
+          "required": true
+        },
+        "validate": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "outputs": {
+        "pipeline_id": {
+          "type": "string"
+        },
+        "validation_errors": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "preconditions": [
+        "all referenced sources exist",
+        "all referenced mappings exist",
+        "DAG has no cycles"
+      ],
+      "postconditions": [
+        "pipeline is registered",
+        "schedule is configured if specified"
+      ],
+      "error_conditions": [
+        {
+          "code": "SOURCE_NOT_FOUND",
+          "description": "Referenced source not found"
+        },
+        {
+          "code": "MAPPING_NOT_FOUND",
+          "description": "Referenced mapping not found"
+        },
+        {
+          "code": "CYCLIC_DEPENDENCY",
+          "description": "Pipeline has cyclic dependencies"
+        },
+        {
+          "code": "INVALID_SCHEDULE",
+          "description": "Invalid schedule expression"
+        }
+      ],
+      "performance_characteristics": {
+        "latency_p50_ms": 100,
+        "latency_p99_ms": 500,
+        "idempotent": false
+      }
+    },
+    "run_pipeline": {
+      "description": "Execute an ETL pipeline",
+      "inputs": {
+        "pipeline_id": {
+          "type": "string",
+          "required": true
+        },
+        "parameters": {
+          "type": "object",
+          "required": false
+        },
+        "mode": {
+          "type": "string",
+          "enum": [
+            "full",
+            "incremental"
+          ],
+          "default": "incremental"
+        },
+        "dry_run": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "outputs": {
+        "run_id": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "metrics": {
+          "type": "PipelineMetrics"
+        }
+      },
+      "preconditions": [
+        "pipeline exists and is enabled",
+        "no conflicting run in progress",
+        "all sources are accessible"
+      ],
+      "postconditions": [
+        "run is logged",
+        "data is loaded to targets",
+        "metrics are recorded"
+      ],
+      "error_conditions": [
+        {
+          "code": "PIPELINE_NOT_FOUND",
+          "description": "Pipeline does not exist"
+        },
+        {
+          "code": "PIPELINE_DISABLED",
+          "description": "Pipeline is disabled"
+        },
+        {
+          "code": "CONCURRENT_RUN",
+          "description": "Another run is in progress"
+        },
+        {
+          "code": "SOURCE_UNAVAILABLE",
+          "description": "Source is not accessible"
+        }
+      ],
+      "performance_characteristics": {
+        "latency_p50_ms": 10000,
+        "latency_p99_ms": 300000,
+        "idempotent": false
+      }
+    },
+    "validate_data": {
+      "description": "Validate data against quality rules",
+      "inputs": {
+        "source_id": {
+          "type": "string",
+          "required": true
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "type": "ValidationRule"
+          },
+          "required": false
+        },
+        "sample_size": {
+          "type": "integer",
+          "required": false
+        }
+      },
+      "outputs": {
+        "report": {
+          "type": "DataQualityReport"
+        }
+      },
+      "preconditions": [
+        "source exists",
+        "rules are valid"
+      ],
+      "postconditions": [
+        "report is generated",
+        "violations are identified"
+      ],
+      "error_conditions": [
+        {
+          "code": "SOURCE_NOT_FOUND",
+          "description": "Source does not exist"
+        },
+        {
+          "code": "VALIDATION_ERROR",
+          "description": "Validation process failed"
+        }
+      ],
+      "performance_characteristics": {
+        "latency_p50_ms": 5000,
+        "latency_p99_ms": 60000,
+        "idempotent": true
+      }
+    },
+    "cleanse_data": {
+      "description": "Apply data cleansing transformations",
+      "inputs": {
+        "source_id": {
+          "type": "string",
+          "required": true
+        },
+        "cleansing_rules": {
+          "type": "array",
+          "items": {
+            "type": "CleansingRule"
+          },
+          "required": true
+        },
+        "target_id": {
+          "type": "string",
+          "required": true
+        }
+      },
+      "outputs": {
+        "records_processed": {
+          "type": "integer"
+        },
+        "records_cleansed": {
+          "type": "integer"
+        },
+        "records_quarantined": {
+          "type": "integer"
+        }
+      },
+      "preconditions": [
+        "source exists",
+        "target exists",
+        "cleansing rules are valid"
+      ],
+      "postconditions": [
+        "cleansed data is written to target",
+        "invalid records are quarantined"
+      ],
+      "error_conditions": [
+        {
+          "code": "SOURCE_NOT_FOUND",
+          "description": "Source does not exist"
+        },
+        {
+          "code": "TARGET_NOT_FOUND",
+          "description": "Target does not exist"
+        },
+        {
+          "code": "CLEANSING_FAILED",
+          "description": "Cleansing operation failed"
+        }
+      ],
+      "performance_characteristics": {
+        "latency_p50_ms": 10000,
+        "latency_p99_ms": 120000,
+        "idempotent": false
+      }
+    },
+    "apply_geometric_transform": {
+      "description": "Apply geometric transformation to data",
+      "inputs": {
+        "source_id": {
+          "type": "string",
+          "required": true
+        },
+        "transform": {
+          "type": "GeometricTransform",
+          "required": true
+        },
+        "column": {
+          "type": "string",
+          "required": true
+        },
+        "target_id": {
+          "type": "string",
+          "required": true
+        }
+      },
+      "outputs": {
+        "records_transformed": {
+          "type": "integer"
+        },
+        "geometric_stats": {
+          "type": "GeometricStatistics"
+        }
+      },
+      "preconditions": [
+        "source column is geometric type",
+        "transform is compatible with source manifold"
+      ],
+      "postconditions": [
+        "transformed data is on target manifold",
+        "geometric integrity is preserved"
+      ],
+      "error_conditions": [
+        {
+          "code": "COLUMN_NOT_GEOMETRIC",
+          "description": "Column is not a geometric type"
+        },
+        {
+          "code": "MANIFOLD_MISMATCH",
+          "description": "Transform not compatible with manifold"
+        },
+        {
+          "code": "NUMERIC_INSTABILITY",
+          "description": "Transform caused numeric instability"
+        }
+      ],
+      "performance_characteristics": {
+        "latency_p50_ms": 5000,
+        "latency_p99_ms": 60000,
+        "idempotent": true
+      }
+    },
+    "issue_transaction_certificate": {
+      "description": "Issue a transaction certificate for data lineage",
+      "inputs": {
+        "transaction_id": {
+          "type": "string",
+          "required": true
+        },
+        "source_id": {
+          "type": "string",
+          "required": true
+        },
+        "target_id": {
+          "type": "string",
+          "required": true
+        },
+        "transformation_id": {
+          "type": "string",
+          "required": false
+        }
+      },
+      "outputs": {
+        "certificate": {
+          "type": "TransactionCertificate"
+        }
+      },
+      "preconditions": [
+        "transaction exists",
+        "transaction is complete"
+      ],
+      "postconditions": [
+        "certificate is signed",
+        "certificate is stored"
+      ],
+      "error_conditions": [
+        {
+          "code": "TRANSACTION_NOT_FOUND",
+          "description": "Transaction does not exist"
+        },
+        {
+          "code": "TRANSACTION_INCOMPLETE",
+          "description": "Transaction is not complete"
+        },
+        {
+          "code": "SIGNING_FAILED",
+          "description": "Certificate signing failed"
+        }
+      ],
+      "performance_characteristics": {
+        "latency_p50_ms": 50,
+        "latency_p99_ms": 200,
+        "idempotent": true
+      }
+    },
+    "review_quarantine": {
+      "description": "Review and process quarantined records",
+      "inputs": {
+        "source_id": {
+          "type": "string",
+          "required": true
+        },
+        "action": {
+          "type": "string",
+          "enum": [
+            "approve",
+            "reject",
+            "fix"
+          ],
+          "required": true
+        },
+        "record_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "required": false
+        },
+        "fix_rules": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          },
+          "required": false
+        }
+      },
+      "outputs": {
+        "processed": {
+          "type": "integer"
+        },
+        "approved": {
+          "type": "integer"
+        },
+        "rejected": {
+          "type": "integer"
+        },
+        "fixed": {
+          "type": "integer"
+        }
+      },
+      "preconditions": [
+        "quarantine records exist",
+        "user has review permission"
+      ],
+      "postconditions": [
+        "records are processed according to action",
+        "approved records are moved to target"
+      ],
+      "error_conditions": [
+        {
+          "code": "NO_RECORDS",
+          "description": "No quarantine records found"
+        },
+        {
+          "code": "FIX_FAILED",
+          "description": "Fix rules could not be applied"
+        }
+      ],
+      "performance_characteristics": {
+        "latency_p50_ms": 1000,
+        "latency_p99_ms": 10000,
+        "idempotent": false
+      }
+    },
+    "get_lineage": {
+      "description": "Get data lineage for a record or dataset",
+      "inputs": {
+        "entity_id": {
+          "type": "string",
+          "required": true
+        },
+        "entity_type": {
+          "type": "string",
+          "enum": [
+            "record",
+            "dataset",
+            "column"
+          ],
+          "required": true
+        },
+        "direction": {
+          "type": "string",
+          "enum": [
+            "upstream",
+            "downstream",
+            "both"
+          ],
+          "default": "both"
+        },
+        "depth": {
+          "type": "integer",
+          "default": 3
+        }
+      },
+      "outputs": {
+        "lineage_graph": {
+          "type": "object"
+        },
+        "certificates": {
+          "type": "array",
+          "items": {
+            "type": "TransactionCertificate"
+          }
+        }
+      },
+      "preconditions": [
+        "entity exists"
+      ],
+      "postconditions": [
+        "lineage is traced up to specified depth"
+      ],
+      "error_conditions": [
+        {
+          "code": "ENTITY_NOT_FOUND",
+          "description": "Entity does not exist"
+        },
+        {
+          "code": "LINEAGE_INCOMPLETE",
+          "description": "Lineage information is incomplete"
+        }
+      ],
+      "performance_characteristics": {
+        "latency_p50_ms": 100,
+        "latency_p99_ms": 1000,
+        "idempotent": true
+      }
+    },
+    "pushdown_query": {
+      "description": "Execute query with pushdown to data warehouse",
+      "inputs": {
+        "source_id": {
+          "type": "string",
+          "required": true
+        },
+        "query": {
+          "type": "string",
+          "required": true
+        },
+        "pushdown_hints": {
+          "type": "object",
+          "required": false
+        }
+      },
+      "outputs": {
+        "result": {
+          "type": "object"
+        },
+        "execution_location": {
+          "type": "string"
+        },
+        "pushdown_used": {
+          "type": "boolean"
+        }
+      },
+      "preconditions": [
+        "source supports pushdown",
+        "query is compatible with source"
+      ],
+      "postconditions": [
+        "query is executed with maximum pushdown"
+      ],
+      "error_conditions": [
+        {
+          "code": "PUSHDOWN_NOT_SUPPORTED",
+          "description": "Source does not support pushdown"
+        },
+        {
+          "code": "QUERY_INCOMPATIBLE",
+          "description": "Query cannot be pushed down"
+        }
+      ],
+      "performance_characteristics": {
+        "latency_p50_ms": 1000,
+        "latency_p99_ms": 30000,
+        "idempotent": true
+      }
+    }
+  },
+  "tests": {
+    "conformance_blocks": [
+      {
+        "schema_version": "block-uni-1",
+        "block_id": "integration.source.registration",
+        "metadata": {
+          "title": "Data Source Registration Conformance",
+          "description": "Validates data source registration and connection testing",
+          "created_at": "2026-01-16T00:00:00Z",
+          "authors": [
+            "HyperSync Data Team"
+          ],
+          "tags": [
+            "source",
+            "registration",
+            "connection"
+          ]
+        },
+        "integrity": {
+          "manifest": [
+            {
+              "path": "test_data/source_configs.json",
+              "sha256": "3456789012345678901234567890123456789012345678901234567890123456",
+              "role": "fixture"
+            }
+          ],
+          "dir_merkle_root": "4567890123456789012345678901234567890123456789012345678901234567",
+          "canonicalization": {
+            "field_order": "lex",
+            "byte_encoding": "utf8",
+            "float_format": "scientific",
+            "normalize_sign": true
+          },
+          "integrity_policy": {
+            "must_match_manifest": true,
+            "deny_unknown_files": true,
+            "allow_out_of_dir": false
+          }
+        },
+        "environment": {
+          "os": "linux",
+          "arch": "x86_64",
+          "accel": "cpu",
+          "precision": "fp64",
+          "deterministic_reductions": true,
+          "blas_threads": 1
+        },
+        "manifold": {
+          "model": "hyperboloid",
+          "dimension": 64,
+          "curvature_K": -1.0
+        },
+        "numeric_policy": {
+          "rounding_mode": "nearest_even",
+          "denormals": "preserve",
+          "rng_impl": "xoshiro256**",
+          "tolerances": {
+            "distance_abs": "1.0e-10",
+            "distance_rel": "1.0e-8"
+          },
+          "retraction_native": "exponential_map_intrinsic",
+          "vector_transport_native": "levi_civita_intrinsic"
+        },
+        "substrate": {
+          "topology": {
+            "nodes": [
+              "integration_service",
+              "database_source",
+              "api_source"
+            ],
+            "edges": [
+              {
+                "u": "integration_service",
+                "v": "database_source",
+                "latency_ms": 20
+              },
+              {
+                "u": "integration_service",
+                "v": "api_source",
+                "latency_ms": 50
+              }
+            ]
+          },
+          "queues": {
+            "policy": "fifo",
+            "drop": "tail"
+          },
+          "flow_control": {
+            "algorithm": "cubic"
+          },
+          "time_model": {
+            "clock": "hybrid"
+          },
+          "crypto_capabilities": {
+            "enc": "aes-gcm",
+            "auth": "sig",
+            "hash": "sha256"
+          },
+          "observability": {
+            "tracing": "semantic",
+            "export": "otlp"
+          }
+        },
+        "semantics": {
+          "message_types": [
+            {
+              "type_id": "registration_request",
+              "sensitivity": "internal"
+            },
+            {
+              "type_id": "connection_test",
+              "sensitivity": "internal"
+            }
+          ],
+          "topics": [
+            {
+              "topic_id": "integration.sources",
+              "intent": "control",
+              "qos": "exactly_once",
+              "ordering": "causal"
+            }
+          ],
+          "headers": {
+            "causality": "vector",
+            "trace": "enabled",
+            "clearance_levels": [
+              "internal"
+            ],
+            "required_headers": [
+              "msg_id",
+              "timestamp"
+            ]
+          },
+          "policies": {
+            "clearance_rules": [],
+            "shadow_ops_policy": {
+              "enabled": true,
+              "on_violation": "shadow"
+            },
+            "privacy_budget": {
+              "epsilon": 1.0,
+              "delta": 1e-06,
+              "mechanism": "gaussian"
+            }
+          }
+        },
+        "fixtures": {
+          "data": {
+            "points": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ]
+            ]
+          }
+        },
+        "program": [
+          {
+            "name": "register_db_source",
+            "op": "sem.request_response",
+            "args": {
+              "from": "integration_service",
+              "to": "database_source",
+              "request": {
+                "action": "register",
+                "config": "$fixtures.db_source_config"
+              },
+              "timeout_ms": 10000
+            },
+            "save_as": "db_registration"
+          },
+          {
+            "name": "test_connection",
+            "op": "sem.request_response",
+            "args": {
+              "from": "integration_service",
+              "to": "database_source",
+              "request": {
+                "action": "test_connection"
+              },
+              "timeout_ms": 5000
+            },
+            "save_as": "connection_test"
+          }
+        ],
+        "checks": {
+          "invariants": [],
+          "ops": [
+            {
+              "kind": "routing.success",
+              "target": "$db_registration",
+              "expected": {
+                "success": true
+              }
+            },
+            {
+              "kind": "health.within_thresholds",
+              "target": "$connection_test",
+              "params": {
+                "max_latency_ms": 1000
+              }
+            }
+          ],
+          "transport": [
+            {
+              "kind": "delivery.qos_satisfied",
+              "target": "integration.sources",
+              "expected": {
+                "satisfied": true
+              }
+            },
+            {
+              "kind": "encryption.enforced",
+              "expected": {
+                "enforced": true
+              }
+            }
+          ],
+          "security": [
+            {
+              "kind": "audit.receipts_match",
+              "expected": {
+                "match": true
+              }
+            }
+          ],
+          "performance": {
+            "max_runtime_ms": 30000,
+            "max_memory_mb": 256
+          }
+        },
+        "coverage": {
+          "claims": [
+            "INTEGRATION-001",
+            "INTEGRATION-002"
+          ],
+          "matrix": [
+            {
+              "claim_id": "INTEGRATION-001",
+              "step": "register_db_source",
+              "check": "routing.success"
+            },
+            {
+              "claim_id": "INTEGRATION-002",
+              "step": "test_connection",
+              "check": "encryption.enforced"
+            }
+          ]
+        },
+        "receipts": {
+          "per_step": [],
+          "per_check": []
+        }
+      },
+      {
+        "schema_version": "block-uni-1",
+        "block_id": "integration.pipeline.etl",
+        "metadata": {
+          "title": "ETL Pipeline Execution Conformance",
+          "description": "Validates ETL pipeline with geometric transformations",
+          "created_at": "2026-01-16T00:00:00Z",
+          "authors": [
+            "HyperSync Data Team"
+          ],
+          "tags": [
+            "pipeline",
+            "etl",
+            "transformation"
+          ]
+        },
+        "integrity": {
+          "manifest": [
+            {
+              "path": "test_data/pipeline_config.json",
+              "sha256": "5678901234567890123456789012345678901234567890123456789012345678",
+              "role": "fixture"
+            }
+          ],
+          "dir_merkle_root": "6789012345678901234567890123456789012345678901234567890123456789",
+          "canonicalization": {
+            "field_order": "lex",
+            "byte_encoding": "utf8",
+            "float_format": "scientific",
+            "normalize_sign": true
+          },
+          "integrity_policy": {
+            "must_match_manifest": true,
+            "deny_unknown_files": true,
+            "allow_out_of_dir": false
+          }
+        },
+        "environment": {
+          "os": "linux",
+          "arch": "x86_64",
+          "accel": "cpu",
+          "precision": "fp64",
+          "deterministic_reductions": true,
+          "blas_threads": 1
+        },
+        "manifold": {
+          "model": "hyperboloid",
+          "dimension": 64,
+          "curvature_K": -1.0
+        },
+        "numeric_policy": {
+          "rounding_mode": "nearest_even",
+          "denormals": "preserve",
+          "rng_impl": "xoshiro256**",
+          "tolerances": {
+            "distance_abs": "1.0e-10",
+            "distance_rel": "1.0e-8"
+          },
+          "retraction_native": "exponential_map_intrinsic",
+          "vector_transport_native": "levi_civita_intrinsic"
+        },
+        "substrate": {
+          "topology": {
+            "nodes": [
+              "pipeline_orchestrator",
+              "source_node",
+              "transform_node",
+              "sink_node"
+            ],
+            "edges": [
+              {
+                "u": "pipeline_orchestrator",
+                "v": "source_node",
+                "latency_ms": 5
+              },
+              {
+                "u": "source_node",
+                "v": "transform_node",
+                "latency_ms": 10
+              },
+              {
+                "u": "transform_node",
+                "v": "sink_node",
+                "latency_ms": 10
+              }
+            ]
+          },
+          "queues": {
+            "policy": "fifo",
+            "drop": "tail",
+            "max_depth": 10000
+          },
+          "flow_control": {
+            "algorithm": "bbr"
+          },
+          "time_model": {
+            "clock": "hybrid"
+          },
+          "crypto_capabilities": {
+            "enc": "aes-gcm",
+            "auth": "sig",
+            "hash": "sha256"
+          },
+          "observability": {
+            "tracing": "semantic",
+            "export": "otlp"
+          }
+        },
+        "semantics": {
+          "message_types": [
+            {
+              "type_id": "pipeline_start",
+              "sensitivity": "internal"
+            },
+            {
+              "type_id": "stage_complete",
+              "sensitivity": "internal"
+            },
+            {
+              "type_id": "pipeline_metrics",
+              "sensitivity": "public"
+            }
+          ],
+          "topics": [
+            {
+              "topic_id": "integration.pipelines",
+              "intent": "control",
+              "qos": "exactly_once",
+              "ordering": "total"
+            }
+          ],
+          "headers": {
+            "causality": "vector",
+            "trace": "enabled",
+            "clearance_levels": [
+              "internal",
+              "public"
+            ],
+            "required_headers": [
+              "msg_id",
+              "pipeline_id",
+              "timestamp"
+            ]
+          },
+          "policies": {
+            "clearance_rules": [],
+            "shadow_ops_policy": {
+              "enabled": true,
+              "on_violation": "log"
+            },
+            "privacy_budget": {
+              "epsilon": 1.0,
+              "delta": 1e-06,
+              "mechanism": "gaussian"
+            }
+          }
+        },
+        "fixtures": {
+          "data": {
+            "points": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.1,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.1
+              ]
+            ]
+          }
+        },
+        "program": [
+          {
+            "name": "start_pipeline",
+            "op": "sem.publish",
+            "args": {
+              "topic_id": "integration.pipelines",
+              "message": {
+                "type": "pipeline_start",
+                "pipeline_id": "test_etl",
+                "mode": "full"
+              }
+            },
+            "save_as": "pipeline_start"
+          },
+          {
+            "name": "wait_completion",
+            "op": "sem.request_response",
+            "args": {
+              "from": "pipeline_orchestrator",
+              "to": "sink_node",
+              "request": {
+                "action": "get_status",
+                "pipeline_id": "test_etl"
+              },
+              "timeout_ms": 120000
+            },
+            "save_as": "pipeline_status"
+          }
+        ],
+        "checks": {
+          "invariants": [
+            {
+              "id": "INV.DIST.CORRECTNESS",
+              "metric": "lorentz"
+            }
+          ],
+          "ops": [
+            {
+              "kind": "routing.success",
+              "target": "$pipeline_status",
+              "expected": {
+                "success": true
+              }
+            }
+          ],
+          "transport": [
+            {
+              "kind": "delivery.qos_satisfied",
+              "target": "integration.pipelines",
+              "expected": {
+                "satisfied": true
+              }
+            },
+            {
+              "kind": "ordering.contract_satisfied",
+              "target": "integration.pipelines",
+              "expected": {
+                "satisfied": true
+              }
+            }
+          ],
+          "security": [
+            {
+              "kind": "audit.receipts_match",
+              "expected": {
+                "match": true
+              }
+            }
+          ],
+          "performance": {
+            "max_runtime_ms": 180000,
+            "max_memory_mb": 1024
+          }
+        },
+        "coverage": {
+          "claims": [
+            "INTEGRATION-003",
+            "INTEGRATION-004",
+            "INTEGRATION-005"
+          ],
+          "matrix": [
+            {
+              "claim_id": "INTEGRATION-003",
+              "step": "start_pipeline",
+              "check": "delivery.qos_satisfied"
+            },
+            {
+              "claim_id": "INTEGRATION-004",
+              "step": "wait_completion",
+              "check": "routing.success"
+            },
+            {
+              "claim_id": "INTEGRATION-005",
+              "step": "wait_completion",
+              "check": "INV.DIST.CORRECTNESS"
+            }
+          ]
+        },
+        "receipts": {
+          "per_step": [],
+          "per_check": []
+        }
+      },
+      {
+        "schema_version": "block-uni-1",
+        "block_id": "integration.quality.validation",
+        "metadata": {
+          "title": "Data Quality Validation Conformance",
+          "description": "Validates data quality checks and quarantine handling",
+          "created_at": "2026-01-16T00:00:00Z",
+          "authors": [
+            "HyperSync Data Team"
+          ],
+          "tags": [
+            "quality",
+            "validation",
+            "quarantine"
+          ]
+        },
+        "integrity": {
+          "manifest": [
+            {
+              "path": "test_data/quality_rules.json",
+              "sha256": "7890123456789012345678901234567890123456789012345678901234567890",
+              "role": "fixture"
+            }
+          ],
+          "dir_merkle_root": "8901234567890123456789012345678901234567890123456789012345678901",
+          "canonicalization": {
+            "field_order": "lex",
+            "byte_encoding": "utf8",
+            "float_format": "scientific",
+            "normalize_sign": true
+          },
+          "integrity_policy": {
+            "must_match_manifest": true,
+            "deny_unknown_files": true,
+            "allow_out_of_dir": false
+          }
+        },
+        "environment": {
+          "os": "linux",
+          "arch": "x86_64",
+          "accel": "cpu",
+          "precision": "fp64",
+          "deterministic_reductions": true,
+          "blas_threads": 1
+        },
+        "manifold": {
+          "model": "hyperboloid",
+          "dimension": 64,
+          "curvature_K": -1.0
+        },
+        "numeric_policy": {
+          "rounding_mode": "nearest_even",
+          "denormals": "preserve",
+          "rng_impl": "xoshiro256**",
+          "tolerances": {
+            "distance_abs": "1.0e-10",
+            "distance_rel": "1.0e-8"
+          },
+          "retraction_native": "exponential_map_intrinsic",
+          "vector_transport_native": "levi_civita_intrinsic"
+        },
+        "substrate": {
+          "topology": {
+            "nodes": [
+              "validator",
+              "quarantine_store"
+            ],
+            "edges": [
+              {
+                "u": "validator",
+                "v": "quarantine_store",
+                "latency_ms": 5
+              }
+            ]
+          },
+          "queues": {
+            "policy": "fifo",
+            "drop": "tail"
+          },
+          "flow_control": {
+            "algorithm": "cubic"
+          },
+          "time_model": {
+            "clock": "hybrid"
+          },
+          "crypto_capabilities": {
+            "enc": "aes-gcm",
+            "auth": "sig",
+            "hash": "sha256"
+          },
+          "observability": {
+            "tracing": "semantic",
+            "export": "otlp"
+          }
+        },
+        "semantics": {
+          "message_types": [
+            {
+              "type_id": "validation_request",
+              "sensitivity": "internal"
+            },
+            {
+              "type_id": "quality_report",
+              "sensitivity": "internal"
+            }
+          ],
+          "topics": [
+            {
+              "topic_id": "integration.quality",
+              "intent": "telemetry",
+              "qos": "at_least_once",
+              "ordering": "per_key"
+            }
+          ],
+          "headers": {
+            "causality": "lamport",
+            "trace": "enabled",
+            "clearance_levels": [
+              "internal"
+            ],
+            "required_headers": [
+              "msg_id",
+              "source_id"
+            ]
+          },
+          "policies": {
+            "clearance_rules": [],
+            "shadow_ops_policy": {
+              "enabled": false,
+              "on_violation": "log"
+            },
+            "privacy_budget": {
+              "epsilon": 2.0,
+              "delta": 1e-05,
+              "mechanism": "gaussian"
+            }
+          }
+        },
+        "fixtures": {
+          "data": {
+            "points": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.5,
+                0.5
+              ]
+            ]
+          }
+        },
+        "program": [
+          {
+            "name": "validate_data",
+            "op": "sem.request_response",
+            "args": {
+              "from": "validator",
+              "to": "validator",
+              "request": {
+                "action": "validate",
+                "source_id": "test_source",
+                "rules": "$fixtures.quality_rules"
+              },
+              "timeout_ms": 60000
+            },
+            "save_as": "validation_result"
+          },
+          {
+            "name": "check_quarantine",
+            "op": "sem.request_response",
+            "args": {
+              "from": "validator",
+              "to": "quarantine_store",
+              "request": {
+                "action": "get_count",
+                "source_id": "test_source"
+              },
+              "timeout_ms": 5000
+            },
+            "save_as": "quarantine_count"
+          }
+        ],
+        "checks": {
+          "invariants": [
+            {
+              "id": "INV.DIST.CORRECTNESS",
+              "metric": "lorentz"
+            }
+          ],
+          "ops": [
+            {
+              "kind": "routing.success",
+              "target": "$validation_result",
+              "expected": {
+                "success": true
+              }
+            }
+          ],
+          "transport": [
+            {
+              "kind": "delivery.qos_satisfied",
+              "target": "integration.quality",
+              "expected": {
+                "satisfied": true
+              }
+            }
+          ],
+          "security": [
+            {
+              "kind": "audit.receipts_match",
+              "expected": {
+                "match": true
+              }
+            }
+          ],
+          "performance": {
+            "max_runtime_ms": 120000,
+            "max_memory_mb": 512
+          }
+        },
+        "coverage": {
+          "claims": [
+            "INTEGRATION-006",
+            "INTEGRATION-007"
+          ],
+          "matrix": [
+            {
+              "claim_id": "INTEGRATION-006",
+              "step": "validate_data",
+              "check": "routing.success"
+            },
+            {
+              "claim_id": "INTEGRATION-007",
+              "step": "check_quarantine",
+              "check": "audit.receipts_match"
+            }
+          ]
+        },
+        "receipts": {
+          "per_step": [],
+          "per_check": []
+        }
+      }
+    ]
+  },
+  "implementation_notes": {
+    "data_sources": {
+      "description": "Data source management",
+      "guidance": [
+        "Connection pools should be sized based on expected concurrency",
+        "SSL/TLS should be required for production connections",
+        "Credentials should use secret management, not inline values",
+        "Schema discovery should be cached with configurable TTL"
+      ]
+    },
+    "schema_mapping": {
+      "description": "Schema mapping best practices",
+      "guidance": [
+        "Use explicit type casts rather than implicit conversions",
+        "Geometric fields require manifold-aware transformations",
+        "Validate mappings before deploying to production",
+        "Version mappings to enable rollback"
+      ]
+    },
+    "etl_pipelines": {
+      "description": "ETL pipeline guidelines",
+      "guidance": [
+        "Use incremental loads when possible for performance",
+        "Implement checkpointing for long-running pipelines",
+        "Monitor pipeline SLAs and alert on violations",
+        "Use dead letter queues for failed records"
+      ]
+    },
+    "data_quality": {
+      "description": "Data quality management",
+      "guidance": [
+        "Define quality rules at schema level for reuse",
+        "Use statistical validation for large datasets",
+        "Geometric validation should check manifold constraints",
+        "Quarantine should have automatic aging/cleanup"
+      ]
+    },
+    "provenance": {
+      "description": "Data provenance and lineage",
+      "guidance": [
+        "Issue transaction certificates for all data movements",
+        "Store lineage in immutable log",
+        "Support lineage queries for compliance",
+        "Include geometric transformation details in certificates"
+      ]
+    }
+  }
+}

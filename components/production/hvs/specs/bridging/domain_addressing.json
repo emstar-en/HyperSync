@@ -1,0 +1,1278 @@
+{
+  "metadata": {
+    "name": "domain_addressing",
+    "version": "1.0.0",
+    "description": "Domain addressing system for HyperSync - defines address formats, parsing, validation, resolution, and cross-domain address translation for Lorentzian Domains",
+    "author": "HyperSync Framework",
+    "created": "2026-01-16",
+    "updated": "2026-01-16",
+    "stunir_version": "1.0",
+    "domain": "hypersync.domains.addressing",
+    "dependencies": [
+      "lorentzian_domains",
+      "agua_geometry_spec"
+    ],
+    "uri_scheme": "ld://",
+    "address_format": "ld://{organization}/{stack}/{domain-id}[/{path}]",
+    "tags": [
+      "addressing",
+      "uri",
+      "routing",
+      "resolution",
+      "domain"
+    ],
+    "license": {
+      "name": "AGPLv3",
+      "url": "https://www.gnu.org/licenses/agpl-3.0.html"
+    }
+  },
+  "types": {
+    "DomainAddress": {
+      "description": "Fully qualified address for a Lorentzian Domain",
+      "base_type": "object",
+      "properties": {
+        "scheme": {
+          "type": "string",
+          "const": "ld",
+          "description": "URI scheme, always 'ld' for Lorentzian Domain"
+        },
+        "organization": {
+          "type": "string",
+          "required": true,
+          "pattern": "^[a-z0-9][a-z0-9-]{0,62}[a-z0-9]$",
+          "description": "Organization identifier (lowercase, alphanumeric with hyphens)"
+        },
+        "stack": {
+          "type": "string",
+          "required": true,
+          "pattern": "^[a-z0-9][a-z0-9-]{0,62}[a-z0-9]$",
+          "description": "Stack/environment identifier"
+        },
+        "domain_id": {
+          "type": "string",
+          "required": true,
+          "pattern": "^[a-z0-9][a-z0-9-_.]{0,126}[a-z0-9]$",
+          "description": "Domain identifier within the stack"
+        },
+        "path": {
+          "type": "string",
+          "required": false,
+          "description": "Optional path within the domain"
+        },
+        "query": {
+          "type": "object",
+          "required": false,
+          "description": "Optional query parameters"
+        },
+        "fragment": {
+          "type": "string",
+          "required": false,
+          "description": "Optional fragment identifier"
+        }
+      },
+      "serialization": "ld://{organization}/{stack}/{domain_id}[/{path}][?{query}][#{fragment}]",
+      "examples": [
+        "ld://acme/production/core-services",
+        "ld://acme/production/core-services/networks/main",
+        "ld://system/root/ld0",
+        "ld://tenant-123/staging/isolated-test?timeout=30s"
+      ]
+    },
+    "EntityAddress": {
+      "description": "Address for an entity within a domain",
+      "base_type": "object",
+      "properties": {
+        "domain_address": {
+          "type": "DomainAddress",
+          "required": true
+        },
+        "entity_type": {
+          "type": "EntityType",
+          "required": true
+        },
+        "entity_id": {
+          "type": "string",
+          "required": true
+        },
+        "version": {
+          "type": "string",
+          "required": false,
+          "description": "Optional version specifier"
+        }
+      },
+      "serialization": "{domain_address}/{entity_type}/{entity_id}[@{version}]"
+    },
+    "EntityType": {
+      "description": "Type of entity that can be addressed within a domain",
+      "base_type": "enum",
+      "values": [
+        "network",
+        "node",
+        "edge",
+        "state",
+        "message",
+        "event",
+        "resource"
+      ]
+    },
+    "AddressResolutionResult": {
+      "description": "Result of resolving a domain address",
+      "base_type": "object",
+      "properties": {
+        "resolved": {
+          "type": "boolean",
+          "description": "Whether resolution was successful"
+        },
+        "domain": {
+          "type": "LorentzianDomain",
+          "description": "Resolved domain object"
+        },
+        "entity": {
+          "type": "object",
+          "description": "Resolved entity if path specified"
+        },
+        "resolution_path": {
+          "type": "array",
+          "items": {
+            "type": "DomainAddress"
+          },
+          "description": "Chain of domains traversed during resolution"
+        },
+        "resolution_time_ms": {
+          "type": "number",
+          "description": "Time taken to resolve in milliseconds"
+        },
+        "cache_hit": {
+          "type": "boolean",
+          "description": "Whether result was served from cache"
+        }
+      }
+    },
+    "AddressValidationResult": {
+      "description": "Result of validating a domain address",
+      "base_type": "object",
+      "properties": {
+        "valid": {
+          "type": "boolean"
+        },
+        "normalized": {
+          "type": "DomainAddress",
+          "description": "Normalized form of the address"
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "type": "AddressValidationError"
+          }
+        },
+        "warnings": {
+          "type": "array",
+          "items": {
+            "type": "AddressValidationWarning"
+          }
+        }
+      }
+    },
+    "AddressValidationError": {
+      "description": "Error found during address validation",
+      "base_type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "position": {
+          "type": "integer",
+          "description": "Character position in address string"
+        },
+        "component": {
+          "type": "string",
+          "description": "Which address component has the error"
+        }
+      }
+    },
+    "AddressValidationWarning": {
+      "description": "Warning found during address validation",
+      "base_type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "suggestion": {
+          "type": "string"
+        }
+      }
+    },
+    "AddressTranslation": {
+      "description": "Translation mapping between addresses in different domains",
+      "base_type": "object",
+      "properties": {
+        "source_address": {
+          "type": "DomainAddress",
+          "required": true
+        },
+        "target_address": {
+          "type": "DomainAddress",
+          "required": true
+        },
+        "translation_type": {
+          "type": "enum",
+          "values": [
+            "ALIAS",
+            "REDIRECT",
+            "PROXY",
+            "MIRROR"
+          ]
+        },
+        "bidirectional": {
+          "type": "boolean",
+          "default": false
+        },
+        "expiry": {
+          "type": "Timestamp",
+          "description": "When translation expires, null for permanent"
+        },
+        "conditions": {
+          "type": "array",
+          "items": {
+            "type": "TranslationCondition"
+          },
+          "description": "Conditions that must be met for translation"
+        }
+      }
+    },
+    "TranslationCondition": {
+      "description": "Condition for address translation",
+      "base_type": "object",
+      "properties": {
+        "type": {
+          "type": "enum",
+          "values": [
+            "TIME_WINDOW",
+            "SOURCE_DOMAIN",
+            "AUTHENTICATION",
+            "RATE_LIMIT"
+          ]
+        },
+        "parameters": {
+          "type": "object"
+        }
+      }
+    },
+    "RouteInfo": {
+      "description": "Routing information for reaching a domain address",
+      "base_type": "object",
+      "properties": {
+        "source": {
+          "type": "DomainAddress"
+        },
+        "destination": {
+          "type": "DomainAddress"
+        },
+        "hops": {
+          "type": "array",
+          "items": {
+            "type": "RouteHop"
+          }
+        },
+        "total_cost": {
+          "type": "number",
+          "description": "Total routing cost (geodesic length)"
+        },
+        "estimated_latency_ms": {
+          "type": "number"
+        },
+        "requires_boundary_crossing": {
+          "type": "boolean"
+        },
+        "boundary_crossings": {
+          "type": "array",
+          "items": {
+            "type": "BoundaryCrossing"
+          }
+        }
+      }
+    },
+    "RouteHop": {
+      "description": "Single hop in a route",
+      "base_type": "object",
+      "properties": {
+        "domain": {
+          "type": "DomainAddress"
+        },
+        "entry_point": {
+          "type": "Point4D"
+        },
+        "exit_point": {
+          "type": "Point4D"
+        },
+        "geodesic_length": {
+          "type": "number"
+        },
+        "cost": {
+          "type": "number"
+        }
+      }
+    },
+    "BoundaryCrossing": {
+      "description": "Information about crossing a domain boundary",
+      "base_type": "object",
+      "properties": {
+        "from_domain": {
+          "type": "DomainAddress"
+        },
+        "to_domain": {
+          "type": "DomainAddress"
+        },
+        "crossing_point": {
+          "type": "Point4D"
+        },
+        "protocol": {
+          "type": "string"
+        },
+        "authorization_required": {
+          "type": "boolean"
+        }
+      }
+    },
+    "AddressCache": {
+      "description": "Cache for resolved addresses",
+      "base_type": "object",
+      "properties": {
+        "max_entries": {
+          "type": "integer",
+          "default": 10000
+        },
+        "ttl_seconds": {
+          "type": "integer",
+          "default": 300
+        },
+        "eviction_policy": {
+          "type": "enum",
+          "values": [
+            "LRU",
+            "LFU",
+            "TTL"
+          ],
+          "default": "LRU"
+        }
+      }
+    },
+    "WildcardAddress": {
+      "description": "Address pattern with wildcards for matching",
+      "base_type": "object",
+      "properties": {
+        "pattern": {
+          "type": "string",
+          "description": "Address pattern with * wildcards"
+        },
+        "organization_wildcard": {
+          "type": "boolean"
+        },
+        "stack_wildcard": {
+          "type": "boolean"
+        },
+        "domain_wildcard": {
+          "type": "boolean"
+        }
+      },
+      "examples": [
+        "ld://*/production/*",
+        "ld://acme/*/test-*",
+        "ld://acme/production/*"
+      ]
+    }
+  },
+  "operations": {
+    "parse_address": {
+      "description": "Parse a string into a structured DomainAddress",
+      "category": "parsing",
+      "inputs": {
+        "address_string": {
+          "type": "string",
+          "required": true,
+          "description": "Address string to parse"
+        },
+        "strict_mode": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether to enforce strict validation"
+        }
+      },
+      "outputs": {
+        "address": {
+          "type": "DomainAddress",
+          "description": "Parsed address object"
+        },
+        "warnings": {
+          "type": "array",
+          "items": {
+            "type": "AddressValidationWarning"
+          }
+        }
+      },
+      "preconditions": [
+        "Address string is not null or empty",
+        "Address string starts with 'ld://'"
+      ],
+      "postconditions": [
+        "All required components are populated",
+        "Components match validation patterns"
+      ],
+      "error_conditions": {
+        "INVALID_SCHEME": "Address does not start with 'ld://'",
+        "MISSING_ORGANIZATION": "Organization component is missing",
+        "MISSING_STACK": "Stack component is missing",
+        "MISSING_DOMAIN_ID": "Domain ID component is missing",
+        "INVALID_ORGANIZATION": "Organization contains invalid characters",
+        "INVALID_STACK": "Stack contains invalid characters",
+        "INVALID_DOMAIN_ID": "Domain ID contains invalid characters",
+        "MALFORMED_ADDRESS": "Address structure is malformed"
+      },
+      "complexity": "O(n) where n is address string length"
+    },
+    "validate_address": {
+      "description": "Validate a domain address for correctness and existence",
+      "category": "validation",
+      "inputs": {
+        "address": {
+          "type": "DomainAddress",
+          "required": true
+        },
+        "check_existence": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether to verify domain actually exists"
+        },
+        "validation_level": {
+          "type": "enum",
+          "values": [
+            "SYNTAX",
+            "SEMANTIC",
+            "FULL"
+          ],
+          "default": "SEMANTIC"
+        }
+      },
+      "outputs": {
+        "result": {
+          "type": "AddressValidationResult"
+        }
+      },
+      "preconditions": [
+        "Address object is not null"
+      ],
+      "postconditions": [
+        "Result contains normalized address if valid",
+        "All errors and warnings are populated"
+      ],
+      "error_conditions": {
+        "NULL_ADDRESS": "Address is null"
+      }
+    },
+    "normalize_address": {
+      "description": "Convert address to canonical normalized form",
+      "category": "parsing",
+      "inputs": {
+        "address": {
+          "type": "DomainAddress",
+          "required": true
+        }
+      },
+      "outputs": {
+        "normalized": {
+          "type": "DomainAddress"
+        },
+        "changes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of normalization changes applied"
+        }
+      },
+      "preconditions": [
+        "Address is syntactically valid"
+      ],
+      "postconditions": [
+        "Organization is lowercase",
+        "Stack is lowercase",
+        "Trailing slashes removed",
+        "Query parameters sorted alphabetically"
+      ],
+      "error_conditions": {
+        "INVALID_ADDRESS": "Address cannot be normalized"
+      },
+      "idempotent": true
+    },
+    "resolve_address": {
+      "description": "Resolve a domain address to the actual domain object",
+      "category": "resolution",
+      "inputs": {
+        "address": {
+          "type": "DomainAddress",
+          "required": true
+        },
+        "resolve_entity": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether to also resolve entity path"
+        },
+        "use_cache": {
+          "type": "boolean",
+          "default": true
+        },
+        "timeout_ms": {
+          "type": "integer",
+          "default": 5000
+        }
+      },
+      "outputs": {
+        "result": {
+          "type": "AddressResolutionResult"
+        }
+      },
+      "preconditions": [
+        "Address is valid",
+        "Caller has permission to resolve address"
+      ],
+      "postconditions": [
+        "If resolved, domain object is populated",
+        "Resolution path shows traversal chain"
+      ],
+      "error_conditions": {
+        "DOMAIN_NOT_FOUND": "Domain does not exist",
+        "ENTITY_NOT_FOUND": "Entity path does not exist in domain",
+        "ACCESS_DENIED": "Caller lacks permission to resolve",
+        "RESOLUTION_TIMEOUT": "Resolution exceeded timeout",
+        "INVALID_ADDRESS": "Address validation failed"
+      }
+    },
+    "compute_route": {
+      "description": "Compute routing information between two addresses",
+      "category": "routing",
+      "inputs": {
+        "source": {
+          "type": "DomainAddress",
+          "required": true
+        },
+        "destination": {
+          "type": "DomainAddress",
+          "required": true
+        },
+        "routing_options": {
+          "type": "object",
+          "properties": {
+            "prefer_shortest": {
+              "type": "boolean",
+              "default": true
+            },
+            "avoid_domains": {
+              "type": "array",
+              "items": {
+                "type": "DomainAddress"
+              }
+            },
+            "max_hops": {
+              "type": "integer",
+              "default": 10
+            }
+          }
+        }
+      },
+      "outputs": {
+        "route": {
+          "type": "RouteInfo"
+        },
+        "alternative_routes": {
+          "type": "array",
+          "items": {
+            "type": "RouteInfo"
+          },
+          "description": "Alternative routes if available"
+        }
+      },
+      "preconditions": [
+        "Both addresses are valid and resolvable",
+        "Route exists between domains"
+      ],
+      "postconditions": [
+        "Route connects source to destination",
+        "All hops are traversable"
+      ],
+      "error_conditions": {
+        "SOURCE_NOT_FOUND": "Source domain not found",
+        "DESTINATION_NOT_FOUND": "Destination domain not found",
+        "NO_ROUTE": "No valid route exists between domains",
+        "ISOLATED_DOMAINS": "Domains are causally isolated - no route possible",
+        "MAX_HOPS_EXCEEDED": "Route would exceed maximum hop count"
+      }
+    },
+    "translate_address": {
+      "description": "Translate an address from one domain context to another",
+      "category": "translation",
+      "inputs": {
+        "source_address": {
+          "type": "DomainAddress",
+          "required": true
+        },
+        "target_context": {
+          "type": "DomainAddress",
+          "required": true,
+          "description": "Domain context to translate into"
+        },
+        "translation_rules": {
+          "type": "array",
+          "items": {
+            "type": "AddressTranslation"
+          },
+          "required": false,
+          "description": "Optional explicit translation rules"
+        }
+      },
+      "outputs": {
+        "translated_address": {
+          "type": "DomainAddress"
+        },
+        "translation_applied": {
+          "type": "AddressTranslation",
+          "description": "Translation rule that was applied"
+        },
+        "is_identity": {
+          "type": "boolean",
+          "description": "True if no translation was needed"
+        }
+      },
+      "preconditions": [
+        "Source address is valid",
+        "Target context is valid and accessible"
+      ],
+      "postconditions": [
+        "Translated address is valid in target context",
+        "Translation is reversible if bidirectional"
+      ],
+      "error_conditions": {
+        "NO_TRANSLATION": "No translation rule matches",
+        "TRANSLATION_EXPIRED": "Translation rule has expired",
+        "CONDITION_NOT_MET": "Translation conditions not satisfied",
+        "TARGET_INACCESSIBLE": "Target context is not accessible"
+      }
+    },
+    "register_translation": {
+      "description": "Register a new address translation mapping",
+      "category": "translation",
+      "inputs": {
+        "translation": {
+          "type": "AddressTranslation",
+          "required": true
+        },
+        "overwrite_existing": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "outputs": {
+        "registration_id": {
+          "type": "string"
+        },
+        "effective_from": {
+          "type": "Timestamp"
+        }
+      },
+      "preconditions": [
+        "Both source and target addresses are valid",
+        "Caller has permission to create translations",
+        "No existing translation conflicts (unless overwrite)"
+      ],
+      "postconditions": [
+        "Translation is active and discoverable",
+        "Reverse translation registered if bidirectional"
+      ],
+      "error_conditions": {
+        "TRANSLATION_EXISTS": "Translation already exists and overwrite not set",
+        "INVALID_SOURCE": "Source address is invalid",
+        "INVALID_TARGET": "Target address is invalid",
+        "CIRCULAR_TRANSLATION": "Would create circular translation chain",
+        "PERMISSION_DENIED": "Caller lacks translation creation rights"
+      }
+    },
+    "match_wildcard": {
+      "description": "Check if an address matches a wildcard pattern",
+      "category": "matching",
+      "inputs": {
+        "address": {
+          "type": "DomainAddress",
+          "required": true
+        },
+        "pattern": {
+          "type": "WildcardAddress",
+          "required": true
+        }
+      },
+      "outputs": {
+        "matches": {
+          "type": "boolean"
+        },
+        "captured_segments": {
+          "type": "object",
+          "description": "Values captured by wildcards"
+        }
+      },
+      "preconditions": [
+        "Address is valid",
+        "Pattern is valid"
+      ],
+      "postconditions": [
+        "Result is deterministic"
+      ],
+      "error_conditions": {
+        "INVALID_ADDRESS": "Address is invalid",
+        "INVALID_PATTERN": "Wildcard pattern is invalid"
+      }
+    },
+    "list_addresses_in_domain": {
+      "description": "List all addressable entities within a domain",
+      "category": "query",
+      "inputs": {
+        "domain_address": {
+          "type": "DomainAddress",
+          "required": true
+        },
+        "entity_type_filter": {
+          "type": "EntityType",
+          "required": false
+        },
+        "pattern_filter": {
+          "type": "WildcardAddress",
+          "required": false
+        },
+        "pagination": {
+          "type": "object",
+          "properties": {
+            "offset": {
+              "type": "integer",
+              "default": 0
+            },
+            "limit": {
+              "type": "integer",
+              "default": 100
+            }
+          }
+        }
+      },
+      "outputs": {
+        "addresses": {
+          "type": "array",
+          "items": {
+            "type": "EntityAddress"
+          }
+        },
+        "total_count": {
+          "type": "integer"
+        },
+        "has_more": {
+          "type": "boolean"
+        }
+      },
+      "preconditions": [
+        "Domain exists and is accessible",
+        "Caller has permission to list"
+      ],
+      "postconditions": [
+        "All returned addresses are valid",
+        "Results respect pagination"
+      ],
+      "error_conditions": {
+        "DOMAIN_NOT_FOUND": "Domain does not exist",
+        "ACCESS_DENIED": "Caller lacks list permission"
+      }
+    },
+    "build_address": {
+      "description": "Construct a domain address from components",
+      "category": "construction",
+      "inputs": {
+        "organization": {
+          "type": "string",
+          "required": true
+        },
+        "stack": {
+          "type": "string",
+          "required": true
+        },
+        "domain_id": {
+          "type": "string",
+          "required": true
+        },
+        "path": {
+          "type": "string",
+          "required": false
+        },
+        "query": {
+          "type": "object",
+          "required": false
+        },
+        "fragment": {
+          "type": "string",
+          "required": false
+        }
+      },
+      "outputs": {
+        "address": {
+          "type": "DomainAddress"
+        },
+        "address_string": {
+          "type": "string",
+          "description": "Serialized address string"
+        }
+      },
+      "preconditions": [
+        "All required components provided",
+        "Components pass validation"
+      ],
+      "postconditions": [
+        "Address is valid",
+        "Address is normalized"
+      ],
+      "error_conditions": {
+        "INVALID_ORGANIZATION": "Organization fails validation",
+        "INVALID_STACK": "Stack fails validation",
+        "INVALID_DOMAIN_ID": "Domain ID fails validation"
+      }
+    },
+    "get_parent_address": {
+      "description": "Get the address of a domain's parent",
+      "category": "navigation",
+      "inputs": {
+        "address": {
+          "type": "DomainAddress",
+          "required": true
+        }
+      },
+      "outputs": {
+        "parent_address": {
+          "type": "DomainAddress",
+          "description": "Parent domain address, null for LD(0)"
+        },
+        "is_root": {
+          "type": "boolean",
+          "description": "True if address is LD(0)"
+        }
+      },
+      "preconditions": [
+        "Address is valid and resolvable"
+      ],
+      "postconditions": [
+        "Parent exists (unless root)"
+      ],
+      "error_conditions": {
+        "DOMAIN_NOT_FOUND": "Domain does not exist"
+      }
+    },
+    "get_child_addresses": {
+      "description": "Get addresses of all child domains",
+      "category": "navigation",
+      "inputs": {
+        "address": {
+          "type": "DomainAddress",
+          "required": true
+        },
+        "recursive": {
+          "type": "boolean",
+          "default": false,
+          "description": "Include all descendants, not just direct children"
+        },
+        "max_depth": {
+          "type": "integer",
+          "default": 1,
+          "description": "Maximum depth for recursive listing"
+        }
+      },
+      "outputs": {
+        "children": {
+          "type": "array",
+          "items": {
+            "type": "DomainAddress"
+          }
+        },
+        "count": {
+          "type": "integer"
+        }
+      },
+      "preconditions": [
+        "Address is valid and resolvable"
+      ],
+      "postconditions": [
+        "All children are valid addresses"
+      ],
+      "error_conditions": {
+        "DOMAIN_NOT_FOUND": "Domain does not exist"
+      }
+    },
+    "cache_invalidate": {
+      "description": "Invalidate cached address resolutions",
+      "category": "cache",
+      "inputs": {
+        "address_pattern": {
+          "type": "WildcardAddress",
+          "required": false,
+          "description": "Pattern to match for invalidation, null for all"
+        },
+        "invalidation_reason": {
+          "type": "string",
+          "required": false
+        }
+      },
+      "outputs": {
+        "invalidated_count": {
+          "type": "integer"
+        }
+      },
+      "preconditions": [],
+      "postconditions": [
+        "Matching entries removed from cache"
+      ],
+      "error_conditions": {
+        "INVALID_PATTERN": "Wildcard pattern is malformed"
+      }
+    }
+  },
+  "tests": {
+    "test_parse_simple_address": {
+      "description": "Parse a simple domain address",
+      "category": "unit",
+      "operation": "parse_address",
+      "inputs": {
+        "address_string": "ld://acme/production/core-services"
+      },
+      "expected": {
+        "address.scheme": "ld",
+        "address.organization": "acme",
+        "address.stack": "production",
+        "address.domain_id": "core-services"
+      }
+    },
+    "test_parse_address_with_path": {
+      "description": "Parse address with entity path",
+      "category": "unit",
+      "operation": "parse_address",
+      "inputs": {
+        "address_string": "ld://acme/production/core-services/network/main"
+      },
+      "expected": {
+        "address.organization": "acme",
+        "address.domain_id": "core-services",
+        "address.path": "network/main"
+      }
+    },
+    "test_parse_address_with_query": {
+      "description": "Parse address with query parameters",
+      "category": "unit",
+      "operation": "parse_address",
+      "inputs": {
+        "address_string": "ld://acme/staging/test?timeout=30s&retry=3"
+      },
+      "expected": {
+        "address.query.timeout": "30s",
+        "address.query.retry": "3"
+      }
+    },
+    "test_parse_invalid_scheme": {
+      "description": "Reject address with wrong scheme",
+      "category": "unit",
+      "operation": "parse_address",
+      "inputs": {
+        "address_string": "http://acme/production/test"
+      },
+      "expected_error": "INVALID_SCHEME"
+    },
+    "test_parse_invalid_organization": {
+      "description": "Reject address with invalid organization",
+      "category": "unit",
+      "operation": "parse_address",
+      "inputs": {
+        "address_string": "ld://ACME_Corp!/production/test"
+      },
+      "expected_error": "INVALID_ORGANIZATION"
+    },
+    "test_validate_existing_domain": {
+      "description": "Validate address with existence check",
+      "category": "unit",
+      "operation": "validate_address",
+      "setup": {
+        "existing_domain": "ld://acme/production/core"
+      },
+      "inputs": {
+        "address": {
+          "organization": "acme",
+          "stack": "production",
+          "domain_id": "core"
+        },
+        "check_existence": true,
+        "validation_level": "FULL"
+      },
+      "expected": {
+        "result.valid": true
+      }
+    },
+    "test_normalize_address": {
+      "description": "Normalize address to canonical form",
+      "category": "unit",
+      "operation": "normalize_address",
+      "inputs": {
+        "address": {
+          "organization": "ACME",
+          "stack": "Production",
+          "domain_id": "Core-Services//"
+        }
+      },
+      "expected": {
+        "normalized.organization": "acme",
+        "normalized.stack": "production",
+        "normalized.domain_id": "core-services"
+      }
+    },
+    "test_resolve_address": {
+      "description": "Resolve address to domain object",
+      "category": "unit",
+      "operation": "resolve_address",
+      "setup": {
+        "domain": {
+          "address": "ld://acme/production/core",
+          "state": "ACTIVE"
+        }
+      },
+      "inputs": {
+        "address": {
+          "organization": "acme",
+          "stack": "production",
+          "domain_id": "core"
+        }
+      },
+      "expected": {
+        "result.resolved": true,
+        "result.domain is not null": true
+      }
+    },
+    "test_compute_route_same_parent": {
+      "description": "Compute route between siblings under same parent",
+      "category": "unit",
+      "operation": "compute_route",
+      "setup": {
+        "parent": "ld://acme/production/base",
+        "domain_a": "ld://acme/production/service-a",
+        "domain_b": "ld://acme/production/service-b"
+      },
+      "inputs": {
+        "source": {
+          "organization": "acme",
+          "stack": "production",
+          "domain_id": "service-a"
+        },
+        "destination": {
+          "organization": "acme",
+          "stack": "production",
+          "domain_id": "service-b"
+        }
+      },
+      "expected": {
+        "route.requires_boundary_crossing": true
+      },
+      "assertions": [
+        "route.hops.length >= 2",
+        "route traverses through common ancestor"
+      ]
+    },
+    "test_translate_address": {
+      "description": "Translate address using registered mapping",
+      "category": "unit",
+      "operation": "translate_address",
+      "setup": {
+        "translation": {
+          "source": "ld://legacy/prod/old-service",
+          "target": "ld://acme/production/new-service",
+          "type": "REDIRECT"
+        }
+      },
+      "inputs": {
+        "source_address": {
+          "organization": "legacy",
+          "stack": "prod",
+          "domain_id": "old-service"
+        },
+        "target_context": {
+          "organization": "acme",
+          "stack": "production",
+          "domain_id": "new-service"
+        }
+      },
+      "expected": {
+        "translated_address.organization": "acme",
+        "is_identity": false
+      }
+    },
+    "test_wildcard_match": {
+      "description": "Match address against wildcard pattern",
+      "category": "unit",
+      "operation": "match_wildcard",
+      "inputs": {
+        "address": {
+          "organization": "acme",
+          "stack": "production",
+          "domain_id": "service-123"
+        },
+        "pattern": {
+          "pattern": "ld://acme/production/service-*"
+        }
+      },
+      "expected": {
+        "matches": true
+      }
+    },
+    "test_wildcard_no_match": {
+      "description": "Wildcard pattern does not match",
+      "category": "unit",
+      "operation": "match_wildcard",
+      "inputs": {
+        "address": {
+          "organization": "acme",
+          "stack": "staging",
+          "domain_id": "service-123"
+        },
+        "pattern": {
+          "pattern": "ld://acme/production/*"
+        }
+      },
+      "expected": {
+        "matches": false
+      }
+    },
+    "test_build_address": {
+      "description": "Build address from components",
+      "category": "unit",
+      "operation": "build_address",
+      "inputs": {
+        "organization": "acme",
+        "stack": "production",
+        "domain_id": "my-service",
+        "path": "networks/main"
+      },
+      "expected": {
+        "address_string": "ld://acme/production/my-service/networks/main"
+      }
+    },
+    "test_parent_child_navigation": {
+      "description": "Navigate between parent and child addresses",
+      "category": "integration",
+      "operations": [
+        "get_parent_address",
+        "get_child_addresses"
+      ],
+      "setup": {
+        "parent": "ld://acme/production/base",
+        "children": [
+          "ld://acme/production/child-1",
+          "ld://acme/production/child-2"
+        ]
+      },
+      "steps": [
+        {
+          "operation": "get_child_addresses",
+          "inputs": {
+            "address": "ld://acme/production/base"
+          }
+        },
+        {
+          "operation": "get_parent_address",
+          "inputs": {
+            "address": "ld://acme/production/child-1"
+          }
+        }
+      ],
+      "assertions": [
+        "children contains child-1 and child-2",
+        "parent of child-1 is base"
+      ]
+    },
+    "test_cache_invalidation": {
+      "description": "Test cache invalidation by pattern",
+      "category": "unit",
+      "operation": "cache_invalidate",
+      "setup": {
+        "cached_entries": [
+          "ld://acme/production/a",
+          "ld://acme/production/b",
+          "ld://acme/staging/c"
+        ]
+      },
+      "inputs": {
+        "address_pattern": {
+          "pattern": "ld://acme/production/*"
+        }
+      },
+      "expected": {
+        "invalidated_count": 2
+      }
+    }
+  },
+  "implementation_notes": {
+    "uri_design": {
+      "description": "Domain addresses follow URI specification (RFC 3986) with custom scheme",
+      "scheme": "ld",
+      "hierarchy": "{scheme}://{organization}/{stack}/{domain-id}[/{path}]",
+      "rationale": [
+        "Familiar URI structure for developers",
+        "Organization provides namespace isolation",
+        "Stack separates environments (prod/staging/dev)",
+        "Domain ID identifies specific domain within stack"
+      ]
+    },
+    "caching_strategy": {
+      "description": "Address resolution caching for performance",
+      "recommendations": [
+        "Cache positive resolutions for 5 minutes",
+        "Cache negative resolutions for 1 minute",
+        "Invalidate on domain state changes",
+        "Use LRU eviction with 10K entry limit"
+      ]
+    },
+    "routing_algorithm": {
+      "description": "Route computation using geodesic paths through domain hierarchy",
+      "approach": [
+        "Find lowest common ancestor of source and destination",
+        "Compute geodesic through hierarchy",
+        "Identify boundary crossings",
+        "Optimize for shortest path or lowest latency"
+      ]
+    },
+    "language_bindings": {
+      "rust": {
+        "crate": "hypersync-addressing",
+        "key_types": [
+          "DomainAddress",
+          "AddressParser",
+          "AddressResolver"
+        ]
+      },
+      "python": {
+        "package": "hypersync.addressing",
+        "key_classes": [
+          "DomainAddress",
+          "AddressResolver",
+          "RouteComputer"
+        ]
+      },
+      "typescript": {
+        "package": "@hypersync/addressing",
+        "key_interfaces": [
+          "IDomainAddress",
+          "IAddressResolver"
+        ]
+      }
+    }
+  }
+}

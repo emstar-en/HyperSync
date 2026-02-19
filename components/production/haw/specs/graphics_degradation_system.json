@@ -1,0 +1,858 @@
+{
+  "version": "1.0.0",
+  "namespace": "hypersync.ui.degradation",
+  "description": "Graphics degradation system for graceful fallback across terminal capabilities. Provides 9-level degradation (Level 0: ASCII → Level 8: Advanced Sixel) with automatic conversion, testing, and optimization.",
+  
+  "types": {
+    "GraphicsLevel": {
+      "description": "Terminal graphics capability level (0-8)",
+      "enum": [0, 1, 2, 3, 4, 5, 6, 7, 8],
+      "levels": {
+        "0": "ASCII only - basic 7-bit ASCII characters",
+        "1": "Extended ASCII - box drawing and extended characters",
+        "2": "Unicode blocks - block elements (█▓▒░)",
+        "3": "Unicode full - complete Unicode symbol support",
+        "4": "16 colors - ANSI 16 color support",
+        "5": "256 colors - ANSI 256 color palette",
+        "6": "True color - 24-bit RGB (16.7M colors)",
+        "7": "Sixel basic - basic sixel graphics support",
+        "8": "Sixel advanced - advanced sixel features"
+      }
+    },
+    
+    "TerminalCapability": {
+      "description": "Comprehensive terminal capability information",
+      "fields": {
+        "graphics_level": {
+          "type": "GraphicsLevel",
+          "description": "Primary graphics level",
+          "required": true
+        },
+        "unicode_support": {
+          "type": "boolean",
+          "description": "Supports Unicode characters",
+          "required": true
+        },
+        "color_count": {
+          "type": "integer",
+          "description": "Number of colors supported (0, 16, 256, or 16777216)",
+          "required": true
+        },
+        "true_color": {
+          "type": "boolean",
+          "description": "Supports 24-bit RGB colors",
+          "required": false
+        },
+        "sixel_support": {
+          "type": "boolean",
+          "description": "Supports sixel graphics",
+          "required": false
+        },
+        "sixel_max_colors": {
+          "type": "integer",
+          "description": "Maximum sixel palette size",
+          "required": false
+        },
+        "box_drawing": {
+          "type": "boolean",
+          "description": "Supports box drawing characters",
+          "required": false
+        },
+        "term_type": {
+          "type": "string",
+          "description": "Terminal type (from TERM)",
+          "required": false
+        },
+        "terminal_width": {
+          "type": "integer",
+          "description": "Terminal width in columns",
+          "required": true
+        },
+        "terminal_height": {
+          "type": "integer",
+          "description": "Terminal height in rows",
+          "required": true
+        }
+      }
+    },
+    
+    "DegradationStrategy": {
+      "description": "Strategy for degrading graphics",
+      "fields": {
+        "source_level": {
+          "type": "GraphicsLevel",
+          "description": "Source graphics level",
+          "required": true
+        },
+        "target_level": {
+          "type": "GraphicsLevel",
+          "description": "Target graphics level",
+          "required": true
+        },
+        "conversion_chain": {
+          "type": "array<GraphicsLevel>",
+          "description": "Conversion steps (ordered)",
+          "required": true
+        },
+        "quality_target": {
+          "type": "float",
+          "description": "Target quality score (0.0-1.0)",
+          "required": false
+        },
+        "preserve_aspect": {
+          "type": "boolean",
+          "description": "Preserve aspect ratio",
+          "required": false
+        }
+      }
+    },
+    
+    "RenderQuality": {
+      "description": "Rendering quality metrics",
+      "fields": {
+        "visual_quality": {
+          "type": "float",
+          "description": "Perceptual visual quality (0.0-1.0)",
+          "required": true
+        },
+        "color_accuracy": {
+          "type": "float",
+          "description": "Color accuracy score (0.0-1.0)",
+          "required": true
+        },
+        "detail_preservation": {
+          "type": "float",
+          "description": "Detail preservation score (0.0-1.0)",
+          "required": true
+        },
+        "overall_score": {
+          "type": "float",
+          "description": "Overall quality score (0.0-1.0)",
+          "required": true
+        }
+      }
+    },
+    
+    "ColorConversion": {
+      "description": "Color conversion configuration",
+      "fields": {
+        "source_space": {
+          "type": "string",
+          "description": "Source color space (rgb, hsl, etc.)",
+          "required": true
+        },
+        "target_space": {
+          "type": "string",
+          "description": "Target color space",
+          "required": true
+        },
+        "palette_size": {
+          "type": "integer",
+          "description": "Target palette size",
+          "required": false
+        },
+        "dithering": {
+          "type": "boolean",
+          "description": "Apply dithering",
+          "required": false
+        }
+      }
+    },
+    
+    "GraphicsContent": {
+      "description": "Graphics content to degrade/upgrade",
+      "fields": {
+        "content_type": {
+          "type": "string",
+          "description": "Type of content (image, chart, primitive, text)",
+          "required": true
+        },
+        "current_level": {
+          "type": "GraphicsLevel",
+          "description": "Current rendering level",
+          "required": true
+        },
+        "data": {
+          "type": "any",
+          "description": "Content data (type-specific)",
+          "required": true
+        },
+        "metadata": {
+          "type": "map<string, any>",
+          "description": "Additional metadata",
+          "required": false
+        }
+      }
+    },
+    
+    "DegradationResult": {
+      "description": "Result of degradation operation",
+      "fields": {
+        "degraded_content": {
+          "type": "GraphicsContent",
+          "description": "Degraded content",
+          "required": true
+        },
+        "achieved_level": {
+          "type": "GraphicsLevel",
+          "description": "Achieved graphics level",
+          "required": true
+        },
+        "quality": {
+          "type": "RenderQuality",
+          "description": "Resulting quality metrics",
+          "required": true
+        },
+        "conversion_steps": {
+          "type": "array<string>",
+          "description": "Conversion steps applied",
+          "required": false
+        }
+      }
+    },
+    
+    "LevelFeatures": {
+      "description": "Features available at a graphics level",
+      "fields": {
+        "level": {
+          "type": "GraphicsLevel",
+          "description": "Graphics level",
+          "required": true
+        },
+        "characters": {
+          "type": "array<string>",
+          "description": "Available character set",
+          "required": false
+        },
+        "colors": {
+          "type": "integer",
+          "description": "Number of colors",
+          "required": true
+        },
+        "graphics": {
+          "type": "boolean",
+          "description": "Supports bitmap graphics",
+          "required": true
+        },
+        "transparency": {
+          "type": "boolean",
+          "description": "Supports transparency",
+          "required": false
+        },
+        "gradients": {
+          "type": "boolean",
+          "description": "Supports smooth gradients",
+          "required": false
+        }
+      }
+    },
+    
+    "CachedVersion": {
+      "description": "Cached degraded version",
+      "fields": {
+        "content_hash": {
+          "type": "string",
+          "description": "Hash of source content",
+          "required": true
+        },
+        "level": {
+          "type": "GraphicsLevel",
+          "description": "Graphics level of cached version",
+          "required": true
+        },
+        "data": {
+          "type": "any",
+          "description": "Cached content data",
+          "required": true
+        },
+        "size_bytes": {
+          "type": "integer",
+          "description": "Cache entry size",
+          "required": true
+        },
+        "created_at": {
+          "type": "integer",
+          "description": "Creation timestamp",
+          "required": true
+        }
+      }
+    },
+    
+    "OptimalLevelConfig": {
+      "description": "Configuration for optimal level selection",
+      "fields": {
+        "prefer_quality": {
+          "type": "boolean",
+          "description": "Prefer quality over performance",
+          "required": false
+        },
+        "prefer_performance": {
+          "type": "boolean",
+          "description": "Prefer performance over quality",
+          "required": false
+        },
+        "bandwidth_limited": {
+          "type": "boolean",
+          "description": "Connection is bandwidth-limited",
+          "required": false
+        },
+        "user_preference": {
+          "type": "GraphicsLevel",
+          "description": "User-specified preference",
+          "required": false
+        }
+      }
+    }
+  },
+  
+  "operations": {
+    "detect_graphics_level": {
+      "description": "Detect terminal graphics capabilities and determine optimal graphics level. Performs comprehensive testing of Unicode, color, and sixel support.",
+      "inputs": {
+        "thorough": {
+          "type": "boolean",
+          "description": "Perform thorough testing (slower but more accurate)",
+          "required": false
+        },
+        "timeout_ms": {
+          "type": "integer",
+          "description": "Detection timeout in milliseconds",
+          "required": false
+        }
+      },
+      "outputs": {
+        "capability": {
+          "type": "TerminalCapability",
+          "description": "Detected terminal capabilities"
+        },
+        "confidence": {
+          "type": "float",
+          "description": "Detection confidence (0.0-1.0)"
+        },
+        "detection_method": {
+          "type": "string",
+          "description": "Method used for detection"
+        }
+      },
+      "errors": {
+        "DETECTION_FAILED": "Failed to detect graphics capabilities",
+        "TIMEOUT": "Detection timed out",
+        "TERMINAL_UNRESPONSIVE": "Terminal did not respond to queries"
+      }
+    },
+    
+    "degrade_primitive": {
+      "description": "Degrade UI primitive to target graphics level with automatic conversion and quality preservation.",
+      "inputs": {
+        "content": {
+          "type": "GraphicsContent",
+          "description": "Content to degrade",
+          "required": true
+        },
+        "target_level": {
+          "type": "GraphicsLevel",
+          "description": "Target graphics level",
+          "required": true
+        },
+        "strategy": {
+          "type": "DegradationStrategy",
+          "description": "Degradation strategy",
+          "required": false
+        }
+      },
+      "outputs": {
+        "result": {
+          "type": "DegradationResult",
+          "description": "Degradation result"
+        }
+      },
+      "errors": {
+        "INVALID_LEVEL": "Target level is invalid",
+        "DEGRADATION_FAILED": "Failed to degrade content",
+        "UNSUPPORTED_CONTENT_TYPE": "Content type not supported for degradation"
+      }
+    },
+    
+    "upgrade_primitive": {
+      "description": "Upgrade primitive to higher graphics level with enhanced rendering and feature detection.",
+      "inputs": {
+        "content": {
+          "type": "GraphicsContent",
+          "description": "Content to upgrade",
+          "required": true
+        },
+        "target_level": {
+          "type": "GraphicsLevel",
+          "description": "Target graphics level (must be higher)",
+          "required": true
+        },
+        "enhance": {
+          "type": "boolean",
+          "description": "Apply enhancements (anti-aliasing, etc.)",
+          "required": false
+        }
+      },
+      "outputs": {
+        "upgraded_content": {
+          "type": "GraphicsContent",
+          "description": "Upgraded content"
+        },
+        "quality_improvement": {
+          "type": "float",
+          "description": "Quality improvement score"
+        }
+      },
+      "errors": {
+        "INVALID_UPGRADE": "Target level is not higher than current",
+        "UPGRADE_FAILED": "Failed to upgrade content",
+        "ENHANCEMENT_FAILED": "Enhancement failed but basic upgrade succeeded"
+      }
+    },
+    
+    "render_at_level": {
+      "description": "Render content at specific graphics level with level-specific optimizations and consistency guarantees.",
+      "inputs": {
+        "content": {
+          "type": "GraphicsContent",
+          "description": "Content to render",
+          "required": true
+        },
+        "level": {
+          "type": "GraphicsLevel",
+          "description": "Graphics level to render at",
+          "required": true
+        },
+        "optimize": {
+          "type": "boolean",
+          "description": "Apply level-specific optimizations",
+          "required": false
+        }
+      },
+      "outputs": {
+        "rendered_data": {
+          "type": "string",
+          "description": "Rendered output (escape sequences or text)"
+        },
+        "quality": {
+          "type": "RenderQuality",
+          "description": "Achieved quality metrics"
+        }
+      },
+      "errors": {
+        "RENDER_FAILED": "Failed to render at specified level",
+        "LEVEL_UNSUPPORTED": "Graphics level not supported for content type"
+      }
+    },
+    
+    "convert_color": {
+      "description": "Convert color to target graphics level with palette mapping and optional dithering.",
+      "inputs": {
+        "source_color": {
+          "type": "map<string, integer>",
+          "description": "Source color (r, g, b)",
+          "required": true
+        },
+        "target_level": {
+          "type": "GraphicsLevel",
+          "description": "Target graphics level",
+          "required": true
+        },
+        "conversion": {
+          "type": "ColorConversion",
+          "description": "Conversion configuration",
+          "required": false
+        }
+      },
+      "outputs": {
+        "converted_color": {
+          "type": "map<string, any>",
+          "description": "Converted color (format depends on target level)"
+        },
+        "ansi_code": {
+          "type": "string",
+          "description": "ANSI escape code (if applicable)",
+          "required": false
+        },
+        "accuracy": {
+          "type": "float",
+          "description": "Color accuracy score (0.0-1.0)"
+        }
+      },
+      "errors": {
+        "INVALID_COLOR": "Source color is invalid",
+        "CONVERSION_FAILED": "Color conversion failed"
+      }
+    },
+    
+    "convert_graphics": {
+      "description": "Convert graphics (images, charts) to target level with quality adaptation and format selection.",
+      "inputs": {
+        "graphics": {
+          "type": "GraphicsContent",
+          "description": "Graphics content to convert",
+          "required": true
+        },
+        "target_level": {
+          "type": "GraphicsLevel",
+          "description": "Target graphics level",
+          "required": true
+        },
+        "quality_target": {
+          "type": "float",
+          "description": "Target quality score (0.0-1.0)",
+          "required": false
+        }
+      },
+      "outputs": {
+        "converted": {
+          "type": "GraphicsContent",
+          "description": "Converted graphics"
+        },
+        "achieved_quality": {
+          "type": "RenderQuality",
+          "description": "Achieved quality metrics"
+        },
+        "conversion_time_ms": {
+          "type": "integer",
+          "description": "Conversion time in milliseconds"
+        }
+      },
+      "errors": {
+        "CONVERSION_FAILED": "Graphics conversion failed",
+        "QUALITY_TOO_LOW": "Cannot achieve target quality at level"
+      }
+    },
+    
+    "test_level_support": {
+      "description": "Test if terminal supports specific graphics level features. Performs feature-specific tests.",
+      "inputs": {
+        "level": {
+          "type": "GraphicsLevel",
+          "description": "Graphics level to test",
+          "required": true
+        },
+        "test_all_features": {
+          "type": "boolean",
+          "description": "Test all features (vs quick test)",
+          "required": false
+        }
+      },
+      "outputs": {
+        "supported": {
+          "type": "boolean",
+          "description": "Level is fully supported"
+        },
+        "features": {
+          "type": "LevelFeatures",
+          "description": "Available features at this level"
+        },
+        "partial_support": {
+          "type": "array<string>",
+          "description": "Features with partial support"
+        },
+        "unsupported": {
+          "type": "array<string>",
+          "description": "Unsupported features"
+        }
+      },
+      "errors": {
+        "TEST_FAILED": "Feature testing failed",
+        "INVALID_LEVEL": "Graphics level is invalid"
+      }
+    },
+    
+    "select_optimal_level": {
+      "description": "Select optimal graphics level based on capabilities, performance, and user preferences.",
+      "inputs": {
+        "capability": {
+          "type": "TerminalCapability",
+          "description": "Terminal capabilities",
+          "required": true
+        },
+        "config": {
+          "type": "OptimalLevelConfig",
+          "description": "Selection configuration",
+          "required": false
+        },
+        "content_type": {
+          "type": "string",
+          "description": "Type of content to render",
+          "required": false
+        }
+      },
+      "outputs": {
+        "selected_level": {
+          "type": "GraphicsLevel",
+          "description": "Selected optimal level"
+        },
+        "reasoning": {
+          "type": "string",
+          "description": "Explanation of selection"
+        },
+        "alternatives": {
+          "type": "array<GraphicsLevel>",
+          "description": "Alternative levels in priority order"
+        }
+      },
+      "errors": {
+        "SELECTION_FAILED": "Failed to select optimal level",
+        "NO_SUITABLE_LEVEL": "No suitable level found for requirements"
+      }
+    },
+    
+    "cache_degraded_versions": {
+      "description": "Cache multiple degraded versions of content for fast switching. Supports lazy generation and memory management.",
+      "inputs": {
+        "content": {
+          "type": "GraphicsContent",
+          "description": "Source content",
+          "required": true
+        },
+        "levels": {
+          "type": "array<GraphicsLevel>",
+          "description": "Levels to cache (empty = all common levels)",
+          "required": false
+        },
+        "lazy": {
+          "type": "boolean",
+          "description": "Generate lazily on first access",
+          "required": false
+        }
+      },
+      "outputs": {
+        "cache_key": {
+          "type": "string",
+          "description": "Cache key for retrieval"
+        },
+        "cached_levels": {
+          "type": "array<GraphicsLevel>",
+          "description": "Levels that were cached"
+        },
+        "total_size_bytes": {
+          "type": "integer",
+          "description": "Total cache size"
+        }
+      },
+      "errors": {
+        "CACHE_FAILED": "Failed to cache versions",
+        "MEMORY_LIMIT_EXCEEDED": "Cache would exceed memory limit",
+        "GENERATION_FAILED": "Failed to generate one or more versions"
+      }
+    },
+    
+    "monitor_level_changes": {
+      "description": "Monitor terminal for capability changes (resize, reconnection, etc.) and trigger re-detection.",
+      "inputs": {
+        "callback_url": {
+          "type": "string",
+          "description": "Webhook URL for change notifications",
+          "required": false
+        },
+        "check_interval_ms": {
+          "type": "integer",
+          "description": "Check interval in milliseconds",
+          "required": false
+        }
+      },
+      "outputs": {
+        "monitor_id": {
+          "type": "string",
+          "description": "Monitor identifier"
+        },
+        "initial_capability": {
+          "type": "TerminalCapability",
+          "description": "Initial terminal capability"
+        }
+      },
+      "errors": {
+        "MONITOR_FAILED": "Failed to start monitoring",
+        "INVALID_CALLBACK": "Callback URL is invalid"
+      }
+    }
+  },
+  
+  "documentation": {
+    "overview": "Graphics Degradation System provides graceful fallback across 9 capability levels (0-8), from pure ASCII to advanced sixel graphics. Enables universal terminal compatibility while maximizing quality on capable terminals.",
+    
+    "graphics_levels": {
+      "level_0_ascii": {
+        "description": "Basic 7-bit ASCII characters only",
+        "characters": "A-Z, a-z, 0-9, punctuation, space",
+        "colors": "None (monochrome)",
+        "use_cases": ["Most basic terminals", "Serial consoles", "Emergency fallback"],
+        "example": "Progress: [=========>........] 50%"
+      },
+      "level_1_extended_ascii": {
+        "description": "Extended ASCII with box drawing",
+        "characters": "ASCII + box drawing (─│┌┐└┘├┤┬┴┼)",
+        "colors": "None (monochrome)",
+        "use_cases": ["Simple terminals", "Text-mode UI"],
+        "example": "┌─────────┐\n│  Hello  │\n└─────────┘"
+      },
+      "level_2_unicode_blocks": {
+        "description": "Unicode block elements for pseudo-graphics",
+        "characters": "Full Unicode + blocks (█▓▒░▄▀)",
+        "colors": "None (monochrome)",
+        "use_cases": ["Progress bars", "Simple charts", "Shading"],
+        "example": "Chart: █▓▓▒▒▒░░░"
+      },
+      "level_3_unicode_full": {
+        "description": "Complete Unicode support",
+        "characters": "All Unicode symbols (emoji, math, etc.)",
+        "colors": "None (monochrome)",
+        "use_cases": ["Rich text UI", "Icons", "Symbols"],
+        "example": "Status: ✓ Success ⚠ Warning ✗ Error"
+      },
+      "level_4_16_colors": {
+        "description": "ANSI 16 colors",
+        "characters": "Full Unicode",
+        "colors": "16 colors (8 normal + 8 bright)",
+        "use_cases": ["Basic color UI", "Syntax highlighting"],
+        "example": "\\033[31mError\\033[0m \\033[32mSuccess\\033[0m"
+      },
+      "level_5_256_colors": {
+        "description": "ANSI 256 color palette",
+        "characters": "Full Unicode",
+        "colors": "256 colors (216 RGB + 24 grayscale + 16 ANSI)",
+        "use_cases": ["Colorful UI", "Charts", "Syntax highlighting"],
+        "example": "Charts with color gradients, heatmaps"
+      },
+      "level_6_true_color": {
+        "description": "24-bit RGB true color",
+        "characters": "Full Unicode",
+        "colors": "16.7M colors (24-bit RGB)",
+        "use_cases": ["Modern terminals", "High-quality UI", "Gradients"],
+        "example": "Smooth color gradients, accurate color representation"
+      },
+      "level_7_sixel_basic": {
+        "description": "Basic sixel graphics",
+        "characters": "Full Unicode + bitmap graphics",
+        "colors": "Up to 256 colors in sixel palette",
+        "use_cases": ["Images", "Charts", "Visualizations"],
+        "example": "High-quality chart rendering, photos"
+      },
+      "level_8_sixel_advanced": {
+        "description": "Advanced sixel with all features",
+        "characters": "Full Unicode + advanced bitmap graphics",
+        "colors": "Up to 256 colors + transparency + animation",
+        "use_cases": ["Professional visualizations", "Animations", "Complex graphics"],
+        "example": "Animated charts, transparent overlays, compositing"
+      }
+    },
+    
+    "degradation_chains": {
+      "description": "Recommended degradation paths for different content types",
+      "images": "8 → 7 → 6 (true color blocks) → 5 (256 color blocks) → 2 (Unicode blocks) → 1 (ASCII art)",
+      "charts": "8 → 7 → 6 (Unicode + true color) → 5 (Unicode + 256 color) → 2 (Unicode blocks) → 0 (ASCII)",
+      "ui_borders": "3 (Unicode box) → 1 (ASCII box) → 0 (ASCII +--|)",
+      "colors": "6 (true color) → 5 (256 color) → 4 (16 color) → 0 (monochrome)",
+      "progress_bars": "6 (Unicode blocks + true color) → 2 (Unicode blocks) → 0 (ASCII ====>)"
+    },
+    
+    "detection_algorithm": {
+      "description": "Multi-stage detection for accurate level determination",
+      "stages": [
+        "1. Environment variables (TERM, COLORTERM)",
+        "2. Terminal type database lookup",
+        "3. Unicode test (attempt to render Unicode character)",
+        "4. Color test (send color codes, check support)",
+        "5. Sixel test (send small sixel, check response)",
+        "6. Feature queries (DA, XTGETTCAP)",
+        "7. Confidence scoring (combine all results)"
+      ],
+      "caching": "Cache results per session to avoid repeated detection"
+    },
+    
+    "quality_preservation": {
+      "description": "Techniques for maintaining quality during degradation",
+      "techniques": [
+        "Color quantization - Reduce colors while preserving perception",
+        "Dithering - Simulate colors through patterns",
+        "Edge preservation - Maintain important edges/boundaries",
+        "Contrast enhancement - Compensate for color loss",
+        "Character selection - Choose best-matching characters",
+        "Aspect ratio - Adjust for character cell dimensions"
+      ]
+    },
+    
+    "performance_optimization": {
+      "caching": "Cache degraded versions for instant switching",
+      "lazy_generation": "Generate versions only when needed",
+      "incremental_updates": "Only re-degrade changed content",
+      "level_skipping": "Skip intermediate levels when appropriate",
+      "parallel_generation": "Generate multiple levels concurrently"
+    },
+    
+    "adaptive_behavior": {
+      "description": "System adapts to changing conditions",
+      "triggers": [
+        "Terminal resize - Re-render with new dimensions",
+        "SSH reconnection - Re-detect capabilities",
+        "Slow connection - Drop to lower level",
+        "User preference - Override automatic selection"
+      ],
+      "adaptation_strategy": "Monitor → Detect change → Re-detect level → Convert content → Re-render"
+    },
+    
+    "best_practices": [
+      "Always detect capabilities before rendering",
+      "Cache detection results per session",
+      "Pre-generate common degradation levels",
+      "Test rendering at all levels during development",
+      "Provide manual override for level selection",
+      "Monitor performance and adjust levels dynamically",
+      "Use appropriate degradation chains for content type",
+      "Maintain quality metrics to guide decisions",
+      "Handle edge cases (very small terminals, etc.)",
+      "Provide user feedback during level changes"
+    ],
+    
+    "testing_strategy": {
+      "description": "Comprehensive testing across all levels",
+      "approaches": [
+        "Automated tests in constrained environments",
+        "Manual testing on diverse terminals",
+        "Visual regression testing at each level",
+        "Performance benchmarking",
+        "Quality metric validation"
+      ],
+      "test_terminals": [
+        "Level 0-1: linux console, serial terminals",
+        "Level 2-3: basic terminal emulators",
+        "Level 4-5: gnome-terminal, konsole",
+        "Level 6: most modern terminals",
+        "Level 7-8: xterm, mlterm, wezterm, mintty"
+      ]
+    },
+    
+    "examples": {
+      "automatic_degradation": {
+        "description": "Automatically degrade content to terminal capabilities",
+        "steps": [
+          "1. detect_graphics_level() → capability",
+          "2. select_optimal_level(capability) → selected_level",
+          "3. degrade_primitive(content, selected_level) → result",
+          "4. render_at_level(result.degraded_content, selected_level)"
+        ]
+      },
+      "cached_multi_level": {
+        "description": "Pre-cache content at multiple levels for fast switching",
+        "steps": [
+          "1. cache_degraded_versions(content, [0, 2, 5, 6, 7, 8])",
+          "2. detect_graphics_level() → capability",
+          "3. Retrieve cached version for capability.graphics_level",
+          "4. Render cached version"
+        ]
+      },
+      "dynamic_adaptation": {
+        "description": "Adapt to changing terminal conditions",
+        "steps": [
+          "1. monitor_level_changes(callback)",
+          "2. On change notification: re-detect level",
+          "3. Convert all visible content to new level",
+          "4. Re-render UI"
+        ]
+      }
+    }
+  }
+}

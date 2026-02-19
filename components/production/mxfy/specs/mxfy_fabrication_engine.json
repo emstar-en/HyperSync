@@ -1,0 +1,214 @@
+{
+  "name": "mxfy_fabrication_engine",
+  "version": "1.0.0",
+  "description": "MXFY Fabrication Engine Specification - Code and asset generation from SDL primitives including template processing, primitive composition, and quality validation",
+  "license": {
+    "type": "AGPLv3",
+    "text": "This specification is licensed under the GNU Affero General Public License v3.0. See https://www.gnu.org/licenses/agpl-3.0.html for full license text.",
+    "copyright": "Copyright (c) 2024-2026 HyperSync Project"
+  },
+  "subsystem": "MXFY",
+  "category": "fabrication_engine",
+  "stunir_compatible": true,
+  "dependencies": [
+    "mxfy_core_system@1.0.0",
+    "mxfy_blueprint_generation@1.0.0",
+    "sdl_core_infrastructure@3.1.0"
+  ],
+  "architecture": {
+    "overview": "Fabrication Engine is Phase 3 of MXFY - generating complete applications from blueprints",
+    "pipeline": {
+      "primitive_loading": "Load primitives from SDL into memory",
+      "template_processing": "Process code templates with parameters",
+      "primitive_composition": "Compose primitives into application",
+      "code_assembly": "Assemble final code structure",
+      "asset_generation": "Generate non-code assets",
+      "quality_validation": "Validate generated code"
+    },
+    "generation_modes": {
+      "template_based": {
+        "description": "Fill templates with parameters",
+        "use_case": "Standard patterns"
+      },
+      "composition_based": {
+        "description": "Compose primitives with adapters",
+        "use_case": "Complex integrations"
+      },
+      "llm_based": {
+        "description": "LLM generates custom code",
+        "use_case": "Novel requirements",
+        "determinism": "D2"
+      }
+    }
+  },
+  "type_definitions": {
+    "LoadedPrimitive": {
+      "description": "Primitive loaded into fabrication memory",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "shard": {"$ref": "sdl_core_infrastructure#/type_definitions/SDLShard"},
+          "parsed_content": {"type": "object"},
+          "interface": {"type": "object"},
+          "dependencies": {"type": "array"}
+        }
+      }
+    },
+    "CodeTemplate": {
+      "description": "Template for code generation",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "string"},
+          "template_type": {"type": "string", "enum": ["boilerplate", "component", "integration", "glue"]},
+          "language": {"type": "string"},
+          "template": {"type": "string"},
+          "slots": {"type": "array", "items": {"type": "string"}}
+        }
+      }
+    },
+    "ComposedComponent": {
+      "description": "Component composed from primitives",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "name": {"type": "string"},
+          "primitives": {"type": "array"},
+          "adapters": {"type": "array"},
+          "interface": {"type": "object"},
+          "code": {"type": "string"}
+        }
+      }
+    },
+    "GeneratedAsset": {
+      "description": "Non-code asset",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "name": {"type": "string"},
+          "type": {"type": "string", "enum": ["config", "style", "data", "manifest", "documentation"]},
+          "content": {"type": "bytes"},
+          "path": {"type": "string"}
+        }
+      }
+    },
+    "CodeBundle": {
+      "description": "Complete code bundle",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "files": {"type": "object"},
+          "entry_point": {"type": "string"},
+          "structure": {"type": "object"},
+          "hash": {"type": "string"}
+        }
+      }
+    },
+    "FabricationResult": {
+      "description": "Result of fabrication phase",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "success": {"type": "boolean"},
+          "code_bundle": {"$ref": "#/type_definitions/CodeBundle"},
+          "assets": {"type": "array", "items": {"$ref": "#/type_definitions/GeneratedAsset"}},
+          "validation_report": {"type": "object"},
+          "generation_stats": {"type": "object"}
+        }
+      }
+    }
+  },
+  "operations": [
+    {
+      "name": "fabrication_load_primitives",
+      "description": "Load primitives from SDL",
+      "signature": "fabrication_load_primitives(spec: FactorySpec) -> array[LoadedPrimitive]",
+      "complexity": "O(n)",
+      "determinism": "D0"
+    },
+    {
+      "name": "fabrication_select_templates",
+      "description": "Select appropriate code templates",
+      "signature": "fabrication_select_templates(primitives: array[LoadedPrimitive], architecture: ArchitecturePlan) -> array[CodeTemplate]",
+      "complexity": "O(n)",
+      "determinism": "D2"
+    },
+    {
+      "name": "fabrication_process_template",
+      "description": "Process single template with parameters",
+      "signature": "fabrication_process_template(template: CodeTemplate, params: object) -> string",
+      "complexity": "O(s) where s = slot count",
+      "determinism": "D0"
+    },
+    {
+      "name": "fabrication_compose_primitives",
+      "description": "Compose primitives into components",
+      "signature": "fabrication_compose_primitives(primitives: array[LoadedPrimitive], data_flow: array) -> array[ComposedComponent]",
+      "complexity": "O(n²)",
+      "determinism": "D2"
+    },
+    {
+      "name": "fabrication_generate_adapters",
+      "description": "Generate adapter code between primitives",
+      "signature": "fabrication_generate_adapters(primitives: array[LoadedPrimitive]) -> array[string]",
+      "complexity": "O(n²)",
+      "determinism": "D2"
+    },
+    {
+      "name": "fabrication_assemble_code",
+      "description": "Assemble final code bundle",
+      "signature": "fabrication_assemble_code(components: array[ComposedComponent], adapters: array[string], structure: object) -> CodeBundle",
+      "complexity": "O(n)",
+      "determinism": "D0"
+    },
+    {
+      "name": "fabrication_generate_assets",
+      "description": "Generate non-code assets",
+      "signature": "fabrication_generate_assets(spec: FactorySpec) -> array[GeneratedAsset]",
+      "complexity": "O(a) where a = asset count",
+      "determinism": "D0"
+    },
+    {
+      "name": "fabrication_validate_output",
+      "description": "Validate generated code quality",
+      "signature": "fabrication_validate_output(bundle: CodeBundle) -> ValidationResult",
+      "complexity": "O(n)",
+      "determinism": "D0"
+    },
+    {
+      "name": "fabrication_execute",
+      "description": "Execute complete fabrication pipeline",
+      "signature": "fabrication_execute(spec: FactorySpec) -> FabricationResult",
+      "complexity": "O(n²)",
+      "determinism": "D2"
+    }
+  ],
+  "template_library": {
+    "boilerplate_templates": [
+      {"id": "capsule_manifest", "purpose": "Generate capsule.json"},
+      {"id": "entry_point", "purpose": "Generate main entry point"},
+      {"id": "module_structure", "purpose": "Generate module organization"}
+    ],
+    "component_templates": [
+      {"id": "ui_component", "purpose": "Generate UI component wrapper"},
+      {"id": "data_handler", "purpose": "Generate data handling code"},
+      {"id": "event_handler", "purpose": "Generate event handling code"}
+    ],
+    "integration_templates": [
+      {"id": "primitive_adapter", "purpose": "Generate adapter between primitives"},
+      {"id": "data_flow_pipe", "purpose": "Generate data flow connections"}
+    ]
+  },
+  "test_cases": [
+    {
+      "id": "FAB_TC_001",
+      "description": "Fabricate simple file browser",
+      "input": {"spec": "file_browser_spec"},
+      "expected": {
+        "success": true,
+        "files_generated": ">=3",
+        "validation": "pass"
+      }
+    }
+  ]
+}

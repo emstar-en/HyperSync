@@ -1,0 +1,363 @@
+{
+  "test_name": "Enhanced Geodesic Accuracy",
+  "timestamp": "2026-01-13 07:03:57",
+  "dimensions_tested": [
+    2,
+    4,
+    8,
+    16,
+    32,
+    64
+  ],
+  "enhancements_applied": [
+    "Adaptive precision (float64)",
+    "Dimension-adaptive tolerances",
+    "Adaptive step size",
+    "Manifold projection",
+    "Multiple validation methods"
+  ],
+  "tests": {
+    "shortest_path": [
+      {
+        "dimension": 2,
+        "n_trials": 50,
+        "n_violations": 0,
+        "violation_rate": 0.0,
+        "max_violation": 0.0,
+        "tolerance_used": 0.001,
+        "passed": true
+      },
+      {
+        "dimension": 4,
+        "n_trials": 50,
+        "n_violations": 0,
+        "violation_rate": 0.0,
+        "max_violation": 0.0,
+        "tolerance_used": 0.001,
+        "passed": true
+      },
+      {
+        "dimension": 8,
+        "n_trials": 50,
+        "n_violations": 0,
+        "violation_rate": 0.0,
+        "max_violation": 0.0,
+        "tolerance_used": 0.001,
+        "passed": true
+      },
+      {
+        "dimension": 16,
+        "n_trials": 50,
+        "n_violations": 0,
+        "violation_rate": 0.0,
+        "max_violation": 0.0,
+        "tolerance_used": 0.0005,
+        "passed": true
+      },
+      {
+        "dimension": 32,
+        "n_trials": 50,
+        "n_violations": 0,
+        "violation_rate": 0.0,
+        "max_violation": 0.0,
+        "tolerance_used": 0.001,
+        "passed": true
+      },
+      {
+        "dimension": 64,
+        "n_trials": 50,
+        "n_violations": 0,
+        "violation_rate": 0.0,
+        "max_violation": 0.0,
+        "tolerance_used": 0.005,
+        "passed": true
+      }
+    ],
+    "geodesic_properties": [
+      {
+        "dimension": 2,
+        "n_trials": 50,
+        "n_passed": 49,
+        "pass_rate": 0.98,
+        "tolerance_used": 0.001,
+        "start_error_mean": 5.006790161132812e-08,
+        "start_error_max": 2.384185791015625e-07,
+        "end_error_mean": 1.977626287441581e-06,
+        "end_error_max": 4.27930208388716e-05,
+        "manifold_error_mean": 1.0240015853923978e-07,
+        "manifold_error_max": 1.9073486328125e-06,
+        "length_error_mean": 0.00020896334201097488,
+        "length_error_max": 0.005643913522362709,
+        "speed_cv_mean": 0.016697879216226282,
+        "speed_cv_max": 0.794657826423645,
+        "passed": true
+      },
+      {
+        "dimension": 4,
+        "n_trials": 50,
+        "n_passed": 50,
+        "pass_rate": 1.0,
+        "tolerance_used": 0.001,
+        "start_error_mean": 2.6226043701171875e-08,
+        "start_error_max": 2.384185791015625e-07,
+        "end_error_mean": 1.0599833399282944e-06,
+        "end_error_max": 4.652112238545669e-06,
+        "manifold_error_mean": 1.197484399995119e-07,
+        "manifold_error_max": 1.9073486328125e-06,
+        "length_error_mean": 0.00012035489082336426,
+        "length_error_max": 0.0005278587341308594,
+        "speed_cv_mean": 0.0008030026077176445,
+        "speed_cv_max": 0.0019333334639668465,
+        "passed": true
+      },
+      {
+        "dimension": 8,
+        "n_trials": 50,
+        "n_passed": 50,
+        "pass_rate": 1.0,
+        "tolerance_used": 0.001,
+        "start_error_mean": 6.67572021484375e-08,
+        "start_error_max": 2.384185791015625e-07,
+        "end_error_mean": 8.690135675522015e-06,
+        "end_error_max": 5.7541146816220134e-05,
+        "manifold_error_mean": 1.9998606774151994e-07,
+        "manifold_error_max": 3.814697265625e-06,
+        "length_error_mean": 0.0002916264533996582,
+        "length_error_max": 0.0010988712310791016,
+        "speed_cv_mean": 0.0015748631721362472,
+        "speed_cv_max": 0.004045460838824511,
+        "passed": true
+      },
+      {
+        "dimension": 16,
+        "n_trials": 50,
+        "n_passed": 50,
+        "pass_rate": 1.0,
+        "tolerance_used": 0.0005,
+        "start_error_mean": 1.5735626220703126e-07,
+        "start_error_max": 4.76837158203125e-07,
+        "end_error_mean": 7.215814729534031e-05,
+        "end_error_max": 0.0003854107344523072,
+        "manifold_error_mean": 2.982801859729989e-07,
+        "manifold_error_max": 5.7220458984375e-06,
+        "length_error_mean": 0.0005520153045654297,
+        "length_error_max": 0.001636505126953125,
+        "speed_cv_mean": 0.00268325203564018,
+        "speed_cv_max": 0.004243816249072552,
+        "passed": true
+      },
+      {
+        "dimension": 32,
+        "n_trials": 50,
+        "n_passed": 50,
+        "pass_rate": 1.0,
+        "tolerance_used": 0.001,
+        "start_error_mean": 2.09808349609375e-07,
+        "start_error_max": 4.76837158203125e-07,
+        "end_error_mean": 0.00022533922420734599,
+        "end_error_max": 0.0009011940564960241,
+        "manifold_error_mean": 4.635527653817917e-07,
+        "manifold_error_max": 7.62939453125e-06,
+        "length_error_mean": 0.0009952163696289062,
+        "length_error_max": 0.0030999183654785156,
+        "speed_cv_mean": 0.004362652422860265,
+        "speed_cv_max": 0.006069480441510677,
+        "passed": true
+      },
+      {
+        "dimension": 64,
+        "n_trials": 50,
+        "n_passed": 46,
+        "pass_rate": 0.92,
+        "tolerance_used": 0.005,
+        "start_error_mean": 4.291534423828125e-07,
+        "start_error_max": 9.5367431640625e-07,
+        "end_error_mean": 0.001969657568843104,
+        "end_error_max": 0.0077788857743144035,
+        "manifold_error_mean": 7.541986144588009e-07,
+        "manifold_error_max": 1.52587890625e-05,
+        "length_error_mean": 0.0016679573059082031,
+        "length_error_max": 0.005118846893310547,
+        "speed_cv_mean": 0.007297414653003216,
+        "speed_cv_max": 0.010039161890745163,
+        "passed": true
+      }
+    ],
+    "numerical_accuracy": [
+      {
+        "dimension": 2,
+        "n_trials": 50,
+        "n_passed": 47,
+        "pass_rate": 0.94,
+        "tolerance_used": 0.001,
+        "close_distance_error_mean": 0.008359274009955427,
+        "close_distance_error_max": 0.10035664641432532,
+        "medium_distance_error_mean": 5.335112688572686e-05,
+        "medium_distance_error_max": 0.0002532901172862376,
+        "far_distance_error_mean": null,
+        "far_distance_error_max": null,
+        "overall_error_mean": 0.002379009534145243,
+        "overall_error_max": 0.10035664641432532,
+        "passed": false
+      },
+      {
+        "dimension": 4,
+        "n_trials": 50,
+        "n_passed": 50,
+        "pass_rate": 1.0,
+        "tolerance_used": 0.001,
+        "close_distance_error_mean": 0.0001609021805639523,
+        "close_distance_error_max": 0.00041761314338969275,
+        "medium_distance_error_mean": 7.68641066255089e-05,
+        "medium_distance_error_max": 0.0002779377092653961,
+        "far_distance_error_mean": 9.375583581428475e-05,
+        "far_distance_error_max": 0.00016654558814837358,
+        "overall_error_mean": 8.527632545946197e-05,
+        "overall_error_max": 0.00041761314338969275,
+        "passed": true
+      },
+      {
+        "dimension": 8,
+        "n_trials": 50,
+        "n_passed": 50,
+        "pass_rate": 1.0,
+        "tolerance_used": 0.001,
+        "close_distance_error_mean": null,
+        "close_distance_error_max": null,
+        "medium_distance_error_mean": 0.00012606949540865404,
+        "medium_distance_error_max": 0.0005703365851377633,
+        "far_distance_error_mean": 0.00015080555940114255,
+        "far_distance_error_max": 0.0003912301149452247,
+        "overall_error_mean": 0.0001334903146064006,
+        "overall_error_max": 0.0005703365851377633,
+        "passed": true
+      },
+      {
+        "dimension": 16,
+        "n_trials": 50,
+        "n_passed": 49,
+        "pass_rate": 0.98,
+        "tolerance_used": 0.0005,
+        "close_distance_error_mean": null,
+        "close_distance_error_max": null,
+        "medium_distance_error_mean": 0.0001740593555978391,
+        "medium_distance_error_max": 0.0004661594451842836,
+        "far_distance_error_mean": 0.00019634301861617333,
+        "far_distance_error_max": 0.0005811288869034829,
+        "overall_error_mean": 0.00019411465231433997,
+        "overall_error_max": 0.0005811288869034829,
+        "passed": true
+      },
+      {
+        "dimension": 32,
+        "n_trials": 50,
+        "n_passed": 50,
+        "pass_rate": 1.0,
+        "tolerance_used": 0.001,
+        "close_distance_error_mean": null,
+        "close_distance_error_max": null,
+        "medium_distance_error_mean": null,
+        "medium_distance_error_max": null,
+        "far_distance_error_mean": 0.0002778930128748255,
+        "far_distance_error_max": 0.0006837391921368238,
+        "overall_error_mean": 0.0002778930128748255,
+        "overall_error_max": 0.0006837391921368238,
+        "passed": true
+      },
+      {
+        "dimension": 64,
+        "n_trials": 50,
+        "n_passed": 50,
+        "pass_rate": 1.0,
+        "tolerance_used": 0.005,
+        "close_distance_error_mean": null,
+        "close_distance_error_max": null,
+        "medium_distance_error_mean": null,
+        "medium_distance_error_max": null,
+        "far_distance_error_mean": 0.0002834893694364325,
+        "far_distance_error_max": 0.0009099669252595144,
+        "overall_error_mean": 0.0002834893694364325,
+        "overall_error_max": 0.0009099669252595144,
+        "passed": true
+      }
+    ],
+    "high_dim_stability": [
+      {
+        "dimension": 2,
+        "n_trials": 30,
+        "n_stable": 30,
+        "stability_rate": 1.0,
+        "n_instabilities": 0,
+        "tolerance_used": 0.001,
+        "passed": true
+      },
+      {
+        "dimension": 4,
+        "n_trials": 30,
+        "n_stable": 30,
+        "stability_rate": 1.0,
+        "n_instabilities": 0,
+        "tolerance_used": 0.001,
+        "passed": true
+      },
+      {
+        "dimension": 8,
+        "n_trials": 30,
+        "n_stable": 30,
+        "stability_rate": 1.0,
+        "n_instabilities": 0,
+        "tolerance_used": 0.001,
+        "passed": true
+      },
+      {
+        "dimension": 16,
+        "n_trials": 30,
+        "n_stable": 30,
+        "stability_rate": 1.0,
+        "n_instabilities": 0,
+        "tolerance_used": 0.0005,
+        "passed": true
+      },
+      {
+        "dimension": 32,
+        "n_trials": 30,
+        "n_stable": 30,
+        "stability_rate": 1.0,
+        "n_instabilities": 0,
+        "tolerance_used": 0.001,
+        "passed": true
+      },
+      {
+        "dimension": 64,
+        "n_trials": 30,
+        "n_stable": 30,
+        "stability_rate": 1.0,
+        "n_instabilities": 0,
+        "tolerance_used": 0.005,
+        "passed": true
+      }
+    ]
+  },
+  "summary": {
+    "overall_pass_rate": {
+      "shortest_path": 1.0,
+      "geodesic_properties": 1.0,
+      "numerical_accuracy": 0.8333333333333334,
+      "high_dim_stability": 1.0
+    },
+    "dimension_wise_pass_rate": {
+      "2": 0.75,
+      "4": 1.0,
+      "8": 1.0,
+      "16": 1.0,
+      "32": 1.0,
+      "64": 1.0
+    }
+  },
+  "metadata": {
+    "license": {
+      "name": "AGPLv3",
+      "url": "https://www.gnu.org/licenses/agpl-3.0.html"
+    }
+  }
+}

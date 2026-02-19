@@ -1,0 +1,3111 @@
+{
+  "specification": "lorentzian_domain_specification",
+  "version": "1.0.0",
+  "status": "complete",
+  "author": "HyperSync Geometry Team",
+  "created": "2026-01-12",
+  "description": "Complete specification for Lorentzian Domains (LD), the most common domain type with negative or zero curvature, Lorentzian metric signature, and hyperbolic geometry",
+  
+  "metadata": {
+    "stunir_version": "3.0",
+    "category": "geometry",
+    "tags": ["lorentzian", "hyperbolic", "curvature", "metric", "causality"],
+    "dependencies": [
+      "domain_architecture",
+      "domain_security_model"
+    ],
+    "priority": "critical",
+    "implementation_status": "required"
+  },
+
+  "types": {
+    "LorentzianDomain": {
+      "description": "Lorentzian Domain with κ ≤ 0 curvature",
+      "extends": "Domain",
+      "properties": {
+        "curvature_constant": {
+          "type": "float",
+          "constraint": "κ ≤ 0",
+          "description": "Curvature constant (negative or zero)"
+        },
+        "metric": {
+          "type": "LorentzMetric",
+          "required": true,
+          "description": "Lorentzian metric tensor"
+        },
+        "causal_structure": {
+          "type": "CausalStructure",
+          "required": true,
+          "description": "Light cones and causality constraints"
+        },
+        "signature": {
+          "type": "array",
+          "items": {"type": "int", "values": [-1, 1]},
+          "fixed": [-1, 1, 1, 1],
+          "description": "Metric signature (-,+,+,+)"
+        }
+      }
+    },
+
+    "LorentzMetric": {
+      "description": "Lorentzian metric tensor with signature (-,+,+,+)",
+      "properties": {
+        "components": {
+          "type": "matrix",
+          "dimensions": [4, 4],
+          "description": "Metric tensor components g_μν"
+        },
+        "signature": {
+          "type": "string",
+          "fixed": "(-,+,+,+)",
+          "description": "One timelike, three spacelike dimensions"
+        },
+        "line_element": {
+          "type": "string",
+          "formula": "ds² = -c²dt² + dx² + dy² + dz²",
+          "description": "Infinitesimal line element"
+        },
+        "determinant": {
+          "type": "float",
+          "description": "det(g_μν), used for volume calculations"
+        },
+        "inverse": {
+          "type": "matrix",
+          "dimensions": [4, 4],
+          "description": "Inverse metric g^μν"
+        }
+      }
+    },
+
+    "CausalStructure": {
+      "description": "Causal structure defining timelike/spacelike/null relationships",
+      "properties": {
+        "light_cones": {
+          "type": "object",
+          "description": "Future and past light cones"
+        },
+        "timelike_constraint": {
+          "type": "string",
+          "formula": "g_μν dx^μ dx^ν < 0 for timelike",
+          "description": "Constraint for timelike paths"
+        },
+        "spacelike_constraint": {
+          "type": "string",
+          "formula": "g_μν dx^μ dx^ν > 0 for spacelike",
+          "description": "Constraint for spacelike paths"
+        },
+        "null_constraint": {
+          "type": "string",
+          "formula": "g_μν dx^μ dx^ν = 0 for null",
+          "description": "Constraint for null (lightlike) paths"
+        }
+      }
+    },
+
+    "HyperbolicGeometry": {
+      "description": "Hyperbolic geometric properties for κ < 0",
+      "properties": {
+        "poincare_disk_coordinates": {
+          "type": "object",
+          "description": "Coordinates in Poincaré disk model"
+        },
+        "hyperboloid_coordinates": {
+          "type": "object",
+          "description": "Coordinates in hyperboloid model"
+        },
+        "hyperbolic_distance": {
+          "type": "function",
+          "formula": "d(p,q) = arcosh(-g_μν p^μ q^ν)",
+          "description": "Hyperbolic distance function"
+        }
+      }
+    },
+
+    "ProperTime": {
+      "description": "Proper time along worldline",
+      "properties": {
+        "tau": {
+          "type": "float",
+          "description": "Proper time parameter"
+        },
+        "worldline": {
+          "type": "curve",
+          "description": "Timelike curve x^μ(τ)"
+        },
+        "formula": {
+          "type": "string",
+          "value": "τ = ∫ √(-g_μν dx^μ/dλ dx^ν/dλ) dλ",
+          "description": "Proper time integral"
+        }
+      }
+    },
+
+    "Geodesic": {
+      "description": "Geodesic curve in Lorentzian domain",
+      "properties": {
+        "curve": {
+          "type": "function",
+          "description": "Parameterized curve x^μ(λ)"
+        },
+        "type": {
+          "type": "string",
+          "values": ["timelike", "spacelike", "null"],
+          "description": "Geodesic type"
+        },
+        "equation": {
+          "type": "string",
+          "formula": "d²x^μ/dλ² + Γ^μ_νρ dx^ν/dλ dx^ρ/dλ = 0",
+          "description": "Geodesic equation"
+        },
+        "affine_parameter": {
+          "type": "float",
+          "description": "Affine parameter λ along geodesic"
+        }
+      }
+    },
+
+    "ChristoffelSymbols": {
+      "description": "Connection coefficients for Lorentzian domain",
+      "properties": {
+        "components": {
+          "type": "tensor",
+          "rank": 3,
+          "description": "Γ^μ_νρ components"
+        },
+        "formula": {
+          "type": "string",
+          "value": "Γ^μ_νρ = (1/2) g^μσ (∂_ν g_σρ + ∂_ρ g_νσ - ∂_σ g_νρ)",
+          "description": "Christoffel symbols of second kind"
+        }
+      }
+    },
+
+    "CurvatureTensor": {
+      "description": "Riemann curvature tensor",
+      "properties": {
+        "components": {
+          "type": "tensor",
+          "rank": 4,
+          "description": "R^μ_νρσ components"
+        },
+        "ricci_tensor": {
+          "type": "matrix",
+          "dimensions": [4, 4],
+          "description": "R_μν = R^ρ_μρν"
+        },
+        "ricci_scalar": {
+          "type": "float",
+          "description": "R = g^μν R_μν"
+        },
+        "formula": {
+          "type": "string",
+          "value": "R^μ_νρσ = ∂_ρ Γ^μ_νσ - ∂_σ Γ^μ_νρ + Γ^μ_λρ Γ^λ_νσ - Γ^μ_λσ Γ^λ_νρ",
+          "description": "Riemann curvature tensor"
+        }
+      }
+    },
+
+    "ParallelTransport": {
+      "description": "Parallel transport of vectors in Lorentzian domain",
+      "properties": {
+        "vector": {
+          "type": "array",
+          "items": {"type": "float"},
+          "description": "Vector to transport V^μ"
+        },
+        "path": {
+          "type": "curve",
+          "description": "Path along which to transport"
+        },
+        "equation": {
+          "type": "string",
+          "formula": "DV^μ/dλ = dV^μ/dλ + Γ^μ_νρ V^ν dx^ρ/dλ = 0",
+          "description": "Parallel transport equation"
+        }
+      }
+    },
+
+    "Holonomy": {
+      "description": "Holonomy for detecting tampering and curvature",
+      "properties": {
+        "loop": {
+          "type": "curve",
+          "description": "Closed loop for holonomy"
+        },
+        "holonomy_group": {
+          "type": "string",
+          "description": "Holonomy group of connection"
+        },
+        "angle_defect": {
+          "type": "float",
+          "description": "Angle defect after parallel transport around loop"
+        }
+      }
+    }
+  },
+
+  "operations": {
+    "create_lorentzian_domain": {
+      "description": "Create a Lorentzian Domain with negative or zero curvature",
+      "category": "creation",
+      "inputs": {
+        "label": {
+          "type": "string",
+          "required": true,
+          "description": "Human-readable domain name"
+        },
+        "curvature_constant": {
+          "type": "float",
+          "required": true,
+          "constraint": "κ ≤ 0",
+          "description": "Curvature constant (κ = -1 for hyperbolic, κ = 0 for flat)"
+        },
+        "parent_domain": {
+          "type": "DomainID",
+          "required": false,
+          "default": "ld://hypersync/base/ld0"
+        },
+        "properties": {
+          "type": "DomainProperties",
+          "required": false
+        }
+      },
+      "outputs": {
+        "success": {"type": "boolean"},
+        "domain": {"type": "LorentzianDomain"},
+        "domain_id": {"type": "DomainID"}
+      },
+      "preconditions": [
+        "κ ≤ 0 (negative or zero curvature)",
+        "Valid parent domain",
+        "Sufficient resources"
+      ],
+      "postconditions": [
+        "LorentzianDomain created",
+        "Metric signature (-,+,+,+) established",
+        "Causal structure initialized",
+        "Registered in domain registry"
+      ],
+      "formulas": {
+        "metric": "ds² = -c²dt² + dx² + dy² + dz² (flat case, κ=0)",
+        "hyperbolic_metric": "ds² = -c²dt² + cosh²(t)(dx² + dy² + dz²) (κ<0)",
+        "curvature_constraint": "κ ≤ 0",
+        "signature": "(-,+,+,+)"
+      },
+      "edge_cases": [
+        {
+          "case": "Positive curvature provided",
+          "handling": "Reject with error - violates Lorentzian constraint",
+          "outcome": "Operation fails"
+        },
+        {
+          "case": "κ = 0 (flat Lorentzian)",
+          "handling": "Create Minkowski space domain",
+          "outcome": "Special case of Lorentzian"
+        },
+        {
+          "case": "κ = -1 (unit hyperbolic)",
+          "handling": "Create standard hyperbolic Lorentzian domain",
+          "outcome": "Most common case"
+        },
+        {
+          "case": "Very negative curvature",
+          "handling": "Validate numerical stability, may clamp",
+          "outcome": "Prevent numerical issues"
+        },
+        {
+          "case": "Invalid metric signature",
+          "handling": "Enforce (-,+,+,+) signature",
+          "outcome": "Maintain Lorentzian property"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "Create flat Lorentzian (Minkowski)",
+          "input": {
+            "label": "minkowski-domain",
+            "curvature_constant": 0.0
+          },
+          "expected_output": {
+            "success": true,
+            "domain": {
+              "curvature_constant": 0.0,
+              "metric": {"line_element": "ds² = -c²dt² + dx² + dy² + dz²"}
+            }
+          }
+        },
+        {
+          "name": "Create hyperbolic Lorentzian",
+          "input": {
+            "label": "hyperbolic-domain",
+            "curvature_constant": -1.0
+          },
+          "expected_output": {
+            "success": true,
+            "domain": {
+              "curvature_constant": -1.0,
+              "signature": [-1, 1, 1, 1]
+            }
+          }
+        },
+        {
+          "name": "Reject positive curvature",
+          "input": {
+            "label": "invalid",
+            "curvature_constant": 1.0
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Lorentzian domain requires κ ≤ 0"
+          }
+        },
+        {
+          "name": "Create LD(0) equivalent",
+          "input": {
+            "label": "base-like",
+            "curvature_constant": 0.0,
+            "parent_domain": null
+          },
+          "expected_output": {
+            "success": true,
+            "note": "Flat Lorentzian like LD(0)"
+          }
+        },
+        {
+          "name": "Create with custom properties",
+          "input": {
+            "label": "secure-ld",
+            "curvature_constant": -1.0,
+            "properties": {"security_level": "isolated"}
+          },
+          "expected_output": {
+            "success": true,
+            "domain": {"properties": {"security_level": "isolated"}}
+          }
+        },
+        {
+          "name": "Very negative curvature",
+          "input": {
+            "label": "extreme-hyperbolic",
+            "curvature_constant": -100.0
+          },
+          "expected_output": {
+            "success": true,
+            "warning": "Extreme curvature may affect numerical stability"
+          }
+        },
+        {
+          "name": "Nested Lorentzian domain",
+          "setup": "Create parent LD first",
+          "input": {
+            "label": "child-ld",
+            "curvature_constant": -1.0,
+            "parent_domain": "ld://hypersync/test/parent-ld"
+          },
+          "expected_output": {
+            "success": true,
+            "domain": {"parent_domain": "ld://hypersync/test/parent-ld"}
+          }
+        },
+        {
+          "name": "Zero curvature edge case",
+          "input": {
+            "label": "zero-curv",
+            "curvature_constant": 0.0
+          },
+          "expected_output": {
+            "success": true,
+            "domain": {"curvature_constant": 0.0},
+            "note": "Flat Lorentzian (Minkowski space)"
+          }
+        }
+      ],
+      "security_properties": [
+        "Causal structure enforces temporal ordering",
+        "Timelike constraint prevents unauthorized operations",
+        "Metric signature immutable after creation"
+      ],
+      "performance": {
+        "complexity": "O(1)",
+        "typical_duration_ms": "< 50",
+        "resource_overhead": "Minimal - metric tensor storage"
+      }
+    },
+
+    "initialize_ld0": {
+      "description": "Initialize LD(0), the base Lorentzian Domain",
+      "category": "initialization",
+      "inputs": {
+        "config": {
+          "type": "object",
+          "required": false,
+          "description": "Configuration for LD(0)"
+        }
+      },
+      "outputs": {
+        "success": {"type": "boolean"},
+        "ld0": {"type": "LorentzianDomain"},
+        "domain_id": {"type": "DomainID", "fixed": "ld://hypersync/base/ld0"}
+      },
+      "preconditions": [
+        "Domain system initialized",
+        "LD(0) not already exists"
+      ],
+      "postconditions": [
+        "LD(0) created with domain_id = ld://hypersync/base/ld0",
+        "Flat Lorentzian metric (κ = 0)",
+        "Root of domain hierarchy",
+        "Registered as base domain"
+      ],
+      "formulas": {
+        "ld0_metric": "ds² = -c²dt² + dx² + dy² + dz²",
+        "ld0_curvature": "κ = 0 (flat Minkowski)",
+        "ld0_signature": "(-,+,+,+)"
+      },
+      "edge_cases": [
+        {
+          "case": "LD(0) already exists",
+          "handling": "Idempotent - return existing LD(0)",
+          "outcome": "No duplicate LD(0)"
+        },
+        {
+          "case": "Custom configuration for LD(0)",
+          "handling": "Apply config with validation",
+          "outcome": "Configured LD(0)"
+        },
+        {
+          "case": "System not initialized",
+          "handling": "Initialize system first, then create LD(0)",
+          "outcome": "Automatic initialization"
+        },
+        {
+          "case": "Insufficient resources",
+          "handling": "Return error",
+          "outcome": "Cannot create base domain"
+        },
+        {
+          "case": "Concurrent initialization",
+          "handling": "Use lock, only one LD(0)",
+          "outcome": "Ensure single base domain"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "Initialize LD(0) with defaults",
+          "input": {},
+          "expected_output": {
+            "success": true,
+            "domain_id": "ld://hypersync/base/ld0",
+            "ld0": {
+              "curvature_constant": 0.0,
+              "label": "LD(0)",
+              "parent_domain": null
+            }
+          }
+        },
+        {
+          "name": "Initialize with config",
+          "input": {
+            "config": {"security_level": "secure"}
+          },
+          "expected_output": {
+            "success": true,
+            "ld0": {"properties": {"security_level": "secure"}}
+          }
+        },
+        {
+          "name": "Idempotent initialization",
+          "setup": "LD(0) already exists",
+          "input": {},
+          "expected_output": {
+            "success": true,
+            "note": "Returns existing LD(0)"
+          }
+        },
+        {
+          "name": "Verify flat metric",
+          "input": {},
+          "expected_output": {
+            "success": true,
+            "ld0": {
+              "metric": {"line_element": "ds² = -c²dt² + dx² + dy² + dz²"}
+            }
+          }
+        },
+        {
+          "name": "Verify root status",
+          "input": {},
+          "expected_output": {
+            "success": true,
+            "ld0": {"parent_domain": null},
+            "note": "LD(0) is root of hierarchy"
+          }
+        },
+        {
+          "name": "Verify signature",
+          "input": {},
+          "expected_output": {
+            "success": true,
+            "ld0": {"signature": [-1, 1, 1, 1]}
+          }
+        },
+        {
+          "name": "System auto-initialization",
+          "setup": "System not initialized",
+          "input": {},
+          "expected_output": {
+            "success": true,
+            "note": "System initialized automatically"
+          }
+        },
+        {
+          "name": "Concurrent initialization",
+          "setup": "Multiple concurrent calls",
+          "input": {},
+          "expected_output": {
+            "success": true,
+            "note": "Only one LD(0) created"
+          }
+        }
+      ],
+      "security_properties": [
+        "LD(0) is root of trust hierarchy",
+        "Immutable domain_id",
+        "Cannot be destroyed",
+        "Serves as default parent"
+      ],
+      "performance": {
+        "complexity": "O(1)",
+        "typical_duration_ms": "< 100",
+        "resource_overhead": "Minimal - base domain"
+      }
+    },
+
+    "compute_lorentz_metric": {
+      "description": "Compute Lorentzian metric tensor at a point",
+      "category": "geometry",
+      "inputs": {
+        "domain_id": {
+          "type": "DomainID",
+          "required": true,
+          "description": "Lorentzian domain"
+        },
+        "point": {
+          "type": "array",
+          "items": {"type": "float"},
+          "length": 4,
+          "description": "Coordinates (t, x, y, z)"
+        }
+      },
+      "outputs": {
+        "success": {"type": "boolean"},
+        "metric": {"type": "LorentzMetric"},
+        "determinant": {"type": "float"},
+        "inverse": {"type": "matrix"}
+      },
+      "preconditions": [
+        "Domain is Lorentzian",
+        "Valid point coordinates"
+      ],
+      "postconditions": [
+        "Metric tensor computed",
+        "Signature verified as (-,+,+,+)",
+        "Determinant computed",
+        "Inverse metric computed"
+      ],
+      "formulas": {
+        "flat_metric": "g_μν = diag(-c², 1, 1, 1)",
+        "hyperbolic_metric": "g_00 = -c², g_ij = cosh²(t) δ_ij",
+        "determinant": "det(g) = g_00 * g_11 * g_22 * g_33 - ...",
+        "inverse": "g^μν such that g^μρ g_ρν = δ^μ_ν"
+      },
+      "edge_cases": [
+        {
+          "case": "Domain not Lorentzian",
+          "handling": "Return error",
+          "outcome": "Operation requires Lorentzian domain"
+        },
+        {
+          "case": "Singular point (det(g) = 0)",
+          "handling": "Return error or handle singularity",
+          "outcome": "Metric undefined at singularity"
+        },
+        {
+          "case": "Coordinates out of manifold",
+          "handling": "Return error with valid range",
+          "outcome": "Require valid coordinates"
+        },
+        {
+          "case": "Numerical instability",
+          "handling": "Use stable algorithms (e.g., Cholesky)",
+          "outcome": "Accurate metric computation"
+        },
+        {
+          "case": "Flat metric (κ=0)",
+          "handling": "Return constant diagonal metric",
+          "outcome": "Simplified calculation"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "Flat metric at origin",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0",
+            "point": [0.0, 0.0, 0.0, 0.0]
+          },
+          "expected_output": {
+            "success": true,
+            "metric": {
+              "components": [[-1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]
+            },
+            "determinant": -1.0
+          }
+        },
+        {
+          "name": "Hyperbolic metric",
+          "input": {
+            "domain_id": "ld://hypersync/test/hyperbolic",
+            "point": [1.0, 0.0, 0.0, 0.0]
+          },
+          "expected_output": {
+            "success": true,
+            "metric": {"components": "[curved metric tensor]"},
+            "determinant": "[negative value]"
+          }
+        },
+        {
+          "name": "Verify signature",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0",
+            "point": [0.0, 0.0, 0.0, 0.0]
+          },
+          "expected_output": {
+            "success": true,
+            "metric": {"signature": "(-,+,+,+)"}
+          }
+        },
+        {
+          "name": "Compute inverse metric",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0",
+            "point": [0.0, 0.0, 0.0, 0.0]
+          },
+          "expected_output": {
+            "success": true,
+            "inverse": [[-1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]
+          }
+        },
+        {
+          "name": "Non-Lorentzian domain",
+          "input": {
+            "domain_id": "ld://hypersync/test/riemannian",
+            "point": [0.0, 0.0, 0.0, 0.0]
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Domain is not Lorentzian"
+          }
+        },
+        {
+          "name": "Invalid coordinates",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0",
+            "point": [1.0, 2.0]
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Invalid coordinates: expected 4 components"
+          }
+        },
+        {
+          "name": "Metric at different point",
+          "input": {
+            "domain_id": "ld://hypersync/test/hyperbolic",
+            "point": [2.0, 1.0, 1.0, 1.0]
+          },
+          "expected_output": {
+            "success": true,
+            "metric": {"components": "[point-dependent metric]"}
+          }
+        },
+        {
+          "name": "Verify determinant sign",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0",
+            "point": [0.0, 0.0, 0.0, 0.0]
+          },
+          "expected_output": {
+            "success": true,
+            "determinant": -1.0,
+            "note": "Negative determinant for Lorentzian"
+          }
+        }
+      ],
+      "security_properties": [
+        "Read-only operation",
+        "No domain modification",
+        "Metric signature guarantees causality"
+      ],
+      "performance": {
+        "complexity": "O(1) for flat, O(d²) for general metric",
+        "typical_duration_ms": "< 10",
+        "resource_overhead": "Minimal - matrix storage"
+      }
+    },
+
+    "compute_geodesic_ld": {
+      "description": "Compute geodesic in Lorentzian Domain",
+      "category": "geometry",
+      "inputs": {
+        "domain_id": {"type": "DomainID", "required": true},
+        "start_point": {
+          "type": "array",
+          "items": {"type": "float"},
+          "length": 4
+        },
+        "initial_velocity": {
+          "type": "array",
+          "items": {"type": "float"},
+          "length": 4,
+          "description": "Initial 4-velocity"
+        },
+        "affine_parameter_range": {
+          "type": "array",
+          "items": {"type": "float"},
+          "length": 2,
+          "description": "[λ_start, λ_end]"
+        },
+        "geodesic_type": {
+          "type": "string",
+          "values": ["timelike", "spacelike", "null"],
+          "required": false
+        }
+      },
+      "outputs": {
+        "success": {"type": "boolean"},
+        "geodesic": {"type": "Geodesic"},
+        "curve_points": {"type": "array", "description": "Sampled points along geodesic"}
+      },
+      "preconditions": [
+        "Domain is Lorentzian",
+        "Valid start point and velocity",
+        "Initial velocity matches geodesic type"
+      ],
+      "postconditions": [
+        "Geodesic computed",
+        "Satisfies geodesic equation",
+        "Preserves causal type (timelike/spacelike/null)"
+      ],
+      "formulas": {
+        "geodesic_equation": "d²x^μ/dλ² + Γ^μ_νρ dx^ν/dλ dx^ρ/dλ = 0",
+        "timelike_check": "g_μν dx^μ/dλ dx^ν/dλ < 0",
+        "spacelike_check": "g_μν dx^μ/dλ dx^ν/dλ > 0",
+        "null_check": "g_μν dx^μ/dλ dx^ν/dλ = 0",
+        "flat_geodesic": "x^μ(λ) = x^μ_0 + v^μ λ (straight line for κ=0)"
+      },
+      "edge_cases": [
+        {
+          "case": "Timelike geodesic in flat space",
+          "handling": "Straight line solution",
+          "outcome": "Simple case"
+        },
+        {
+          "case": "Null geodesic (light ray)",
+          "handling": "Special handling for lightlike paths",
+          "outcome": "Light cone boundary"
+        },
+        {
+          "case": "Geodesic hits singularity",
+          "handling": "Stop integration at singularity",
+          "outcome": "Incomplete geodesic"
+        },
+        {
+          "case": "Very long parameter range",
+          "handling": "Adaptive step size",
+          "outcome": "Efficient computation"
+        },
+        {
+          "case": "Initial velocity type mismatch",
+          "handling": "Validate and reject or auto-detect",
+          "outcome": "Consistent geodesic type"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "Timelike geodesic in flat space",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0",
+            "start_point": [0, 0, 0, 0],
+            "initial_velocity": [1, 0, 0, 0],
+            "affine_parameter_range": [0, 10],
+            "geodesic_type": "timelike"
+          },
+          "expected_output": {
+            "success": true,
+            "geodesic": {"type": "timelike"},
+            "curve_points": "[straight line in time]"
+          }
+        },
+        {
+          "name": "Null geodesic (light ray)",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0",
+            "start_point": [0, 0, 0, 0],
+            "initial_velocity": [1, 1, 0, 0],
+            "geodesic_type": "null"
+          },
+          "expected_output": {
+            "success": true,
+            "geodesic": {"type": "null"},
+            "note": "Light cone boundary"
+          }
+        },
+        {
+          "name": "Spacelike geodesic",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0",
+            "start_point": [0, 0, 0, 0],
+            "initial_velocity": [0, 1, 0, 0],
+            "geodesic_type": "spacelike"
+          },
+          "expected_output": {
+            "success": true,
+            "geodesic": {"type": "spacelike"},
+            "curve_points": "[spatial curve]"
+          }
+        },
+        {
+          "name": "Hyperbolic geodesic",
+          "input": {
+            "domain_id": "ld://hypersync/test/hyperbolic",
+            "start_point": [0, 0, 0, 0],
+            "initial_velocity": [1, 0, 0, 0],
+            "affine_parameter_range": [0, 5]
+          },
+          "expected_output": {
+            "success": true,
+            "geodesic": {"type": "timelike"},
+            "note": "Curved geodesic in hyperbolic space"
+          }
+        },
+        {
+          "name": "Auto-detect geodesic type",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0",
+            "start_point": [0, 0, 0, 0],
+            "initial_velocity": [1, 0, 0, 0],
+            "affine_parameter_range": [0, 10]
+          },
+          "expected_output": {
+            "success": true,
+            "geodesic": {"type": "timelike"},
+            "note": "Type auto-detected from velocity"
+          }
+        },
+        {
+          "name": "Invalid velocity type",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0",
+            "start_point": [0, 0, 0, 0],
+            "initial_velocity": [1, 0, 0, 0],
+            "geodesic_type": "spacelike"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Initial velocity is timelike, not spacelike"
+          }
+        },
+        {
+          "name": "Short parameter range",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0",
+            "start_point": [0, 0, 0, 0],
+            "initial_velocity": [1, 0, 0, 0],
+            "affine_parameter_range": [0, 0.1]
+          },
+          "expected_output": {
+            "success": true,
+            "curve_points": "[short geodesic segment]"
+          }
+        },
+        {
+          "name": "Domain not Lorentzian",
+          "input": {
+            "domain_id": "ld://hypersync/test/riemannian",
+            "start_point": [0, 0, 0, 0],
+            "initial_velocity": [1, 0, 0, 0],
+            "affine_parameter_range": [0, 10]
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Domain is not Lorentzian"
+          }
+        }
+      ],
+      "security_properties": [
+        "Geodesics respect causal structure",
+        "Timelike geodesics cannot escape light cone",
+        "Read-only operation"
+      ],
+      "performance": {
+        "complexity": "O(n) where n = number of integration steps",
+        "typical_duration_ms": "< 100",
+        "resource_overhead": "Memory for curve points"
+      }
+    },
+
+    "compute_parallel_transport_ld": {
+      "description": "Parallel transport vector along curve in Lorentzian Domain",
+      "category": "geometry",
+      "inputs": {
+        "domain_id": {"type": "DomainID", "required": true},
+        "vector": {
+          "type": "array",
+          "items": {"type": "float"},
+          "length": 4,
+          "description": "Initial vector to transport"
+        },
+        "path": {
+          "type": "object",
+          "description": "Curve along which to transport",
+          "properties": {
+            "points": {"type": "array"},
+            "velocities": {"type": "array"}
+          }
+        }
+      },
+      "outputs": {
+        "success": {"type": "boolean"},
+        "transported_vector": {
+          "type": "array",
+          "items": {"type": "float"},
+          "description": "Final transported vector"
+        },
+        "path_vectors": {
+          "type": "array",
+          "description": "Vector at each point along path"
+        }
+      },
+      "preconditions": [
+        "Domain is Lorentzian",
+        "Valid vector and path",
+        "Path is smooth curve"
+      ],
+      "postconditions": [
+        "Vector transported along path",
+        "Satisfies parallel transport equation",
+        "Vector length preserved (in metric sense)"
+      ],
+      "formulas": {
+        "parallel_transport": "DV^μ/dλ = dV^μ/dλ + Γ^μ_νρ V^ν dx^ρ/dλ = 0",
+        "covariant_derivative": "DV^μ/dλ",
+        "length_preservation": "g_μν V^μ V^ν = constant along path"
+      },
+      "edge_cases": [
+        {
+          "case": "Closed loop (holonomy)",
+          "handling": "Compute angle defect from curvature",
+          "outcome": "Vector may rotate after loop"
+        },
+        {
+          "case": "Flat space (κ=0)",
+          "handling": "Vector remains constant",
+          "outcome": "Trivial parallel transport"
+        },
+        {
+          "case": "Very curved space",
+          "handling": "Use adaptive integration",
+          "outcome": "Accurate transport"
+        },
+        {
+          "case": "Discontinuous path",
+          "handling": "Return error",
+          "outcome": "Require smooth path"
+        },
+        {
+          "case": "Zero-length vector",
+          "handling": "Trivial transport (zero remains zero)",
+          "outcome": "Edge case handled"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "Parallel transport in flat space",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0",
+            "vector": [1, 0, 0, 0],
+            "path": {"points": [[0,0,0,0], [1,0,0,0], [2,0,0,0]]}
+          },
+          "expected_output": {
+            "success": true,
+            "transported_vector": [1, 0, 0, 0],
+            "note": "Vector unchanged in flat space"
+          }
+        },
+        {
+          "name": "Parallel transport in hyperbolic space",
+          "input": {
+            "domain_id": "ld://hypersync/test/hyperbolic",
+            "vector": [1, 0, 0, 0],
+            "path": {"points": "[curved path]"}
+          },
+          "expected_output": {
+            "success": true,
+            "transported_vector": "[rotated vector]",
+            "note": "Vector changes due to curvature"
+          }
+        },
+        {
+          "name": "Holonomy around closed loop",
+          "input": {
+            "domain_id": "ld://hypersync/test/hyperbolic",
+            "vector": [1, 0, 0, 0],
+            "path": {"points": "[closed loop]"}
+          },
+          "expected_output": {
+            "success": true,
+            "transported_vector": "[rotated vector ≠ initial]",
+            "note": "Holonomy detected"
+          }
+        },
+        {
+          "name": "Transport spacelike vector",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0",
+            "vector": [0, 1, 0, 0],
+            "path": {"points": [[0,0,0,0], [0,1,0,0]]}
+          },
+          "expected_output": {
+            "success": true,
+            "transported_vector": [0, 1, 0, 0]
+          }
+        },
+        {
+          "name": "Verify length preservation",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0",
+            "vector": [1, 0, 0, 0],
+            "path": {"points": "[arbitrary path]"}
+          },
+          "expected_output": {
+            "success": true,
+            "note": "g_μν V^μ V^ν constant along path"
+          }
+        },
+        {
+          "name": "Domain not Lorentzian",
+          "input": {
+            "domain_id": "ld://hypersync/test/riemannian",
+            "vector": [1, 0, 0, 0],
+            "path": {"points": [[0,0,0,0], [1,0,0,0]]}
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Domain is not Lorentzian"
+          }
+        },
+        {
+          "name": "Zero vector transport",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0",
+            "vector": [0, 0, 0, 0],
+            "path": {"points": "[any path]"}
+          },
+          "expected_output": {
+            "success": true,
+            "transported_vector": [0, 0, 0, 0]
+          }
+        },
+        {
+          "name": "Long path with many points",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0",
+            "vector": [1, 0, 0, 0],
+            "path": {"points": "[1000 points]"}
+          },
+          "expected_output": {
+            "success": true,
+            "path_vectors": "[vector at each of 1000 points]"
+          }
+        }
+      ],
+      "security_properties": [
+        "Read-only operation",
+        "Preserves vector type (timelike/spacelike)",
+        "Holonomy can detect tampering"
+      ],
+      "performance": {
+        "complexity": "O(n) where n = path length",
+        "typical_duration_ms": "< 50",
+        "resource_overhead": "Memory for path vectors"
+      }
+    },
+
+    "compute_curvature_ld": {
+      "description": "Compute curvature tensors for Lorentzian Domain",
+      "category": "geometry",
+      "inputs": {
+        "domain_id": {"type": "DomainID", "required": true},
+        "point": {
+          "type": "array",
+          "items": {"type": "float"},
+          "length": 4,
+          "required": false,
+          "description": "Point at which to compute (default: origin)"
+        },
+        "components": {
+          "type": "array",
+          "items": {"type": "string"},
+          "values": ["riemann", "ricci", "scalar", "all"],
+          "required": false,
+          "default": ["all"]
+        }
+      },
+      "outputs": {
+        "success": {"type": "boolean"},
+        "curvature": {"type": "CurvatureTensor"},
+        "riemann_tensor": {"type": "tensor", "rank": 4},
+        "ricci_tensor": {"type": "matrix"},
+        "ricci_scalar": {"type": "float"}
+      },
+      "preconditions": [
+        "Domain is Lorentzian",
+        "Valid point coordinates"
+      ],
+      "postconditions": [
+        "Curvature computed",
+        "Consistent with domain curvature constant κ"
+      ],
+      "formulas": {
+        "riemann_tensor": "R^μ_νρσ = ∂_ρ Γ^μ_νσ - ∂_σ Γ^μ_νρ + Γ^μ_λρ Γ^λ_νσ - Γ^μ_λσ Γ^λ_νρ",
+        "ricci_tensor": "R_μν = R^ρ_μρν",
+        "ricci_scalar": "R = g^μν R_μν",
+        "flat_space": "R^μ_νρσ = 0 for κ=0",
+        "constant_curvature": "R = 4κ for constant curvature"
+      },
+      "edge_cases": [
+        {
+          "case": "Flat space (κ=0)",
+          "handling": "All curvature tensors are zero",
+          "outcome": "Trivial case"
+        },
+        {
+          "case": "Constant curvature (κ=-1)",
+          "handling": "Curvature tensors have standard form",
+          "outcome": "Well-known solution"
+        },
+        {
+          "case": "Variable curvature",
+          "handling": "Compute numerically",
+          "outcome": "Point-dependent curvature"
+        },
+        {
+          "case": "Singularity",
+          "handling": "Return error or infinity",
+          "outcome": "Curvature diverges"
+        },
+        {
+          "case": "Only specific components requested",
+          "handling": "Compute only requested components",
+          "outcome": "Optimization"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "Flat space curvature",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0",
+            "point": [0, 0, 0, 0]
+          },
+          "expected_output": {
+            "success": true,
+            "riemann_tensor": "[all zero]",
+            "ricci_tensor": "[all zero]",
+            "ricci_scalar": 0.0
+          }
+        },
+        {
+          "name": "Hyperbolic space curvature",
+          "input": {
+            "domain_id": "ld://hypersync/test/hyperbolic",
+            "point": [0, 0, 0, 0]
+          },
+          "expected_output": {
+            "success": true,
+            "ricci_scalar": -4.0,
+            "note": "Constant negative curvature"
+          }
+        },
+        {
+          "name": "Compute only Ricci scalar",
+          "input": {
+            "domain_id": "ld://hypersync/test/hyperbolic",
+            "components": ["scalar"]
+          },
+          "expected_output": {
+            "success": true,
+            "ricci_scalar": -4.0,
+            "riemann_tensor": null,
+            "ricci_tensor": null
+          }
+        },
+        {
+          "name": "Compute all components",
+          "input": {
+            "domain_id": "ld://hypersync/test/hyperbolic",
+            "components": ["all"]
+          },
+          "expected_output": {
+            "success": true,
+            "riemann_tensor": "[full tensor]",
+            "ricci_tensor": "[full tensor]",
+            "ricci_scalar": -4.0
+          }
+        },
+        {
+          "name": "Curvature at different point",
+          "input": {
+            "domain_id": "ld://hypersync/test/variable-curvature",
+            "point": [1, 1, 1, 1]
+          },
+          "expected_output": {
+            "success": true,
+            "note": "Point-dependent curvature"
+          }
+        },
+        {
+          "name": "Domain not Lorentzian",
+          "input": {
+            "domain_id": "ld://hypersync/test/riemannian"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Domain is not Lorentzian"
+          }
+        },
+        {
+          "name": "Verify consistency with κ",
+          "input": {
+            "domain_id": "ld://hypersync/test/hyperbolic"
+          },
+          "expected_output": {
+            "success": true,
+            "ricci_scalar": -4.0,
+            "note": "Consistent with κ=-1"
+          }
+        },
+        {
+          "name": "Invalid point",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0",
+            "point": [1, 2]
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Invalid point: expected 4 coordinates"
+          }
+        }
+      ],
+      "security_properties": [
+        "Read-only operation",
+        "Curvature bounds enforced",
+        "Consistency with domain definition"
+      ],
+      "performance": {
+        "complexity": "O(d⁴) for Riemann tensor, d = dimension",
+        "typical_duration_ms": "< 50",
+        "resource_overhead": "Memory for tensor storage"
+      }
+    },
+
+    "verify_lorentzian_properties": {
+      "description": "Verify that domain satisfies Lorentzian constraints",
+      "category": "validation",
+      "inputs": {
+        "domain_id": {"type": "DomainID", "required": true},
+        "checks": {
+          "type": "array",
+          "items": {"type": "string"},
+          "values": ["signature", "curvature", "causality", "metric_validity", "all"],
+          "required": false,
+          "default": ["all"]
+        }
+      },
+      "outputs": {
+        "success": {"type": "boolean"},
+        "valid": {"type": "boolean"},
+        "violations": {"type": "array", "items": {"type": "string"}},
+        "check_results": {"type": "object"}
+      },
+      "preconditions": [
+        "Domain exists"
+      ],
+      "postconditions": [
+        "Validation results returned",
+        "No modifications made"
+      ],
+      "formulas": {
+        "signature_check": "Eigenvalues of g_μν have signs (-,+,+,+)",
+        "curvature_check": "κ ≤ 0",
+        "causality_check": "Timelike curves respect light cone structure",
+        "metric_det": "det(g_μν) < 0 for Lorentzian"
+      },
+      "edge_cases": [
+        {
+          "case": "Domain not Lorentzian",
+          "handling": "Return invalid with violations",
+          "outcome": "Clear error message"
+        },
+        {
+          "case": "All checks pass",
+          "handling": "Return valid=true",
+          "outcome": "Success"
+        },
+        {
+          "case": "Some checks fail",
+          "handling": "List all violations",
+          "outcome": "Detailed report"
+        },
+        {
+          "case": "Numerical errors near tolerance",
+          "handling": "Use appropriate tolerances",
+          "outcome": "Robust validation"
+        },
+        {
+          "case": "Corrupted domain data",
+          "handling": "Detect and report inconsistencies",
+          "outcome": "Corruption detected"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "Verify valid LD(0)",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0"
+          },
+          "expected_output": {
+            "success": true,
+            "valid": true,
+            "violations": [],
+            "check_results": {
+              "signature": "pass",
+              "curvature": "pass",
+              "causality": "pass",
+              "metric_validity": "pass"
+            }
+          }
+        },
+        {
+          "name": "Verify hyperbolic domain",
+          "input": {
+            "domain_id": "ld://hypersync/test/hyperbolic"
+          },
+          "expected_output": {
+            "success": true,
+            "valid": true,
+            "check_results": {"curvature": "pass (κ=-1)"}
+          }
+        },
+        {
+          "name": "Detect invalid curvature",
+          "setup": "Domain with κ > 0",
+          "input": {
+            "domain_id": "ld://hypersync/test/invalid-curvature"
+          },
+          "expected_output": {
+            "success": true,
+            "valid": false,
+            "violations": ["Curvature κ > 0, violates Lorentzian constraint"]
+          }
+        },
+        {
+          "name": "Detect invalid signature",
+          "setup": "Domain with wrong metric signature",
+          "input": {
+            "domain_id": "ld://hypersync/test/invalid-signature"
+          },
+          "expected_output": {
+            "success": true,
+            "valid": false,
+            "violations": ["Metric signature not (-,+,+,+)"]
+          }
+        },
+        {
+          "name": "Check specific property",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0",
+            "checks": ["signature"]
+          },
+          "expected_output": {
+            "success": true,
+            "valid": true,
+            "check_results": {"signature": "pass"}
+          }
+        },
+        {
+          "name": "Verify causality",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0",
+            "checks": ["causality"]
+          },
+          "expected_output": {
+            "success": true,
+            "valid": true,
+            "check_results": {"causality": "pass"}
+          }
+        },
+        {
+          "name": "Multiple violations",
+          "setup": "Domain with multiple issues",
+          "input": {
+            "domain_id": "ld://hypersync/test/broken"
+          },
+          "expected_output": {
+            "success": true,
+            "valid": false,
+            "violations": [
+              "Invalid curvature",
+              "Invalid signature",
+              "Causality violated"
+            ]
+          }
+        },
+        {
+          "name": "Domain not found",
+          "input": {
+            "domain_id": "ld://invalid/domain/id"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Domain not found"
+          }
+        }
+      ],
+      "security_properties": [
+        "Read-only validation",
+        "Detects security violations",
+        "Comprehensive checking"
+      ],
+      "performance": {
+        "complexity": "O(n) where n = number of checks",
+        "typical_duration_ms": "< 100",
+        "resource_overhead": "Minimal"
+      }
+    },
+
+    "compute_causal_structure": {
+      "description": "Compute causal structure (light cones, timelike/spacelike separation) for Lorentzian Domain",
+      "category": "causality",
+      "inputs": {
+        "domain_id": {"type": "DomainID", "required": true},
+        "event_point": {
+          "type": "array",
+          "items": {"type": "float"},
+          "length": 4,
+          "description": "Event coordinates"
+        }
+      },
+      "outputs": {
+        "success": {"type": "boolean"},
+        "causal_structure": {"type": "CausalStructure"},
+        "future_light_cone": {"type": "object"},
+        "past_light_cone": {"type": "object"}
+      },
+      "preconditions": [
+        "Domain is Lorentzian",
+        "Valid event point"
+      ],
+      "postconditions": [
+        "Causal structure computed",
+        "Light cones defined"
+      ],
+      "formulas": {
+        "light_cone": "g_μν dx^μ dx^ν = 0",
+        "timelike": "g_μν dx^μ dx^ν < 0 (inside light cone)",
+        "spacelike": "g_μν dx^μ dx^ν > 0 (outside light cone)",
+        "future_cone": "dt > 0 and on/inside light cone",
+        "past_cone": "dt < 0 and on/inside light cone"
+      },
+      "edge_cases": [
+        {
+          "case": "Flat space",
+          "handling": "Standard Minkowski light cones",
+          "outcome": "45-degree cones in spacetime diagram"
+        },
+        {
+          "case": "Curved space",
+          "handling": "Distorted light cones",
+          "outcome": "Curvature affects causal structure"
+        },
+        {
+          "case": "Event horizon",
+          "handling": "Special handling for horizons",
+          "outcome": "Causal structure changes at horizon"
+        },
+        {
+          "case": "Very curved spacetime",
+          "handling": "Numerical computation",
+          "outcome": "Accurate causal structure"
+        },
+        {
+          "case": "Domain not Lorentzian",
+          "handling": "Return error",
+          "outcome": "Causality only for Lorentzian"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "Light cones at origin (flat)",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0",
+            "event_point": [0, 0, 0, 0]
+          },
+          "expected_output": {
+            "success": true,
+            "future_light_cone": {"equation": "t² = x² + y² + z², t > 0"},
+            "past_light_cone": {"equation": "t² = x² + y² + z², t < 0"}
+          }
+        },
+        {
+          "name": "Light cones in hyperbolic space",
+          "input": {
+            "domain_id": "ld://hypersync/test/hyperbolic",
+            "event_point": [1, 0, 0, 0]
+          },
+          "expected_output": {
+            "success": true,
+            "causal_structure": "[curved light cones]"
+          }
+        },
+        {
+          "name": "Verify timelike region",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0",
+            "event_point": [0, 0, 0, 0]
+          },
+          "expected_output": {
+            "success": true,
+            "note": "Interior of light cone is timelike"
+          }
+        },
+        {
+          "name": "Verify spacelike region",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0",
+            "event_point": [0, 0, 0, 0]
+          },
+          "expected_output": {
+            "success": true,
+            "note": "Exterior of light cone is spacelike"
+          }
+        },
+        {
+          "name": "Causal structure at different event",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0",
+            "event_point": [1, 1, 0, 0]
+          },
+          "expected_output": {
+            "success": true,
+            "causal_structure": "[light cones centered at (1,1,0,0)]"
+          }
+        },
+        {
+          "name": "Domain not Lorentzian",
+          "input": {
+            "domain_id": "ld://hypersync/test/riemannian",
+            "event_point": [0, 0, 0, 0]
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Causal structure only defined for Lorentzian domains"
+          }
+        },
+        {
+          "name": "Invalid event coordinates",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0",
+            "event_point": [1, 2]
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Invalid event coordinates"
+          }
+        },
+        {
+          "name": "Causal structure in variable curvature",
+          "input": {
+            "domain_id": "ld://hypersync/test/variable-curvature",
+            "event_point": [0, 0, 0, 0]
+          },
+          "expected_output": {
+            "success": true,
+            "note": "Light cones depend on local curvature"
+          }
+        }
+      ],
+      "security_properties": [
+        "Causality enforces temporal ordering",
+        "Prevents superluminal information transfer",
+        "Security operations respect causal structure"
+      ],
+      "performance": {
+        "complexity": "O(1) for simple cases, O(n²) for full structure",
+        "typical_duration_ms": "< 30",
+        "resource_overhead": "Minimal"
+      }
+    },
+
+    "enforce_causality": {
+      "description": "Enforce causality constraints in Lorentzian Domain",
+      "category": "security",
+      "inputs": {
+        "domain_id": {"type": "DomainID", "required": true},
+        "operation": {
+          "type": "object",
+          "required": true,
+          "description": "Operation to check for causality"
+        },
+        "source_event": {
+          "type": "array",
+          "items": {"type": "float"},
+          "length": 4
+        },
+        "target_event": {
+          "type": "array",
+          "items": {"type": "float"},
+          "length": 4
+        }
+      },
+      "outputs": {
+        "success": {"type": "boolean"},
+        "causally_allowed": {"type": "boolean"},
+        "violation_reason": {"type": "string", "optional": true}
+      },
+      "preconditions": [
+        "Domain is Lorentzian",
+        "Valid source and target events"
+      ],
+      "postconditions": [
+        "Causality verified",
+        "Violation prevented if detected"
+      ],
+      "formulas": {
+        "causal_relation": "Δs² = g_μν Δx^μ Δx^ν",
+        "timelike_allowed": "Δs² < 0 and Δt > 0",
+        "null_allowed": "Δs² = 0 and Δt ≥ 0",
+        "spacelike_forbidden": "Δs² > 0 for causal influence"
+      },
+      "edge_cases": [
+        {
+          "case": "Timelike separation",
+          "handling": "Allow operation",
+          "outcome": "Causally allowed"
+        },
+        {
+          "case": "Null separation (lightlike)",
+          "handling": "Allow operation (limit case)",
+          "outcome": "Causally allowed"
+        },
+        {
+          "case": "Spacelike separation",
+          "handling": "Block operation - causality violation",
+          "outcome": "Operation prevented"
+        },
+        {
+          "case": "Backwards in time",
+          "handling": "Block operation - causality violation",
+          "outcome": "No time travel"
+        },
+        {
+          "case": "Same event",
+          "handling": "Allow operation",
+          "outcome": "Local operation"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "Timelike allowed",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0",
+            "source_event": [0, 0, 0, 0],
+            "target_event": [1, 0, 0, 0]
+          },
+          "expected_output": {
+            "success": true,
+            "causally_allowed": true
+          }
+        },
+        {
+          "name": "Null (lightlike) allowed",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0",
+            "source_event": [0, 0, 0, 0],
+            "target_event": [1, 1, 0, 0]
+          },
+          "expected_output": {
+            "success": true,
+            "causally_allowed": true,
+            "note": "Light-speed communication allowed"
+          }
+        },
+        {
+          "name": "Spacelike forbidden",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0",
+            "source_event": [0, 0, 0, 0],
+            "target_event": [0, 1, 0, 0]
+          },
+          "expected_output": {
+            "success": true,
+            "causally_allowed": false,
+            "violation_reason": "Spacelike separation - no causal connection"
+          }
+        },
+        {
+          "name": "Backwards in time forbidden",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0",
+            "source_event": [1, 0, 0, 0],
+            "target_event": [0, 0, 0, 0]
+          },
+          "expected_output": {
+            "success": true,
+            "causally_allowed": false,
+            "violation_reason": "Backwards in time"
+          }
+        },
+        {
+          "name": "Same event allowed",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0",
+            "source_event": [0, 0, 0, 0],
+            "target_event": [0, 0, 0, 0]
+          },
+          "expected_output": {
+            "success": true,
+            "causally_allowed": true,
+            "note": "Local operation"
+          }
+        },
+        {
+          "name": "Causality in curved space",
+          "input": {
+            "domain_id": "ld://hypersync/test/hyperbolic",
+            "source_event": [0, 0, 0, 0],
+            "target_event": [1, 0, 0, 0]
+          },
+          "expected_output": {
+            "success": true,
+            "causally_allowed": true,
+            "note": "Curvature affects causal structure"
+          }
+        },
+        {
+          "name": "Domain not Lorentzian",
+          "input": {
+            "domain_id": "ld://hypersync/test/riemannian",
+            "source_event": [0, 0, 0, 0],
+            "target_event": [1, 0, 0, 0]
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Causality only enforced in Lorentzian domains"
+          }
+        },
+        {
+          "name": "Superluminal forbidden",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0",
+            "source_event": [0, 0, 0, 0],
+            "target_event": [0.5, 1, 0, 0]
+          },
+          "expected_output": {
+            "success": true,
+            "causally_allowed": false,
+            "violation_reason": "Faster than light"
+          }
+        }
+      ],
+      "security_properties": [
+        "Prevents causality violations",
+        "Enforces temporal ordering",
+        "Zero runtime overhead (checked at compile-time when possible)",
+        "Mathematical proof of security"
+      ],
+      "performance": {
+        "complexity": "O(1) - simple interval check",
+        "typical_duration_ms": "< 5",
+        "resource_overhead": "Minimal"
+      }
+    },
+
+    "compute_proper_time": {
+      "description": "Compute proper time along worldline in Lorentzian Domain",
+      "category": "geometry",
+      "inputs": {
+        "domain_id": {"type": "DomainID", "required": true},
+        "worldline": {
+          "type": "object",
+          "required": true,
+          "description": "Timelike worldline x^μ(λ)",
+          "properties": {
+            "curve": {"type": "function"},
+            "parameter_range": {"type": "array", "items": {"type": "float"}}
+          }
+        }
+      },
+      "outputs": {
+        "success": {"type": "boolean"},
+        "proper_time": {"type": "float"},
+        "proper_time_curve": {"type": "function", "description": "τ(λ)"}
+      },
+      "preconditions": [
+        "Domain is Lorentzian",
+        "Worldline is timelike",
+        "Valid parameter range"
+      ],
+      "postconditions": [
+        "Proper time computed",
+        "Satisfies proper time formula"
+      ],
+      "formulas": {
+        "proper_time": "τ = ∫ √(-g_μν dx^μ/dλ dx^ν/dλ) dλ",
+        "timelike_condition": "g_μν dx^μ/dλ dx^ν/dλ < 0",
+        "flat_space": "τ = ∫ √(1 - v²/c²) dt (time dilation)"
+      },
+      "edge_cases": [
+        {
+          "case": "Straight worldline in flat space",
+          "handling": "Simple integral, proper time = coordinate time",
+          "outcome": "Trivial case"
+        },
+        {
+          "case": "Moving worldline",
+          "handling": "Time dilation factor",
+          "outcome": "τ < t (time dilation)"
+        },
+        {
+          "case": "Null worldline (light ray)",
+          "handling": "τ = 0 for photons",
+          "outcome": "Photons experience no proper time"
+        },
+        {
+          "case": "Spacelike worldline",
+          "handling": "Return error - not physical",
+          "outcome": "Proper time only for timelike"
+        },
+        {
+          "case": "Curved spacetime",
+          "handling": "Numerical integration",
+          "outcome": "Accurate proper time"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "Stationary worldline",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0",
+            "worldline": {
+              "curve": "x^μ(λ) = [λ, 0, 0, 0]",
+              "parameter_range": [0, 10]
+            }
+          },
+          "expected_output": {
+            "success": true,
+            "proper_time": 10.0,
+            "note": "τ = t for stationary observer"
+          }
+        },
+        {
+          "name": "Moving worldline (time dilation)",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0",
+            "worldline": {
+              "curve": "x^μ(λ) = [λ, 0.5λ, 0, 0]",
+              "parameter_range": [0, 10]
+            }
+          },
+          "expected_output": {
+            "success": true,
+            "proper_time": "[< 10.0]",
+            "note": "Time dilation: τ < t"
+          }
+        },
+        {
+          "name": "Null worldline (photon)",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0",
+            "worldline": {
+              "curve": "x^μ(λ) = [λ, λ, 0, 0]",
+              "parameter_range": [0, 10]
+            }
+          },
+          "expected_output": {
+            "success": true,
+            "proper_time": 0.0,
+            "note": "Photons experience no proper time"
+          }
+        },
+        {
+          "name": "Spacelike worldline rejected",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0",
+            "worldline": {
+              "curve": "x^μ(λ) = [0, λ, 0, 0]",
+              "parameter_range": [0, 10]
+            }
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Worldline is spacelike, proper time undefined"
+          }
+        },
+        {
+          "name": "Circular motion",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0",
+            "worldline": {
+              "curve": "x^μ(λ) = [λ, cos(λ), sin(λ), 0]",
+              "parameter_range": [0, 6.28]
+            }
+          },
+          "expected_output": {
+            "success": true,
+            "proper_time": "[< 6.28]",
+            "note": "Time dilation from circular motion"
+          }
+        },
+        {
+          "name": "Proper time in curved space",
+          "input": {
+            "domain_id": "ld://hypersync/test/hyperbolic",
+            "worldline": {
+              "curve": "[curved worldline]",
+              "parameter_range": [0, 5]
+            }
+          },
+          "expected_output": {
+            "success": true,
+            "proper_time": "[depends on curvature]"
+          }
+        },
+        {
+          "name": "Domain not Lorentzian",
+          "input": {
+            "domain_id": "ld://hypersync/test/riemannian",
+            "worldline": {"curve": "[any]", "parameter_range": [0, 10]}
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Proper time only defined for Lorentzian domains"
+          }
+        },
+        {
+          "name": "High velocity (relativistic)",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0",
+            "worldline": {
+              "curve": "x^μ(λ) = [λ, 0.99λ, 0, 0]",
+              "parameter_range": [0, 10]
+            }
+          },
+          "expected_output": {
+            "success": true,
+            "proper_time": "[<< 10.0]",
+            "note": "Extreme time dilation at 0.99c"
+          }
+        }
+      ],
+      "security_properties": [
+        "Read-only operation",
+        "Proper time respects causality",
+        "Cannot be negative"
+      ],
+      "performance": {
+        "complexity": "O(n) where n = integration steps",
+        "typical_duration_ms": "< 50",
+        "resource_overhead": "Minimal"
+      }
+    },
+
+    "transform_to_ld": {
+      "description": "Transform coordinates to Lorentzian Domain coordinates",
+      "category": "coordinate_transform",
+      "inputs": {
+        "domain_id": {"type": "DomainID", "required": true},
+        "external_coords": {
+          "type": "array",
+          "items": {"type": "float"},
+          "description": "Coordinates in external system"
+        },
+        "source_coordinate_system": {
+          "type": "string",
+          "required": true,
+          "values": ["cartesian", "spherical", "cylindrical", "custom"]
+        }
+      },
+      "outputs": {
+        "success": {"type": "boolean"},
+        "ld_coords": {
+          "type": "array",
+          "items": {"type": "float"},
+          "length": 4,
+          "description": "Coordinates in LD"
+        },
+        "jacobian": {"type": "matrix", "description": "Transformation Jacobian"}
+      },
+      "preconditions": [
+        "Domain is Lorentzian",
+        "Valid external coordinates",
+        "Valid source coordinate system"
+      ],
+      "postconditions": [
+        "Coordinates transformed",
+        "Metric preserved under transformation"
+      ],
+      "formulas": {
+        "coordinate_transform": "x'^μ = f^μ(x^ν)",
+        "metric_transform": "g'_μν = ∂x^ρ/∂x'^μ ∂x^σ/∂x'^ν g_ρσ",
+        "jacobian": "J^μ_ν = ∂x'^μ/∂x^ν"
+      },
+      "edge_cases": [
+        {
+          "case": "Identity transformation",
+          "handling": "Return original coordinates",
+          "outcome": "No-op"
+        },
+        {
+          "case": "Singular Jacobian",
+          "handling": "Return error - transformation invalid",
+          "outcome": "Cannot transform"
+        },
+        {
+          "case": "Boundary crossing",
+          "handling": "Handle coordinate discontinuities",
+          "outcome": "Smooth transformation"
+        },
+        {
+          "case": "Invalid source system",
+          "handling": "Return error",
+          "outcome": "Require valid system"
+        },
+        {
+          "case": "Dimension mismatch",
+          "handling": "Return error or pad/truncate",
+          "outcome": "Ensure 4D output"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "Cartesian to LD",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0",
+            "external_coords": [1, 2, 3, 4],
+            "source_coordinate_system": "cartesian"
+          },
+          "expected_output": {
+            "success": true,
+            "ld_coords": [1, 2, 3, 4],
+            "note": "Identity for flat LD"
+          }
+        },
+        {
+          "name": "Spherical to LD",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0",
+            "external_coords": [1, 1, 0.5, 1.5],
+            "source_coordinate_system": "spherical"
+          },
+          "expected_output": {
+            "success": true,
+            "ld_coords": "[transformed coords]",
+            "jacobian": "[transformation matrix]"
+          }
+        },
+        {
+          "name": "Identity transformation",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0",
+            "external_coords": [0, 0, 0, 0],
+            "source_coordinate_system": "cartesian"
+          },
+          "expected_output": {
+            "success": true,
+            "ld_coords": [0, 0, 0, 0]
+          }
+        },
+        {
+          "name": "Domain not Lorentzian",
+          "input": {
+            "domain_id": "ld://hypersync/test/riemannian",
+            "external_coords": [1, 2, 3, 4],
+            "source_coordinate_system": "cartesian"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Domain is not Lorentzian"
+          }
+        },
+        {
+          "name": "Invalid coordinate system",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0",
+            "external_coords": [1, 2, 3, 4],
+            "source_coordinate_system": "invalid"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Invalid coordinate system"
+          }
+        },
+        {
+          "name": "Dimension mismatch",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0",
+            "external_coords": [1, 2],
+            "source_coordinate_system": "cartesian"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Invalid coordinates: expected 4 components"
+          }
+        },
+        {
+          "name": "Compute Jacobian",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0",
+            "external_coords": [1, 1, 0, 0],
+            "source_coordinate_system": "spherical"
+          },
+          "expected_output": {
+            "success": true,
+            "jacobian": "[4x4 matrix]"
+          }
+        },
+        {
+          "name": "Transform in curved space",
+          "input": {
+            "domain_id": "ld://hypersync/test/hyperbolic",
+            "external_coords": [1, 2, 3, 4],
+            "source_coordinate_system": "cartesian"
+          },
+          "expected_output": {
+            "success": true,
+            "ld_coords": "[curved space coords]"
+          }
+        }
+      ],
+      "security_properties": [
+        "Preserves causal structure",
+        "Metric signature preserved",
+        "Read-only operation"
+      ],
+      "performance": {
+        "complexity": "O(d²) where d = dimension",
+        "typical_duration_ms": "< 20",
+        "resource_overhead": "Minimal"
+      }
+    },
+
+    "transform_from_ld": {
+      "description": "Transform from Lorentzian Domain coordinates to external system",
+      "category": "coordinate_transform",
+      "inputs": {
+        "domain_id": {"type": "DomainID", "required": true},
+        "ld_coords": {
+          "type": "array",
+          "items": {"type": "float"},
+          "length": 4
+        },
+        "target_coordinate_system": {
+          "type": "string",
+          "required": true,
+          "values": ["cartesian", "spherical", "cylindrical", "custom"]
+        }
+      },
+      "outputs": {
+        "success": {"type": "boolean"},
+        "external_coords": {"type": "array", "items": {"type": "float"}},
+        "jacobian": {"type": "matrix"}
+      },
+      "preconditions": [
+        "Domain is Lorentzian",
+        "Valid LD coordinates"
+      ],
+      "postconditions": [
+        "Coordinates transformed",
+        "Inverse of transform_to_ld"
+      ],
+      "formulas": {
+        "inverse_transform": "x^μ = f^{-1,μ}(x'^ν)",
+        "inverse_jacobian": "J^{-1}"
+      },
+      "edge_cases": [
+        {
+          "case": "Identity transformation",
+          "handling": "Return original coordinates",
+          "outcome": "No-op"
+        },
+        {
+          "case": "Non-invertible transformation",
+          "handling": "Return error",
+          "outcome": "Cannot invert"
+        },
+        {
+          "case": "Coordinate singularities",
+          "handling": "Handle carefully",
+          "outcome": "Avoid singularities"
+        },
+        {
+          "case": "Invalid target system",
+          "handling": "Return error",
+          "outcome": "Require valid system"
+        },
+        {
+          "case": "Boundary handling",
+          "handling": "Ensure valid output range",
+          "outcome": "Valid external coords"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "LD to Cartesian",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0",
+            "ld_coords": [1, 2, 3, 4],
+            "target_coordinate_system": "cartesian"
+          },
+          "expected_output": {
+            "success": true,
+            "external_coords": [1, 2, 3, 4],
+            "note": "Identity for flat LD"
+          }
+        },
+        {
+          "name": "LD to Spherical",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0",
+            "ld_coords": [1, 1, 1, 1],
+            "target_coordinate_system": "spherical"
+          },
+          "expected_output": {
+            "success": true,
+            "external_coords": "[spherical coords]",
+            "jacobian": "[inverse transform matrix]"
+          }
+        },
+        {
+          "name": "Round-trip transformation",
+          "setup": "Transform to LD and back",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0",
+            "ld_coords": [1, 2, 3, 4],
+            "target_coordinate_system": "cartesian"
+          },
+          "expected_output": {
+            "success": true,
+            "external_coords": "[original coords]",
+            "note": "Inverse of transform_to_ld"
+          }
+        },
+        {
+          "name": "Domain not Lorentzian",
+          "input": {
+            "domain_id": "ld://hypersync/test/riemannian",
+            "ld_coords": [1, 2, 3, 4],
+            "target_coordinate_system": "cartesian"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Domain is not Lorentzian"
+          }
+        },
+        {
+          "name": "Invalid coordinate system",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0",
+            "ld_coords": [1, 2, 3, 4],
+            "target_coordinate_system": "invalid"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Invalid coordinate system"
+          }
+        },
+        {
+          "name": "Invalid LD coordinates",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0",
+            "ld_coords": [1, 2],
+            "target_coordinate_system": "cartesian"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Invalid LD coordinates"
+          }
+        },
+        {
+          "name": "Transform from curved space",
+          "input": {
+            "domain_id": "ld://hypersync/test/hyperbolic",
+            "ld_coords": [1, 1, 1, 1],
+            "target_coordinate_system": "cartesian"
+          },
+          "expected_output": {
+            "success": true,
+            "external_coords": "[external representation]"
+          }
+        },
+        {
+          "name": "Verify inverse Jacobian",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0",
+            "ld_coords": [1, 1, 1, 1],
+            "target_coordinate_system": "spherical"
+          },
+          "expected_output": {
+            "success": true,
+            "jacobian": "[inverse of forward Jacobian]"
+          }
+        }
+      ],
+      "security_properties": [
+        "Preserves causal structure",
+        "Invertible transformation",
+        "Read-only operation"
+      ],
+      "performance": {
+        "complexity": "O(d²)",
+        "typical_duration_ms": "< 20",
+        "resource_overhead": "Minimal"
+      }
+    },
+
+    "compute_ld_distance": {
+      "description": "Compute geometric distance between two points in Lorentzian Domain",
+      "category": "geometry",
+      "inputs": {
+        "domain_id": {"type": "DomainID", "required": true},
+        "point1": {"type": "array", "items": {"type": "float"}, "length": 4},
+        "point2": {"type": "array", "items": {"type": "float"}, "length": 4}
+      },
+      "outputs": {
+        "success": {"type": "boolean"},
+        "distance": {"type": "float"},
+        "separation_type": {
+          "type": "string",
+          "values": ["timelike", "spacelike", "null"]
+        }
+      },
+      "preconditions": [
+        "Domain is Lorentzian",
+        "Valid point coordinates"
+      ],
+      "postconditions": [
+        "Distance computed",
+        "Separation type determined"
+      ],
+      "formulas": {
+        "interval": "Δs² = g_μν Δx^μ Δx^ν",
+        "timelike_distance": "d = √(-Δs²) for Δs² < 0",
+        "spacelike_distance": "d = √(Δs²) for Δs² > 0",
+        "null_distance": "d = 0 for Δs² = 0",
+        "hyperbolic_distance": "d(p,q) = arcosh(-g_μν p^μ q^ν) for κ<0"
+      },
+      "edge_cases": [
+        {
+          "case": "Timelike separation",
+          "handling": "Proper distance computed",
+          "outcome": "Real distance"
+        },
+        {
+          "case": "Spacelike separation",
+          "handling": "Spatial distance computed",
+          "outcome": "Real distance"
+        },
+        {
+          "case": "Null separation",
+          "handling": "Distance is zero",
+          "outcome": "Light-connected events"
+        },
+        {
+          "case": "Same point",
+          "handling": "Distance is zero",
+          "outcome": "Trivial case"
+        },
+        {
+          "case": "Flat vs curved space",
+          "handling": "Use appropriate formula",
+          "outcome": "Correct distance"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "Timelike distance (flat)",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0",
+            "point1": [0, 0, 0, 0],
+            "point2": [1, 0, 0, 0]
+          },
+          "expected_output": {
+            "success": true,
+            "distance": 1.0,
+            "separation_type": "timelike"
+          }
+        },
+        {
+          "name": "Spacelike distance (flat)",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0",
+            "point1": [0, 0, 0, 0],
+            "point2": [0, 1, 0, 0]
+          },
+          "expected_output": {
+            "success": true,
+            "distance": 1.0,
+            "separation_type": "spacelike"
+          }
+        },
+        {
+          "name": "Null distance (lightlike)",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0",
+            "point1": [0, 0, 0, 0],
+            "point2": [1, 1, 0, 0]
+          },
+          "expected_output": {
+            "success": true,
+            "distance": 0.0,
+            "separation_type": "null"
+          }
+        },
+        {
+          "name": "Same point",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0",
+            "point1": [1, 2, 3, 4],
+            "point2": [1, 2, 3, 4]
+          },
+          "expected_output": {
+            "success": true,
+            "distance": 0.0,
+            "note": "Zero distance"
+          }
+        },
+        {
+          "name": "Hyperbolic distance",
+          "input": {
+            "domain_id": "ld://hypersync/test/hyperbolic",
+            "point1": [0, 0, 0, 0],
+            "point2": [1, 0, 0, 0]
+          },
+          "expected_output": {
+            "success": true,
+            "distance": "[hyperbolic distance]",
+            "note": "Different from flat space"
+          }
+        },
+        {
+          "name": "Domain not Lorentzian",
+          "input": {
+            "domain_id": "ld://hypersync/test/riemannian",
+            "point1": [0, 0, 0, 0],
+            "point2": [1, 0, 0, 0]
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Domain is not Lorentzian"
+          }
+        },
+        {
+          "name": "Invalid coordinates",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0",
+            "point1": [1, 2],
+            "point2": [3, 4]
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Invalid coordinates"
+          }
+        },
+        {
+          "name": "General separation",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0",
+            "point1": [0, 0, 0, 0],
+            "point2": [2, 1, 1, 1]
+          },
+          "expected_output": {
+            "success": true,
+            "distance": "[computed distance]",
+            "separation_type": "timelike",
+            "note": "General case"
+          }
+        }
+      ],
+      "security_properties": [
+        "Distance respects causal structure",
+        "Read-only operation",
+        "Metric signature preserved"
+      ],
+      "performance": {
+        "complexity": "O(1)",
+        "typical_duration_ms": "< 10",
+        "resource_overhead": "Minimal"
+      }
+    },
+
+    "compute_ld_volume": {
+      "description": "Compute volume element in Lorentzian Domain",
+      "category": "geometry",
+      "inputs": {
+        "domain_id": {"type": "DomainID", "required": true},
+        "region": {
+          "type": "object",
+          "required": true,
+          "description": "Region to integrate over"
+        }
+      },
+      "outputs": {
+        "success": {"type": "boolean"},
+        "volume": {"type": "float"}
+      },
+      "preconditions": [
+        "Domain is Lorentzian",
+        "Valid region specified"
+      ],
+      "postconditions": [
+        "Volume computed"
+      ],
+      "formulas": {
+        "volume_element": "dV = √|det(g)| dx^0 dx^1 dx^2 dx^3",
+        "flat_volume": "dV = dx dt dy dz for κ=0",
+        "curved_volume": "dV depends on metric determinant"
+      },
+      "edge_cases": [
+        {
+          "case": "Flat space",
+          "handling": "Standard volume calculation",
+          "outcome": "Simple integration"
+        },
+        {
+          "case": "Curved space",
+          "handling": "Include metric determinant",
+          "outcome": "Curvature affects volume"
+        },
+        {
+          "case": "Infinite region",
+          "handling": "Return infinity or error",
+          "outcome": "Cannot compute infinite volume"
+        },
+        {
+          "case": "Zero region",
+          "handling": "Return zero",
+          "outcome": "Trivial case"
+        },
+        {
+          "case": "Singularity in region",
+          "handling": "Exclude singular points or return error",
+          "outcome": "Handle singularities"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "Unit cube in flat space",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0",
+            "region": {"bounds": [[0,1], [0,1], [0,1], [0,1]]}
+          },
+          "expected_output": {
+            "success": true,
+            "volume": 1.0
+          }
+        },
+        {
+          "name": "Volume in hyperbolic space",
+          "input": {
+            "domain_id": "ld://hypersync/test/hyperbolic",
+            "region": {"bounds": [[0,1], [0,1], [0,1], [0,1]]}
+          },
+          "expected_output": {
+            "success": true,
+            "volume": "[> 1.0 due to curvature]"
+          }
+        },
+        {
+          "name": "Zero volume",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0",
+            "region": {"bounds": [[0,0], [0,0], [0,0], [0,0]]}
+          },
+          "expected_output": {
+            "success": true,
+            "volume": 0.0
+          }
+        },
+        {
+          "name": "Large region",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0",
+            "region": {"bounds": [[0,100], [0,100], [0,100], [0,100]]}
+          },
+          "expected_output": {
+            "success": true,
+            "volume": 100000000.0
+          }
+        },
+        {
+          "name": "Domain not Lorentzian",
+          "input": {
+            "domain_id": "ld://hypersync/test/riemannian",
+            "region": {"bounds": [[0,1], [0,1], [0,1], [0,1]]}
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Domain is not Lorentzian"
+          }
+        },
+        {
+          "name": "Invalid region",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0",
+            "region": {"bounds": [[1,0], [0,1], [0,1], [0,1]]}
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Invalid region: bounds reversed"
+          }
+        },
+        {
+          "name": "Non-rectangular region",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0",
+            "region": {"type": "sphere", "radius": 1}
+          },
+          "expected_output": {
+            "success": true,
+            "volume": "[4/3 π r³ = 4.19...]"
+          }
+        },
+        {
+          "name": "Verify metric determinant",
+          "input": {
+            "domain_id": "ld://hypersync/test/hyperbolic",
+            "region": {"bounds": [[0,1], [0,1], [0,1], [0,1]]}
+          },
+          "expected_output": {
+            "success": true,
+            "note": "Volume includes √|det(g)| factor"
+          }
+        }
+      ],
+      "security_properties": [
+        "Read-only operation",
+        "No domain modification"
+      ],
+      "performance": {
+        "complexity": "O(n) where n = integration steps",
+        "typical_duration_ms": "< 100",
+        "resource_overhead": "Memory for integration"
+      }
+    },
+
+    "optimize_ld_geometry": {
+      "description": "Optimize Lorentzian Domain geometry for performance and security",
+      "category": "optimization",
+      "inputs": {
+        "domain_id": {"type": "DomainID", "required": true},
+        "optimization_goals": {
+          "type": "array",
+          "items": {"type": "string"},
+          "values": ["performance", "security", "numerical_stability"],
+          "required": false,
+          "default": ["performance"]
+        }
+      },
+      "outputs": {
+        "success": {"type": "boolean"},
+        "optimizations_applied": {"type": "array"},
+        "performance_improvement": {"type": "object"}
+      },
+      "preconditions": [
+        "Domain is Lorentzian",
+        "Domain is active"
+      ],
+      "postconditions": [
+        "Geometry optimized",
+        "Properties preserved",
+        "Performance improved"
+      ],
+      "formulas": {
+        "curvature_tuning": "Adjust κ within constraints",
+        "metric_simplification": "Simplify metric tensor representation",
+        "security_strengthening": "Increase curvature barrier"
+      },
+      "edge_cases": [
+        {
+          "case": "Already optimal",
+          "handling": "Return success with no changes",
+          "outcome": "Idempotent"
+        },
+        {
+          "case": "Conflicting goals",
+          "handling": "Balance optimization",
+          "outcome": "Best-effort"
+        },
+        {
+          "case": "Optimization fails",
+          "handling": "Rollback changes",
+          "outcome": "Maintain consistency"
+        },
+        {
+          "case": "Domain under load",
+          "handling": "Defer optimization",
+          "outcome": "Minimize disruption"
+        },
+        {
+          "case": "Invalid optimization goal",
+          "handling": "Return error",
+          "outcome": "Require valid goals"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "Optimize for performance",
+          "input": {
+            "domain_id": "ld://hypersync/test/ld",
+            "optimization_goals": ["performance"]
+          },
+          "expected_output": {
+            "success": true,
+            "optimizations_applied": ["metric caching", "geodesic precomputation"],
+            "performance_improvement": {"speedup": "15%"}
+          }
+        },
+        {
+          "name": "Optimize for security",
+          "input": {
+            "domain_id": "ld://hypersync/test/ld",
+            "optimization_goals": ["security"]
+          },
+          "expected_output": {
+            "success": true,
+            "optimizations_applied": ["increase curvature barrier"],
+            "note": "Stronger isolation"
+          }
+        },
+        {
+          "name": "Optimize for numerical stability",
+          "input": {
+            "domain_id": "ld://hypersync/test/high-curvature",
+            "optimization_goals": ["numerical_stability"]
+          },
+          "expected_output": {
+            "success": true,
+            "optimizations_applied": ["rescale metric", "use stable algorithms"]
+          }
+        },
+        {
+          "name": "Multiple optimization goals",
+          "input": {
+            "domain_id": "ld://hypersync/test/ld",
+            "optimization_goals": ["performance", "security"]
+          },
+          "expected_output": {
+            "success": true,
+            "note": "Balanced optimization"
+          }
+        },
+        {
+          "name": "Already optimal",
+          "setup": "Domain already optimized",
+          "input": {
+            "domain_id": "ld://hypersync/test/optimal"
+          },
+          "expected_output": {
+            "success": true,
+            "optimizations_applied": [],
+            "note": "No changes needed"
+          }
+        },
+        {
+          "name": "Domain not Lorentzian",
+          "input": {
+            "domain_id": "ld://hypersync/test/riemannian",
+            "optimization_goals": ["performance"]
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Domain is not Lorentzian"
+          }
+        },
+        {
+          "name": "Invalid optimization goal",
+          "input": {
+            "domain_id": "ld://hypersync/test/ld",
+            "optimization_goals": ["invalid_goal"]
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Invalid optimization goal"
+          }
+        },
+        {
+          "name": "Verify properties preserved",
+          "input": {
+            "domain_id": "ld://hypersync/test/ld",
+            "optimization_goals": ["performance"]
+          },
+          "expected_output": {
+            "success": true,
+            "note": "Curvature and signature preserved"
+          }
+        }
+      ],
+      "security_properties": [
+        "Write permission enforced",
+        "Optimization preserves security properties",
+        "Rollback on failure"
+      ],
+      "performance": {
+        "complexity": "O(n) where n = optimization complexity",
+        "typical_duration_ms": "< 500",
+        "resource_overhead": "Temporary memory for analysis"
+      }
+    },
+
+    "validate_ld_consistency": {
+      "description": "Validate Lorentzian Domain geometric consistency",
+      "category": "validation",
+      "inputs": {
+        "domain_id": {"type": "DomainID", "required": true}
+      },
+      "outputs": {
+        "success": {"type": "boolean"},
+        "valid": {"type": "boolean"},
+        "errors": {"type": "array"},
+        "warnings": {"type": "array"}
+      },
+      "preconditions": [
+        "Domain exists"
+      ],
+      "postconditions": [
+        "Consistency verified",
+        "Report generated"
+      ],
+      "formulas": {
+        "metric_consistency": "Verify g_μν = g_νμ (symmetry)",
+        "signature_check": "Verify eigenvalues have signs (-,+,+,+)",
+        "curvature_bounds": "Verify κ ≤ 0",
+        "einstein_equations": "Check R_μν - (1/2)R g_μν = 0 for vacuum"
+      },
+      "edge_cases": [
+        {
+          "case": "Fully consistent",
+          "handling": "Return valid=true",
+          "outcome": "All checks pass"
+        },
+        {
+          "case": "Minor inconsistencies",
+          "handling": "Return warnings",
+          "outcome": "Fixable issues"
+        },
+        {
+          "case": "Major inconsistencies",
+          "handling": "Return errors",
+          "outcome": "Require intervention"
+        },
+        {
+          "case": "Corrupted domain",
+          "handling": "Detect and report corruption",
+          "outcome": "Data corruption found"
+        },
+        {
+          "case": "Domain not Lorentzian",
+          "handling": "Return error",
+          "outcome": "Cannot validate non-LD"
+        }
+      ],
+      "test_cases": [
+        {
+          "name": "Validate consistent LD",
+          "input": {
+            "domain_id": "ld://hypersync/base/ld0"
+          },
+          "expected_output": {
+            "success": true,
+            "valid": true,
+            "errors": [],
+            "warnings": []
+          }
+        },
+        {
+          "name": "Detect signature violation",
+          "setup": "Domain with wrong signature",
+          "input": {
+            "domain_id": "ld://hypersync/test/invalid-signature"
+          },
+          "expected_output": {
+            "success": true,
+            "valid": false,
+            "errors": ["Metric signature not (-,+,+,+)"]
+          }
+        },
+        {
+          "name": "Detect curvature violation",
+          "setup": "Domain with κ > 0",
+          "input": {
+            "domain_id": "ld://hypersync/test/positive-curvature"
+          },
+          "expected_output": {
+            "success": true,
+            "valid": false,
+            "errors": ["Curvature κ > 0, violates Lorentzian constraint"]
+          }
+        },
+        {
+          "name": "Detect metric asymmetry",
+          "setup": "Domain with asymmetric metric",
+          "input": {
+            "domain_id": "ld://hypersync/test/asymmetric-metric"
+          },
+          "expected_output": {
+            "success": true,
+            "valid": false,
+            "errors": ["Metric tensor not symmetric"]
+          }
+        },
+        {
+          "name": "Warning for numerical precision",
+          "setup": "Domain with near-zero determinant",
+          "input": {
+            "domain_id": "ld://hypersync/test/low-precision"
+          },
+          "expected_output": {
+            "success": true,
+            "valid": true,
+            "warnings": ["Metric determinant near zero - numerical issues"]
+          }
+        },
+        {
+          "name": "Domain not found",
+          "input": {
+            "domain_id": "ld://invalid/domain/id"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Domain not found"
+          }
+        },
+        {
+          "name": "Domain not Lorentzian",
+          "input": {
+            "domain_id": "ld://hypersync/test/riemannian"
+          },
+          "expected_output": {
+            "success": false,
+            "error": "Domain is not Lorentzian"
+          }
+        },
+        {
+          "name": "Comprehensive validation",
+          "input": {
+            "domain_id": "ld://hypersync/test/ld"
+          },
+          "expected_output": {
+            "success": true,
+            "valid": true,
+            "note": "All geometric constraints satisfied"
+          }
+        }
+      ],
+      "security_properties": [
+        "Read-only validation",
+        "Detects security-relevant inconsistencies",
+        "Comprehensive checking"
+      ],
+      "performance": {
+        "complexity": "O(d⁴) for full validation",
+        "typical_duration_ms": "< 200",
+        "resource_overhead": "Memory for consistency checks"
+      }
+    }
+  },
+
+  "integration_points": {
+    "domain_architecture": {
+      "operations": ["create_domain", "validate_domain"],
+      "types": ["Domain", "CurvatureType"]
+    },
+    "domain_security_model": {
+      "operations": ["enforce_causality", "verify_lorentzian_properties"],
+      "types": ["SecurityMetric"]
+    }
+  },
+
+  "examples": {
+    "create_and_verify": {
+      "description": "Create and verify a Lorentzian Domain",
+      "code": [
+        "# Create hyperbolic Lorentzian Domain",
+        "ld = create_lorentzian_domain({",
+        "  label: 'hyperbolic-ld',",
+        "  curvature_constant: -1.0",
+        "})",
+        "",
+        "# Verify Lorentzian properties",
+        "validation = verify_lorentzian_properties({",
+        "  domain_id: ld.domain_id",
+        "})",
+        "",
+        "# Compute metric at origin",
+        "metric = compute_lorentz_metric({",
+        "  domain_id: ld.domain_id,",
+        "  point: [0, 0, 0, 0]",
+        "})"
+      ]
+    },
+    "causality_check": {
+      "description": "Check causality between events",
+      "code": [
+        "# Enforce causality for operation",
+        "causal_check = enforce_causality({",
+        "  domain_id: ld.domain_id,",
+        "  source_event: [0, 0, 0, 0],",
+        "  target_event: [1, 0, 0, 0]",
+        "})",
+        "",
+        "if (causal_check.causally_allowed) {",
+        "  # Operation is causally allowed",
+        "  execute_operation()",
+        "} else {",
+        "  # Causality violation",
+        "  reject_operation(causal_check.violation_reason)",
+        "}"
+      ]
+    }
+  },
+
+  "security_considerations": {
+    "causality_enforcement": "Timelike constraint prevents unauthorized operations",
+    "geometric_security": "Curvature-based isolation",
+    "holonomy_detection": "Detects tampering through parallel transport",
+    "zero_overhead": "Security enforced by geometry, not runtime checks"
+  },
+
+  "performance_considerations": {
+    "flat_space_optimization": "O(1) operations for κ=0",
+    "curved_space_complexity": "O(d²) to O(d⁴) for general operations",
+    "caching_strategies": "Cache metric, Christoffel symbols for frequently used points",
+    "numerical_stability": "Use stable algorithms for extreme curvatures"
+  },
+
+  "compliance": {
+    "stunir_version": "3.0",
+    "validation_status": "complete",
+    "test_coverage": "100% of operations",
+    "documentation_complete": true
+  }
+}

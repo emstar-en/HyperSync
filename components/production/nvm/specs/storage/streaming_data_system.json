@@ -1,0 +1,2503 @@
+{
+  "metadata": {
+    "name": "streaming_data_system",
+    "version": "1.0.0",
+    "description": "Streaming Data System for HyperSync - Real-time data streams with geometric operations, backpressure handling, flow control, stream processing primitives (map, filter, reduce), and windowing (tumbling, sliding, session)",
+    "author": "HyperSync Framework",
+    "created": "2026-01-16T00:00:00Z",
+    "updated": "2026-01-16T00:00:00Z",
+    "stunir_version": "1.0",
+    "domain": "hypersync.streaming.data",
+    "conformance_level": 3,
+    "dependencies": [
+      "hyperbolic_core",
+      "network_transport",
+      "flow_control",
+      "windowing_engine"
+    ],
+    "license": {
+      "name": "AGPLv3",
+      "url": "https://www.gnu.org/licenses/agpl-3.0.html"
+    },
+    "authors": [
+      "HyperSync Streaming Team"
+    ],
+    "operational_model": {
+      "processing": "Real-time stream processing with geometric operations",
+      "flow_control": "Backpressure handling with configurable policies",
+      "windowing": "Time and count-based windowing strategies",
+      "fault_tolerance": "At-least-once and exactly-once semantics"
+    },
+    "tags": [
+      "streaming",
+      "real-time",
+      "backpressure",
+      "windowing",
+      "flow-control",
+      "network"
+    ]
+  },
+  "types": {
+    "StreamDefinition": {
+      "description": "Definition of a data stream",
+      "base_type": "object",
+      "properties": {
+        "stream_id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "source": {
+          "type": "StreamSource"
+        },
+        "schema": {
+          "type": "StreamSchema"
+        },
+        "partitioning": {
+          "type": "StreamPartitioning"
+        },
+        "retention": {
+          "type": "RetentionPolicy"
+        },
+        "replication": {
+          "type": "ReplicationConfig"
+        },
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "StreamSource": {
+      "description": "Source configuration for a stream",
+      "base_type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "kafka",
+            "kinesis",
+            "pubsub",
+            "websocket",
+            "http_push",
+            "grpc_stream",
+            "internal"
+          ]
+        },
+        "endpoint": {
+          "type": "string"
+        },
+        "topic": {
+          "type": "string"
+        },
+        "consumer_group": {
+          "type": "string"
+        },
+        "credentials_ref": {
+          "type": "string"
+        },
+        "starting_position": {
+          "type": "string",
+          "enum": [
+            "earliest",
+            "latest",
+            "timestamp",
+            "offset"
+          ]
+        },
+        "starting_value": {
+          "type": "string"
+        }
+      }
+    },
+    "StreamSchema": {
+      "description": "Schema for stream records",
+      "base_type": "object",
+      "properties": {
+        "schema_id": {
+          "type": "string"
+        },
+        "format": {
+          "type": "string",
+          "enum": [
+            "json",
+            "avro",
+            "protobuf",
+            "raw"
+          ]
+        },
+        "fields": {
+          "type": "array",
+          "items": {
+            "type": "StreamField"
+          }
+        },
+        "timestamp_field": {
+          "type": "string"
+        },
+        "key_fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "geometric_fields": {
+          "type": "array",
+          "items": {
+            "type": "GeometricStreamField"
+          }
+        }
+      }
+    },
+    "StreamField": {
+      "description": "Field in stream schema",
+      "base_type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "string",
+            "int32",
+            "int64",
+            "float32",
+            "float64",
+            "boolean",
+            "bytes",
+            "timestamp",
+            "array",
+            "map",
+            "struct",
+            "geometric"
+          ]
+        },
+        "nullable": {
+          "type": "boolean",
+          "default": true
+        },
+        "nested_schema": {
+          "type": "StreamSchema"
+        }
+      }
+    },
+    "GeometricStreamField": {
+      "description": "Geometric field configuration in stream",
+      "base_type": "object",
+      "properties": {
+        "field_name": {
+          "type": "string"
+        },
+        "manifold": {
+          "type": "string",
+          "enum": [
+            "hyperboloid",
+            "poincare_ball",
+            "euclidean"
+          ]
+        },
+        "dimension": {
+          "type": "integer",
+          "minimum": 2
+        },
+        "curvature": {
+          "type": "number",
+          "default": -1.0
+        },
+        "validation_enabled": {
+          "type": "boolean",
+          "default": true
+        }
+      }
+    },
+    "StreamPartitioning": {
+      "description": "Partitioning configuration for stream",
+      "base_type": "object",
+      "properties": {
+        "strategy": {
+          "type": "string",
+          "enum": [
+            "hash",
+            "round_robin",
+            "geographic",
+            "custom"
+          ]
+        },
+        "partition_key": {
+          "type": "string"
+        },
+        "partition_count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "rebalance_threshold": {
+          "type": "number"
+        }
+      }
+    },
+    "RetentionPolicy": {
+      "description": "Retention policy for stream data",
+      "base_type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "time",
+            "size",
+            "both"
+          ]
+        },
+        "duration_ms": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "size_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "compaction_enabled": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    "ReplicationConfig": {
+      "description": "Replication configuration",
+      "base_type": "object",
+      "properties": {
+        "replication_factor": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 3
+        },
+        "min_in_sync_replicas": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 2
+        },
+        "ack_mode": {
+          "type": "string",
+          "enum": [
+            "none",
+            "leader",
+            "all"
+          ],
+          "default": "all"
+        }
+      }
+    },
+    "StreamProcessor": {
+      "description": "Stream processor definition",
+      "base_type": "object",
+      "properties": {
+        "processor_id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "input_streams": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "output_streams": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "operations": {
+          "type": "array",
+          "items": {
+            "type": "StreamOperation"
+          }
+        },
+        "state_stores": {
+          "type": "array",
+          "items": {
+            "type": "StateStore"
+          }
+        },
+        "parallelism": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 1
+        },
+        "checkpointing": {
+          "type": "CheckpointConfig"
+        },
+        "error_handling": {
+          "type": "StreamErrorHandling"
+        },
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        }
+      }
+    },
+    "StreamOperation": {
+      "description": "Operation in stream processing",
+      "base_type": "object",
+      "properties": {
+        "operation_id": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "map",
+            "flat_map",
+            "filter",
+            "reduce",
+            "aggregate",
+            "join",
+            "union",
+            "split",
+            "merge",
+            "window",
+            "key_by",
+            "repartition",
+            "geometric_transform",
+            "geometric_filter",
+            "geometric_aggregate",
+            "parallel_transport_stream",
+            "distance_filter",
+            "centroid_update"
+          ]
+        },
+        "config": {
+          "type": "OperationConfig"
+        },
+        "input": {
+          "type": "string"
+        },
+        "output": {
+          "type": "string"
+        }
+      }
+    },
+    "OperationConfig": {
+      "description": "Configuration for stream operation",
+      "base_type": "object",
+      "properties": {
+        "expression": {
+          "type": "string"
+        },
+        "function_ref": {
+          "type": "string"
+        },
+        "predicate": {
+          "type": "string"
+        },
+        "key_selector": {
+          "type": "string"
+        },
+        "value_selector": {
+          "type": "string"
+        },
+        "aggregation_function": {
+          "type": "string"
+        },
+        "window_spec": {
+          "type": "WindowSpec"
+        },
+        "join_spec": {
+          "type": "JoinSpec"
+        },
+        "geometric_config": {
+          "type": "GeometricOperationConfig"
+        }
+      }
+    },
+    "GeometricOperationConfig": {
+      "description": "Configuration for geometric stream operations",
+      "base_type": "object",
+      "properties": {
+        "operation": {
+          "type": "string",
+          "enum": [
+            "transform_manifold",
+            "compute_distance",
+            "filter_by_distance",
+            "aggregate_centroid",
+            "aggregate_frechet_mean",
+            "parallel_transport",
+            "project_to_factor",
+            "normalize_embedding"
+          ]
+        },
+        "source_field": {
+          "type": "string"
+        },
+        "target_field": {
+          "type": "string"
+        },
+        "reference_point": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        },
+        "threshold": {
+          "type": "number"
+        },
+        "manifold_params": {
+          "type": "object"
+        }
+      }
+    },
+    "WindowSpec": {
+      "description": "Window specification",
+      "base_type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "tumbling",
+            "sliding",
+            "session",
+            "global",
+            "count"
+          ]
+        },
+        "size_ms": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "slide_ms": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "gap_ms": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "allowed_lateness_ms": {
+          "type": "integer",
+          "default": 0
+        },
+        "trigger": {
+          "type": "WindowTrigger"
+        },
+        "evictor": {
+          "type": "WindowEvictor"
+        }
+      }
+    },
+    "WindowTrigger": {
+      "description": "Trigger for window evaluation",
+      "base_type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "watermark",
+            "processing_time",
+            "count",
+            "continuous",
+            "custom"
+          ]
+        },
+        "interval_ms": {
+          "type": "integer"
+        },
+        "count_threshold": {
+          "type": "integer"
+        },
+        "early_firing": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    "WindowEvictor": {
+      "description": "Evictor for window elements",
+      "base_type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "count",
+            "time",
+            "delta"
+          ]
+        },
+        "threshold": {
+          "type": "number"
+        },
+        "before_function": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    "JoinSpec": {
+      "description": "Specification for stream join",
+      "base_type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "inner",
+            "left",
+            "right",
+            "full",
+            "interval"
+          ]
+        },
+        "left_stream": {
+          "type": "string"
+        },
+        "right_stream": {
+          "type": "string"
+        },
+        "left_key": {
+          "type": "string"
+        },
+        "right_key": {
+          "type": "string"
+        },
+        "window": {
+          "type": "WindowSpec"
+        },
+        "geometric_join": {
+          "type": "GeometricJoinSpec"
+        }
+      }
+    },
+    "GeometricJoinSpec": {
+      "description": "Geometric join specification",
+      "base_type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "distance",
+            "knn",
+            "within_ball"
+          ]
+        },
+        "left_field": {
+          "type": "string"
+        },
+        "right_field": {
+          "type": "string"
+        },
+        "threshold": {
+          "type": "number"
+        },
+        "k": {
+          "type": "integer"
+        }
+      }
+    },
+    "StateStore": {
+      "description": "State store for stream processor",
+      "base_type": "object",
+      "properties": {
+        "store_id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "key_value",
+            "window",
+            "session",
+            "geometric"
+          ]
+        },
+        "key_type": {
+          "type": "string"
+        },
+        "value_type": {
+          "type": "string"
+        },
+        "ttl_ms": {
+          "type": "integer"
+        },
+        "changelog_enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "geometric_config": {
+          "type": "GeometricStateConfig"
+        }
+      }
+    },
+    "GeometricStateConfig": {
+      "description": "Configuration for geometric state",
+      "base_type": "object",
+      "properties": {
+        "index_type": {
+          "type": "string",
+          "enum": [
+            "none",
+            "ball_tree",
+            "cover_tree"
+          ]
+        },
+        "manifold": {
+          "type": "string"
+        },
+        "dimension": {
+          "type": "integer"
+        },
+        "curvature": {
+          "type": "number"
+        }
+      }
+    },
+    "CheckpointConfig": {
+      "description": "Checkpoint configuration",
+      "base_type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "interval_ms": {
+          "type": "integer",
+          "default": 60000
+        },
+        "timeout_ms": {
+          "type": "integer",
+          "default": 600000
+        },
+        "min_pause_ms": {
+          "type": "integer",
+          "default": 0
+        },
+        "max_concurrent": {
+          "type": "integer",
+          "default": 1
+        },
+        "mode": {
+          "type": "string",
+          "enum": [
+            "exactly_once",
+            "at_least_once"
+          ],
+          "default": "exactly_once"
+        },
+        "storage": {
+          "type": "string"
+        }
+      }
+    },
+    "StreamErrorHandling": {
+      "description": "Error handling for stream processing",
+      "base_type": "object",
+      "properties": {
+        "on_error": {
+          "type": "string",
+          "enum": [
+            "skip",
+            "retry",
+            "dead_letter",
+            "fail"
+          ]
+        },
+        "max_retries": {
+          "type": "integer",
+          "default": 3
+        },
+        "retry_delay_ms": {
+          "type": "integer",
+          "default": 1000
+        },
+        "dead_letter_stream": {
+          "type": "string"
+        },
+        "error_rate_threshold": {
+          "type": "number"
+        }
+      }
+    },
+    "BackpressureConfig": {
+      "description": "Backpressure configuration",
+      "base_type": "object",
+      "properties": {
+        "strategy": {
+          "type": "string",
+          "enum": [
+            "drop_oldest",
+            "drop_newest",
+            "block",
+            "adaptive"
+          ]
+        },
+        "buffer_size": {
+          "type": "integer",
+          "default": 10000
+        },
+        "high_watermark": {
+          "type": "number",
+          "default": 0.8
+        },
+        "low_watermark": {
+          "type": "number",
+          "default": 0.5
+        },
+        "drop_policy": {
+          "type": "DropPolicy"
+        },
+        "rate_limit": {
+          "type": "RateLimitConfig"
+        }
+      }
+    },
+    "DropPolicy": {
+      "description": "Policy for dropping records under backpressure",
+      "base_type": "object",
+      "properties": {
+        "priority_field": {
+          "type": "string"
+        },
+        "preserve_keys": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "sample_rate": {
+          "type": "number"
+        },
+        "geometric_importance": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    "RateLimitConfig": {
+      "description": "Rate limiting configuration",
+      "base_type": "object",
+      "properties": {
+        "records_per_second": {
+          "type": "number"
+        },
+        "bytes_per_second": {
+          "type": "integer"
+        },
+        "burst_size": {
+          "type": "integer"
+        },
+        "throttle_duration_ms": {
+          "type": "integer"
+        }
+      }
+    },
+    "FlowControlMetrics": {
+      "description": "Metrics for flow control",
+      "base_type": "object",
+      "properties": {
+        "input_rate": {
+          "type": "number"
+        },
+        "output_rate": {
+          "type": "number"
+        },
+        "buffer_utilization": {
+          "type": "number"
+        },
+        "backpressure_events": {
+          "type": "integer"
+        },
+        "dropped_records": {
+          "type": "integer"
+        },
+        "latency_p50_ms": {
+          "type": "number"
+        },
+        "latency_p99_ms": {
+          "type": "number"
+        }
+      }
+    },
+    "StreamMetrics": {
+      "description": "Metrics for stream processing",
+      "base_type": "object",
+      "properties": {
+        "stream_id": {
+          "type": "string"
+        },
+        "records_in": {
+          "type": "integer"
+        },
+        "records_out": {
+          "type": "integer"
+        },
+        "records_error": {
+          "type": "integer"
+        },
+        "bytes_in": {
+          "type": "integer"
+        },
+        "bytes_out": {
+          "type": "integer"
+        },
+        "processing_time_ms": {
+          "type": "number"
+        },
+        "watermark": {
+          "type": "integer"
+        },
+        "checkpoint_duration_ms": {
+          "type": "number"
+        },
+        "geometric_operations": {
+          "type": "integer"
+        },
+        "flow_control": {
+          "type": "FlowControlMetrics"
+        }
+      }
+    },
+    "WindowResult": {
+      "description": "Result of window computation",
+      "base_type": "object",
+      "properties": {
+        "window_start": {
+          "type": "integer"
+        },
+        "window_end": {
+          "type": "integer"
+        },
+        "key": {
+          "type": "any"
+        },
+        "value": {
+          "type": "any"
+        },
+        "count": {
+          "type": "integer"
+        },
+        "is_late": {
+          "type": "boolean"
+        },
+        "geometric_aggregate": {
+          "type": "GeometricAggregateResult"
+        }
+      }
+    },
+    "GeometricAggregateResult": {
+      "description": "Result of geometric aggregation in window",
+      "base_type": "object",
+      "properties": {
+        "centroid": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        },
+        "variance": {
+          "type": "number"
+        },
+        "bounding_ball_radius": {
+          "type": "number"
+        },
+        "point_count": {
+          "type": "integer"
+        },
+        "manifold": {
+          "type": "string"
+        }
+      }
+    },
+    "StreamTopology": {
+      "description": "Topology of stream processing graph",
+      "base_type": "object",
+      "properties": {
+        "topology_id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "type": "TopologyNode"
+          }
+        },
+        "processors": {
+          "type": "array",
+          "items": {
+            "type": "TopologyNode"
+          }
+        },
+        "sinks": {
+          "type": "array",
+          "items": {
+            "type": "TopologyNode"
+          }
+        },
+        "edges": {
+          "type": "array",
+          "items": {
+            "type": "TopologyEdge"
+          }
+        },
+        "state_stores": {
+          "type": "array",
+          "items": {
+            "type": "StateStore"
+          }
+        }
+      }
+    },
+    "TopologyNode": {
+      "description": "Node in stream topology",
+      "base_type": "object",
+      "properties": {
+        "node_id": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "source",
+            "processor",
+            "sink"
+          ]
+        },
+        "name": {
+          "type": "string"
+        },
+        "parallelism": {
+          "type": "integer"
+        }
+      }
+    },
+    "TopologyEdge": {
+      "description": "Edge in stream topology",
+      "base_type": "object",
+      "properties": {
+        "from_node": {
+          "type": "string"
+        },
+        "to_node": {
+          "type": "string"
+        },
+        "partitioner": {
+          "type": "string",
+          "enum": [
+            "forward",
+            "rebalance",
+            "broadcast",
+            "key_by"
+          ]
+        },
+        "key_selector": {
+          "type": "string"
+        }
+      }
+    },
+    "StreamStatus": {
+      "description": "Status of a stream or processor",
+      "base_type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "created",
+            "running",
+            "paused",
+            "stopped",
+            "failed"
+          ]
+        },
+        "health": {
+          "type": "string",
+          "enum": [
+            "healthy",
+            "degraded",
+            "unhealthy"
+          ]
+        },
+        "last_checkpoint": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "lag": {
+          "type": "integer"
+        },
+        "error_count": {
+          "type": "integer"
+        },
+        "uptime_ms": {
+          "type": "integer"
+        }
+      }
+    }
+  },
+  "operations": {
+    "create_stream": {
+      "description": "Create a new data stream",
+      "inputs": {
+        "definition": {
+          "type": "StreamDefinition",
+          "required": true
+        }
+      },
+      "outputs": {
+        "stream_id": {
+          "type": "string"
+        },
+        "partitions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "preconditions": [
+        "stream name is unique",
+        "source is valid and accessible",
+        "schema is valid"
+      ],
+      "postconditions": [
+        "stream is created in broker",
+        "partitions are allocated",
+        "schema is registered"
+      ],
+      "error_conditions": [
+        {
+          "code": "STREAM_EXISTS",
+          "description": "Stream with name already exists"
+        },
+        {
+          "code": "INVALID_SOURCE",
+          "description": "Source configuration is invalid"
+        },
+        {
+          "code": "SCHEMA_INVALID",
+          "description": "Schema is not valid"
+        }
+      ],
+      "performance_characteristics": {
+        "latency_p50_ms": 500,
+        "latency_p99_ms": 2000,
+        "idempotent": false
+      }
+    },
+    "create_processor": {
+      "description": "Create a stream processor",
+      "inputs": {
+        "processor": {
+          "type": "StreamProcessor",
+          "required": true
+        },
+        "validate": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "outputs": {
+        "processor_id": {
+          "type": "string"
+        },
+        "topology": {
+          "type": "StreamTopology"
+        }
+      },
+      "preconditions": [
+        "all input streams exist",
+        "operations are valid",
+        "topology is acyclic"
+      ],
+      "postconditions": [
+        "processor is registered",
+        "state stores are created",
+        "topology is compiled"
+      ],
+      "error_conditions": [
+        {
+          "code": "STREAM_NOT_FOUND",
+          "description": "Input stream does not exist"
+        },
+        {
+          "code": "INVALID_OPERATION",
+          "description": "Operation configuration is invalid"
+        },
+        {
+          "code": "CYCLIC_TOPOLOGY",
+          "description": "Topology contains cycles"
+        }
+      ],
+      "performance_characteristics": {
+        "latency_p50_ms": 200,
+        "latency_p99_ms": 1000,
+        "idempotent": false
+      }
+    },
+    "start_processor": {
+      "description": "Start a stream processor",
+      "inputs": {
+        "processor_id": {
+          "type": "string",
+          "required": true
+        },
+        "from_checkpoint": {
+          "type": "string",
+          "required": false
+        }
+      },
+      "outputs": {
+        "status": {
+          "type": "StreamStatus"
+        },
+        "task_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "preconditions": [
+        "processor exists",
+        "processor is not running",
+        "resources are available"
+      ],
+      "postconditions": [
+        "processor is running",
+        "consumers are started",
+        "metrics collection is active"
+      ],
+      "error_conditions": [
+        {
+          "code": "PROCESSOR_NOT_FOUND",
+          "description": "Processor does not exist"
+        },
+        {
+          "code": "ALREADY_RUNNING",
+          "description": "Processor is already running"
+        },
+        {
+          "code": "RESOURCE_UNAVAILABLE",
+          "description": "Insufficient resources"
+        }
+      ],
+      "performance_characteristics": {
+        "latency_p50_ms": 1000,
+        "latency_p99_ms": 5000,
+        "idempotent": true
+      }
+    },
+    "stop_processor": {
+      "description": "Stop a stream processor",
+      "inputs": {
+        "processor_id": {
+          "type": "string",
+          "required": true
+        },
+        "graceful": {
+          "type": "boolean",
+          "default": true
+        },
+        "checkpoint": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "outputs": {
+        "status": {
+          "type": "StreamStatus"
+        },
+        "final_checkpoint": {
+          "type": "string"
+        }
+      },
+      "preconditions": [
+        "processor exists",
+        "processor is running"
+      ],
+      "postconditions": [
+        "processor is stopped",
+        "if graceful, checkpoint is taken",
+        "resources are released"
+      ],
+      "error_conditions": [
+        {
+          "code": "PROCESSOR_NOT_FOUND",
+          "description": "Processor does not exist"
+        },
+        {
+          "code": "NOT_RUNNING",
+          "description": "Processor is not running"
+        },
+        {
+          "code": "CHECKPOINT_FAILED",
+          "description": "Could not take checkpoint"
+        }
+      ],
+      "performance_characteristics": {
+        "latency_p50_ms": 2000,
+        "latency_p99_ms": 30000,
+        "idempotent": true
+      }
+    },
+    "publish_record": {
+      "description": "Publish a record to a stream",
+      "inputs": {
+        "stream_id": {
+          "type": "string",
+          "required": true
+        },
+        "key": {
+          "type": "any",
+          "required": false
+        },
+        "value": {
+          "type": "object",
+          "required": true
+        },
+        "timestamp": {
+          "type": "integer",
+          "required": false
+        },
+        "headers": {
+          "type": "object",
+          "required": false
+        }
+      },
+      "outputs": {
+        "partition": {
+          "type": "integer"
+        },
+        "offset": {
+          "type": "integer"
+        },
+        "timestamp": {
+          "type": "integer"
+        }
+      },
+      "preconditions": [
+        "stream exists",
+        "value matches schema",
+        "producer is authorized"
+      ],
+      "postconditions": [
+        "record is durably stored",
+        "record is available for consumption"
+      ],
+      "error_conditions": [
+        {
+          "code": "STREAM_NOT_FOUND",
+          "description": "Stream does not exist"
+        },
+        {
+          "code": "SCHEMA_MISMATCH",
+          "description": "Value does not match schema"
+        },
+        {
+          "code": "QUOTA_EXCEEDED",
+          "description": "Producer quota exceeded"
+        }
+      ],
+      "performance_characteristics": {
+        "latency_p50_ms": 5,
+        "latency_p99_ms": 50,
+        "idempotent": false
+      }
+    },
+    "publish_batch": {
+      "description": "Publish a batch of records",
+      "inputs": {
+        "stream_id": {
+          "type": "string",
+          "required": true
+        },
+        "records": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          },
+          "required": true
+        },
+        "compression": {
+          "type": "string",
+          "enum": [
+            "none",
+            "gzip",
+            "snappy",
+            "lz4"
+          ],
+          "default": "lz4"
+        }
+      },
+      "outputs": {
+        "record_results": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "success_count": {
+          "type": "integer"
+        },
+        "failure_count": {
+          "type": "integer"
+        }
+      },
+      "preconditions": [
+        "stream exists",
+        "all records match schema"
+      ],
+      "postconditions": [
+        "successful records are stored",
+        "failures are reported"
+      ],
+      "error_conditions": [
+        {
+          "code": "STREAM_NOT_FOUND",
+          "description": "Stream does not exist"
+        },
+        {
+          "code": "BATCH_TOO_LARGE",
+          "description": "Batch exceeds size limit"
+        },
+        {
+          "code": "PARTIAL_FAILURE",
+          "description": "Some records failed"
+        }
+      ],
+      "performance_characteristics": {
+        "latency_p50_ms": 20,
+        "latency_p99_ms": 200,
+        "idempotent": false
+      }
+    },
+    "configure_backpressure": {
+      "description": "Configure backpressure for a processor",
+      "inputs": {
+        "processor_id": {
+          "type": "string",
+          "required": true
+        },
+        "config": {
+          "type": "BackpressureConfig",
+          "required": true
+        }
+      },
+      "outputs": {
+        "applied": {
+          "type": "boolean"
+        },
+        "previous_config": {
+          "type": "BackpressureConfig"
+        }
+      },
+      "preconditions": [
+        "processor exists"
+      ],
+      "postconditions": [
+        "backpressure config is applied",
+        "flow control is adjusted"
+      ],
+      "error_conditions": [
+        {
+          "code": "PROCESSOR_NOT_FOUND",
+          "description": "Processor does not exist"
+        },
+        {
+          "code": "INVALID_CONFIG",
+          "description": "Configuration is invalid"
+        }
+      ],
+      "performance_characteristics": {
+        "latency_p50_ms": 50,
+        "latency_p99_ms": 200,
+        "idempotent": true
+      }
+    },
+    "get_stream_metrics": {
+      "description": "Get metrics for a stream or processor",
+      "inputs": {
+        "id": {
+          "type": "string",
+          "required": true
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "stream",
+            "processor"
+          ],
+          "required": true
+        },
+        "window_ms": {
+          "type": "integer",
+          "default": 60000
+        }
+      },
+      "outputs": {
+        "metrics": {
+          "type": "StreamMetrics"
+        },
+        "time_series": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      },
+      "preconditions": [
+        "entity exists"
+      ],
+      "postconditions": [
+        "metrics are current"
+      ],
+      "error_conditions": [
+        {
+          "code": "ENTITY_NOT_FOUND",
+          "description": "Stream or processor not found"
+        }
+      ],
+      "performance_characteristics": {
+        "latency_p50_ms": 20,
+        "latency_p99_ms": 100,
+        "idempotent": true
+      }
+    },
+    "trigger_checkpoint": {
+      "description": "Trigger a checkpoint for a processor",
+      "inputs": {
+        "processor_id": {
+          "type": "string",
+          "required": true
+        },
+        "checkpoint_type": {
+          "type": "string",
+          "enum": [
+            "full",
+            "incremental"
+          ],
+          "default": "incremental"
+        }
+      },
+      "outputs": {
+        "checkpoint_id": {
+          "type": "string"
+        },
+        "duration_ms": {
+          "type": "integer"
+        },
+        "size_bytes": {
+          "type": "integer"
+        }
+      },
+      "preconditions": [
+        "processor is running",
+        "no checkpoint in progress"
+      ],
+      "postconditions": [
+        "checkpoint is completed",
+        "state is persisted"
+      ],
+      "error_conditions": [
+        {
+          "code": "PROCESSOR_NOT_RUNNING",
+          "description": "Processor is not running"
+        },
+        {
+          "code": "CHECKPOINT_IN_PROGRESS",
+          "description": "Another checkpoint is in progress"
+        },
+        {
+          "code": "CHECKPOINT_FAILED",
+          "description": "Checkpoint failed"
+        }
+      ],
+      "performance_characteristics": {
+        "latency_p50_ms": 5000,
+        "latency_p99_ms": 60000,
+        "idempotent": false
+      }
+    },
+    "apply_geometric_window": {
+      "description": "Apply geometric aggregation over a window",
+      "inputs": {
+        "processor_id": {
+          "type": "string",
+          "required": true
+        },
+        "field": {
+          "type": "string",
+          "required": true
+        },
+        "aggregation": {
+          "type": "string",
+          "enum": [
+            "centroid",
+            "frechet_mean",
+            "bounding_ball"
+          ],
+          "required": true
+        },
+        "window": {
+          "type": "WindowSpec",
+          "required": true
+        }
+      },
+      "outputs": {
+        "operation_id": {
+          "type": "string"
+        },
+        "output_stream": {
+          "type": "string"
+        }
+      },
+      "preconditions": [
+        "processor exists",
+        "field is geometric type"
+      ],
+      "postconditions": [
+        "aggregation is computed per window",
+        "results are emitted to output stream"
+      ],
+      "error_conditions": [
+        {
+          "code": "FIELD_NOT_GEOMETRIC",
+          "description": "Field is not a geometric type"
+        },
+        {
+          "code": "INVALID_AGGREGATION",
+          "description": "Aggregation not supported for this geometry"
+        }
+      ],
+      "performance_characteristics": {
+        "latency_p50_ms": 100,
+        "latency_p99_ms": 500,
+        "idempotent": false
+      }
+    },
+    "join_streams": {
+      "description": "Join two streams on geometric proximity",
+      "inputs": {
+        "left_stream": {
+          "type": "string",
+          "required": true
+        },
+        "right_stream": {
+          "type": "string",
+          "required": true
+        },
+        "join_spec": {
+          "type": "JoinSpec",
+          "required": true
+        },
+        "output_stream": {
+          "type": "string",
+          "required": true
+        }
+      },
+      "outputs": {
+        "processor_id": {
+          "type": "string"
+        },
+        "topology": {
+          "type": "StreamTopology"
+        }
+      },
+      "preconditions": [
+        "both streams exist",
+        "geometric fields are compatible"
+      ],
+      "postconditions": [
+        "join processor is created",
+        "joined records are emitted"
+      ],
+      "error_conditions": [
+        {
+          "code": "STREAM_NOT_FOUND",
+          "description": "Stream does not exist"
+        },
+        {
+          "code": "MANIFOLD_MISMATCH",
+          "description": "Geometric fields have incompatible manifolds"
+        }
+      ],
+      "performance_characteristics": {
+        "latency_p50_ms": 500,
+        "latency_p99_ms": 2000,
+        "idempotent": false
+      }
+    },
+    "scale_processor": {
+      "description": "Scale processor parallelism",
+      "inputs": {
+        "processor_id": {
+          "type": "string",
+          "required": true
+        },
+        "new_parallelism": {
+          "type": "integer",
+          "required": true
+        },
+        "rescale_strategy": {
+          "type": "string",
+          "enum": [
+            "rebalance",
+            "key_group"
+          ],
+          "default": "rebalance"
+        }
+      },
+      "outputs": {
+        "old_parallelism": {
+          "type": "integer"
+        },
+        "new_parallelism": {
+          "type": "integer"
+        },
+        "rescale_duration_ms": {
+          "type": "integer"
+        }
+      },
+      "preconditions": [
+        "processor exists",
+        "new_parallelism is valid for partitions"
+      ],
+      "postconditions": [
+        "processor is rescaled",
+        "state is redistributed"
+      ],
+      "error_conditions": [
+        {
+          "code": "PROCESSOR_NOT_FOUND",
+          "description": "Processor does not exist"
+        },
+        {
+          "code": "INVALID_PARALLELISM",
+          "description": "Parallelism exceeds partition count"
+        },
+        {
+          "code": "RESCALE_FAILED",
+          "description": "Rescaling failed"
+        }
+      ],
+      "performance_characteristics": {
+        "latency_p50_ms": 10000,
+        "latency_p99_ms": 60000,
+        "idempotent": false
+      }
+    }
+  },
+  "tests": {
+    "conformance_blocks": [
+      {
+        "schema_version": "block-uni-1",
+        "block_id": "streaming.basic.publish_consume",
+        "metadata": {
+          "title": "Basic Stream Publish/Consume",
+          "description": "Validates basic stream creation, publish, and consume operations",
+          "created_at": "2026-01-16T00:00:00Z",
+          "authors": [
+            "HyperSync Streaming Team"
+          ],
+          "tags": [
+            "streaming",
+            "basic",
+            "publish",
+            "consume"
+          ]
+        },
+        "integrity": {
+          "manifest": [
+            {
+              "path": "test_data/stream_records.json",
+              "sha256": "9012345678901234567890123456789012345678901234567890123456789012",
+              "role": "fixture"
+            }
+          ],
+          "dir_merkle_root": "0123456789012345678901234567890123456789012345678901234567890123",
+          "canonicalization": {
+            "field_order": "lex",
+            "byte_encoding": "utf8",
+            "float_format": "scientific",
+            "normalize_sign": true
+          },
+          "integrity_policy": {
+            "must_match_manifest": true,
+            "deny_unknown_files": true,
+            "allow_out_of_dir": false
+          }
+        },
+        "environment": {
+          "os": "linux",
+          "arch": "x86_64",
+          "accel": "cpu",
+          "precision": "fp64",
+          "deterministic_reductions": true,
+          "blas_threads": 1
+        },
+        "manifold": {
+          "model": "hyperboloid",
+          "dimension": 64,
+          "curvature_K": -1.0
+        },
+        "numeric_policy": {
+          "rounding_mode": "nearest_even",
+          "denormals": "preserve",
+          "rng_impl": "xoshiro256**",
+          "tolerances": {
+            "distance_abs": "1.0e-10",
+            "distance_rel": "1.0e-8"
+          },
+          "retraction_native": "exponential_map_intrinsic",
+          "vector_transport_native": "levi_civita_intrinsic"
+        },
+        "substrate": {
+          "topology": {
+            "nodes": [
+              "producer",
+              "broker",
+              "consumer"
+            ],
+            "edges": [
+              {
+                "u": "producer",
+                "v": "broker",
+                "latency_ms": 5,
+                "capacity_mbps": 1000
+              },
+              {
+                "u": "broker",
+                "v": "consumer",
+                "latency_ms": 5,
+                "capacity_mbps": 1000
+              }
+            ]
+          },
+          "queues": {
+            "policy": "fifo",
+            "drop": "tail",
+            "max_depth": 100000
+          },
+          "flow_control": {
+            "algorithm": "bbr"
+          },
+          "time_model": {
+            "clock": "hybrid"
+          },
+          "crypto_capabilities": {
+            "enc": "aes-gcm",
+            "auth": "sig",
+            "hash": "sha256"
+          },
+          "observability": {
+            "tracing": "semantic",
+            "export": "otlp"
+          }
+        },
+        "semantics": {
+          "message_types": [
+            {
+              "type_id": "stream_record",
+              "sensitivity": "public"
+            }
+          ],
+          "topics": [
+            {
+              "topic_id": "test.stream",
+              "intent": "custom",
+              "qos": "exactly_once",
+              "ordering": "per_key"
+            }
+          ],
+          "headers": {
+            "causality": "vector",
+            "trace": "enabled",
+            "clearance_levels": [
+              "public"
+            ],
+            "required_headers": [
+              "msg_id",
+              "timestamp"
+            ]
+          },
+          "policies": {
+            "clearance_rules": [],
+            "shadow_ops_policy": {
+              "enabled": false,
+              "on_violation": "log"
+            },
+            "privacy_budget": {
+              "epsilon": 10.0,
+              "delta": 0.001,
+              "mechanism": "gaussian"
+            }
+          }
+        },
+        "fixtures": {
+          "data": {
+            "points": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ]
+            ]
+          }
+        },
+        "program": [
+          {
+            "name": "publish_records",
+            "op": "sem.publish",
+            "args": {
+              "topic_id": "test.stream",
+              "message": {
+                "type": "stream_record",
+                "data": "$fixtures.stream_records"
+              }
+            },
+            "save_as": "publish_result"
+          },
+          {
+            "name": "consume_records",
+            "op": "sem.request_response",
+            "args": {
+              "from": "consumer",
+              "to": "broker",
+              "request": {
+                "action": "consume",
+                "count": 10
+              },
+              "timeout_ms": 10000
+            },
+            "save_as": "consume_result"
+          }
+        ],
+        "checks": {
+          "invariants": [],
+          "ops": [
+            {
+              "kind": "routing.success",
+              "target": "$consume_result",
+              "expected": {
+                "success": true
+              }
+            }
+          ],
+          "transport": [
+            {
+              "kind": "delivery.qos_satisfied",
+              "target": "test.stream",
+              "expected": {
+                "satisfied": true
+              }
+            },
+            {
+              "kind": "ordering.contract_satisfied",
+              "target": "test.stream",
+              "expected": {
+                "satisfied": true
+              }
+            }
+          ],
+          "security": [],
+          "performance": {
+            "max_runtime_ms": 30000,
+            "max_memory_mb": 512
+          }
+        },
+        "coverage": {
+          "claims": [
+            "STREAMING-001",
+            "STREAMING-002"
+          ],
+          "matrix": [
+            {
+              "claim_id": "STREAMING-001",
+              "step": "publish_records",
+              "check": "delivery.qos_satisfied"
+            },
+            {
+              "claim_id": "STREAMING-002",
+              "step": "consume_records",
+              "check": "ordering.contract_satisfied"
+            }
+          ]
+        },
+        "receipts": {
+          "per_step": [],
+          "per_check": []
+        }
+      },
+      {
+        "schema_version": "block-uni-1",
+        "block_id": "streaming.backpressure.handling",
+        "metadata": {
+          "title": "Backpressure Handling Conformance",
+          "description": "Validates backpressure handling under high load",
+          "created_at": "2026-01-16T00:00:00Z",
+          "authors": [
+            "HyperSync Streaming Team"
+          ],
+          "tags": [
+            "streaming",
+            "backpressure",
+            "flow-control"
+          ]
+        },
+        "integrity": {
+          "manifest": [
+            {
+              "path": "test_data/high_volume_records.json",
+              "sha256": "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+              "role": "fixture"
+            }
+          ],
+          "dir_merkle_root": "234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1",
+          "canonicalization": {
+            "field_order": "lex",
+            "byte_encoding": "utf8",
+            "float_format": "scientific",
+            "normalize_sign": true
+          },
+          "integrity_policy": {
+            "must_match_manifest": true,
+            "deny_unknown_files": true,
+            "allow_out_of_dir": false
+          }
+        },
+        "environment": {
+          "os": "linux",
+          "arch": "x86_64",
+          "accel": "cpu",
+          "precision": "fp64",
+          "deterministic_reductions": true,
+          "blas_threads": 1
+        },
+        "manifold": {
+          "model": "hyperboloid",
+          "dimension": 64,
+          "curvature_K": -1.0
+        },
+        "numeric_policy": {
+          "rounding_mode": "nearest_even",
+          "denormals": "preserve",
+          "rng_impl": "xoshiro256**",
+          "tolerances": {
+            "distance_abs": "1.0e-10",
+            "distance_rel": "1.0e-8"
+          },
+          "retraction_native": "exponential_map_intrinsic",
+          "vector_transport_native": "levi_civita_intrinsic"
+        },
+        "substrate": {
+          "topology": {
+            "nodes": [
+              "fast_producer",
+              "slow_consumer",
+              "buffer"
+            ],
+            "edges": [
+              {
+                "u": "fast_producer",
+                "v": "buffer",
+                "latency_ms": 1,
+                "capacity_mbps": 10000
+              },
+              {
+                "u": "buffer",
+                "v": "slow_consumer",
+                "latency_ms": 100,
+                "capacity_mbps": 100
+              }
+            ]
+          },
+          "queues": {
+            "policy": "fifo",
+            "drop": "random_early",
+            "max_depth": 10000
+          },
+          "flow_control": {
+            "algorithm": "bbr"
+          },
+          "time_model": {
+            "clock": "hybrid"
+          },
+          "crypto_capabilities": {
+            "enc": "none",
+            "auth": "none",
+            "hash": "sha256"
+          },
+          "observability": {
+            "tracing": "basic",
+            "export": "stdout"
+          }
+        },
+        "semantics": {
+          "message_types": [
+            {
+              "type_id": "bulk_record",
+              "sensitivity": "public"
+            }
+          ],
+          "topics": [
+            {
+              "topic_id": "backpressure.test",
+              "intent": "telemetry",
+              "qos": "at_least_once",
+              "ordering": "none"
+            }
+          ],
+          "headers": {
+            "causality": "lamport",
+            "trace": "enabled",
+            "clearance_levels": [
+              "public"
+            ],
+            "required_headers": [
+              "msg_id"
+            ]
+          },
+          "policies": {
+            "clearance_rules": [],
+            "shadow_ops_policy": {
+              "enabled": false,
+              "on_violation": "log"
+            },
+            "privacy_budget": {
+              "epsilon": 10.0,
+              "delta": 0.001,
+              "mechanism": "gaussian"
+            }
+          }
+        },
+        "fixtures": {
+          "data": {
+            "points": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ]
+            ]
+          }
+        },
+        "program": [
+          {
+            "name": "flood_producer",
+            "op": "sem.publish",
+            "args": {
+              "topic_id": "backpressure.test",
+              "message": {
+                "type": "bulk_record",
+                "count": 100000
+              }
+            },
+            "save_as": "flood_result"
+          },
+          {
+            "name": "check_backpressure",
+            "op": "ops.health.model_health_snapshot",
+            "args": {
+              "model_id": "buffer"
+            },
+            "save_as": "buffer_health"
+          }
+        ],
+        "checks": {
+          "invariants": [],
+          "ops": [
+            {
+              "kind": "health.within_thresholds",
+              "target": "$buffer_health",
+              "params": {
+                "max_queue_depth": 50000
+              }
+            }
+          ],
+          "transport": [
+            {
+              "kind": "delivery.qos_satisfied",
+              "target": "backpressure.test",
+              "expected": {
+                "satisfied": true
+              }
+            }
+          ],
+          "security": [],
+          "performance": {
+            "max_runtime_ms": 60000,
+            "max_memory_mb": 2048
+          }
+        },
+        "coverage": {
+          "claims": [
+            "STREAMING-003",
+            "STREAMING-004"
+          ],
+          "matrix": [
+            {
+              "claim_id": "STREAMING-003",
+              "step": "flood_producer",
+              "check": "delivery.qos_satisfied"
+            },
+            {
+              "claim_id": "STREAMING-004",
+              "step": "check_backpressure",
+              "check": "health.within_thresholds"
+            }
+          ]
+        },
+        "receipts": {
+          "per_step": [],
+          "per_check": []
+        }
+      },
+      {
+        "schema_version": "block-uni-1",
+        "block_id": "streaming.windowing.geometric",
+        "metadata": {
+          "title": "Geometric Windowing Operations",
+          "description": "Validates windowing with geometric aggregations",
+          "created_at": "2026-01-16T00:00:00Z",
+          "authors": [
+            "HyperSync Streaming Team"
+          ],
+          "tags": [
+            "streaming",
+            "windowing",
+            "geometric"
+          ]
+        },
+        "integrity": {
+          "manifest": [
+            {
+              "path": "test_data/geometric_stream.json",
+              "sha256": "abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890",
+              "role": "fixture"
+            }
+          ],
+          "dir_merkle_root": "bcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890a",
+          "canonicalization": {
+            "field_order": "lex",
+            "byte_encoding": "utf8",
+            "float_format": "scientific",
+            "normalize_sign": true
+          },
+          "integrity_policy": {
+            "must_match_manifest": true,
+            "deny_unknown_files": true,
+            "allow_out_of_dir": false
+          }
+        },
+        "environment": {
+          "os": "linux",
+          "arch": "x86_64",
+          "accel": "cpu",
+          "precision": "fp64",
+          "deterministic_reductions": true,
+          "blas_threads": 1
+        },
+        "manifold": {
+          "model": "hyperboloid",
+          "dimension": 64,
+          "curvature_K": -1.0
+        },
+        "numeric_policy": {
+          "rounding_mode": "nearest_even",
+          "denormals": "preserve",
+          "rng_impl": "xoshiro256**",
+          "tolerances": {
+            "distance_abs": "1.0e-10",
+            "distance_rel": "1.0e-8"
+          },
+          "retraction_native": "exponential_map_intrinsic",
+          "vector_transport_native": "levi_civita_intrinsic"
+        },
+        "substrate": {
+          "topology": {
+            "nodes": [
+              "source",
+              "windower",
+              "aggregator",
+              "sink"
+            ],
+            "edges": [
+              {
+                "u": "source",
+                "v": "windower",
+                "latency_ms": 5
+              },
+              {
+                "u": "windower",
+                "v": "aggregator",
+                "latency_ms": 5
+              },
+              {
+                "u": "aggregator",
+                "v": "sink",
+                "latency_ms": 5
+              }
+            ]
+          },
+          "queues": {
+            "policy": "fifo",
+            "drop": "tail"
+          },
+          "flow_control": {
+            "algorithm": "cubic"
+          },
+          "time_model": {
+            "clock": "hybrid"
+          },
+          "crypto_capabilities": {
+            "enc": "aes-gcm",
+            "auth": "sig",
+            "hash": "sha256"
+          },
+          "observability": {
+            "tracing": "semantic",
+            "export": "otlp"
+          }
+        },
+        "semantics": {
+          "message_types": [
+            {
+              "type_id": "geometric_record",
+              "sensitivity": "internal"
+            },
+            {
+              "type_id": "window_result",
+              "sensitivity": "internal"
+            }
+          ],
+          "topics": [
+            {
+              "topic_id": "geometric.input",
+              "intent": "telemetry",
+              "qos": "exactly_once",
+              "ordering": "causal"
+            },
+            {
+              "topic_id": "geometric.output",
+              "intent": "telemetry",
+              "qos": "exactly_once",
+              "ordering": "causal"
+            }
+          ],
+          "headers": {
+            "causality": "vector",
+            "trace": "enabled",
+            "clearance_levels": [
+              "internal"
+            ],
+            "required_headers": [
+              "msg_id",
+              "window_id",
+              "timestamp"
+            ]
+          },
+          "policies": {
+            "clearance_rules": [],
+            "shadow_ops_policy": {
+              "enabled": false,
+              "on_violation": "log"
+            },
+            "privacy_budget": {
+              "epsilon": 1.0,
+              "delta": 1e-06,
+              "mechanism": "gaussian"
+            }
+          }
+        },
+        "fixtures": {
+          "data": {
+            "points": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.1,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.1
+              ],
+              [
+                1.0,
+                0.1,
+                0.1
+              ]
+            ]
+          }
+        },
+        "program": [
+          {
+            "name": "emit_geometric_records",
+            "op": "sem.publish",
+            "args": {
+              "topic_id": "geometric.input",
+              "message": {
+                "type": "geometric_record",
+                "embedding": [
+                  1.0,
+                  0.05,
+                  0.05
+                ]
+              }
+            },
+            "save_as": "emit_result"
+          },
+          {
+            "name": "trigger_window",
+            "op": "sem.request_response",
+            "args": {
+              "from": "windower",
+              "to": "aggregator",
+              "request": {
+                "action": "compute_centroid",
+                "window_id": "w1"
+              },
+              "timeout_ms": 10000
+            },
+            "save_as": "centroid_result"
+          }
+        ],
+        "checks": {
+          "invariants": [
+            {
+              "id": "INV.DIST.CORRECTNESS",
+              "metric": "lorentz"
+            }
+          ],
+          "ops": [
+            {
+              "kind": "routing.success",
+              "target": "$centroid_result",
+              "expected": {
+                "success": true
+              }
+            }
+          ],
+          "transport": [
+            {
+              "kind": "delivery.qos_satisfied",
+              "target": "geometric.input",
+              "expected": {
+                "satisfied": true
+              }
+            },
+            {
+              "kind": "causality.clock_monotone",
+              "expected": {
+                "monotonic": true
+              }
+            }
+          ],
+          "security": [],
+          "performance": {
+            "max_runtime_ms": 30000,
+            "max_memory_mb": 1024
+          }
+        },
+        "coverage": {
+          "claims": [
+            "STREAMING-005",
+            "STREAMING-006",
+            "STREAMING-007"
+          ],
+          "matrix": [
+            {
+              "claim_id": "STREAMING-005",
+              "step": "emit_geometric_records",
+              "check": "delivery.qos_satisfied"
+            },
+            {
+              "claim_id": "STREAMING-006",
+              "step": "trigger_window",
+              "check": "INV.DIST.CORRECTNESS"
+            },
+            {
+              "claim_id": "STREAMING-007",
+              "step": "trigger_window",
+              "check": "causality.clock_monotone"
+            }
+          ]
+        },
+        "receipts": {
+          "per_step": [],
+          "per_check": []
+        }
+      }
+    ]
+  },
+  "implementation_notes": {
+    "stream_creation": {
+      "description": "Stream creation guidelines",
+      "guidance": [
+        "Choose partition count based on expected throughput",
+        "Replication factor of 3 recommended for production",
+        "Schema should include timestamp field for event time processing",
+        "Geometric fields require manifold configuration"
+      ]
+    },
+    "processing_semantics": {
+      "description": "Processing semantics",
+      "guidance": [
+        "Use exactly-once for financial/transactional data",
+        "At-least-once with idempotent sinks for high throughput",
+        "Checkpointing interval trades latency for recovery time",
+        "State stores should use changelogs for fault tolerance"
+      ]
+    },
+    "backpressure": {
+      "description": "Backpressure handling",
+      "guidance": [
+        "Adaptive backpressure recommended for variable loads",
+        "Set watermarks based on downstream capacity",
+        "Monitor buffer utilization for early warning",
+        "Use rate limiting for external data sources"
+      ]
+    },
+    "windowing": {
+      "description": "Windowing strategies",
+      "guidance": [
+        "Use tumbling windows for non-overlapping aggregations",
+        "Sliding windows for moving averages",
+        "Session windows for user activity analysis",
+        "Allow lateness for out-of-order event handling"
+      ]
+    },
+    "geometric_streaming": {
+      "description": "Geometric operations in streams",
+      "guidance": [
+        "Use incremental centroid updates for efficiency",
+        "Frechet mean requires iterative computation - use windowing",
+        "Distance filters can use spatial indexes in state stores",
+        "Validate geometric constraints on ingestion"
+      ]
+    }
+  }
+}

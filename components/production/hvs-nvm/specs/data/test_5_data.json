@@ -1,0 +1,287 @@
+{
+  "test_name": "Exponential/Logarithmic Map Inverse",
+  "timestamp": "2026-01-13 05:45:31",
+  "dimensions_tested": [
+    2,
+    4,
+    8,
+    16,
+    32,
+    64
+  ],
+  "tests": {
+    "exp_then_log": [
+      {
+        "dimension": 2,
+        "n_trials": 100,
+        "error_mean": 1.2081016164459288,
+        "error_std": 0.6149221573415625,
+        "error_max": 4.09971284866333,
+        "error_median": 1.1566071510314941,
+        "small_magnitude_error": 2.2798545211553574,
+        "medium_magnitude_error": 1.1804749937489247,
+        "large_magnitude_error": 1.151793312346726,
+        "passed": false
+      },
+      {
+        "dimension": 4,
+        "n_trials": 100,
+        "error_mean": 1.3043056954070926,
+        "error_std": 0.7033124174577544,
+        "error_max": 4.13819694519043,
+        "error_median": 1.216131329536438,
+        "small_magnitude_error": 3.096386194229126,
+        "medium_magnitude_error": 1.2972385690680572,
+        "large_magnitude_error": 1.22158162968774,
+        "passed": false
+      },
+      {
+        "dimension": 8,
+        "n_trials": 100,
+        "error_mean": 1.2455374167114497,
+        "error_std": 0.6559770204776048,
+        "error_max": 3.9339065551757812,
+        "error_median": 1.2362380027770996,
+        "small_magnitude_error": null,
+        "medium_magnitude_error": 1.7615608048439027,
+        "large_magnitude_error": 1.0735296206672986,
+        "passed": false
+      },
+      {
+        "dimension": 16,
+        "n_trials": 100,
+        "error_mean": 1.4253218242153525,
+        "error_std": 1.0356373256087272,
+        "error_max": 5.726991176605225,
+        "error_median": 1.23773992061615,
+        "small_magnitude_error": null,
+        "medium_magnitude_error": 3.398194656922267,
+        "large_magnitude_error": 1.1305247342706413,
+        "passed": false
+      },
+      {
+        "dimension": 32,
+        "n_trials": 100,
+        "error_mean": 1.3128316140174865,
+        "error_std": 0.8246597279190868,
+        "error_max": 5.842552185058594,
+        "error_median": 1.2245385646820068,
+        "small_magnitude_error": null,
+        "medium_magnitude_error": 4.619627873102824,
+        "large_magnitude_error": 1.2105595647674245,
+        "passed": false
+      },
+      {
+        "dimension": 64,
+        "n_trials": 100,
+        "error_mean": 1.4409906278923155,
+        "error_std": 1.1689758198509954,
+        "error_max": 7.838457107543945,
+        "error_median": 1.2319875955581665,
+        "small_magnitude_error": null,
+        "medium_magnitude_error": 6.369553565979004,
+        "large_magnitude_error": 1.23563383880537,
+        "passed": false
+      }
+    ],
+    "log_then_exp": [
+      {
+        "dimension": 2,
+        "n_trials": 100,
+        "error_mean": 5.842313800741294e-07,
+        "error_std": 1.3653159620695899e-06,
+        "error_max": 1.019572482618969e-05,
+        "error_median": 2.591538930118986e-07,
+        "close_distance_error": 2.381372422131362e-07,
+        "medium_distance_error": 7.625222995782774e-07,
+        "far_distance_error": null,
+        "passed": true
+      },
+      {
+        "dimension": 4,
+        "n_trials": 100,
+        "error_mean": 4.437350650761118e-06,
+        "error_std": 9.269237690919226e-06,
+        "error_max": 6.629032577620819e-05,
+        "error_median": 1.4733209354744758e-06,
+        "close_distance_error": 3.8239031141529267e-07,
+        "medium_distance_error": 2.7907284902859033e-06,
+        "far_distance_error": 2.7690095456429325e-05,
+        "passed": true
+      },
+      {
+        "dimension": 8,
+        "n_trials": 100,
+        "error_mean": 1.696838304440007e-05,
+        "error_std": 2.714818456092069e-05,
+        "error_max": 0.00014918032684363425,
+        "error_median": 6.058654662410845e-06,
+        "close_distance_error": null,
+        "medium_distance_error": 7.616547014260339e-06,
+        "far_distance_error": 3.512194710290661e-05,
+        "passed": true
+      },
+      {
+        "dimension": 16,
+        "n_trials": 100,
+        "error_mean": 7.30700828580666e-05,
+        "error_std": 9.689545326188564e-05,
+        "error_max": 0.0005622716271318495,
+        "error_median": 4.115961928619072e-05,
+        "close_distance_error": null,
+        "medium_distance_error": 2.6843886997893504e-05,
+        "far_distance_error": 7.764190442665515e-05,
+        "passed": true
+      },
+      {
+        "dimension": 32,
+        "n_trials": 100,
+        "error_mean": 0.00045741823290427417,
+        "error_std": 0.000447857103060163,
+        "error_max": 0.0021253530867397785,
+        "error_median": 0.0003423973830649629,
+        "close_distance_error": null,
+        "medium_distance_error": null,
+        "far_distance_error": 0.00045741823290427417,
+        "passed": true
+      },
+      {
+        "dimension": 64,
+        "n_trials": 100,
+        "error_mean": 0.0027494565450615484,
+        "error_std": 0.002597988004379918,
+        "error_max": 0.015430532395839691,
+        "error_median": 0.0020765423541888595,
+        "close_distance_error": null,
+        "medium_distance_error": null,
+        "far_distance_error": 0.0027494565450615484,
+        "passed": false
+      }
+    ],
+    "numerical_stability": [
+      {
+        "dimension": 2,
+        "n_trials": 100,
+        "near_zero_error_mean": 1.0884926561266184,
+        "moderate_error_mean": 0.957202064760384,
+        "large_error_mean": 1.3082529162555667,
+        "n_valid_computations": 98,
+        "passed": false
+      },
+      {
+        "dimension": 4,
+        "n_trials": 100,
+        "near_zero_error_mean": 0.9494878931769303,
+        "moderate_error_mean": 1.747430155009386,
+        "large_error_mean": 1.3005661538669042,
+        "n_valid_computations": 98,
+        "passed": false
+      },
+      {
+        "dimension": 8,
+        "n_trials": 100,
+        "near_zero_error_mean": 1.0843894524233681,
+        "moderate_error_mean": 1.1796085257526665,
+        "large_error_mean": 0.8354945489804128,
+        "n_valid_computations": 98,
+        "passed": false
+      },
+      {
+        "dimension": 16,
+        "n_trials": 100,
+        "near_zero_error_mean": 0.5202189021344695,
+        "moderate_error_mean": 0.5879769642682126,
+        "large_error_mean": 0.3504296966961452,
+        "n_valid_computations": 98,
+        "passed": false
+      },
+      {
+        "dimension": 32,
+        "n_trials": 100,
+        "near_zero_error_mean": 0.5714306287201387,
+        "moderate_error_mean": 0.3098777908931619,
+        "large_error_mean": 0.4631820907483676,
+        "n_valid_computations": 98,
+        "passed": false
+      },
+      {
+        "dimension": 64,
+        "n_trials": 100,
+        "near_zero_error_mean": 0.1828029071246939,
+        "moderate_error_mean": 0.17943717860838487,
+        "large_error_mean": 0.2211596054756748,
+        "n_valid_computations": 98,
+        "passed": false
+      }
+    ],
+    "performance": [
+      {
+        "dimension": 2,
+        "n_trials": 100,
+        "exp_time_mean_ms": 0.0555419921875,
+        "exp_time_std_ms": 0.004161059292479734,
+        "log_time_mean_ms": 0.05243062973022461,
+        "log_time_std_ms": 0.004618321732777851,
+        "total_time_mean_ms": 0.10797262191772461
+      },
+      {
+        "dimension": 4,
+        "n_trials": 100,
+        "exp_time_mean_ms": 0.05559682846069336,
+        "exp_time_std_ms": 0.003699054074127419,
+        "log_time_mean_ms": 0.051789283752441406,
+        "log_time_std_ms": 0.003623739662352338,
+        "total_time_mean_ms": 0.10738611221313477
+      },
+      {
+        "dimension": 8,
+        "n_trials": 100,
+        "exp_time_mean_ms": 0.05555391311645508,
+        "exp_time_std_ms": 0.0066421289505772954,
+        "log_time_mean_ms": 0.05124092102050781,
+        "log_time_std_ms": 0.005323378085481672,
+        "total_time_mean_ms": 0.10679483413696289
+      },
+      {
+        "dimension": 16,
+        "n_trials": 100,
+        "exp_time_mean_ms": 0.056662559509277344,
+        "exp_time_std_ms": 0.008350657616782515,
+        "log_time_mean_ms": 0.0508880615234375,
+        "log_time_std_ms": 0.0055862566969382185,
+        "total_time_mean_ms": 0.10755062103271484
+      },
+      {
+        "dimension": 32,
+        "n_trials": 100,
+        "exp_time_mean_ms": 0.055751800537109375,
+        "exp_time_std_ms": 0.00732808271944558,
+        "log_time_mean_ms": 0.051712989807128906,
+        "log_time_std_ms": 0.006108310053201767,
+        "total_time_mean_ms": 0.10746479034423828
+      },
+      {
+        "dimension": 64,
+        "n_trials": 100,
+        "exp_time_mean_ms": 0.056078433990478516,
+        "exp_time_std_ms": 0.004647669797143331,
+        "log_time_mean_ms": 0.05249977111816406,
+        "log_time_std_ms": 0.005610187253847183,
+        "total_time_mean_ms": 0.10857820510864258
+      }
+    ]
+  },
+  "summary": {
+    "overall_pass_rate": {
+      "exp_then_log": 0.0,
+      "log_then_exp": 0.8333333333333334,
+      "numerical_stability": 0.0
+    }
+  },
+  "metadata": {
+    "license": {
+      "name": "AGPLv3",
+      "url": "https://www.gnu.org/licenses/agpl-3.0.html"
+    }
+  }
+}

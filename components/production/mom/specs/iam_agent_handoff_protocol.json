@@ -1,0 +1,1823 @@
+{
+  "component": "iam_agent_handoff_protocol",
+  "version": "1.0.0",
+  "description": "Secure IAM-to-agent handoff protocol with multiple authentication methods, AI self-initialization, and extensible authentication system",
+  "subsystem": "AI Management",
+  "dependencies": [
+    "model_versioning_strategy",
+    "node_resource_allocation_policies",
+    "agent_communication_protocols"
+  ],
+  "type_definitions": {
+    "HandoffToken": {
+      "type": "object",
+      "description": "Cryptographic handoff token",
+      "properties": {
+        "token_id": {
+          "type": "UUID",
+          "description": "Token identifier"
+        },
+        "value": {
+          "type": "string",
+          "description": "Encrypted token value"
+        },
+        "issued_at": {
+          "type": "ISO8601",
+          "description": "Token issuance time"
+        },
+        "expires_at": {
+          "type": "ISO8601",
+          "description": "Token expiration time"
+        },
+        "signature": {
+          "type": "string",
+          "description": "Cryptographic signature"
+        }
+      }
+    },
+    "Credentials": {
+      "type": "object",
+      "description": "Agent credentials",
+      "properties": {
+        "credential_type": {
+          "type": "enum",
+          "values": [
+            "JWT",
+            "OAuth2",
+            "mTLS",
+            "APIKey",
+            "Custom"
+          ],
+          "description": "Credential type"
+        },
+        "value": {
+          "type": "string",
+          "description": "Credential value (encrypted)"
+        },
+        "metadata": {
+          "type": "dict[string, any]",
+          "description": "Credential metadata"
+        },
+        "expires_at": {
+          "type": "ISO8601",
+          "description": "Credential expiration",
+          "optional": true
+        }
+      }
+    },
+    "TrustChain": {
+      "type": "object",
+      "description": "Certificate chain of trust",
+      "properties": {
+        "root_cert": {
+          "type": "string",
+          "description": "Root certificate"
+        },
+        "intermediate_certs": {
+          "type": "array[string]",
+          "description": "Intermediate certificates"
+        },
+        "leaf_cert": {
+          "type": "string",
+          "description": "Leaf certificate"
+        },
+        "valid_until": {
+          "type": "ISO8601",
+          "description": "Chain validity period"
+        }
+      }
+    },
+    "HandoffContext": {
+      "type": "object",
+      "description": "Initialization context data",
+      "properties": {
+        "agent_id": {
+          "type": "UUID",
+          "description": "Agent identifier"
+        },
+        "configuration": {
+          "type": "dict[string, any]",
+          "description": "Agent configuration"
+        },
+        "state": {
+          "type": "dict[string, any]",
+          "description": "Initial state data"
+        },
+        "secrets": {
+          "type": "dict[string, string]",
+          "description": "Encrypted secrets"
+        },
+        "permissions": {
+          "type": "array[string]",
+          "description": "Agent permissions"
+        }
+      }
+    },
+    "AuthMethod": {
+      "type": "object",
+      "description": "Authentication method definition",
+      "properties": {
+        "method_id": {
+          "type": "UUID",
+          "description": "Method identifier"
+        },
+        "name": {
+          "type": "string",
+          "description": "Method name"
+        },
+        "type": {
+          "type": "enum",
+          "values": [
+            "JWT",
+            "OAuth2",
+            "mTLS",
+            "APIKey",
+            "Biometric",
+            "Hardware",
+            "Custom"
+          ],
+          "description": "Auth method type"
+        },
+        "validator": {
+          "type": "function",
+          "description": "Validation function"
+        }
+      }
+    },
+    "HandoffSession": {
+      "type": "object",
+      "properties": {
+        "session_id": {
+          "type": "UUID",
+          "description": "Session identifier"
+        },
+        "agent_id": {
+          "type": "UUID",
+          "description": "Agent identifier"
+        },
+        "state": {
+          "type": "enum",
+          "values": [
+            "Initiated",
+            "Validated",
+            "Completed",
+            "Failed",
+            "Revoked"
+          ],
+          "description": "Session state"
+        },
+        "created_at": {
+          "type": "ISO8601",
+          "description": "Session creation time"
+        },
+        "completed_at": {
+          "type": "ISO8601",
+          "description": "Session completion time",
+          "optional": true
+        }
+      }
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "IAH-001",
+      "name": "initiate_handoff",
+      "category": "Handoff Management",
+      "description": "Initiate IAM-to-agent handoff with authentication and authorization",
+      "signature": {
+        "inputs": {
+          "agent_id": {
+            "type": "UUID",
+            "description": "Target agent identifier"
+          },
+          "initiator_credentials": {
+            "type": "Credentials",
+            "description": "IAM credentials"
+          },
+          "requested_permissions": {
+            "type": "array[string]",
+            "description": "Requested agent permissions",
+            "optional": true
+          },
+          "auto_initialize": {
+            "type": "boolean",
+            "description": "Enable AI auto-initialization",
+            "default": true
+          }
+        },
+        "outputs": {
+          "handoff_token": {
+            "type": "HandoffToken",
+            "description": "Generated handoff token"
+          },
+          "session_id": {
+            "type": "UUID",
+            "description": "Handoff session identifier"
+          },
+          "expires_in_seconds": {
+            "type": "integer",
+            "description": "Token expiration time"
+          }
+        }
+      },
+      "formula": {
+        "description": "Handoff initiation algorithm",
+        "steps": [
+          "1. Validate initiator_credentials with IAM",
+          "2. Check authorization for agent_id access",
+          "3. If requested_permissions specified:",
+          "   a. Validate permissions are allowed",
+          "   b. Authorize permissions",
+          "4. Generate cryptographic handoff_token:",
+          "   token = encrypt(agent_id + timestamp + nonce, IAM_key)",
+          "5. Create handoff session",
+          "6. Store session with timeout (default 5 minutes)",
+          "7. If auto_initialize: prepare initialization context",
+          "8. Return handoff_token and session_id"
+        ],
+        "token_generation": "token = HMAC-SHA256(agent_id || timestamp || nonce, secret_key)",
+        "default_expiration": "300 seconds (5 minutes)"
+      },
+      "properties": {
+        "idempotency": "No (each call generates new token)",
+        "atomicity": "Yes",
+        "ai_managed": "Yes (auto_initialize mode)",
+        "secure": "Yes (cryptographic token)",
+        "time_complexity": "O(1)",
+        "space_complexity": "O(1)"
+      },
+      "edge_cases": [
+        {
+          "case": "Invalid initiator credentials",
+          "handling": "Reject with authentication error",
+          "error": "INVALID_CREDENTIALS"
+        },
+        {
+          "case": "Insufficient permissions",
+          "handling": "Reject with authorization error",
+          "error": "INSUFFICIENT_PERMISSIONS"
+        },
+        {
+          "case": "Agent does not exist",
+          "handling": "Reject with error",
+          "error": "AGENT_NOT_FOUND"
+        },
+        {
+          "case": "Rate limit exceeded",
+          "handling": "Reject with rate limit error",
+          "error": "RATE_LIMIT_EXCEEDED"
+        },
+        {
+          "case": "Concurrent handoff sessions",
+          "handling": "Revoke old sessions, create new",
+          "warning": "PREVIOUS_SESSION_REVOKED"
+        },
+        {
+          "case": "Requested permissions denied",
+          "handling": "Reject or grant subset of permissions",
+          "warning": "PARTIAL_PERMISSIONS"
+        }
+      ],
+      "test_cases": [
+        {
+          "test_id": "IAH-001-T01",
+          "description": "Successful handoff initiation",
+          "input": {
+            "agent_id": "agent-1",
+            "initiator_credentials": "Valid IAM credentials"
+          },
+          "expected_output": {
+            "handoff_token": "Encrypted token",
+            "session_id": "UUID",
+            "expires_in_seconds": 300
+          }
+        },
+        {
+          "test_id": "IAH-001-T02",
+          "description": "Handoff with specific permissions",
+          "input": {
+            "agent_id": "agent-2",
+            "initiator_credentials": "Valid credentials",
+            "requested_permissions": [
+              "read",
+              "write",
+              "execute"
+            ]
+          },
+          "expected_output": {
+            "handoff_token": "Token with permissions"
+          }
+        },
+        {
+          "test_id": "IAH-001-T03",
+          "description": "Invalid credentials rejected",
+          "input": {
+            "agent_id": "agent-3",
+            "initiator_credentials": "Invalid credentials"
+          },
+          "expected_error": "INVALID_CREDENTIALS"
+        },
+        {
+          "test_id": "IAH-001-T04",
+          "description": "Insufficient permissions",
+          "input": {
+            "agent_id": "agent-4",
+            "initiator_credentials": "Low-privilege credentials",
+            "requested_permissions": [
+              "admin"
+            ]
+          },
+          "expected_error": "INSUFFICIENT_PERMISSIONS"
+        },
+        {
+          "test_id": "IAH-001-T05",
+          "description": "Agent not found",
+          "input": {
+            "agent_id": "nonexistent",
+            "initiator_credentials": "Valid credentials"
+          },
+          "expected_error": "AGENT_NOT_FOUND"
+        },
+        {
+          "test_id": "IAH-001-T06",
+          "description": "Rate limit exceeded",
+          "input": {
+            "agent_id": "agent-5",
+            "initiator_credentials": "Valid credentials"
+          },
+          "precondition": "Many recent handoff requests from same source",
+          "expected_error": "RATE_LIMIT_EXCEEDED"
+        },
+        {
+          "test_id": "IAH-001-T07",
+          "description": "Concurrent sessions (old revoked)",
+          "input": {
+            "agent_id": "agent-6",
+            "initiator_credentials": "Valid credentials"
+          },
+          "precondition": "Active handoff session exists",
+          "expected_output": {
+            "session_id": "New session ID"
+          },
+          "expected_warning": "PREVIOUS_SESSION_REVOKED"
+        },
+        {
+          "test_id": "IAH-001-T08",
+          "description": "Partial permissions granted",
+          "input": {
+            "agent_id": "agent-7",
+            "requested_permissions": [
+              "read",
+              "write",
+              "admin"
+            ]
+          },
+          "precondition": "Only read and write allowed",
+          "expected_output": {
+            "handoff_token": "Token with read, write only"
+          },
+          "expected_warning": "PARTIAL_PERMISSIONS"
+        },
+        {
+          "test_id": "IAH-001-T09",
+          "description": "Auto-initialization enabled",
+          "input": {
+            "agent_id": "agent-8",
+            "initiator_credentials": "Valid credentials",
+            "auto_initialize": true
+          },
+          "expected_output": {
+            "handoff_token": "Token with initialization context"
+          }
+        },
+        {
+          "test_id": "IAH-001-T10",
+          "description": "Custom expiration",
+          "input": {
+            "agent_id": "agent-9",
+            "initiator_credentials": "Valid credentials"
+          },
+          "expected_output": {
+            "expires_in_seconds": 300
+          }
+        }
+      ]
+    },
+    {
+      "operation_id": "IAH-002",
+      "name": "validate_handoff",
+      "category": "Handoff Management",
+      "description": "Validate handoff token with cryptographic verification",
+      "signature": {
+        "inputs": {
+          "handoff_token": {
+            "type": "HandoffToken",
+            "description": "Token to validate"
+          },
+          "agent_id": {
+            "type": "UUID",
+            "description": "Agent claiming the token"
+          }
+        },
+        "outputs": {
+          "valid": {
+            "type": "boolean",
+            "description": "Whether token is valid"
+          },
+          "session_id": {
+            "type": "UUID",
+            "description": "Associated session ID",
+            "optional": true
+          },
+          "context": {
+            "type": "HandoffContext",
+            "description": "Handoff context if valid",
+            "optional": true
+          }
+        }
+      },
+      "formula": {
+        "description": "Token validation algorithm",
+        "steps": [
+          "1. Verify token signature:",
+          "   valid = HMAC-SHA256(token_data, secret_key) == token_signature",
+          "2. Check token expiration:",
+          "   expired = current_time > token.expires_at",
+          "3. Verify agent_id matches token",
+          "4. Check token not revoked",
+          "5. Retrieve handoff session",
+          "6. If all checks pass:",
+          "   a. Mark token as validated",
+          "   b. Retrieve handoff context",
+          "   c. Return valid=true with context",
+          "7. Else: Return valid=false with reason"
+        ],
+        "signature_verification": "HMAC-SHA256 with secret key",
+        "revocation_check": "Query revocation list or distributed cache"
+      },
+      "properties": {
+        "idempotency": "Yes (same token yields same result until expiration)",
+        "atomicity": "Yes",
+        "cryptographic": "Yes",
+        "time_complexity": "O(1)",
+        "space_complexity": "O(1)"
+      },
+      "edge_cases": [
+        {
+          "case": "Token expired",
+          "handling": "Return invalid",
+          "error": "TOKEN_EXPIRED"
+        },
+        {
+          "case": "Invalid signature",
+          "handling": "Return invalid, possible tampering",
+          "error": "INVALID_SIGNATURE"
+        },
+        {
+          "case": "Token revoked",
+          "handling": "Return invalid",
+          "error": "TOKEN_REVOKED"
+        },
+        {
+          "case": "Agent ID mismatch",
+          "handling": "Return invalid",
+          "error": "AGENT_MISMATCH"
+        },
+        {
+          "case": "Session not found",
+          "handling": "Return invalid",
+          "error": "SESSION_NOT_FOUND"
+        },
+        {
+          "case": "Malformed token",
+          "handling": "Return invalid",
+          "error": "MALFORMED_TOKEN"
+        }
+      ],
+      "test_cases": [
+        {
+          "test_id": "IAH-002-T01",
+          "description": "Valid token",
+          "input": {
+            "handoff_token": "Valid unexpired token",
+            "agent_id": "agent-1"
+          },
+          "expected_output": {
+            "valid": true,
+            "session_id": "UUID",
+            "context": "Handoff context"
+          }
+        },
+        {
+          "test_id": "IAH-002-T02",
+          "description": "Expired token",
+          "input": {
+            "handoff_token": "Expired token",
+            "agent_id": "agent-2"
+          },
+          "expected_output": {
+            "valid": false
+          },
+          "expected_error": "TOKEN_EXPIRED"
+        },
+        {
+          "test_id": "IAH-002-T03",
+          "description": "Invalid signature",
+          "input": {
+            "handoff_token": "Token with bad signature",
+            "agent_id": "agent-3"
+          },
+          "expected_output": {
+            "valid": false
+          },
+          "expected_error": "INVALID_SIGNATURE"
+        },
+        {
+          "test_id": "IAH-002-T04",
+          "description": "Token revoked",
+          "input": {
+            "handoff_token": "Revoked token",
+            "agent_id": "agent-4"
+          },
+          "precondition": "Token was revoked",
+          "expected_output": {
+            "valid": false
+          },
+          "expected_error": "TOKEN_REVOKED"
+        },
+        {
+          "test_id": "IAH-002-T05",
+          "description": "Agent ID mismatch",
+          "input": {
+            "handoff_token": "Token for agent-5",
+            "agent_id": "agent-6"
+          },
+          "expected_output": {
+            "valid": false
+          },
+          "expected_error": "AGENT_MISMATCH"
+        },
+        {
+          "test_id": "IAH-002-T06",
+          "description": "Session not found",
+          "input": {
+            "handoff_token": "Token with nonexistent session",
+            "agent_id": "agent-7"
+          },
+          "expected_output": {
+            "valid": false
+          },
+          "expected_error": "SESSION_NOT_FOUND"
+        },
+        {
+          "test_id": "IAH-002-T07",
+          "description": "Malformed token",
+          "input": {
+            "handoff_token": "Corrupted token data",
+            "agent_id": "agent-8"
+          },
+          "expected_output": {
+            "valid": false
+          },
+          "expected_error": "MALFORMED_TOKEN"
+        },
+        {
+          "test_id": "IAH-002-T08",
+          "description": "Token near expiration",
+          "input": {
+            "handoff_token": "Token expiring in 10 seconds",
+            "agent_id": "agent-9"
+          },
+          "expected_output": {
+            "valid": true
+          },
+          "note": "Still valid"
+        },
+        {
+          "test_id": "IAH-002-T09",
+          "description": "Repeated validation",
+          "input": {
+            "handoff_token": "Valid token",
+            "agent_id": "agent-10"
+          },
+          "note": "Validate same token twice",
+          "expected_output": {
+            "valid": true
+          },
+          "postcondition": "Both validations succeed (idempotent)"
+        },
+        {
+          "test_id": "IAH-002-T10",
+          "description": "Validation with context retrieval",
+          "input": {
+            "handoff_token": "Valid token with rich context",
+            "agent_id": "agent-11"
+          },
+          "expected_output": {
+            "valid": true,
+            "context": "Full initialization context"
+          }
+        }
+      ]
+    },
+    {
+      "operation_id": "IAH-003",
+      "name": "complete_handoff",
+      "category": "Handoff Management",
+      "description": "Complete handoff and establish agent session",
+      "signature": {
+        "inputs": {
+          "session_id": {
+            "type": "UUID",
+            "description": "Handoff session identifier"
+          },
+          "agent_id": {
+            "type": "UUID",
+            "description": "Agent identifier"
+          },
+          "handoff_token": {
+            "type": "HandoffToken",
+            "description": "Validated handoff token"
+          }
+        },
+        "outputs": {
+          "credentials": {
+            "type": "Credentials",
+            "description": "Agent credentials"
+          },
+          "context": {
+            "type": "HandoffContext",
+            "description": "Initialization context"
+          },
+          "session_established": {
+            "type": "boolean",
+            "description": "Whether session was established"
+          }
+        }
+      },
+      "formula": {
+        "description": "Handoff completion algorithm",
+        "steps": [
+          "1. Verify handoff_token is validated",
+          "2. Generate agent credentials:",
+          "   - JWT with RS256 signature",
+          "   - Short expiration (1 hour default)",
+          "   - Refresh token for renewal",
+          "3. Retrieve initialization context from session",
+          "4. Establish agent session",
+          "5. Mark handoff session as completed",
+          "6. Cleanup handoff_token (one-time use)",
+          "7. Return credentials and context"
+        ],
+        "credential_generation": "JWT = header.payload.signature with RS256",
+        "cleanup": "Delete handoff_token after successful completion"
+      },
+      "properties": {
+        "idempotency": "No (token is one-time use)",
+        "atomicity": "Yes (all-or-nothing)",
+        "secure": "Yes (zero-downtime handoff)",
+        "time_complexity": "O(1)",
+        "space_complexity": "O(context_size)"
+      },
+      "edge_cases": [
+        {
+          "case": "Token not validated",
+          "handling": "Reject completion",
+          "error": "TOKEN_NOT_VALIDATED"
+        },
+        {
+          "case": "Token already used",
+          "handling": "Reject completion",
+          "error": "TOKEN_ALREADY_USED"
+        },
+        {
+          "case": "Session expired",
+          "handling": "Reject completion",
+          "error": "SESSION_EXPIRED"
+        },
+        {
+          "case": "Session mismatch",
+          "handling": "Reject completion",
+          "error": "SESSION_MISMATCH"
+        },
+        {
+          "case": "Context retrieval failure",
+          "handling": "Retry or fail gracefully",
+          "error": "CONTEXT_RETRIEVAL_FAILED"
+        },
+        {
+          "case": "Credential generation failure",
+          "handling": "Retry or return error",
+          "error": "CREDENTIAL_GENERATION_FAILED"
+        }
+      ],
+      "test_cases": [
+        {
+          "test_id": "IAH-003-T01",
+          "description": "Successful handoff completion",
+          "input": {
+            "session_id": "session-1",
+            "agent_id": "agent-1",
+            "handoff_token": "Validated token"
+          },
+          "expected_output": {
+            "credentials": "JWT credentials",
+            "context": "Initialization context",
+            "session_established": true
+          }
+        },
+        {
+          "test_id": "IAH-003-T02",
+          "description": "Token not validated",
+          "input": {
+            "session_id": "session-2",
+            "agent_id": "agent-2",
+            "handoff_token": "Unvalidated token"
+          },
+          "expected_error": "TOKEN_NOT_VALIDATED"
+        },
+        {
+          "test_id": "IAH-003-T03",
+          "description": "Token already used",
+          "input": {
+            "session_id": "session-3",
+            "agent_id": "agent-3",
+            "handoff_token": "Previously used token"
+          },
+          "expected_error": "TOKEN_ALREADY_USED"
+        },
+        {
+          "test_id": "IAH-003-T04",
+          "description": "Session expired",
+          "input": {
+            "session_id": "session-expired",
+            "agent_id": "agent-4",
+            "handoff_token": "Valid token"
+          },
+          "precondition": "Session expired",
+          "expected_error": "SESSION_EXPIRED"
+        },
+        {
+          "test_id": "IAH-003-T05",
+          "description": "Session mismatch",
+          "input": {
+            "session_id": "session-A",
+            "agent_id": "agent-5",
+            "handoff_token": "Token from session-B"
+          },
+          "expected_error": "SESSION_MISMATCH"
+        },
+        {
+          "test_id": "IAH-003-T06",
+          "description": "Context with secrets",
+          "input": {
+            "session_id": "session-4",
+            "agent_id": "agent-6",
+            "handoff_token": "Valid token"
+          },
+          "expected_output": {
+            "context": {
+              "secrets": "Encrypted secrets included"
+            }
+          }
+        },
+        {
+          "test_id": "IAH-003-T07",
+          "description": "Credential with custom expiration",
+          "input": {
+            "session_id": "session-5",
+            "agent_id": "agent-7",
+            "handoff_token": "Valid token"
+          },
+          "expected_output": {
+            "credentials": {
+              "expires_at": "1 hour from now"
+            }
+          }
+        },
+        {
+          "test_id": "IAH-003-T08",
+          "description": "Completion with permissions",
+          "input": {
+            "session_id": "session-6",
+            "agent_id": "agent-8",
+            "handoff_token": "Token with permissions"
+          },
+          "expected_output": {
+            "context": {
+              "permissions": [
+                "read",
+                "write"
+              ]
+            }
+          }
+        },
+        {
+          "test_id": "IAH-003-T09",
+          "description": "Token cleanup after completion",
+          "input": {
+            "session_id": "session-7",
+            "agent_id": "agent-9",
+            "handoff_token": "Valid token"
+          },
+          "expected_output": {
+            "session_established": true
+          },
+          "postcondition": "Token is invalidated and cannot be reused"
+        },
+        {
+          "test_id": "IAH-003-T10",
+          "description": "Complete with AI auto-init",
+          "input": {
+            "session_id": "session-8",
+            "agent_id": "agent-10",
+            "handoff_token": "Auto-init token"
+          },
+          "expected_output": {
+            "context": "Rich initialization context for AI"
+          }
+        }
+      ]
+    },
+    {
+      "operation_id": "IAH-004",
+      "name": "generate_credentials",
+      "category": "Credential Management",
+      "description": "Generate agent credentials with configurable method and expiration",
+      "signature": {
+        "inputs": {
+          "agent_id": {
+            "type": "UUID",
+            "description": "Agent identifier"
+          },
+          "credential_type": {
+            "type": "enum",
+            "values": [
+              "JWT",
+              "OAuth2",
+              "mTLS",
+              "APIKey",
+              "Custom"
+            ],
+            "description": "Type of credentials to generate",
+            "default": "JWT"
+          },
+          "expiration_seconds": {
+            "type": "integer",
+            "description": "Credential expiration time",
+            "default": 3600
+          },
+          "permissions": {
+            "type": "array[string]",
+            "description": "Permissions to embed",
+            "optional": true
+          }
+        },
+        "outputs": {
+          "credentials": {
+            "type": "Credentials",
+            "description": "Generated credentials"
+          },
+          "refresh_token": {
+            "type": "string",
+            "description": "Refresh token (if applicable)",
+            "optional": true
+          }
+        }
+      },
+      "formula": {
+        "description": "Credential generation algorithm",
+        "steps": [
+          "1. Validate agent_id exists",
+          "2. Based on credential_type:",
+          "   JWT: Generate JWT with RS256 signature",
+          "   OAuth2: Generate OAuth2 access + refresh tokens",
+          "   mTLS: Generate certificate and private key",
+          "   APIKey: Generate cryptographic API key",
+          "   Custom: Use custom generator",
+          "3. Embed permissions in credentials",
+          "4. Set expiration time",
+          "5. Sign credentials",
+          "6. Store credential metadata",
+          "7. Return credentials"
+        ],
+        "jwt_structure": {
+          "header": {
+            "alg": "RS256",
+            "typ": "JWT"
+          },
+          "payload": {
+            "sub": "agent_id",
+            "exp": "expiration",
+            "permissions": "[]"
+          },
+          "signature": "RS256(header.payload, private_key)"
+        }
+      },
+      "properties": {
+        "idempotency": "No (generates new credentials each time)",
+        "secure": "Yes (cryptographic)",
+        "extensible": "Yes (custom types supported)",
+        "time_complexity": "O(1)",
+        "space_complexity": "O(1)"
+      },
+      "edge_cases": [
+        {
+          "case": "Agent does not exist",
+          "handling": "Reject generation",
+          "error": "AGENT_NOT_FOUND"
+        },
+        {
+          "case": "Invalid credential type",
+          "handling": "Reject generation",
+          "error": "INVALID_CREDENTIAL_TYPE"
+        },
+        {
+          "case": "Expiration too long",
+          "handling": "Cap at maximum (e.g., 24 hours)",
+          "warning": "EXPIRATION_CAPPED"
+        },
+        {
+          "case": "Invalid permissions",
+          "handling": "Reject or filter permissions",
+          "error": "INVALID_PERMISSIONS"
+        }
+      ],
+      "test_cases": [
+        {
+          "test_id": "IAH-004-T01",
+          "description": "Generate JWT credentials",
+          "input": {
+            "agent_id": "agent-1",
+            "credential_type": "JWT",
+            "expiration_seconds": 3600
+          },
+          "expected_output": {
+            "credentials": "JWT token"
+          }
+        },
+        {
+          "test_id": "IAH-004-T02",
+          "description": "Generate OAuth2 credentials",
+          "input": {
+            "agent_id": "agent-2",
+            "credential_type": "OAuth2"
+          },
+          "expected_output": {
+            "credentials": "Access token",
+            "refresh_token": "Refresh token"
+          }
+        },
+        {
+          "test_id": "IAH-004-T03",
+          "description": "Generate mTLS certificate",
+          "input": {
+            "agent_id": "agent-3",
+            "credential_type": "mTLS"
+          },
+          "expected_output": {
+            "credentials": "Certificate and private key"
+          }
+        },
+        {
+          "test_id": "IAH-004-T04",
+          "description": "Generate API key",
+          "input": {
+            "agent_id": "agent-4",
+            "credential_type": "APIKey"
+          },
+          "expected_output": {
+            "credentials": "API key"
+          }
+        },
+        {
+          "test_id": "IAH-004-T05",
+          "description": "Credentials with permissions",
+          "input": {
+            "agent_id": "agent-5",
+            "permissions": [
+              "read",
+              "write",
+              "execute"
+            ]
+          },
+          "expected_output": {
+            "credentials": "Credentials with embedded permissions"
+          }
+        },
+        {
+          "test_id": "IAH-004-T06",
+          "description": "Custom expiration",
+          "input": {
+            "agent_id": "agent-6",
+            "expiration_seconds": 7200
+          },
+          "expected_output": {
+            "credentials": "Credentials expiring in 2 hours"
+          }
+        },
+        {
+          "test_id": "IAH-004-T07",
+          "description": "Expiration capped",
+          "input": {
+            "agent_id": "agent-7",
+            "expiration_seconds": 999999
+          },
+          "expected_output": {
+            "credentials": "Credentials with max expiration"
+          },
+          "expected_warning": "EXPIRATION_CAPPED"
+        },
+        {
+          "test_id": "IAH-004-T08",
+          "description": "Agent not found",
+          "input": {
+            "agent_id": "nonexistent"
+          },
+          "expected_error": "AGENT_NOT_FOUND"
+        }
+      ]
+    },
+    {
+      "operation_id": "IAH-005",
+      "name": "refresh_credentials",
+      "category": "Credential Management",
+      "description": "Refresh credentials before expiration with zero-downtime",
+      "signature": {
+        "inputs": {
+          "agent_id": {
+            "type": "UUID",
+            "description": "Agent identifier"
+          },
+          "current_credentials": {
+            "type": "Credentials",
+            "description": "Current credentials"
+          },
+          "refresh_token": {
+            "type": "string",
+            "description": "Refresh token",
+            "optional": true
+          }
+        },
+        "outputs": {
+          "new_credentials": {
+            "type": "Credentials",
+            "description": "Refreshed credentials"
+          },
+          "success": {
+            "type": "boolean",
+            "description": "Whether refresh succeeded"
+          }
+        }
+      },
+      "formula": {
+        "description": "Credential refresh algorithm",
+        "steps": [
+          "1. Validate current_credentials not fully expired",
+          "2. If refresh_token provided:",
+          "   a. Validate refresh_token",
+          "   b. Generate new credentials using refresh_token",
+          "3. Else:",
+          "   a. Validate current_credentials still valid",
+          "   b. Generate new credentials extending expiration",
+          "4. Return new credentials",
+          "5. Old credentials remain valid until expiration (overlap)"
+        ],
+        "proactive_refresh": "Refresh when remaining_time < 10% of total_lifetime"
+      },
+      "properties": {
+        "idempotency": "No (generates new credentials)",
+        "zero_downtime": "Yes (old credentials valid during transition)",
+        "automatic": "Can be AI-managed (proactive refresh)",
+        "time_complexity": "O(1)",
+        "space_complexity": "O(1)"
+      },
+      "edge_cases": [
+        {
+          "case": "Credentials fully expired",
+          "handling": "Reject refresh, require re-authentication",
+          "error": "CREDENTIALS_EXPIRED"
+        },
+        {
+          "case": "Invalid refresh token",
+          "handling": "Reject refresh",
+          "error": "INVALID_REFRESH_TOKEN"
+        },
+        {
+          "case": "Refresh token expired",
+          "handling": "Reject refresh",
+          "error": "REFRESH_TOKEN_EXPIRED"
+        },
+        {
+          "case": "Credentials revoked",
+          "handling": "Reject refresh",
+          "error": "CREDENTIALS_REVOKED"
+        }
+      ],
+      "test_cases": [
+        {
+          "test_id": "IAH-005-T01",
+          "description": "Successful refresh with refresh token",
+          "input": {
+            "agent_id": "agent-1",
+            "current_credentials": "Valid credentials",
+            "refresh_token": "Valid refresh token"
+          },
+          "expected_output": {
+            "new_credentials": "Refreshed credentials",
+            "success": true
+          }
+        },
+        {
+          "test_id": "IAH-005-T02",
+          "description": "Refresh without refresh token",
+          "input": {
+            "agent_id": "agent-2",
+            "current_credentials": "Valid credentials"
+          },
+          "expected_output": {
+            "new_credentials": "Extended credentials",
+            "success": true
+          }
+        },
+        {
+          "test_id": "IAH-005-T03",
+          "description": "Credentials expired",
+          "input": {
+            "agent_id": "agent-3",
+            "current_credentials": "Expired credentials"
+          },
+          "expected_error": "CREDENTIALS_EXPIRED"
+        },
+        {
+          "test_id": "IAH-005-T04",
+          "description": "Invalid refresh token",
+          "input": {
+            "agent_id": "agent-4",
+            "current_credentials": "Valid credentials",
+            "refresh_token": "Invalid token"
+          },
+          "expected_error": "INVALID_REFRESH_TOKEN"
+        },
+        {
+          "test_id": "IAH-005-T05",
+          "description": "Proactive refresh (before expiration)",
+          "input": {
+            "agent_id": "agent-5",
+            "current_credentials": "Credentials with 5 minutes remaining"
+          },
+          "expected_output": {
+            "new_credentials": "Refreshed proactively",
+            "success": true
+          }
+        },
+        {
+          "test_id": "IAH-005-T06",
+          "description": "Zero-downtime transition",
+          "input": {
+            "agent_id": "agent-6",
+            "current_credentials": "Valid credentials"
+          },
+          "expected_output": {
+            "success": true
+          },
+          "postcondition": "Both old and new credentials valid briefly"
+        }
+      ]
+    },
+    {
+      "operation_id": "IAH-006",
+      "name": "revoke_credentials",
+      "category": "Credential Management",
+      "description": "Revoke credentials immediately with cascade to dependent agents",
+      "signature": {
+        "inputs": {
+          "credentials": {
+            "type": "Credentials",
+            "description": "Credentials to revoke"
+          },
+          "cascade": {
+            "type": "boolean",
+            "description": "Cascade revocation to dependent agents",
+            "default": false
+          },
+          "reason": {
+            "type": "string",
+            "description": "Revocation reason",
+            "optional": true
+          }
+        },
+        "outputs": {
+          "success": {
+            "type": "boolean",
+            "description": "Revocation success"
+          },
+          "revoked_count": {
+            "type": "integer",
+            "description": "Number of credentials revoked (including cascade)"
+          }
+        }
+      },
+      "formula": {
+        "description": "Credential revocation algorithm",
+        "steps": [
+          "1. Add credentials to revocation list",
+          "2. Invalidate any active sessions using credentials",
+          "3. If cascade=true:",
+          "   a. Find agents with dependent credentials",
+          "   b. Recursively revoke dependent credentials",
+          "4. Log revocation event with reason",
+          "5. Notify affected agents",
+          "6. Return revocation count"
+        ]
+      },
+      "properties": {
+        "idempotency": "Yes (revoking already revoked credentials is no-op)",
+        "immediate": "Yes (takes effect immediately)",
+        "cascading": "Optional",
+        "time_complexity": "O(1) without cascade, O(n) with cascade",
+        "space_complexity": "O(1)"
+      },
+      "edge_cases": [
+        {
+          "case": "Credentials already revoked",
+          "handling": "Return success (idempotent)",
+          "warning": "ALREADY_REVOKED"
+        },
+        {
+          "case": "Credentials not found",
+          "handling": "Return success (no-op)",
+          "warning": "CREDENTIALS_NOT_FOUND"
+        },
+        {
+          "case": "Cascade affects many agents",
+          "handling": "Batch revocation efficiently",
+          "warning": "LARGE_CASCADE"
+        }
+      ],
+      "test_cases": [
+        {
+          "test_id": "IAH-006-T01",
+          "description": "Simple revocation",
+          "input": {
+            "credentials": "Valid credentials",
+            "cascade": false
+          },
+          "expected_output": {
+            "success": true,
+            "revoked_count": 1
+          }
+        },
+        {
+          "test_id": "IAH-006-T02",
+          "description": "Revocation with cascade",
+          "input": {
+            "credentials": "Parent credentials",
+            "cascade": true
+          },
+          "precondition": "5 dependent agents",
+          "expected_output": {
+            "success": true,
+            "revoked_count": 6
+          }
+        },
+        {
+          "test_id": "IAH-006-T03",
+          "description": "Revocation with reason",
+          "input": {
+            "credentials": "Compromised credentials",
+            "reason": "Security breach detected"
+          },
+          "expected_output": {
+            "success": true
+          },
+          "postcondition": "Reason logged in audit trail"
+        },
+        {
+          "test_id": "IAH-006-T04",
+          "description": "Already revoked",
+          "input": {
+            "credentials": "Previously revoked credentials"
+          },
+          "expected_output": {
+            "success": true,
+            "revoked_count": 0
+          },
+          "expected_warning": "ALREADY_REVOKED"
+        }
+      ]
+    },
+    {
+      "operation_id": "IAH-007",
+      "name": "establish_trust",
+      "category": "Trust Management",
+      "description": "Establish trust relationship with certificate validation",
+      "signature": {
+        "inputs": {
+          "agent_id": {
+            "type": "UUID",
+            "description": "Agent to establish trust with"
+          },
+          "trust_chain": {
+            "type": "TrustChain",
+            "description": "Certificate chain",
+            "optional": true
+          },
+          "mutual_authentication": {
+            "type": "boolean",
+            "description": "Enable mutual authentication",
+            "default": true
+          }
+        },
+        "outputs": {
+          "trust_established": {
+            "type": "boolean",
+            "description": "Whether trust was established"
+          },
+          "trust_level": {
+            "type": "enum",
+            "values": [
+              "Full",
+              "Partial",
+              "None"
+            ],
+            "description": "Level of trust"
+          }
+        }
+      },
+      "formula": {
+        "description": "Trust establishment algorithm",
+        "steps": [
+          "1. If trust_chain provided:",
+          "   a. Validate certificate chain",
+          "   b. Check certificate not revoked (OCSP/CRL)",
+          "   c. Verify certificate validity period",
+          "   d. Check certificate purpose",
+          "2. If mutual_authentication:",
+          "   a. Agent provides its certificate",
+          "   b. Both parties validate each other",
+          "3. Establish trust level based on validation",
+          "4. Store trust relationship",
+          "5. Return trust status"
+        ],
+        "chain_validation": "Verify each cert signed by parent, root in trust store"
+      },
+      "properties": {
+        "idempotency": "Yes (re-establishing yields same trust)",
+        "mutual": "Optional",
+        "cryptographic": "Yes",
+        "time_complexity": "O(chain_length)",
+        "space_complexity": "O(1)"
+      },
+      "edge_cases": [
+        {
+          "case": "Invalid certificate chain",
+          "handling": "Reject trust establishment",
+          "error": "INVALID_CHAIN"
+        },
+        {
+          "case": "Certificate expired",
+          "handling": "Reject trust",
+          "error": "CERTIFICATE_EXPIRED"
+        },
+        {
+          "case": "Certificate revoked",
+          "handling": "Reject trust",
+          "error": "CERTIFICATE_REVOKED"
+        },
+        {
+          "case": "Root not in trust store",
+          "handling": "Partial trust or reject",
+          "warning": "UNTRUSTED_ROOT"
+        }
+      ],
+      "test_cases": [
+        {
+          "test_id": "IAH-007-T01",
+          "description": "Establish trust with valid chain",
+          "input": {
+            "agent_id": "agent-1",
+            "trust_chain": "Valid certificate chain"
+          },
+          "expected_output": {
+            "trust_established": true,
+            "trust_level": "Full"
+          }
+        },
+        {
+          "test_id": "IAH-007-T02",
+          "description": "Mutual authentication",
+          "input": {
+            "agent_id": "agent-2",
+            "trust_chain": "Valid chain",
+            "mutual_authentication": true
+          },
+          "expected_output": {
+            "trust_established": true,
+            "trust_level": "Full"
+          },
+          "note": "Both agents validated"
+        },
+        {
+          "test_id": "IAH-007-T03",
+          "description": "Invalid certificate chain",
+          "input": {
+            "agent_id": "agent-3",
+            "trust_chain": "Invalid chain"
+          },
+          "expected_error": "INVALID_CHAIN"
+        },
+        {
+          "test_id": "IAH-007-T04",
+          "description": "Expired certificate",
+          "input": {
+            "agent_id": "agent-4",
+            "trust_chain": "Chain with expired cert"
+          },
+          "expected_error": "CERTIFICATE_EXPIRED"
+        }
+      ]
+    },
+    {
+      "operation_id": "IAH-008",
+      "name": "transfer_context",
+      "category": "Context Management",
+      "description": "Transfer initialization context with encrypted secrets",
+      "signature": {
+        "inputs": {
+          "agent_id": {
+            "type": "UUID",
+            "description": "Target agent"
+          },
+          "context": {
+            "type": "HandoffContext",
+            "description": "Context to transfer"
+          },
+          "encryption": {
+            "type": "boolean",
+            "description": "Encrypt sensitive data",
+            "default": true
+          }
+        },
+        "outputs": {
+          "success": {
+            "type": "boolean",
+            "description": "Transfer success"
+          },
+          "context_id": {
+            "type": "UUID",
+            "description": "Context identifier"
+          }
+        }
+      },
+      "formula": {
+        "description": "Context transfer algorithm",
+        "steps": [
+          "1. If encryption=true:",
+          "   a. Encrypt secrets using AES-256-GCM",
+          "   b. Encrypt sensitive configuration",
+          "2. Package context securely",
+          "3. Transfer context to agent",
+          "4. Verify transfer integrity",
+          "5. Return transfer status"
+        ],
+        "encryption": "AES-256-GCM with unique key per context"
+      },
+      "properties": {
+        "idempotency": "No (each transfer creates new context)",
+        "secure": "Yes (encrypted secrets)",
+        "time_complexity": "O(context_size)",
+        "space_complexity": "O(context_size)"
+      },
+      "edge_cases": [
+        {
+          "case": "Large context",
+          "handling": "Stream transfer",
+          "note": "Efficient for large contexts"
+        },
+        {
+          "case": "Transfer failure",
+          "handling": "Retry or rollback",
+          "error": "TRANSFER_FAILED"
+        }
+      ],
+      "test_cases": [
+        {
+          "test_id": "IAH-008-T01",
+          "description": "Transfer with encryption",
+          "input": {
+            "agent_id": "agent-1",
+            "context": "Context with secrets",
+            "encryption": true
+          },
+          "expected_output": {
+            "success": true,
+            "context_id": "UUID"
+          }
+        }
+      ]
+    },
+    {
+      "operation_id": "IAH-009",
+      "name": "verify_agent_identity",
+      "category": "Identity Verification",
+      "description": "Verify agent identity with attestation and anti-spoofing",
+      "signature": {
+        "inputs": {
+          "agent_id": {
+            "type": "UUID",
+            "description": "Agent to verify"
+          },
+          "proof": {
+            "type": "object",
+            "description": "Identity proof"
+          }
+        },
+        "outputs": {
+          "verified": {
+            "type": "boolean",
+            "description": "Verification result"
+          },
+          "confidence": {
+            "type": "float64",
+            "description": "Verification confidence (0-1)"
+          }
+        }
+      },
+      "formula": {
+        "description": "Identity verification algorithm",
+        "steps": [
+          "1. Validate proof authenticity",
+          "2. Check agent attestation",
+          "3. Verify agent not spoofed",
+          "4. Calculate confidence score",
+          "5. Return verification result"
+        ]
+      },
+      "properties": {
+        "idempotency": "Yes",
+        "anti_spoofing": "Yes",
+        "time_complexity": "O(1)",
+        "space_complexity": "O(1)"
+      },
+      "edge_cases": [
+        {
+          "case": "Invalid proof",
+          "handling": "Reject verification",
+          "error": "INVALID_PROOF"
+        }
+      ],
+      "test_cases": [
+        {
+          "test_id": "IAH-009-T01",
+          "description": "Successful verification",
+          "input": {
+            "agent_id": "agent-1",
+            "proof": "Valid identity proof"
+          },
+          "expected_output": {
+            "verified": true,
+            "confidence": 0.95
+          }
+        }
+      ]
+    },
+    {
+      "operation_id": "IAH-010",
+      "name": "register_auth_method",
+      "category": "Extensibility",
+      "description": "Register custom authentication method for extensibility",
+      "signature": {
+        "inputs": {
+          "method_name": {
+            "type": "string",
+            "description": "Auth method name"
+          },
+          "auth_type": {
+            "type": "enum",
+            "values": [
+              "JWT",
+              "OAuth2",
+              "mTLS",
+              "APIKey",
+              "Biometric",
+              "Hardware",
+              "Custom"
+            ],
+            "description": "Authentication type"
+          },
+          "validator": {
+            "type": "function",
+            "description": "Validation function"
+          }
+        },
+        "outputs": {
+          "success": {
+            "type": "boolean",
+            "description": "Registration success"
+          },
+          "method_id": {
+            "type": "UUID",
+            "description": "Method identifier"
+          }
+        }
+      },
+      "formula": {
+        "description": "Auth method registration",
+        "steps": [
+          "1. Validate method_name unique",
+          "2. Test validator function",
+          "3. Register method",
+          "4. Return method_id"
+        ]
+      },
+      "properties": {
+        "idempotency": "No",
+        "extensibility": "Full",
+        "time_complexity": "O(1)",
+        "space_complexity": "O(1)"
+      },
+      "edge_cases": [
+        {
+          "case": "Method name exists",
+          "handling": "Reject registration",
+          "error": "METHOD_EXISTS"
+        }
+      ],
+      "test_cases": [
+        {
+          "test_id": "IAH-010-T01",
+          "description": "Register custom method",
+          "input": {
+            "method_name": "BiometricAuth",
+            "auth_type": "Biometric",
+            "validator": "Validation function"
+          },
+          "expected_output": {
+            "success": true,
+            "method_id": "UUID"
+          }
+        }
+      ]
+    },
+    {
+      "operation_id": "IAH-011",
+      "name": "audit_handoff",
+      "category": "Auditing",
+      "description": "Audit handoff process with complete trail and anomaly detection",
+      "signature": {
+        "inputs": {
+          "session_id": {
+            "type": "UUID",
+            "description": "Session to audit",
+            "optional": true
+          },
+          "time_range": {
+            "type": "object",
+            "description": "Time range for audit",
+            "optional": true
+          }
+        },
+        "outputs": {
+          "audit_log": {
+            "type": "array[object]",
+            "description": "Complete audit trail"
+          },
+          "anomalies": {
+            "type": "array[object]",
+            "description": "Detected anomalies",
+            "optional": true
+          }
+        }
+      },
+      "formula": {
+        "description": "Audit algorithm with AI anomaly detection",
+        "steps": [
+          "1. Collect handoff events for time_range",
+          "2. Build complete audit trail",
+          "3. Analyze for anomalies using AI",
+          "4. Return audit log and anomalies"
+        ]
+      },
+      "properties": {
+        "idempotency": "Yes",
+        "ai_managed": "Yes (anomaly detection)",
+        "time_complexity": "O(n) where n = events",
+        "space_complexity": "O(n)"
+      },
+      "edge_cases": [
+        {
+          "case": "No events in range",
+          "handling": "Return empty audit",
+          "warning": "NO_EVENTS"
+        }
+      ],
+      "test_cases": [
+        {
+          "test_id": "IAH-011-T01",
+          "description": "Audit specific session",
+          "input": {
+            "session_id": "session-1"
+          },
+          "expected_output": {
+            "audit_log": "Complete session audit trail"
+          }
+        }
+      ]
+    },
+    {
+      "operation_id": "IAH-012",
+      "name": "recover_handoff",
+      "category": "Recovery",
+      "description": "Recover from handoff failure with automatic retry and self-healing",
+      "signature": {
+        "inputs": {
+          "session_id": {
+            "type": "UUID",
+            "description": "Failed session"
+          },
+          "retry_strategy": {
+            "type": "enum",
+            "values": [
+              "Immediate",
+              "Exponential",
+              "Manual"
+            ],
+            "description": "Retry strategy",
+            "default": "Exponential"
+          }
+        },
+        "outputs": {
+          "recovered": {
+            "type": "boolean",
+            "description": "Recovery success"
+          },
+          "new_session_id": {
+            "type": "UUID",
+            "description": "New session ID if recovered",
+            "optional": true
+          }
+        }
+      },
+      "formula": {
+        "description": "Handoff recovery algorithm",
+        "steps": [
+          "1. Analyze failure reason",
+          "2. Apply recovery strategy:",
+          "   Immediate: Retry immediately",
+          "   Exponential: Exponential backoff",
+          "   Manual: Wait for manual intervention",
+          "3. Attempt recovery",
+          "4. If successful: create new session",
+          "5. Return recovery status"
+        ],
+        "exponential_backoff": "delay_n = min(initial \u00d7 2^n, max_delay)"
+      },
+      "properties": {
+        "idempotency": "No",
+        "ai_managed": "Yes (self-healing)",
+        "automatic": "Yes (except manual strategy)",
+        "time_complexity": "O(retries)",
+        "space_complexity": "O(1)"
+      },
+      "edge_cases": [
+        {
+          "case": "Unrecoverable failure",
+          "handling": "Return failure after max retries",
+          "error": "RECOVERY_FAILED"
+        }
+      ],
+      "test_cases": [
+        {
+          "test_id": "IAH-012-T01",
+          "description": "Successful recovery",
+          "input": {
+            "session_id": "failed-session",
+            "retry_strategy": "Exponential"
+          },
+          "expected_output": {
+            "recovered": true,
+            "new_session_id": "UUID"
+          }
+        }
+      ]
+    }
+  ],
+  "configuration": {
+    "default_auth_method": "JWT",
+    "jwt_algorithm": "RS256",
+    "token_default_expiration": 300,
+    "credential_default_expiration": 3600,
+    "encryption_algorithm": "AES-256-GCM",
+    "auto_refresh_enabled": true,
+    "refresh_threshold_percent": 10,
+    "audit_enabled": true,
+    "anomaly_detection_enabled": true
+  },
+  "license": {
+    "type": "AGPLv3",
+    "name": "GNU Affero General Public License v3.0",
+    "url": "https://www.gnu.org/licenses/agpl-3.0.html",
+    "description": "This specification is licensed under AGPLv3. Any implementation or derivative work must also be licensed under AGPLv3 and source code must be made available."
+  }
+}

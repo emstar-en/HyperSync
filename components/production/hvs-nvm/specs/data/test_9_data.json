@@ -1,0 +1,543 @@
+{
+  "test_name": "Semantic Preservation",
+  "timestamp": "2026-01-13 05:48:01",
+  "embedding_dimensions": [
+    384,
+    768,
+    1536
+  ],
+  "hvs_dimensions": [
+    8,
+    16,
+    32,
+    64
+  ],
+  "tests": {
+    "similarity_preservation": [
+      {
+        "embedding_dim": 384,
+        "hvs_dim": 8,
+        "n_samples": 100,
+        "similarity_correlation": 0.7794173954553482,
+        "correlation_p_value": 0.0,
+        "similarity_mse": 0.10234608501195908,
+        "preservation_quality": 77.94173954553482,
+        "passed": false
+      },
+      {
+        "embedding_dim": 384,
+        "hvs_dim": 16,
+        "n_samples": 100,
+        "similarity_correlation": 0.8347740737165785,
+        "correlation_p_value": 0.0,
+        "similarity_mse": 0.04805634915828705,
+        "preservation_quality": 83.47740737165785,
+        "passed": false
+      },
+      {
+        "embedding_dim": 384,
+        "hvs_dim": 32,
+        "n_samples": 100,
+        "similarity_correlation": 0.8960808231326638,
+        "correlation_p_value": 0.0,
+        "similarity_mse": 0.01561259850859642,
+        "preservation_quality": 89.60808231326638,
+        "passed": false
+      },
+      {
+        "embedding_dim": 384,
+        "hvs_dim": 64,
+        "n_samples": 100,
+        "similarity_correlation": 0.9591692559418307,
+        "correlation_p_value": 0.0,
+        "similarity_mse": 0.003351232036948204,
+        "preservation_quality": 95.91692559418307,
+        "passed": true
+      },
+      {
+        "embedding_dim": 768,
+        "hvs_dim": 8,
+        "n_samples": 100,
+        "similarity_correlation": 0.7044172788871514,
+        "correlation_p_value": 0.0,
+        "similarity_mse": 0.11172620952129364,
+        "preservation_quality": 70.44172788871515,
+        "passed": false
+      },
+      {
+        "embedding_dim": 768,
+        "hvs_dim": 16,
+        "n_samples": 100,
+        "similarity_correlation": 0.7438277181936471,
+        "correlation_p_value": 0.0,
+        "similarity_mse": 0.05110601335763931,
+        "preservation_quality": 74.3827718193647,
+        "passed": false
+      },
+      {
+        "embedding_dim": 768,
+        "hvs_dim": 32,
+        "n_samples": 100,
+        "similarity_correlation": 0.826580354184207,
+        "correlation_p_value": 0.0,
+        "similarity_mse": 0.01754392310976982,
+        "preservation_quality": 82.6580354184207,
+        "passed": false
+      },
+      {
+        "embedding_dim": 768,
+        "hvs_dim": 64,
+        "n_samples": 100,
+        "similarity_correlation": 0.8958420862443913,
+        "correlation_p_value": 0.0,
+        "similarity_mse": 0.0036521803122013807,
+        "preservation_quality": 89.58420862443913,
+        "passed": false
+      },
+      {
+        "embedding_dim": 1536,
+        "hvs_dim": 8,
+        "n_samples": 100,
+        "similarity_correlation": 0.5887134296717319,
+        "correlation_p_value": 0.0,
+        "similarity_mse": 0.11613587290048599,
+        "preservation_quality": 58.87134296717319,
+        "passed": false
+      },
+      {
+        "embedding_dim": 1536,
+        "hvs_dim": 16,
+        "n_samples": 100,
+        "similarity_correlation": 0.6610970545815705,
+        "correlation_p_value": 0.0,
+        "similarity_mse": 0.05073217302560806,
+        "preservation_quality": 66.10970545815705,
+        "passed": false
+      },
+      {
+        "embedding_dim": 1536,
+        "hvs_dim": 32,
+        "n_samples": 100,
+        "similarity_correlation": 0.7030121476527142,
+        "correlation_p_value": 0.0,
+        "similarity_mse": 0.018541062250733376,
+        "preservation_quality": 70.30121476527142,
+        "passed": false
+      },
+      {
+        "embedding_dim": 1536,
+        "hvs_dim": 64,
+        "n_samples": 100,
+        "similarity_correlation": 0.7833281032545565,
+        "correlation_p_value": 0.0,
+        "similarity_mse": 0.004171378444880247,
+        "preservation_quality": 78.33281032545565,
+        "passed": false
+      }
+    ],
+    "clustering_preservation": [
+      {
+        "embedding_dim": 384,
+        "hvs_dim": 8,
+        "n_samples": 100,
+        "n_clusters": 5,
+        "clustering_ari": 1.0,
+        "clustering_nmi": 1.0,
+        "original_vs_true_ari": 1.0,
+        "reconstructed_vs_true_ari": 1.0,
+        "cluster_preservation_quality": 100.0,
+        "passed": true
+      },
+      {
+        "embedding_dim": 384,
+        "hvs_dim": 16,
+        "n_samples": 100,
+        "n_clusters": 5,
+        "clustering_ari": 1.0,
+        "clustering_nmi": 1.0,
+        "original_vs_true_ari": 1.0,
+        "reconstructed_vs_true_ari": 1.0,
+        "cluster_preservation_quality": 100.0,
+        "passed": true
+      },
+      {
+        "embedding_dim": 384,
+        "hvs_dim": 32,
+        "n_samples": 100,
+        "n_clusters": 5,
+        "clustering_ari": 1.0,
+        "clustering_nmi": 1.0,
+        "original_vs_true_ari": 1.0,
+        "reconstructed_vs_true_ari": 1.0,
+        "cluster_preservation_quality": 100.0,
+        "passed": true
+      },
+      {
+        "embedding_dim": 384,
+        "hvs_dim": 64,
+        "n_samples": 100,
+        "n_clusters": 5,
+        "clustering_ari": 1.0,
+        "clustering_nmi": 1.0,
+        "original_vs_true_ari": 1.0,
+        "reconstructed_vs_true_ari": 1.0,
+        "cluster_preservation_quality": 100.0,
+        "passed": true
+      },
+      {
+        "embedding_dim": 768,
+        "hvs_dim": 8,
+        "n_samples": 100,
+        "n_clusters": 5,
+        "clustering_ari": 1.0,
+        "clustering_nmi": 1.0,
+        "original_vs_true_ari": 1.0,
+        "reconstructed_vs_true_ari": 1.0,
+        "cluster_preservation_quality": 100.0,
+        "passed": true
+      },
+      {
+        "embedding_dim": 768,
+        "hvs_dim": 16,
+        "n_samples": 100,
+        "n_clusters": 5,
+        "clustering_ari": 1.0,
+        "clustering_nmi": 1.0,
+        "original_vs_true_ari": 1.0,
+        "reconstructed_vs_true_ari": 1.0,
+        "cluster_preservation_quality": 100.0,
+        "passed": true
+      },
+      {
+        "embedding_dim": 768,
+        "hvs_dim": 32,
+        "n_samples": 100,
+        "n_clusters": 5,
+        "clustering_ari": 1.0,
+        "clustering_nmi": 1.0,
+        "original_vs_true_ari": 1.0,
+        "reconstructed_vs_true_ari": 1.0,
+        "cluster_preservation_quality": 100.0,
+        "passed": true
+      },
+      {
+        "embedding_dim": 768,
+        "hvs_dim": 64,
+        "n_samples": 100,
+        "n_clusters": 5,
+        "clustering_ari": 1.0,
+        "clustering_nmi": 1.0,
+        "original_vs_true_ari": 1.0,
+        "reconstructed_vs_true_ari": 1.0,
+        "cluster_preservation_quality": 100.0,
+        "passed": true
+      },
+      {
+        "embedding_dim": 1536,
+        "hvs_dim": 8,
+        "n_samples": 100,
+        "n_clusters": 5,
+        "clustering_ari": 0.7731301207772738,
+        "clustering_nmi": 0.7943986144733474,
+        "original_vs_true_ari": 0.8091259640102828,
+        "reconstructed_vs_true_ari": 0.9505793331756917,
+        "cluster_preservation_quality": 78.37643676253106,
+        "passed": false
+      },
+      {
+        "embedding_dim": 1536,
+        "hvs_dim": 16,
+        "n_samples": 100,
+        "n_clusters": 5,
+        "clustering_ari": 0.8523291037763745,
+        "clustering_nmi": 0.8521143538534806,
+        "original_vs_true_ari": 0.8523291037763745,
+        "reconstructed_vs_true_ari": 1.0,
+        "cluster_preservation_quality": 85.22217288149275,
+        "passed": true
+      },
+      {
+        "embedding_dim": 1536,
+        "hvs_dim": 32,
+        "n_samples": 100,
+        "n_clusters": 5,
+        "clustering_ari": 0.9004685148801115,
+        "clustering_nmi": 0.9011474625092609,
+        "original_vs_true_ari": 0.9004685148801115,
+        "reconstructed_vs_true_ari": 1.0,
+        "cluster_preservation_quality": 90.08079886946862,
+        "passed": true
+      },
+      {
+        "embedding_dim": 1536,
+        "hvs_dim": 64,
+        "n_samples": 100,
+        "n_clusters": 5,
+        "clustering_ari": 0.8492717447414677,
+        "clustering_nmi": 0.8675901660342162,
+        "original_vs_true_ari": 0.8492717447414677,
+        "reconstructed_vs_true_ari": 1.0,
+        "cluster_preservation_quality": 85.8430955387842,
+        "passed": true
+      }
+    ],
+    "ranking_preservation": [
+      {
+        "embedding_dim": 384,
+        "hvs_dim": 8,
+        "n_samples": 100,
+        "k_neighbors": 10,
+        "ranking_preservation_mean": 0.595,
+        "ranking_preservation_std": 0.09733961166965892,
+        "ranking_preservation_min": 0.4,
+        "ranking_quality": 59.5,
+        "passed": false
+      },
+      {
+        "embedding_dim": 384,
+        "hvs_dim": 16,
+        "n_samples": 100,
+        "k_neighbors": 10,
+        "ranking_preservation_mean": 0.7249999999999999,
+        "ranking_preservation_std": 0.11346805717910219,
+        "ranking_preservation_min": 0.6,
+        "ranking_quality": 72.49999999999999,
+        "passed": true
+      },
+      {
+        "embedding_dim": 384,
+        "hvs_dim": 32,
+        "n_samples": 100,
+        "k_neighbors": 10,
+        "ranking_preservation_mean": 0.785,
+        "ranking_preservation_std": 0.11079259903080171,
+        "ranking_preservation_min": 0.6,
+        "ranking_quality": 78.5,
+        "passed": true
+      },
+      {
+        "embedding_dim": 384,
+        "hvs_dim": 64,
+        "n_samples": 100,
+        "k_neighbors": 10,
+        "ranking_preservation_mean": 0.89,
+        "ranking_preservation_std": 0.09433981132056604,
+        "ranking_preservation_min": 0.7,
+        "ranking_quality": 89.0,
+        "passed": true
+      },
+      {
+        "embedding_dim": 768,
+        "hvs_dim": 8,
+        "n_samples": 100,
+        "k_neighbors": 10,
+        "ranking_preservation_mean": 0.6049999999999999,
+        "ranking_preservation_std": 0.12031209415515963,
+        "ranking_preservation_min": 0.4,
+        "ranking_quality": 60.499999999999986,
+        "passed": false
+      },
+      {
+        "embedding_dim": 768,
+        "hvs_dim": 16,
+        "n_samples": 100,
+        "k_neighbors": 10,
+        "ranking_preservation_mean": 0.6549999999999998,
+        "ranking_preservation_std": 0.10712142642814276,
+        "ranking_preservation_min": 0.5,
+        "ranking_quality": 65.49999999999999,
+        "passed": false
+      },
+      {
+        "embedding_dim": 768,
+        "hvs_dim": 32,
+        "n_samples": 100,
+        "k_neighbors": 10,
+        "ranking_preservation_mean": 0.7349999999999999,
+        "ranking_preservation_std": 0.09630680142129114,
+        "ranking_preservation_min": 0.5,
+        "ranking_quality": 73.49999999999999,
+        "passed": true
+      },
+      {
+        "embedding_dim": 768,
+        "hvs_dim": 64,
+        "n_samples": 100,
+        "k_neighbors": 10,
+        "ranking_preservation_mean": 0.705,
+        "ranking_preservation_std": 0.10234744745229361,
+        "ranking_preservation_min": 0.5,
+        "ranking_quality": 70.5,
+        "passed": true
+      },
+      {
+        "embedding_dim": 1536,
+        "hvs_dim": 8,
+        "n_samples": 100,
+        "k_neighbors": 10,
+        "ranking_preservation_mean": 0.485,
+        "ranking_preservation_std": 0.20560885194952086,
+        "ranking_preservation_min": 0.1,
+        "ranking_quality": 48.5,
+        "passed": false
+      },
+      {
+        "embedding_dim": 1536,
+        "hvs_dim": 16,
+        "n_samples": 100,
+        "k_neighbors": 10,
+        "ranking_preservation_mean": 0.5399999999999999,
+        "ranking_preservation_std": 0.12409673645990854,
+        "ranking_preservation_min": 0.2,
+        "ranking_quality": 53.99999999999999,
+        "passed": false
+      },
+      {
+        "embedding_dim": 1536,
+        "hvs_dim": 32,
+        "n_samples": 100,
+        "k_neighbors": 10,
+        "ranking_preservation_mean": 0.555,
+        "ranking_preservation_std": 0.17168284713389398,
+        "ranking_preservation_min": 0.2,
+        "ranking_quality": 55.50000000000001,
+        "passed": false
+      },
+      {
+        "embedding_dim": 1536,
+        "hvs_dim": 64,
+        "n_samples": 100,
+        "k_neighbors": 10,
+        "ranking_preservation_mean": 0.625,
+        "ranking_preservation_std": 0.11346805717910216,
+        "ranking_preservation_min": 0.4,
+        "ranking_quality": 62.5,
+        "passed": false
+      }
+    ],
+    "distance_preservation": [
+      {
+        "embedding_dim": 384,
+        "hvs_dim": 8,
+        "n_samples": 100,
+        "distance_correlation": 0.7463426342634263,
+        "distance_mae": 0.26222163438796997,
+        "distance_preservation_quality": 74.63426342634263,
+        "passed": false
+      },
+      {
+        "embedding_dim": 384,
+        "hvs_dim": 16,
+        "n_samples": 100,
+        "distance_correlation": 0.878091809180918,
+        "distance_mae": 0.15510816872119904,
+        "distance_preservation_quality": 87.8091809180918,
+        "passed": true
+      },
+      {
+        "embedding_dim": 384,
+        "hvs_dim": 32,
+        "n_samples": 100,
+        "distance_correlation": 0.8433363336333631,
+        "distance_mae": 0.10146639496088028,
+        "distance_preservation_quality": 84.33363336333632,
+        "passed": false
+      },
+      {
+        "embedding_dim": 384,
+        "hvs_dim": 64,
+        "n_samples": 100,
+        "distance_correlation": 0.9583438343834382,
+        "distance_mae": 0.0491764172911644,
+        "distance_preservation_quality": 95.83438343834382,
+        "passed": true
+      },
+      {
+        "embedding_dim": 768,
+        "hvs_dim": 8,
+        "n_samples": 100,
+        "distance_correlation": 0.7645724572457245,
+        "distance_mae": 0.2667590081691742,
+        "distance_preservation_quality": 76.45724572457246,
+        "passed": false
+      },
+      {
+        "embedding_dim": 768,
+        "hvs_dim": 16,
+        "n_samples": 100,
+        "distance_correlation": 0.7038343834383438,
+        "distance_mae": 0.15364859998226166,
+        "distance_preservation_quality": 70.38343834383438,
+        "passed": false
+      },
+      {
+        "embedding_dim": 768,
+        "hvs_dim": 32,
+        "n_samples": 100,
+        "distance_correlation": 0.8133213321332132,
+        "distance_mae": 0.10086791217327118,
+        "distance_preservation_quality": 81.33213321332133,
+        "passed": false
+      },
+      {
+        "embedding_dim": 768,
+        "hvs_dim": 64,
+        "n_samples": 100,
+        "distance_correlation": 0.9195199519951993,
+        "distance_mae": 0.05456612631678581,
+        "distance_preservation_quality": 91.95199519951993,
+        "passed": true
+      },
+      {
+        "embedding_dim": 1536,
+        "hvs_dim": 8,
+        "n_samples": 100,
+        "distance_correlation": 0.6454125412541253,
+        "distance_mae": 0.251799613237381,
+        "distance_preservation_quality": 64.54125412541252,
+        "passed": false
+      },
+      {
+        "embedding_dim": 1536,
+        "hvs_dim": 16,
+        "n_samples": 100,
+        "distance_correlation": 0.7500390039003899,
+        "distance_mae": 0.19456075131893158,
+        "distance_preservation_quality": 75.003900390039,
+        "passed": false
+      },
+      {
+        "embedding_dim": 1536,
+        "hvs_dim": 32,
+        "n_samples": 100,
+        "distance_correlation": 0.6694029402940294,
+        "distance_mae": 0.11113253235816956,
+        "distance_preservation_quality": 66.94029402940293,
+        "passed": false
+      },
+      {
+        "embedding_dim": 1536,
+        "hvs_dim": 64,
+        "n_samples": 100,
+        "distance_correlation": 0.7336453645364536,
+        "distance_mae": 0.05881328135728836,
+        "distance_preservation_quality": 73.36453645364536,
+        "passed": false
+      }
+    ]
+  },
+  "summary": {
+    "overall_pass_rate": {
+      "similarity_preservation": 0.08333333333333333,
+      "clustering_preservation": 0.9166666666666666,
+      "ranking_preservation": 0.4166666666666667,
+      "distance_preservation": 0.25
+    }
+  },
+  "metadata": {
+    "license": {
+      "name": "AGPLv3",
+      "url": "https://www.gnu.org/licenses/agpl-3.0.html"
+    }
+  }
+}

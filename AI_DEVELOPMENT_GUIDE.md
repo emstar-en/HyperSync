@@ -6,6 +6,44 @@ This guide helps AI assistants understand the HyperSync project structure, navig
 
 ---
 
+## 🌀 Understanding HyperSync's Geometric Principles
+
+**CRITICAL: Read this section to understand the foundational architecture**
+
+HyperSync is not a traditional distributed system. It reimagines computation as **geometric physics**.
+
+### Key Concepts
+
+1. **Geometry IS the Database**
+   - State is encoded as points on manifolds (H⁴ × S³ × E⁵)
+   - "If you move the point, you change the state"
+   - All operations are geometric transformations
+
+2. **Physics-Based Coordination**
+   - Agents are particles with position, momentum, mass
+   - Tasks are gravity wells that attract agents
+   - Consensus emerges from geometric equilibrium
+
+3. **Fractal (Holonic) Architecture**
+   - Self-similar at every scale
+   - Each Holon is a self-contained universe
+   - Recursive nesting enables autonomous coordination
+
+4. **Hierarchical Determinism (D0-D3)**
+   - D0: Bit-exact (financial, legal)
+   - D1: Replayable (ML training, science)
+   - D2: Statistical (exploration, Monte Carlo)
+   - D3: Best-effort (visualization)
+
+5. **AGUA: The Determinism Engine**
+   - Enforces determinism tiers
+   - Supervises PCT phases (Pathfinder → Cartographer → Trailblazer)
+   - Intercepts all requests for compliance
+
+**📖 For Complete Details**: See [`docs/GEOMETRIC_PRINCIPLES.md`](docs/GEOMETRIC_PRINCIPLES.md)
+
+---
+
 ## 📂 Project Structure Overview
 
 ```

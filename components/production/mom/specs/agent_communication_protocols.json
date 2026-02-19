@@ -1,0 +1,1411 @@
+{
+  "component": "agent_communication_protocols",
+  "version": "1.0.0",
+  "description": "Comprehensive communication protocols for AI agents with support for HTTP, gRPC, WebSocket, MQTT, and custom protocols with AI-managed negotiation",
+  "subsystem": "AI Management",
+  "dependencies": [
+    "iam_agent_handoff_protocol",
+    "model_versioning_strategy",
+    "node_resource_allocation_policies"
+  ],
+  "type_definitions": {
+    "Protocol": {
+      "type": "enum",
+      "values": [
+        "HTTP",
+        "HTTP2",
+        "gRPC",
+        "WebSocket",
+        "MQTT",
+        "Custom"
+      ],
+      "description": "Communication protocol type"
+    },
+    "Message": {
+      "type": "object",
+      "description": "Generic message structure",
+      "properties": {
+        "message_id": {
+          "type": "UUID",
+          "description": "Unique message identifier"
+        },
+        "sender_id": {
+          "type": "UUID",
+          "description": "Sender agent identifier"
+        },
+        "receiver_id": {
+          "type": "UUID",
+          "description": "Receiver agent identifier"
+        },
+        "headers": {
+          "type": "dict[string, string]",
+          "description": "Message headers"
+        },
+        "body": {
+          "type": "bytes",
+          "description": "Message payload"
+        },
+        "metadata": {
+          "type": "dict[string, any]",
+          "description": "Additional metadata"
+        },
+        "timestamp": {
+          "type": "ISO8601",
+          "description": "Message creation timestamp"
+        }
+      }
+    },
+    "MessagePattern": {
+      "type": "enum",
+      "values": [
+        "RequestResponse",
+        "PubSub",
+        "Stream",
+        "Broadcast"
+      ],
+      "description": "Message exchange pattern"
+    },
+    "ProtocolConfig": {
+      "type": "object",
+      "description": "Protocol configuration",
+      "properties": {
+        "protocol": {
+          "type": "Protocol",
+          "description": "Protocol type"
+        },
+        "endpoint": {
+          "type": "string",
+          "description": "Endpoint URL or address"
+        },
+        "options": {
+          "type": "dict[string, any]",
+          "description": "Protocol-specific options"
+        },
+        "security": {
+          "type": "SecurityConfig",
+          "description": "Security configuration"
+        }
+      }
+    },
+    "SecurityConfig": {
+      "type": "object",
+      "properties": {
+        "encryption": {
+          "type": "enum",
+          "values": [
+            "TLS1.2",
+            "TLS1.3",
+            "None"
+          ],
+          "description": "Encryption protocol"
+        },
+        "authentication": {
+          "type": "enum",
+          "values": [
+            "JWT",
+            "OAuth2",
+            "mTLS",
+            "APIKey",
+            "None"
+          ],
+          "description": "Authentication method"
+        },
+        "authorization": {
+          "type": "boolean",
+          "description": "Whether to enable authorization"
+        }
+      }
+    },
+    "CommunicationMetrics": {
+      "type": "object",
+      "properties": {
+        "latency_ms": {
+          "type": "float64",
+          "description": "Average latency in milliseconds"
+        },
+        "throughput_mbps": {
+          "type": "float64",
+          "description": "Throughput in Mbps"
+        },
+        "error_rate": {
+          "type": "float64",
+          "description": "Error rate (0-1)"
+        },
+        "messages_sent": {
+          "type": "integer",
+          "description": "Total messages sent"
+        },
+        "messages_received": {
+          "type": "integer",
+          "description": "Total messages received"
+        }
+      }
+    },
+    "Connection": {
+      "type": "object",
+      "properties": {
+        "connection_id": {
+          "type": "UUID",
+          "description": "Connection identifier"
+        },
+        "protocol": {
+          "type": "Protocol",
+          "description": "Connection protocol"
+        },
+        "state": {
+          "type": "enum",
+          "values": [
+            "Connecting",
+            "Connected",
+            "Disconnecting",
+            "Disconnected",
+            "Error"
+          ],
+          "description": "Connection state"
+        },
+        "established_at": {
+          "type": "ISO8601",
+          "description": "Connection establishment time"
+        }
+      }
+    },
+    "Route": {
+      "type": "object",
+      "properties": {
+        "route_id": {
+          "type": "UUID",
+          "description": "Route identifier"
+        },
+        "pattern": {
+          "type": "string",
+          "description": "Route pattern (e.g., '/agents/:id/messages')"
+        },
+        "destination": {
+          "type": "UUID",
+          "description": "Destination agent or service"
+        },
+        "priority": {
+          "type": "integer",
+          "description": "Route priority"
+        }
+      }
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "ACP-001",
+      "name": "send_message",
+      "category": "Basic Communication",
+      "description": "Send message to agent with automatic protocol selection and routing",
+      "signature": {
+        "inputs": {
+          "receiver_id": {
+            "type": "UUID",
+            "description": "Target agent identifier"
+          },
+          "body": {
+            "type": "bytes",
+            "description": "Message payload"
+          },
+          "headers": {
+            "type": "dict[string, string]",
+            "description": "Message headers",
+            "optional": true
+          },
+          "protocol": {
+            "type": "Protocol",
+            "description": "Specific protocol (auto-select if not specified)",
+            "optional": true
+          },
+          "timeout_ms": {
+            "type": "integer",
+            "description": "Message timeout in milliseconds",
+            "default": 30000
+          },
+          "retry": {
+            "type": "boolean",
+            "description": "Enable automatic retry on failure",
+            "default": true
+          }
+        },
+        "outputs": {
+          "message_id": {
+            "type": "UUID",
+            "description": "Sent message identifier"
+          },
+          "delivered": {
+            "type": "boolean",
+            "description": "Whether message was delivered"
+          },
+          "protocol_used": {
+            "type": "Protocol",
+            "description": "Protocol that was used"
+          }
+        }
+      },
+      "formula": {
+        "description": "Message sending algorithm",
+        "steps": [
+          "1. Validate receiver_id exists and is reachable",
+          "2. If protocol not specified:",
+          "   a. Query receiver capabilities",
+          "   b. Select optimal protocol based on:",
+          "      - Message size",
+          "      - Latency requirements",
+          "      - Reliability requirements",
+          "      - Network conditions",
+          "3. Create Message object with unique message_id",
+          "4. Serialize message according to protocol",
+          "5. Establish connection if needed",
+          "6. Transmit message",
+          "7. If retry=true and failure: apply retry logic",
+          "8. Wait for acknowledgment or timeout",
+          "9. Return send result"
+        ],
+        "protocol_selection": {
+          "criteria": [
+            "Message size: small \u2192 HTTP, large \u2192 gRPC/stream",
+            "Latency: critical \u2192 WebSocket, normal \u2192 HTTP",
+            "Reliability: high \u2192 gRPC with retry, normal \u2192 HTTP",
+            "Real-time: yes \u2192 WebSocket/MQTT, no \u2192 HTTP"
+          ]
+        },
+        "retry_policy": "Exponential backoff: delay_n = min(initial_delay \u00d7 2^n, max_delay)"
+      },
+      "properties": {
+        "idempotency": "No (each call sends new message)",
+        "atomicity": "Yes (message sent or error)",
+        "ai_managed": "Yes (automatic protocol selection)",
+        "time_complexity": "O(1) + network latency",
+        "space_complexity": "O(message_size)"
+      },
+      "edge_cases": [
+        {
+          "case": "Receiver not reachable",
+          "handling": "Return delivery failure, queue if retry enabled",
+          "error": "RECEIVER_UNREACHABLE"
+        },
+        {
+          "case": "Message too large",
+          "handling": "Switch to streaming protocol or reject",
+          "error": "MESSAGE_TOO_LARGE"
+        },
+        {
+          "case": "Timeout exceeded",
+          "handling": "Cancel send, return timeout error",
+          "error": "SEND_TIMEOUT"
+        },
+        {
+          "case": "Protocol not supported by receiver",
+          "handling": "Fallback to common protocol or fail",
+          "error": "PROTOCOL_MISMATCH"
+        },
+        {
+          "case": "Connection failure",
+          "handling": "Retry if enabled, else fail",
+          "error": "CONNECTION_FAILED"
+        },
+        {
+          "case": "Serialization error",
+          "handling": "Return serialization error",
+          "error": "SERIALIZATION_FAILED"
+        }
+      ],
+      "test_cases": [
+        {
+          "test_id": "ACP-001-T01",
+          "description": "Simple message send with auto protocol",
+          "input": {
+            "receiver_id": "agent-2",
+            "body": "Hello from agent-1"
+          },
+          "expected_output": {
+            "message_id": "UUID",
+            "delivered": true,
+            "protocol_used": "HTTP2 or gRPC (auto-selected)"
+          }
+        },
+        {
+          "test_id": "ACP-001-T02",
+          "description": "Send with specific protocol",
+          "input": {
+            "receiver_id": "agent-3",
+            "body": "Test message",
+            "protocol": "gRPC"
+          },
+          "expected_output": {
+            "delivered": true,
+            "protocol_used": "gRPC"
+          }
+        },
+        {
+          "test_id": "ACP-001-T03",
+          "description": "Send with custom headers",
+          "input": {
+            "receiver_id": "agent-4",
+            "body": "Message",
+            "headers": {
+              "Priority": "high",
+              "Type": "command"
+            }
+          },
+          "expected_output": {
+            "delivered": true
+          }
+        },
+        {
+          "test_id": "ACP-001-T04",
+          "description": "Receiver unreachable",
+          "input": {
+            "receiver_id": "agent-offline",
+            "body": "Message"
+          },
+          "expected_error": "RECEIVER_UNREACHABLE"
+        },
+        {
+          "test_id": "ACP-001-T05",
+          "description": "Message too large",
+          "input": {
+            "receiver_id": "agent-5",
+            "body": "10 MB payload"
+          },
+          "precondition": "Max message size is 5 MB",
+          "expected_output": {
+            "protocol_used": "Stream protocol (auto-switched)"
+          }
+        },
+        {
+          "test_id": "ACP-001-T06",
+          "description": "Timeout exceeded",
+          "input": {
+            "receiver_id": "agent-slow",
+            "body": "Message",
+            "timeout_ms": 1000
+          },
+          "inject_condition": "Receiver takes > 1 second",
+          "expected_error": "SEND_TIMEOUT"
+        },
+        {
+          "test_id": "ACP-001-T07",
+          "description": "Automatic retry on failure",
+          "input": {
+            "receiver_id": "agent-6",
+            "body": "Message",
+            "retry": true
+          },
+          "inject_failure": "First attempt fails",
+          "expected_output": {
+            "delivered": true
+          },
+          "note": "Succeeded on retry"
+        },
+        {
+          "test_id": "ACP-001-T08",
+          "description": "No retry on failure",
+          "input": {
+            "receiver_id": "agent-7",
+            "body": "Message",
+            "retry": false
+          },
+          "inject_failure": "Send fails",
+          "expected_output": {
+            "delivered": false
+          }
+        },
+        {
+          "test_id": "ACP-001-T09",
+          "description": "Protocol fallback",
+          "input": {
+            "receiver_id": "agent-8",
+            "body": "Message",
+            "protocol": "HTTP2"
+          },
+          "precondition": "Receiver doesn't support HTTP2",
+          "expected_output": {
+            "delivered": true,
+            "protocol_used": "HTTP (fallback)"
+          }
+        },
+        {
+          "test_id": "ACP-001-T10",
+          "description": "Large batch of messages",
+          "input": {
+            "receiver_id": "agent-9",
+            "messages": "1000 messages"
+          },
+          "expected_output": {
+            "all_delivered": true
+          }
+        }
+      ]
+    },
+    {
+      "operation_id": "ACP-002",
+      "name": "receive_message",
+      "category": "Basic Communication",
+      "description": "Receive message from another agent with automatic deserialization",
+      "signature": {
+        "inputs": {
+          "filter": {
+            "type": "dict[string, any]",
+            "description": "Message filter criteria",
+            "optional": true
+          },
+          "timeout_ms": {
+            "type": "integer",
+            "description": "Wait timeout in milliseconds",
+            "default": 0
+          },
+          "blocking": {
+            "type": "boolean",
+            "description": "Block until message arrives",
+            "default": false
+          }
+        },
+        "outputs": {
+          "message": {
+            "type": "Message",
+            "description": "Received message",
+            "optional": true
+          },
+          "available": {
+            "type": "boolean",
+            "description": "Whether message was available"
+          }
+        }
+      },
+      "formula": {
+        "description": "Message receiving algorithm",
+        "steps": [
+          "1. Query message queue for waiting messages",
+          "2. If filter specified: apply filter to messages",
+          "3. If messages available:",
+          "   a. Dequeue message",
+          "   b. Deserialize based on protocol",
+          "   c. Validate message integrity",
+          "   d. Return message",
+          "4. Else if blocking=true:",
+          "   a. Wait up to timeout_ms for message",
+          "   b. Return message or timeout",
+          "5. Else: Return no message available"
+        ]
+      },
+      "properties": {
+        "idempotency": "No (consumes messages from queue)",
+        "blocking_capable": "Yes",
+        "type_safe": "Yes (automatic deserialization)",
+        "time_complexity": "O(1) for queue access, O(n) for filtering",
+        "space_complexity": "O(message_size)"
+      },
+      "edge_cases": [
+        {
+          "case": "No messages available",
+          "handling": "Return null message if non-blocking",
+          "result": "available=false"
+        },
+        {
+          "case": "Timeout in blocking mode",
+          "handling": "Return null after timeout",
+          "warning": "RECEIVE_TIMEOUT"
+        },
+        {
+          "case": "Deserialization failure",
+          "handling": "Return error, message moved to dead letter queue",
+          "error": "DESERIALIZATION_FAILED"
+        },
+        {
+          "case": "Filter matches no messages",
+          "handling": "Return null or wait",
+          "result": "No matching message"
+        },
+        {
+          "case": "Malformed message",
+          "handling": "Skip message, log error",
+          "warning": "MALFORMED_MESSAGE"
+        },
+        {
+          "case": "Queue full (backpressure)",
+          "handling": "Apply flow control",
+          "warning": "QUEUE_FULL"
+        }
+      ],
+      "test_cases": [
+        {
+          "test_id": "ACP-002-T01",
+          "description": "Receive available message",
+          "input": {
+            "blocking": false
+          },
+          "precondition": "Message in queue",
+          "expected_output": {
+            "message": "Message object",
+            "available": true
+          }
+        },
+        {
+          "test_id": "ACP-002-T02",
+          "description": "No message available (non-blocking)",
+          "input": {
+            "blocking": false
+          },
+          "precondition": "Queue is empty",
+          "expected_output": {
+            "message": null,
+            "available": false
+          }
+        },
+        {
+          "test_id": "ACP-002-T03",
+          "description": "Blocking receive",
+          "input": {
+            "blocking": true,
+            "timeout_ms": 5000
+          },
+          "precondition": "Message arrives in 2 seconds",
+          "expected_output": {
+            "message": "Message object",
+            "available": true
+          }
+        },
+        {
+          "test_id": "ACP-002-T04",
+          "description": "Blocking timeout",
+          "input": {
+            "blocking": true,
+            "timeout_ms": 1000
+          },
+          "precondition": "No message arrives",
+          "expected_output": {
+            "message": null,
+            "available": false
+          },
+          "expected_warning": "RECEIVE_TIMEOUT"
+        },
+        {
+          "test_id": "ACP-002-T05",
+          "description": "Receive with filter",
+          "input": {
+            "filter": {
+              "headers.Priority": "high"
+            }
+          },
+          "precondition": "Queue has messages with various priorities",
+          "expected_output": {
+            "message": "High priority message"
+          }
+        },
+        {
+          "test_id": "ACP-002-T06",
+          "description": "Deserialization failure",
+          "input": {},
+          "precondition": "Queue has corrupted message",
+          "expected_error": "DESERIALIZATION_FAILED"
+        },
+        {
+          "test_id": "ACP-002-T07",
+          "description": "Malformed message skipped",
+          "input": {},
+          "precondition": "Queue has malformed message followed by valid message",
+          "expected_output": {
+            "message": "Valid message"
+          },
+          "expected_warning": "MALFORMED_MESSAGE"
+        },
+        {
+          "test_id": "ACP-002-T08",
+          "description": "Filter matches no messages",
+          "input": {
+            "filter": {
+              "headers.Type": "nonexistent"
+            }
+          },
+          "expected_output": {
+            "message": null,
+            "available": false
+          }
+        },
+        {
+          "test_id": "ACP-002-T09",
+          "description": "Multiple filters",
+          "input": {
+            "filter": {
+              "headers.Priority": "high",
+              "headers.Type": "alert"
+            }
+          },
+          "expected_output": {
+            "message": "Message matching all criteria"
+          }
+        },
+        {
+          "test_id": "ACP-002-T10",
+          "description": "Automatic protocol deserialization",
+          "input": {},
+          "precondition": "Queue has messages from different protocols",
+          "expected_output": {
+            "message": "Correctly deserialized regardless of protocol"
+          }
+        }
+      ]
+    },
+    {
+      "operation_id": "ACP-003",
+      "name": "broadcast_message",
+      "category": "Advanced Communication",
+      "description": "Broadcast message to multiple agents with efficient delivery",
+      "signature": {
+        "inputs": {
+          "receiver_ids": {
+            "type": "array[UUID]",
+            "description": "Target agent identifiers (empty for all agents)",
+            "optional": true
+          },
+          "body": {
+            "type": "bytes",
+            "description": "Message payload"
+          },
+          "topic": {
+            "type": "string",
+            "description": "Topic for topic-based routing",
+            "optional": true
+          },
+          "reliable": {
+            "type": "boolean",
+            "description": "Ensure delivery to all receivers",
+            "default": false
+          }
+        },
+        "outputs": {
+          "message_id": {
+            "type": "UUID",
+            "description": "Broadcast message identifier"
+          },
+          "delivered_count": {
+            "type": "integer",
+            "description": "Number of successful deliveries"
+          },
+          "failed_receivers": {
+            "type": "array[UUID]",
+            "description": "Receivers that failed to receive",
+            "optional": true
+          }
+        }
+      },
+      "formula": {
+        "description": "Broadcast algorithm",
+        "steps": [
+          "1. If receiver_ids specified: use explicit list",
+          "   Else if topic specified: lookup subscribers to topic",
+          "   Else: use all registered agents",
+          "2. Create broadcast message with multicast support",
+          "3. Use efficient delivery:",
+          "   - If all receivers support multicast: use multicast",
+          "   - Else: parallel unicast to receivers",
+          "4. Track delivery status for each receiver",
+          "5. If reliable=true:",
+          "   a. Retry failed deliveries",
+          "   b. Wait for all acknowledgments",
+          "6. Return delivery statistics"
+        ],
+        "multicast_efficiency": "Single transmission vs n unicasts \u2192 O(1) vs O(n) network usage"
+      },
+      "properties": {
+        "idempotency": "No (each broadcast is new)",
+        "scalability": "High (multicast when possible)",
+        "reliability_configurable": "Yes",
+        "time_complexity": "O(n) worst case, O(1) with multicast",
+        "space_complexity": "O(1) for message, O(n) for tracking"
+      },
+      "edge_cases": [
+        {
+          "case": "No receivers",
+          "handling": "Return success with delivered_count=0",
+          "warning": "NO_RECEIVERS"
+        },
+        {
+          "case": "Some receivers unreachable",
+          "handling": "Deliver to reachable, report failures",
+          "result": "Partial delivery"
+        },
+        {
+          "case": "All receivers unreachable",
+          "handling": "Return delivery failure",
+          "error": "BROADCAST_FAILED"
+        },
+        {
+          "case": "Topic has no subscribers",
+          "handling": "Return success with delivered_count=0",
+          "warning": "NO_SUBSCRIBERS"
+        },
+        {
+          "case": "Multicast not supported",
+          "handling": "Fallback to parallel unicast",
+          "warning": "MULTICAST_UNAVAILABLE"
+        },
+        {
+          "case": "Very large receiver list",
+          "handling": "Batch deliveries",
+          "note": "Efficient batching"
+        }
+      ],
+      "test_cases": [
+        {
+          "test_id": "ACP-003-T01",
+          "description": "Broadcast to specific agents",
+          "input": {
+            "receiver_ids": [
+              "agent-1",
+              "agent-2",
+              "agent-3"
+            ],
+            "body": "Broadcast message"
+          },
+          "expected_output": {
+            "delivered_count": 3,
+            "failed_receivers": []
+          }
+        },
+        {
+          "test_id": "ACP-003-T02",
+          "description": "Broadcast to topic subscribers",
+          "input": {
+            "topic": "alerts",
+            "body": "Alert message"
+          },
+          "precondition": "5 agents subscribed to 'alerts'",
+          "expected_output": {
+            "delivered_count": 5
+          }
+        },
+        {
+          "test_id": "ACP-003-T03",
+          "description": "Broadcast to all agents",
+          "input": {
+            "body": "System announcement"
+          },
+          "precondition": "10 agents registered",
+          "expected_output": {
+            "delivered_count": 10
+          }
+        },
+        {
+          "test_id": "ACP-003-T04",
+          "description": "Partial delivery (some unreachable)",
+          "input": {
+            "receiver_ids": [
+              "agent-1",
+              "agent-offline",
+              "agent-3"
+            ],
+            "body": "Message"
+          },
+          "expected_output": {
+            "delivered_count": 2,
+            "failed_receivers": [
+              "agent-offline"
+            ]
+          }
+        },
+        {
+          "test_id": "ACP-003-T05",
+          "description": "Reliable broadcast with retries",
+          "input": {
+            "receiver_ids": [
+              "agent-1",
+              "agent-2"
+            ],
+            "body": "Important message",
+            "reliable": true
+          },
+          "inject_failure": "agent-2 initially fails",
+          "expected_output": {
+            "delivered_count": 2,
+            "failed_receivers": []
+          },
+          "note": "Retry succeeded"
+        },
+        {
+          "test_id": "ACP-003-T06",
+          "description": "No receivers",
+          "input": {
+            "receiver_ids": [],
+            "body": "Message"
+          },
+          "expected_output": {
+            "delivered_count": 0
+          },
+          "expected_warning": "NO_RECEIVERS"
+        },
+        {
+          "test_id": "ACP-003-T07",
+          "description": "Topic with no subscribers",
+          "input": {
+            "topic": "empty-topic",
+            "body": "Message"
+          },
+          "expected_output": {
+            "delivered_count": 0
+          },
+          "expected_warning": "NO_SUBSCRIBERS"
+        },
+        {
+          "test_id": "ACP-003-T08",
+          "description": "Multicast optimization",
+          "input": {
+            "receiver_ids": [
+              "agent-1",
+              "agent-2",
+              "agent-3",
+              "agent-4",
+              "agent-5"
+            ],
+            "body": "Large message"
+          },
+          "precondition": "All agents support multicast",
+          "expected_output": {
+            "delivered_count": 5
+          },
+          "note": "Used multicast for efficiency"
+        },
+        {
+          "test_id": "ACP-003-T09",
+          "description": "Multicast fallback to unicast",
+          "input": {
+            "receiver_ids": [
+              "agent-1",
+              "agent-2"
+            ],
+            "body": "Message"
+          },
+          "precondition": "Multicast not available",
+          "expected_output": {
+            "delivered_count": 2
+          },
+          "expected_warning": "MULTICAST_UNAVAILABLE"
+        },
+        {
+          "test_id": "ACP-003-T10",
+          "description": "Large broadcast (1000 agents)",
+          "input": {
+            "body": "Message",
+            "receiver_ids": "1000 agent IDs"
+          },
+          "expected_output": {
+            "delivered_count": 1000
+          },
+          "note": "Efficient batched delivery"
+        }
+      ]
+    },
+    {
+      "operation_id": "ACP-004",
+      "name": "request_response",
+      "category": "Advanced Communication",
+      "description": "Send request and wait for response with timeout and correlation",
+      "signature": {
+        "inputs": {
+          "receiver_id": {
+            "type": "UUID",
+            "description": "Target agent"
+          },
+          "request": {
+            "type": "bytes",
+            "description": "Request payload"
+          },
+          "timeout_ms": {
+            "type": "integer",
+            "description": "Response timeout in milliseconds",
+            "default": 30000
+          },
+          "retry": {
+            "type": "boolean",
+            "description": "Retry on failure",
+            "default": true
+          }
+        },
+        "outputs": {
+          "response": {
+            "type": "bytes",
+            "description": "Response payload",
+            "optional": true
+          },
+          "success": {
+            "type": "boolean",
+            "description": "Whether response was received"
+          },
+          "latency_ms": {
+            "type": "float64",
+            "description": "Round-trip latency"
+          }
+        }
+      },
+      "formula": {
+        "description": "Request-response algorithm",
+        "steps": [
+          "1. Generate correlation_id for request",
+          "2. Send request with correlation_id",
+          "3. Register response handler for correlation_id",
+          "4. Wait for response up to timeout_ms:",
+          "   - Use event loop or blocking wait",
+          "   - Match response by correlation_id",
+          "5. If response received:",
+          "   a. Calculate latency = response_time - request_time",
+          "   b. Return response and latency",
+          "6. If timeout:",
+          "   a. If retry=true: retry request",
+          "   b. Else: return timeout error",
+          "7. Clean up response handler"
+        ],
+        "latency_formula": "RTT = t_response - t_request"
+      },
+      "properties": {
+        "idempotency": "Depends on request (can be idempotent)",
+        "synchronous": "Yes",
+        "correlation": "Automatic",
+        "time_complexity": "O(1) + RTT",
+        "space_complexity": "O(request_size + response_size)"
+      },
+      "edge_cases": [
+        {
+          "case": "Response timeout",
+          "handling": "Return timeout error or retry",
+          "error": "RESPONSE_TIMEOUT"
+        },
+        {
+          "case": "Receiver returns error",
+          "handling": "Propagate error to caller",
+          "result": "success=false with error details"
+        },
+        {
+          "case": "Connection lost during request",
+          "handling": "Retry if enabled, else fail",
+          "error": "CONNECTION_LOST"
+        },
+        {
+          "case": "Duplicate response received",
+          "handling": "Ignore duplicate, use first response",
+          "warning": "DUPLICATE_RESPONSE"
+        },
+        {
+          "case": "Response arrives after timeout",
+          "handling": "Discard late response",
+          "warning": "LATE_RESPONSE"
+        },
+        {
+          "case": "Correlation ID mismatch",
+          "handling": "Reject response",
+          "error": "CORRELATION_MISMATCH"
+        }
+      ],
+      "test_cases": [
+        {
+          "test_id": "ACP-004-T01",
+          "description": "Successful request-response",
+          "input": {
+            "receiver_id": "agent-service",
+            "request": "GET /status"
+          },
+          "expected_output": {
+            "response": "OK",
+            "success": true,
+            "latency_ms": "<100"
+          }
+        },
+        {
+          "test_id": "ACP-004-T02",
+          "description": "Response timeout",
+          "input": {
+            "receiver_id": "agent-slow",
+            "request": "Query",
+            "timeout_ms": 1000,
+            "retry": false
+          },
+          "inject_condition": "Response takes > 1 second",
+          "expected_error": "RESPONSE_TIMEOUT"
+        },
+        {
+          "test_id": "ACP-004-T03",
+          "description": "Retry on timeout succeeds",
+          "input": {
+            "receiver_id": "agent-flaky",
+            "request": "Request",
+            "timeout_ms": 2000,
+            "retry": true
+          },
+          "inject_failure": "First attempt times out",
+          "expected_output": {
+            "response": "Success",
+            "success": true
+          },
+          "note": "Retry succeeded"
+        },
+        {
+          "test_id": "ACP-004-T04",
+          "description": "Receiver returns error",
+          "input": {
+            "receiver_id": "agent-error",
+            "request": "Invalid request"
+          },
+          "expected_output": {
+            "success": false,
+            "response": "Error details"
+          }
+        },
+        {
+          "test_id": "ACP-004-T05",
+          "description": "Connection lost during request",
+          "input": {
+            "receiver_id": "agent-unstable",
+            "request": "Request"
+          },
+          "inject_failure": "Connection drops",
+          "expected_error": "CONNECTION_LOST"
+        },
+        {
+          "test_id": "ACP-004-T06",
+          "description": "Duplicate response ignored",
+          "input": {
+            "receiver_id": "agent-duplicate",
+            "request": "Request"
+          },
+          "inject_condition": "Receiver sends response twice",
+          "expected_output": {
+            "response": "First response",
+            "success": true
+          },
+          "expected_warning": "DUPLICATE_RESPONSE"
+        },
+        {
+          "test_id": "ACP-004-T07",
+          "description": "Late response discarded",
+          "input": {
+            "receiver_id": "agent-late",
+            "request": "Request",
+            "timeout_ms": 1000
+          },
+          "inject_condition": "Response arrives after 1.5 seconds",
+          "expected_error": "RESPONSE_TIMEOUT",
+          "expected_warning": "LATE_RESPONSE"
+        },
+        {
+          "test_id": "ACP-004-T08",
+          "description": "High latency measured",
+          "input": {
+            "receiver_id": "agent-remote",
+            "request": "Request"
+          },
+          "precondition": "Agent is geographically distant",
+          "expected_output": {
+            "success": true,
+            "latency_ms": ">200"
+          }
+        },
+        {
+          "test_id": "ACP-004-T09",
+          "description": "Correlation ID tracking",
+          "input": {
+            "receiver_id": "agent-service",
+            "request": "Request"
+          },
+          "expected_output": {
+            "success": true
+          },
+          "note": "Response correctly correlated with request"
+        },
+        {
+          "test_id": "ACP-004-T10",
+          "description": "Concurrent requests",
+          "input": {
+            "concurrent_requests": 10,
+            "receiver_id": "agent-service"
+          },
+          "expected_output": {
+            "all_successful": true
+          },
+          "note": "All responses correctly correlated"
+        }
+      ]
+    },
+    {
+      "operation_id": "ACP-005",
+      "name": "publish_subscribe",
+      "category": "Pub/Sub",
+      "description": "Publish-subscribe pattern with topic-based routing and multiple subscribers",
+      "signature": {
+        "inputs": {
+          "topic": {
+            "type": "string",
+            "description": "Topic to publish to or subscribe to"
+          },
+          "operation": {
+            "type": "enum",
+            "values": [
+              "publish",
+              "subscribe",
+              "unsubscribe"
+            ],
+            "description": "Pub/sub operation"
+          },
+          "message": {
+            "type": "bytes",
+            "description": "Message to publish (for publish operation)",
+            "optional": true
+          },
+          "callback": {
+            "type": "function",
+            "description": "Callback for received messages (for subscribe)",
+            "optional": true
+          },
+          "persist": {
+            "type": "boolean",
+            "description": "Persist messages for offline subscribers",
+            "default": false
+          }
+        },
+        "outputs": {
+          "success": {
+            "type": "boolean",
+            "description": "Operation success"
+          },
+          "subscription_id": {
+            "type": "UUID",
+            "description": "Subscription identifier (for subscribe)",
+            "optional": true
+          },
+          "delivered_count": {
+            "type": "integer",
+            "description": "Number of subscribers delivered to (for publish)",
+            "optional": true
+          }
+        }
+      },
+      "formula": {
+        "description": "Pub/sub algorithm",
+        "steps": [
+          "1. If operation='publish':",
+          "   a. Lookup subscribers for topic",
+          "   b. For each subscriber:",
+          "      - If online: deliver message immediately",
+          "      - If offline and persist=true: queue message",
+          "   c. Return delivered_count",
+          "2. If operation='subscribe':",
+          "   a. Generate subscription_id",
+          "   b. Register subscriber for topic with callback",
+          "   c. If persist=true: deliver queued messages",
+          "   d. Return subscription_id",
+          "3. If operation='unsubscribe':",
+          "   a. Remove subscriber from topic",
+          "   b. Clean up resources",
+          "   c. Return success"
+        ],
+        "topic_matching": "Supports wildcards: 'sensors/*' matches 'sensors/temp', 'sensors/humidity'"
+      },
+      "properties": {
+        "idempotency": "Depends on operation (subscribe is idempotent)",
+        "scalability": "High (decoupled publishers and subscribers)",
+        "persistence_optional": "Yes",
+        "time_complexity": "O(n) where n = subscribers",
+        "space_complexity": "O(m) where m = queued messages"
+      },
+      "edge_cases": [
+        {
+          "case": "Topic has no subscribers",
+          "handling": "Message delivered to 0 subscribers",
+          "result": "delivered_count=0"
+        },
+        {
+          "case": "Duplicate subscription",
+          "handling": "Return existing subscription_id",
+          "warning": "ALREADY_SUBSCRIBED"
+        },
+        {
+          "case": "Unsubscribe from non-existent topic",
+          "handling": "Return success (idempotent)",
+          "result": "No-op"
+        },
+        {
+          "case": "Offline subscriber with persist=false",
+          "handling": "Message lost for offline subscriber",
+          "result": "No delivery to offline"
+        },
+        {
+          "case": "Subscriber callback throws exception",
+          "handling": "Log error, continue to other subscribers",
+          "warning": "SUBSCRIBER_ERROR"
+        },
+        {
+          "case": "Topic wildcard subscription",
+          "handling": "Receive messages matching pattern",
+          "result": "Multiple topic subscription"
+        }
+      ],
+      "test_cases": [
+        {
+          "test_id": "ACP-005-T01",
+          "description": "Subscribe to topic",
+          "input": {
+            "topic": "events",
+            "operation": "subscribe",
+            "callback": "message_handler"
+          },
+          "expected_output": {
+            "success": true,
+            "subscription_id": "UUID"
+          }
+        },
+        {
+          "test_id": "ACP-005-T02",
+          "description": "Publish to topic with subscribers",
+          "input": {
+            "topic": "events",
+            "operation": "publish",
+            "message": "Event data"
+          },
+          "precondition": "3 agents subscribed to 'events'",
+          "expected_output": {
+            "success": true,
+            "delivered_count": 3
+          }
+        },
+        {
+          "test_id": "ACP-005-T03",
+          "description": "Publish to topic with no subscribers",
+          "input": {
+            "topic": "empty-topic",
+            "operation": "publish",
+            "message": "Data"
+          },
+          "expected_output": {
+            "success": true,
+            "delivered_count": 0
+          }
+        },
+        {
+          "test_id": "ACP-005-T04",
+          "description": "Unsubscribe from topic",
+          "input": {
+            "topic": "events",
+            "operation": "unsubscribe"
+          },
+          "precondition": "Agent is subscribed to 'events'",
+          "expected_output": {
+            "success": true
+          },
+          "postcondition": "Agent no longer receives messages"
+        },
+        {
+          "test_id": "ACP-005-T05",
+          "description": "Persistent messages for offline subscriber",
+          "input": {
+            "topic": "alerts",
+            "operation": "publish",
+            "message": "Alert",
+            "persist": true
+          },
+          "precondition": "Subscriber is offline",
+          "expected_output": {
+            "success": true,
+            "delivered_count": 0
+          },
+          "postcondition": "Message queued for offline subscriber"
+        },
+        {
+          "test_id": "ACP-005-T06",
+          "description": "Offline subscriber receives queued messages on reconnect",
+          "input": {
+            "topic": "alerts",
+            "operation": "subscribe",
+            "callback": "handler"
+          },
+          "precondition": "2 messages queued for this subscriber",
+          "expected_output": {
+            "success": true
+          },
+          "postcondition": "Callback receives 2 queued messages"
+        },
+        {
+          "test_id": "ACP-005-T07",
+          "description": "Duplicate subscription",
+          "input": {
+            "topic": "events",
+            "operation": "subscribe"
+          },
+          "precondition": "Already subscribed to 'events'",
+          "expected_output": {
+            "success": true,
+            "subscription_id": "Existing ID"
+          },
+          "expected_warning": "ALREADY_SUBSCRIBED"
+        },
+        {
+          "test_id": "ACP-005-T08",
+          "description": "Wildcard subscription",
+          "input": {
+            "topic": "sensors/*",
+            "operation": "subscribe"
+          },
+          "expected_output": {
+            "success": true
+          },
+          "postcondition": "Receives messages from 'sensors/temp', 'sensors/humidity', etc."
+        },
+        {
+          "test_id": "ACP-005-T09",
+          "description": "Subscriber callback error doesn't affect others",
+          "input": {
+            "topic": "events",
+            "operation": "publish",
+            "message": "Data"
+          },
+          "precondition": "3 subscribers, one with failing callback",
+          "expected_output": {
+            "success": true,
+            "delivered_count": 3
+          },
+          "expected_warning": "SUBSCRIBER_ERROR",
+          "note": "Other subscribers still received message"
+        },
+        {
+          "test_id": "ACP-005-T10",
+          "description": "Multiple topics subscription",
+          "input": [
+            {
+              "topic": "events",
+              "operation": "subscribe"
+            },
+            {
+              "topic": "alerts",
+              "operation": "subscribe"
+            },
+            {
+              "topic": "logs",
+              "operation": "subscribe"
+            }
+          ],
+          "expected_output": {
+            "all_successful": true
+          }
+        }
+      ]
+    }
+  ],
+  "configuration": {
+    "default_protocol": "HTTP2",
+    "fallback_protocol": "HTTP",
+    "default_encryption": "TLS1.3",
+    "default_authentication": "JWT",
+    "compression_enabled": true,
+    "default_serialization": "ProtocolBuffers",
+    "connection_pool_size": 100,
+    "max_message_size_mb": 5,
+    "retry_max_attempts": 3,
+    "retry_initial_delay_ms": 100,
+    "retry_max_delay_ms": 10000
+  },
+  "license": {
+    "type": "AGPLv3",
+    "name": "GNU Affero General Public License v3.0",
+    "url": "https://www.gnu.org/licenses/agpl-3.0.html",
+    "description": "This specification is licensed under AGPLv3. Any implementation or derivative work must also be licensed under AGPLv3 and source code must be made available."
+  }
+}

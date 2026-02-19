@@ -1,0 +1,1200 @@
+{
+  "version": "1.0.0",
+  "namespace": "hypersync.ui.ai_generation",
+  "description": "AI-driven dynamic UI generation system. Analyzes user context, preferences, and task to generate adaptive terminal interfaces. The UI feels like it builds itself around the user with context-appropriate widgets and layouts.",
+  
+  "types": {
+    "UserContext": {
+      "description": "Current user context and state",
+      "fields": {
+        "user_id": {
+          "type": "string",
+          "description": "User identifier",
+          "required": true
+        },
+        "current_task": {
+          "type": "string",
+          "description": "Current task/operation",
+          "required": true
+        },
+        "task_history": {
+          "type": "array<string>",
+          "description": "Recent task history",
+          "required": false
+        },
+        "active_entities": {
+          "type": "array<string>",
+          "description": "Currently active entities (files, sessions, etc.)",
+          "required": false
+        },
+        "environment": {
+          "type": "map<string, any>",
+          "description": "Environment variables and settings",
+          "required": false
+        },
+        "terminal_capability": {
+          "type": "TerminalCapability",
+          "description": "Terminal capabilities",
+          "required": true
+        },
+        "user_skill_level": {
+          "type": "SkillLevel",
+          "description": "User's skill level",
+          "required": false
+        }
+      }
+    },
+    
+    "SkillLevel": {
+      "description": "User skill level",
+      "enum": ["novice", "intermediate", "advanced", "expert"]
+    },
+    
+    "UILayout": {
+      "description": "Generated UI layout definition",
+      "fields": {
+        "layout_id": {
+          "type": "string",
+          "description": "Unique layout identifier",
+          "required": true
+        },
+        "layout_type": {
+          "type": "LayoutType",
+          "description": "Layout type",
+          "required": true
+        },
+        "regions": {
+          "type": "array<LayoutRegion>",
+          "description": "Layout regions",
+          "required": true
+        },
+        "widgets": {
+          "type": "array<WidgetPlacement>",
+          "description": "Widget placements in layout",
+          "required": true
+        },
+        "generated_at": {
+          "type": "integer",
+          "description": "Generation timestamp",
+          "required": true
+        },
+        "confidence": {
+          "type": "float",
+          "description": "AI confidence in layout (0.0-1.0)",
+          "required": true
+        }
+      }
+    },
+    
+    "LayoutType": {
+      "description": "Type of layout structure",
+      "enum": ["single_panel", "horizontal_split", "vertical_split", "grid", "dashboard", "wizard", "free_form"]
+    },
+    
+    "LayoutRegion": {
+      "description": "Region within layout",
+      "fields": {
+        "region_id": {
+          "type": "string",
+          "description": "Region identifier",
+          "required": true
+        },
+        "bounds": {
+          "type": "Bounds",
+          "description": "Region boundaries",
+          "required": true
+        },
+        "purpose": {
+          "type": "string",
+          "description": "Region purpose (content, status, navigation, etc.)",
+          "required": true
+        },
+        "scrollable": {
+          "type": "boolean",
+          "description": "Region can scroll",
+          "required": false
+        },
+        "resizable": {
+          "type": "boolean",
+          "description": "Region is resizable",
+          "required": false
+        }
+      }
+    },
+    
+    "WidgetPlacement": {
+      "description": "Widget placement in layout",
+      "fields": {
+        "widget_id": {
+          "type": "string",
+          "description": "Widget identifier",
+          "required": true
+        },
+        "primitive_type": {
+          "type": "PrimitiveType",
+          "description": "Type of primitive widget",
+          "required": true
+        },
+        "region_id": {
+          "type": "string",
+          "description": "Parent region ID",
+          "required": true
+        },
+        "bounds": {
+          "type": "Bounds",
+          "description": "Widget bounds within region",
+          "required": true
+        },
+        "config": {
+          "type": "map<string, any>",
+          "description": "Widget-specific configuration",
+          "required": true
+        },
+        "priority": {
+          "type": "integer",
+          "description": "Display priority (higher = more important)",
+          "required": false
+        }
+      }
+    },
+    
+    "GenerationStrategy": {
+      "description": "AI generation strategy",
+      "fields": {
+        "approach": {
+          "type": "string",
+          "description": "Generation approach (task_based, user_based, hybrid)",
+          "required": true
+        },
+        "complexity_target": {
+          "type": "ComplexityLevel",
+          "description": "Target UI complexity",
+          "required": false
+        },
+        "emphasize": {
+          "type": "array<string>",
+          "description": "Aspects to emphasize (efficiency, clarity, aesthetics)",
+          "required": false
+        },
+        "constraints": {
+          "type": "array<string>",
+          "description": "Generation constraints",
+          "required": false
+        }
+      }
+    },
+    
+    "ComplexityLevel": {
+      "description": "UI complexity level",
+      "enum": ["minimal", "simple", "moderate", "complex", "power_user"]
+    },
+    
+    "UserPreference": {
+      "description": "User UI preferences",
+      "fields": {
+        "user_id": {
+          "type": "string",
+          "description": "User identifier",
+          "required": true
+        },
+        "preferred_layout": {
+          "type": "LayoutType",
+          "description": "Preferred layout type",
+          "required": false
+        },
+        "preferred_complexity": {
+          "type": "ComplexityLevel",
+          "description": "Preferred complexity level",
+          "required": false
+        },
+        "widget_preferences": {
+          "type": "map<string, float>",
+          "description": "Widget preference scores",
+          "required": false
+        },
+        "color_preferences": {
+          "type": "array<string>",
+          "description": "Preferred colors",
+          "required": false
+        },
+        "shortcuts": {
+          "type": "map<string, string>",
+          "description": "Custom keyboard shortcuts",
+          "required": false
+        },
+        "learned_patterns": {
+          "type": "array<string>",
+          "description": "Learned usage patterns",
+          "required": false
+        }
+      }
+    },
+    
+    "UITemplate": {
+      "description": "Reusable UI template",
+      "fields": {
+        "template_id": {
+          "type": "string",
+          "description": "Template identifier",
+          "required": true
+        },
+        "name": {
+          "type": "string",
+          "description": "Template name",
+          "required": true
+        },
+        "description": {
+          "type": "string",
+          "description": "Template description",
+          "required": false
+        },
+        "layout": {
+          "type": "UILayout",
+          "description": "Template layout",
+          "required": true
+        },
+        "parameters": {
+          "type": "array<string>",
+          "description": "Customizable parameters",
+          "required": false
+        },
+        "use_count": {
+          "type": "integer",
+          "description": "Number of times used",
+          "required": false
+        }
+      }
+    },
+    
+    "ContextAnalysis": {
+      "description": "Analysis of user context",
+      "fields": {
+        "task_type": {
+          "type": "string",
+          "description": "Identified task type",
+          "required": true
+        },
+        "task_complexity": {
+          "type": "ComplexityLevel",
+          "description": "Estimated task complexity",
+          "required": true
+        },
+        "required_widgets": {
+          "type": "array<PrimitiveType>",
+          "description": "Widgets required for task",
+          "required": true
+        },
+        "optional_widgets": {
+          "type": "array<PrimitiveType>",
+          "description": "Optional helpful widgets",
+          "required": false
+        },
+        "data_types": {
+          "type": "array<string>",
+          "description": "Types of data being worked with",
+          "required": false
+        },
+        "predicted_duration": {
+          "type": "string",
+          "description": "Predicted task duration",
+          "required": false
+        }
+      }
+    },
+    
+    "AdaptationResult": {
+      "description": "Result of UI adaptation",
+      "fields": {
+        "adapted_layout": {
+          "type": "UILayout",
+          "description": "Adapted UI layout",
+          "required": true
+        },
+        "changes": {
+          "type": "array<string>",
+          "description": "Changes made to UI",
+          "required": true
+        },
+        "reasoning": {
+          "type": "string",
+          "description": "Explanation of adaptations",
+          "required": true
+        },
+        "user_impact": {
+          "type": "string",
+          "description": "Expected impact on user (minimal, moderate, significant)",
+          "required": true
+        }
+      }
+    },
+    
+    "FeedbackData": {
+      "description": "User feedback on UI",
+      "fields": {
+        "feedback_type": {
+          "type": "string",
+          "description": "Type of feedback (explicit, implicit)",
+          "required": true
+        },
+        "widget_id": {
+          "type": "string",
+          "description": "Widget being evaluated",
+          "required": false
+        },
+        "rating": {
+          "type": "float",
+          "description": "Rating score (0.0-1.0)",
+          "required": false
+        },
+        "usage_count": {
+          "type": "integer",
+          "description": "Number of times used",
+          "required": false
+        },
+        "time_spent": {
+          "type": "integer",
+          "description": "Time spent with widget (ms)",
+          "required": false
+        },
+        "success": {
+          "type": "boolean",
+          "description": "Task completed successfully",
+          "required": false
+        }
+      }
+    },
+    
+    "ActionSuggestion": {
+      "description": "Suggested action for user",
+      "fields": {
+        "action_id": {
+          "type": "string",
+          "description": "Action identifier",
+          "required": true
+        },
+        "label": {
+          "type": "string",
+          "description": "Action label",
+          "required": true
+        },
+        "description": {
+          "type": "string",
+          "description": "Action description",
+          "required": true
+        },
+        "confidence": {
+          "type": "float",
+          "description": "Confidence in suggestion (0.0-1.0)",
+          "required": true
+        },
+        "priority": {
+          "type": "integer",
+          "description": "Suggestion priority",
+          "required": true
+        },
+        "keyboard_shortcut": {
+          "type": "string",
+          "description": "Suggested keyboard shortcut",
+          "required": false
+        }
+      }
+    },
+    
+    "HelpContent": {
+      "description": "Contextual help content",
+      "fields": {
+        "help_type": {
+          "type": "string",
+          "description": "Type of help (tooltip, guide, tutorial)",
+          "required": true
+        },
+        "title": {
+          "type": "string",
+          "description": "Help title",
+          "required": true
+        },
+        "content": {
+          "type": "string",
+          "description": "Help content (markdown)",
+          "required": true
+        },
+        "related_topics": {
+          "type": "array<string>",
+          "description": "Related help topics",
+          "required": false
+        },
+        "examples": {
+          "type": "array<string>",
+          "description": "Usage examples",
+          "required": false
+        }
+      }
+    }
+  },
+  
+  "operations": {
+    "analyze_user_context": {
+      "description": "Analyze current user context to understand task, environment, and needs. Foundation for AI-driven UI generation.",
+      "inputs": {
+        "context": {
+          "type": "UserContext",
+          "description": "Current user context",
+          "required": true
+        },
+        "history_depth": {
+          "type": "integer",
+          "description": "Number of historical interactions to consider",
+          "required": false
+        }
+      },
+      "outputs": {
+        "analysis": {
+          "type": "ContextAnalysis",
+          "description": "Context analysis results"
+        },
+        "confidence": {
+          "type": "float",
+          "description": "Analysis confidence (0.0-1.0)"
+        }
+      },
+      "errors": {
+        "INSUFFICIENT_CONTEXT": "Not enough context information provided",
+        "ANALYSIS_FAILED": "Failed to analyze context"
+      }
+    },
+    
+    "generate_ui_layout": {
+      "description": "Generate optimal UI layout based on context analysis. AI selects layout type, regions, and structure.",
+      "inputs": {
+        "analysis": {
+          "type": "ContextAnalysis",
+          "description": "Context analysis",
+          "required": true
+        },
+        "preferences": {
+          "type": "UserPreference",
+          "description": "User preferences",
+          "required": false
+        },
+        "strategy": {
+          "type": "GenerationStrategy",
+          "description": "Generation strategy",
+          "required": false
+        },
+        "terminal_size": {
+          "type": "map<string, integer>",
+          "description": "Terminal dimensions (width, height)",
+          "required": true
+        }
+      },
+      "outputs": {
+        "layout": {
+          "type": "UILayout",
+          "description": "Generated UI layout"
+        },
+        "reasoning": {
+          "type": "string",
+          "description": "Explanation of layout decisions"
+        }
+      },
+      "errors": {
+        "GENERATION_FAILED": "Failed to generate UI layout",
+        "TERMINAL_TOO_SMALL": "Terminal too small for required layout",
+        "CONFLICTING_REQUIREMENTS": "Requirements cannot be satisfied"
+      }
+    },
+    
+    "select_primitives": {
+      "description": "Select appropriate UI primitives (widgets) for task. Chooses widgets that best serve user needs.",
+      "inputs": {
+        "analysis": {
+          "type": "ContextAnalysis",
+          "description": "Context analysis",
+          "required": true
+        },
+        "layout": {
+          "type": "UILayout",
+          "description": "Target layout",
+          "required": true
+        },
+        "preferences": {
+          "type": "UserPreference",
+          "description": "User preferences",
+          "required": false
+        },
+        "max_widgets": {
+          "type": "integer",
+          "description": "Maximum number of widgets",
+          "required": false
+        }
+      },
+      "outputs": {
+        "placements": {
+          "type": "array<WidgetPlacement>",
+          "description": "Selected widget placements"
+        },
+        "selection_reasoning": {
+          "type": "map<string, string>",
+          "description": "Reasoning for each widget selection"
+        }
+      },
+      "errors": {
+        "NO_SUITABLE_WIDGETS": "No suitable widgets found for task",
+        "SELECTION_FAILED": "Failed to select primitives"
+      }
+    },
+    
+    "assemble_interface": {
+      "description": "Assemble complete interface from layout and widget selections. Creates final UI structure with interactions.",
+      "inputs": {
+        "layout": {
+          "type": "UILayout",
+          "description": "UI layout",
+          "required": true
+        },
+        "placements": {
+          "type": "array<WidgetPlacement>",
+          "description": "Widget placements",
+          "required": true
+        },
+        "wire_interactions": {
+          "type": "boolean",
+          "description": "Wire up widget interactions",
+          "required": false
+        }
+      },
+      "outputs": {
+        "interface": {
+          "type": "map<string, any>",
+          "description": "Assembled interface structure"
+        },
+        "render_tree": {
+          "type": "array<Primitive>",
+          "description": "Primitive render tree"
+        },
+        "interaction_map": {
+          "type": "map<string, array<string>>",
+          "description": "Widget interaction mappings"
+        }
+      },
+      "errors": {
+        "ASSEMBLY_FAILED": "Failed to assemble interface",
+        "INVALID_PLACEMENTS": "Widget placements are invalid",
+        "INTERACTION_WIRING_FAILED": "Failed to wire interactions"
+      }
+    },
+    
+    "adapt_to_feedback": {
+      "description": "Adapt UI based on user feedback (usage patterns, explicit feedback). Learns and improves over time.",
+      "inputs": {
+        "feedback": {
+          "type": "array<FeedbackData>",
+          "description": "User feedback data",
+          "required": true
+        },
+        "current_layout": {
+          "type": "UILayout",
+          "description": "Current UI layout",
+          "required": true
+        },
+        "preferences": {
+          "type": "UserPreference",
+          "description": "Current user preferences",
+          "required": true
+        }
+      },
+      "outputs": {
+        "adaptation": {
+          "type": "AdaptationResult",
+          "description": "Adaptation results"
+        },
+        "updated_preferences": {
+          "type": "UserPreference",
+          "description": "Updated user preferences"
+        }
+      },
+      "errors": {
+        "INSUFFICIENT_FEEDBACK": "Not enough feedback data",
+        "ADAPTATION_FAILED": "Failed to adapt UI"
+      }
+    },
+    
+    "optimize_layout": {
+      "description": "Optimize layout for space utilization, visual hierarchy, and accessibility. Refines generated layout.",
+      "inputs": {
+        "layout": {
+          "type": "UILayout",
+          "description": "Layout to optimize",
+          "required": true
+        },
+        "optimization_goals": {
+          "type": "array<string>",
+          "description": "Optimization goals (space, hierarchy, accessibility)",
+          "required": false
+        },
+        "constraints": {
+          "type": "map<string, any>",
+          "description": "Optimization constraints",
+          "required": false
+        }
+      },
+      "outputs": {
+        "optimized_layout": {
+          "type": "UILayout",
+          "description": "Optimized layout"
+        },
+        "improvements": {
+          "type": "array<string>",
+          "description": "List of improvements made"
+        },
+        "metrics": {
+          "type": "map<string, float>",
+          "description": "Quality metrics (before/after)"
+        }
+      },
+      "errors": {
+        "OPTIMIZATION_FAILED": "Failed to optimize layout",
+        "GOALS_UNACHIEVABLE": "Optimization goals cannot be achieved"
+      }
+    },
+    
+    "generate_interactions": {
+      "description": "Generate widget interactions, event handlers, and keyboard shortcuts. Creates interactive behavior.",
+      "inputs": {
+        "widgets": {
+          "type": "array<WidgetPlacement>",
+          "description": "Widget placements",
+          "required": true
+        },
+        "context": {
+          "type": "UserContext",
+          "description": "User context for appropriate interactions",
+          "required": true
+        },
+        "preferences": {
+          "type": "UserPreference",
+          "description": "User preferences (including shortcuts)",
+          "required": false
+        }
+      },
+      "outputs": {
+        "interactions": {
+          "type": "map<string, any>",
+          "description": "Generated interaction definitions"
+        },
+        "shortcuts": {
+          "type": "map<string, string>",
+          "description": "Keyboard shortcut mappings"
+        },
+        "help_hints": {
+          "type": "array<string>",
+          "description": "Help hints for interactions"
+        }
+      },
+      "errors": {
+        "GENERATION_FAILED": "Failed to generate interactions",
+        "SHORTCUT_CONFLICTS": "Keyboard shortcut conflicts detected"
+      }
+    },
+    
+    "personalize_ui": {
+      "description": "Personalize UI for specific user based on preferences, history, and patterns. Makes UI feel tailored.",
+      "inputs": {
+        "user_id": {
+          "type": "string",
+          "description": "User identifier",
+          "required": true
+        },
+        "base_layout": {
+          "type": "UILayout",
+          "description": "Base layout to personalize",
+          "required": true
+        },
+        "preferences": {
+          "type": "UserPreference",
+          "description": "User preferences",
+          "required": true
+        }
+      },
+      "outputs": {
+        "personalized_layout": {
+          "type": "UILayout",
+          "description": "Personalized layout"
+        },
+        "personalizations": {
+          "type": "array<string>",
+          "description": "List of personalizations applied"
+        }
+      },
+      "errors": {
+        "PERSONALIZATION_FAILED": "Failed to personalize UI",
+        "INVALID_PREFERENCES": "User preferences are invalid"
+      }
+    },
+    
+    "predict_user_needs": {
+      "description": "Predict what user will need next based on context and patterns. Enables anticipatory UI.",
+      "inputs": {
+        "context": {
+          "type": "UserContext",
+          "description": "Current user context",
+          "required": true
+        },
+        "history": {
+          "type": "array<string>",
+          "description": "User action history",
+          "required": true
+        },
+        "preferences": {
+          "type": "UserPreference",
+          "description": "User preferences",
+          "required": false
+        }
+      },
+      "outputs": {
+        "predictions": {
+          "type": "array<ActionSuggestion>",
+          "description": "Predicted user needs/actions"
+        },
+        "confidence": {
+          "type": "float",
+          "description": "Overall prediction confidence"
+        }
+      },
+      "errors": {
+        "PREDICTION_FAILED": "Failed to predict user needs",
+        "INSUFFICIENT_HISTORY": "Not enough history for prediction"
+      }
+    },
+    
+    "simplify_for_user": {
+      "description": "Simplify UI by hiding complexity, using progressive disclosure, and non-technical language.",
+      "inputs": {
+        "layout": {
+          "type": "UILayout",
+          "description": "Layout to simplify",
+          "required": true
+        },
+        "skill_level": {
+          "type": "SkillLevel",
+          "description": "User skill level",
+          "required": true
+        },
+        "simplification_level": {
+          "type": "integer",
+          "description": "Simplification level (1-5, higher = simpler)",
+          "required": false
+        }
+      },
+      "outputs": {
+        "simplified_layout": {
+          "type": "UILayout",
+          "description": "Simplified layout"
+        },
+        "hidden_features": {
+          "type": "array<string>",
+          "description": "Features that were hidden"
+        },
+        "progressive_disclosure": {
+          "type": "map<string, string>",
+          "description": "Progressive disclosure points"
+        }
+      },
+      "errors": {
+        "SIMPLIFICATION_FAILED": "Failed to simplify UI",
+        "OVER_SIMPLIFIED": "UI would lose essential functionality"
+      }
+    },
+    
+    "generate_help": {
+      "description": "Generate contextual help content based on task and user needs. Interactive tutorials and guidance.",
+      "inputs": {
+        "context": {
+          "type": "UserContext",
+          "description": "Current context",
+          "required": true
+        },
+        "widget_id": {
+          "type": "string",
+          "description": "Specific widget for help",
+          "required": false
+        },
+        "help_type": {
+          "type": "string",
+          "description": "Type of help needed",
+          "required": false
+        }
+      },
+      "outputs": {
+        "help": {
+          "type": "HelpContent",
+          "description": "Generated help content"
+        },
+        "interactive_tutorial": {
+          "type": "boolean",
+          "description": "Interactive tutorial available"
+        }
+      },
+      "errors": {
+        "HELP_GENERATION_FAILED": "Failed to generate help",
+        "NO_HELP_AVAILABLE": "No help available for context"
+      }
+    },
+    
+    "learn_preferences": {
+      "description": "Learn user preferences from behavior patterns. Extracts implicit preferences from usage.",
+      "inputs": {
+        "user_id": {
+          "type": "string",
+          "description": "User identifier",
+          "required": true
+        },
+        "interaction_history": {
+          "type": "array<map<string, any>>",
+          "description": "User interaction history",
+          "required": true
+        },
+        "current_preferences": {
+          "type": "UserPreference",
+          "description": "Current preferences",
+          "required": true
+        }
+      },
+      "outputs": {
+        "learned_preferences": {
+          "type": "UserPreference",
+          "description": "Updated preferences with learned patterns"
+        },
+        "patterns": {
+          "type": "array<string>",
+          "description": "Identified usage patterns"
+        },
+        "confidence": {
+          "type": "map<string, float>",
+          "description": "Confidence in each learned preference"
+        }
+      },
+      "errors": {
+        "LEARNING_FAILED": "Failed to learn preferences",
+        "INSUFFICIENT_DATA": "Not enough interaction data"
+      }
+    },
+    
+    "validate_ui_generation": {
+      "description": "Validate generated UI for usability, accessibility, and errors. Ensures quality before rendering.",
+      "inputs": {
+        "layout": {
+          "type": "UILayout",
+          "description": "Layout to validate",
+          "required": true
+        },
+        "widgets": {
+          "type": "array<WidgetPlacement>",
+          "description": "Widget placements",
+          "required": true
+        },
+        "validation_rules": {
+          "type": "array<string>",
+          "description": "Validation rules to apply",
+          "required": false
+        }
+      },
+      "outputs": {
+        "valid": {
+          "type": "boolean",
+          "description": "UI is valid"
+        },
+        "issues": {
+          "type": "array<map<string, string>>",
+          "description": "Validation issues found"
+        },
+        "suggestions": {
+          "type": "array<string>",
+          "description": "Improvement suggestions"
+        }
+      },
+      "errors": {
+        "VALIDATION_FAILED": "Validation process failed",
+        "CRITICAL_ISSUES": "Critical issues prevent UI rendering"
+      }
+    },
+    
+    "version_ui_state": {
+      "description": "Version UI state for snapshots, rollback, and history tracking. Enables undo/redo of UI changes.",
+      "inputs": {
+        "layout": {
+          "type": "UILayout",
+          "description": "Current layout",
+          "required": true
+        },
+        "user_id": {
+          "type": "string",
+          "description": "User identifier",
+          "required": true
+        },
+        "version_name": {
+          "type": "string",
+          "description": "Version name/label",
+          "required": false
+        }
+      },
+      "outputs": {
+        "version_id": {
+          "type": "string",
+          "description": "Version identifier"
+        },
+        "snapshot": {
+          "type": "map<string, any>",
+          "description": "Complete UI state snapshot"
+        },
+        "version_count": {
+          "type": "integer",
+          "description": "Total versions for user"
+        }
+      },
+      "errors": {
+        "VERSIONING_FAILED": "Failed to version UI state",
+        "STORAGE_FULL": "Version storage is full"
+      }
+    },
+    
+    "export_ui_template": {
+      "description": "Export UI layout as reusable template for sharing and customization.",
+      "inputs": {
+        "layout": {
+          "type": "UILayout",
+          "description": "Layout to export",
+          "required": true
+        },
+        "template_name": {
+          "type": "string",
+          "description": "Template name",
+          "required": true
+        },
+        "description": {
+          "type": "string",
+          "description": "Template description",
+          "required": false
+        },
+        "parameters": {
+          "type": "array<string>",
+          "description": "Customizable parameters",
+          "required": false
+        }
+      },
+      "outputs": {
+        "template": {
+          "type": "UITemplate",
+          "description": "Exported UI template"
+        },
+        "template_data": {
+          "type": "string",
+          "description": "Serialized template (JSON)"
+        }
+      },
+      "errors": {
+        "EXPORT_FAILED": "Failed to export template",
+        "INVALID_TEMPLATE": "Template structure is invalid"
+      }
+    }
+  },
+  
+  "documentation": {
+    "overview": "AI-Generated UI System creates dynamic, adaptive terminal interfaces that feel like they build themselves around the user. Uses context analysis, user modeling, and machine learning to generate optimal layouts and widget selections.",
+    
+    "core_philosophy": {
+      "user_centric": "UI adapts to user, not vice versa",
+      "context_aware": "Understands current task and needs",
+      "learning_system": "Improves over time from feedback",
+      "anticipatory": "Predicts and prepares for user needs",
+      "non_intrusive": "Changes feel natural and helpful",
+      "accessibility": "Adapts to skill level and abilities"
+    },
+    
+    "generation_pipeline": [
+      "1. analyze_user_context - Understand current situation",
+      "2. generate_ui_layout - Create appropriate layout structure",
+      "3. select_primitives - Choose best widgets for task",
+      "4. optimize_layout - Refine for quality",
+      "5. generate_interactions - Wire up behavior",
+      "6. personalize_ui - Apply user-specific customizations",
+      "7. validate_ui_generation - Ensure quality",
+      "8. assemble_interface - Create final UI",
+      "9. Render and monitor feedback",
+      "10. adapt_to_feedback - Continuous improvement"
+    ],
+    
+    "context_analysis": {
+      "description": "Understanding user context is foundation of AI generation",
+      "factors": [
+        "Current task - What is user doing?",
+        "Task history - What has user been doing?",
+        "Active entities - What files/data/sessions are active?",
+        "Environment - System state and resources",
+        "User skill level - Novice to expert",
+        "Terminal capabilities - What can be rendered?",
+        "Time of day - Work patterns vary by time",
+        "Task complexity - Simple vs complex operations"
+      ],
+      "ml_techniques": "Pattern recognition, task classification, context embedding"
+    },
+    
+    "layout_generation": {
+      "description": "AI selects optimal layout based on task and preferences",
+      "layout_selection_factors": [
+        "Task complexity - More complex = more regions",
+        "Data types - Tables for tabular data, charts for metrics",
+        "User skill - Simple layouts for novices",
+        "Terminal size - Adapt to available space",
+        "Historical preference - User's past choices",
+        "Task duration - Different layouts for quick vs long tasks"
+      ],
+      "layout_types": {
+        "single_panel": "Simple tasks, focused work",
+        "horizontal_split": "Comparison, side-by-side",
+        "vertical_split": "Status + content, navigation + detail",
+        "grid": "Dashboard, monitoring, multiple data sources",
+        "wizard": "Multi-step processes, guided workflows",
+        "free_form": "Custom, highly specific needs"
+      }
+    },
+    
+    "widget_selection": {
+      "description": "Choosing right widgets for task",
+      "selection_criteria": [
+        "Task requirements - What operations are needed?",
+        "Data types - Match widget to data (table, chart, list)",
+        "User expertise - Simple widgets for novices",
+        "Efficiency - Fastest way to accomplish task",
+        "Discoverability - Easy to find and understand",
+        "Terminal capabilities - What can be rendered?"
+      ],
+      "widget_prioritization": "Essential > Helpful > Optional > Advanced"
+    },
+    
+    "personalization": {
+      "description": "Making UI feel personal and familiar",
+      "techniques": [
+        "Color preferences - User's preferred color scheme",
+        "Layout preferences - Remembered layout choices",
+        "Widget preferences - Frequently used widgets prominent",
+        "Shortcut learning - Custom shortcuts from patterns",
+        "Language adaptation - Technical vs non-technical terms",
+        "Density preference - Compact vs spacious layouts"
+      ],
+      "learning": "Implicit learning from usage patterns, explicit from settings"
+    },
+    
+    "adaptive_behavior": {
+      "description": "UI adapts in real-time to user behavior",
+      "triggers": [
+        "Task change - Switch layout for new task type",
+        "Frustration detection - Simplify or provide help",
+        "Efficiency pattern - Optimize for repeated actions",
+        "Skill increase - Gradually introduce advanced features",
+        "Error patterns - Add validation or guidance",
+        "Terminal resize - Reflow layout optimally"
+      ],
+      "adaptation_strategy": "Gradual, non-disruptive changes with user awareness"
+    },
+    
+    "feedback_loop": {
+      "description": "Continuous learning from user feedback",
+      "explicit_feedback": [
+        "User ratings - Direct feedback on UI elements",
+        "Preference settings - Explicit choices",
+        "Feature requests - User-initiated changes",
+        "Help requests - Indicates confusion"
+      ],
+      "implicit_feedback": [
+        "Usage frequency - Which widgets are used?",
+        "Time spent - How long on each widget?",
+        "Success rate - Tasks completed successfully?",
+        "Shortcuts used - Custom workflow patterns",
+        "Errors made - Where do users struggle?",
+        "Feature discovery - What features are found?"
+      ],
+      "learning_rate": "Balance stability vs adaptation"
+    },
+    
+    "progressive_disclosure": {
+      "description": "Revealing complexity gradually as needed",
+      "levels": [
+        "Level 1 - Essential features only",
+        "Level 2 - Common additional features",
+        "Level 3 - Advanced features",
+        "Level 4 - Expert/power user features",
+        "Level 5 - Customization and extensibility"
+      ],
+      "triggers": [
+        "User exploration - User actively looking for more",
+        "Task complexity - Task requires advanced features",
+        "Skill increase - User demonstrates competence",
+        "Explicit request - User asks for feature",
+        "Repeated pattern - User's workflow suggests need"
+      ]
+    },
+    
+    "accessibility_adaptation": {
+      "description": "Adapting for accessibility needs",
+      "adaptations": [
+        "Skill-based - Simpler UI for novices",
+        "Terminal-based - Adapt to terminal limitations",
+        "Bandwidth-based - Lighter UI for slow connections",
+        "Language-based - Non-technical terminology",
+        "Visual - Color schemes, contrast",
+        "Cognitive - Reduced complexity, clear organization"
+      ]
+    },
+    
+    "best_practices": [
+      "Always start with context analysis",
+      "Validate generated UI before rendering",
+      "Monitor user feedback continuously",
+      "Adapt gradually, not abruptly",
+      "Explain significant UI changes to user",
+      "Provide way to revert changes",
+      "Version UI state for rollback",
+      "Balance personalization vs consistency",
+      "Test generated UIs across skill levels",
+      "Maintain performance (fast generation)"
+    ],
+    
+    "examples": {
+      "task_based_generation": {
+        "description": "Generate UI for specific task",
+        "scenario": "User starts file synchronization task",
+        "steps": [
+          "1. analyze_user_context(context) → analysis: task='file_sync'",
+          "2. generate_ui_layout(analysis) → layout: vertical_split (status + file_list)",
+          "3. select_primitives(analysis, layout) → progress_bar, table, statusbar",
+          "4. assemble_interface(layout, placements) → complete UI",
+          "5. Render UI, monitor sync progress",
+          "6. adapt_to_feedback as user interacts"
+        ]
+      },
+      "adaptive_simplification": {
+        "description": "Simplify UI for novice user",
+        "scenario": "Novice user shows confusion patterns",
+        "steps": [
+          "1. detect_user_frustration() → frustrated=true",
+          "2. simplify_for_user(current_layout, skill='novice') → simplified",
+          "3. generate_help(context) → tutorial",
+          "4. Notify user: 'I simplified the interface. Need help?'",
+          "5. Render simplified UI with tutorial link"
+        ]
+      },
+      "anticipatory_ui": {
+        "description": "Predict and prepare for user needs",
+        "scenario": "User regularly performs sequence of actions",
+        "steps": [
+          "1. learn_preferences(user_id, history) → pattern detected",
+          "2. predict_user_needs(context, history) → likely_next_action",
+          "3. Suggest action proactively in UI",
+          "4. If accepted: learn positive reinforcement",
+          "5. If rejected: adjust prediction model"
+        ]
+      }
+    }
+  }
+}

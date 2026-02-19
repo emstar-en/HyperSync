@@ -1,0 +1,259 @@
+{
+  "name": "mxfy_terminal_ui_integration",
+  "version": "1.0.0",
+  "description": "MXFY Terminal UI Integration Specification - UI generation for created applications including widget selection, layout generation, and adaptive interface creation",
+  "license": {
+    "type": "AGPLv3",
+    "text": "This specification is licensed under the GNU Affero General Public License v3.0. See https://www.gnu.org/licenses/agpl-3.0.html for full license text.",
+    "copyright": "Copyright (c) 2024-2026 HyperSync Project"
+  },
+  "subsystem": "MXFY",
+  "category": "terminal_ui_integration",
+  "stunir_compatible": true,
+  "dependencies": [
+    "mxfy_core_system@1.0.0",
+    "mxfy_sdl_integration@1.0.0",
+    "hypersync_terminal_ui@2.0.0",
+    "ui/terminal_ui_primitives@2.0.0",
+    "ui/ai_generated_ui_system@2.0.0"
+  ],
+  "architecture": {
+    "overview": "MXFY integrates with HyperSync's terminal UI system to generate adaptive, context-aware interfaces",
+    "ui_generation_flow": {
+      "intent_analysis": "Extract UI requirements from intent",
+      "widget_selection": "Select appropriate UI primitives from SDL",
+      "layout_generation": "Generate layout based on application type",
+      "interaction_mapping": "Map user interactions to application logic",
+      "adaptive_creation": "Create context-aware adaptive UI"
+    },
+    "terminal_ui_integration": {
+      "description": "Generated apps run in HyperSync terminal/xterm environment",
+      "primitives_used": [
+        "box", "text", "button", "input", "list",
+        "table", "progress", "chart", "tree", "dialog",
+        "tabs", "statusbar", "tooltip", "notification", "custom"
+      ],
+      "layout_types": [
+        "single_panel", "horizontal_split", "vertical_split",
+        "grid", "dashboard", "wizard", "free_form"
+      ]
+    },
+    "adaptive_ui_features": {
+      "context_awareness": {
+        "user_skill_level": "Adapt complexity to novice/intermediate/expert",
+        "current_task": "Optimize layout for current workflow",
+        "terminal_capabilities": "Degrade gracefully for limited terminals",
+        "history": "Learn from user preferences"
+      },
+      "dynamic_assembly": {
+        "description": "Assemble UI components at runtime",
+        "techniques": ["Widget composition", "Layout templating", "Style inheritance"]
+      }
+    }
+  },
+  "type_definitions": {
+    "UIRequirements": {
+      "description": "UI requirements extracted from intent",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "primary_interaction": {"type": "string", "enum": ["viewing", "editing", "monitoring", "managing", "searching"]},
+          "data_display_type": {"type": "string", "enum": ["list", "table", "tree", "chart", "form", "mixed"]},
+          "navigation_style": {"type": "string", "enum": ["tabs", "sidebar", "breadcrumb", "wizard", "none"]},
+          "complexity_level": {"type": "string", "enum": ["minimal", "standard", "advanced"]},
+          "real_time_updates": {"type": "boolean"}
+        }
+      }
+    },
+    "WidgetSelection": {
+      "description": "Selected widgets for UI",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "primary_widget": {"$ref": "#/type_definitions/WidgetSpec"},
+          "secondary_widgets": {"type": "array", "items": {"$ref": "#/type_definitions/WidgetSpec"}},
+          "navigation_widget": {"$ref": "#/type_definitions/WidgetSpec"},
+          "status_widget": {"$ref": "#/type_definitions/WidgetSpec"}
+        }
+      }
+    },
+    "WidgetSpec": {
+      "description": "Widget specification",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "type": {"type": "string"},
+          "shard_id": {"type": "string"},
+          "configuration": {"type": "object"},
+          "style": {"type": "object"},
+          "bindings": {"type": "object"}
+        }
+      }
+    },
+    "GeneratedLayout": {
+      "description": "Generated UI layout",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "type": {"type": "string"},
+          "root_panel": {"$ref": "#/type_definitions/PanelSpec"},
+          "responsive_rules": {"type": "array"},
+          "theme": {"type": "object"}
+        }
+      }
+    },
+    "PanelSpec": {
+      "description": "Panel specification in layout",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "string"},
+          "type": {"type": "string"},
+          "widgets": {"type": "array"},
+          "children": {"type": "array", "items": {"$ref": "#/type_definitions/PanelSpec"}},
+          "size": {"type": "object"},
+          "constraints": {"type": "object"}
+        }
+      }
+    },
+    "InteractionMap": {
+      "description": "Mapping of UI interactions to logic",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "event_handlers": {"type": "object"},
+          "data_bindings": {"type": "object"},
+          "callbacks": {"type": "object"}
+        }
+      }
+    },
+    "AdaptiveUIConfig": {
+      "description": "Configuration for adaptive UI behavior",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "adapt_to_skill": {"type": "boolean", "default": true},
+          "adapt_to_terminal": {"type": "boolean", "default": true},
+          "learn_preferences": {"type": "boolean", "default": true},
+          "degradation_strategy": {"type": "string", "enum": ["graceful", "minimal", "none"]}
+        }
+      }
+    }
+  },
+  "operations": [
+    {
+      "name": "ui_extract_requirements",
+      "description": "Extract UI requirements from intent",
+      "signature": "ui_extract_requirements(intent: ParsedIntent) -> UIRequirements",
+      "complexity": "O(1)",
+      "determinism": "D2"
+    },
+    {
+      "name": "ui_select_widgets",
+      "description": "Select appropriate widgets from SDL",
+      "signature": "ui_select_widgets(requirements: UIRequirements) -> WidgetSelection",
+      "complexity": "O(log n)",
+      "determinism": "D2"
+    },
+    {
+      "name": "ui_generate_layout",
+      "description": "Generate UI layout",
+      "signature": "ui_generate_layout(widgets: WidgetSelection, requirements: UIRequirements) -> GeneratedLayout",
+      "complexity": "O(n)",
+      "determinism": "D2"
+    },
+    {
+      "name": "ui_map_interactions",
+      "description": "Map interactions to application logic",
+      "signature": "ui_map_interactions(layout: GeneratedLayout, data_flow: array) -> InteractionMap",
+      "complexity": "O(n)",
+      "determinism": "D0"
+    },
+    {
+      "name": "ui_create_adaptive",
+      "description": "Create adaptive UI with context awareness",
+      "signature": "ui_create_adaptive(layout: GeneratedLayout, config: AdaptiveUIConfig) -> AdaptiveUI",
+      "complexity": "O(n)",
+      "determinism": "D2"
+    },
+    {
+      "name": "ui_generate_code",
+      "description": "Generate UI code from layout",
+      "signature": "ui_generate_code(layout: GeneratedLayout, interactions: InteractionMap) -> string",
+      "complexity": "O(n)",
+      "determinism": "D0"
+    },
+    {
+      "name": "ui_adapt_to_context",
+      "description": "Adapt UI to current context",
+      "signature": "ui_adapt_to_context(ui: AdaptiveUI, context: SessionContext) -> AdaptiveUI",
+      "complexity": "O(n)",
+      "determinism": "D2"
+    },
+    {
+      "name": "ui_degrade_gracefully",
+      "description": "Degrade UI for limited terminals",
+      "signature": "ui_degrade_gracefully(layout: GeneratedLayout, capabilities: object) -> GeneratedLayout",
+      "complexity": "O(n)",
+      "determinism": "D0"
+    }
+  ],
+  "widget_mapping": {
+    "description": "Mapping of application types to recommended widgets",
+    "mappings": [
+      {
+        "application_type": "file browser",
+        "recommended_widgets": ["tree", "list", "statusbar"],
+        "layout": "horizontal_split"
+      },
+      {
+        "application_type": "log viewer",
+        "recommended_widgets": ["list", "input", "statusbar"],
+        "layout": "vertical_split"
+      },
+      {
+        "application_type": "dashboard",
+        "recommended_widgets": ["chart", "table", "progress", "statusbar"],
+        "layout": "dashboard"
+      },
+      {
+        "application_type": "form",
+        "recommended_widgets": ["input", "button", "dialog"],
+        "layout": "wizard"
+      },
+      {
+        "application_type": "data viewer",
+        "recommended_widgets": ["table", "chart", "tabs"],
+        "layout": "grid"
+      }
+    ]
+  },
+  "skill_level_adaptations": {
+    "novice": {
+      "features": ["tooltips_always_visible", "simplified_menus", "guided_workflows"],
+      "hidden": ["advanced_options", "keyboard_shortcuts", "batch_operations"]
+    },
+    "intermediate": {
+      "features": ["context_tooltips", "standard_menus", "some_shortcuts"],
+      "hidden": ["developer_options"]
+    },
+    "expert": {
+      "features": ["all_options", "full_shortcuts", "batch_operations", "developer_tools"],
+      "hidden": []
+    }
+  },
+  "test_cases": [
+    {
+      "id": "UI_INT_TC_001",
+      "description": "Generate file browser UI",
+      "input": {"intent": {"application_type": "file browser", "target_use_case": "datasets"}},
+      "expected": {"has_tree": true, "has_list": true, "layout": "horizontal_split"}
+    },
+    {
+      "id": "UI_INT_TC_002",
+      "description": "Adapt to novice user",
+      "input": {"skill_level": "novice"},
+      "expected": {"tooltips_visible": true, "simplified": true}
+    }
+  ]
+}
