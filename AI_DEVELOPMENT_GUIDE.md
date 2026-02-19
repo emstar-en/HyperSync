@@ -32,15 +32,16 @@ HyperSync/build/current/
 ```
 components/
 ├── production/          # 9 stable, production-ready components
-│   ├── agua/           # Adaptive Unified Geometric Architecture
-│   ├── pct/            # Propositional Concept Theory
-│   ├── sdl/            # Stochastic Decision Logic
-│   ├── hvs-nvm/        # Hierarchical Vector Store with Non-Volatile Memory
-│   ├── vnes/           # Vector-based Natural Evolution System
-│   ├── mom/            # Multi-Model Orchestration Manager
+│   ├── agua/           # Automated Geometric Universal Architecture
+│   ├── pct/            # Pathfinder → Cartographer → Trailblazer
+│   ├── sdl/            # Semantic Data Lake
+│   ├── hvs/            # HyperVector/Visual System
+│   ├── nvs/            # Non-Volatile Memory
+│   ├── vnes/           # Vector Native Extension System
+│   ├── mom/            # Machine Orchestration Management
 │   ├── haw/            # Human-AI Workspace
-│   ├── ascif/          # Adaptive Safety Constraint Integration Framework
-│   └── mxfy/           # Maxify (Intent synthesis)
+│   ├── ascif/          # Adaptive Social-Consciousness Integration Framework
+│   └── mxfy/           # Make X for Y
 └── experimental/
     └── _template/      # Template for new components
 ```
